@@ -290,13 +290,15 @@ Represents evidence supporting an experience claim.
 
 ## HAS_GOAL
 
-```text
+Relationship:
+
 (User)-[:HAS_GOAL]->(Goal)
-```
+
+Purpose:
 
 Connects a User to a Goal they own.
 
-### Relationship Properties
+Relationship Properties:
 
 None.
 
@@ -304,29 +306,33 @@ None.
 
 ## HAS_EXPERIENCE
 
-```text
+Relationship:
+
 (User)-[:HAS_EXPERIENCE]->(Experience)
-```
+
+Purpose:
 
 Connects a User to an Experience they own.
 
-### Relationship Properties
+Relationship Properties:
 
-| Property | Type    | Description                                             |
-| -------- | ------- | ------------------------------------------------------- |
-| order    | Integer | Timeline ordering value used for chronological sorting. |
+| Property | Type | Description |
+|-----------|--------|-------------|
+| order | Integer | Timeline ordering value used for chronological sorting. |
 
 ---
 
 ## CONTRIBUTED_TO
 
-```text
+Relationship:
+
 (Experience)-[:CONTRIBUTED_TO]->(Goal)
-```
+
+Purpose:
 
 Indicates that an Experience contributed toward pursuing or achieving a Goal.
 
-### Relationship Properties
+Relationship Properties:
 
 None.
 
@@ -334,13 +340,15 @@ None.
 
 ## BUILT_SKILL
 
-```text
+Relationship:
+
 (Experience)-[:BUILT_SKILL]->(Skill)
-```
+
+Purpose:
 
 Indicates that a Skill was gained, improved, or demonstrated through an Experience.
 
-### Relationship Properties
+Relationship Properties:
 
 None.
 
@@ -348,46 +356,49 @@ None.
 
 ## TRANSITION
 
-```text
+Relationship:
+
 (Experience)-[:TRANSITION]->(Experience)
-```
+
+Purpose:
 
 Represents movement from one Experience to another.
 
-### Relationship Properties
+Relationship Properties:
 
-| Property      | Type    | Description                              |
-| ------------- | ------- | ---------------------------------------- |
-| decisionLabel | String  | Key decision that caused the transition. |
-| gapMonths     | Integer | Number of months between experiences.    |
-| gapReason     | String  | Explanation for the gap if one existed.  |
+| Property | Type | Description |
+|-----------|--------|-------------|
+| decisionLabel | String | Key decision that caused the transition. |
+| gapMonths | Integer | Number of months between experiences. |
+| gapReason | String? | Explanation for the gap if one existed. |
 
-### Example
+Example:
 
-```text
 College
 
-    |
-    | TRANSITION {
-    |   decisionLabel: "Rejected Placement Offer",
-    |   gapMonths: 4
-    | }
-    |
+↓ TRANSITION
+
+decisionLabel = "Rejected Placement Offer"
+
+gapMonths = 4
+
+↓
 
 Startup
-```
 
 ---
 
 ## HAS_PROOF
 
-```text
+Relationship:
+
 (Experience)-[:HAS_PROOF]->(Proof)
-```
+
+Purpose:
 
 Connects an Experience to supporting evidence.
 
-### Relationship Properties
+Relationship Properties:
 
 None.
 
@@ -395,23 +406,31 @@ None.
 
 # Canonical Graph Structure
 
-```text
-(User)
+User
 
- ├── HAS_GOAL ─────────► (Goal)
+├── HAS_GOAL ─────────► Goal
 
- ├── HAS_EXPERIENCE ───► (Experience)
- │
- │                       ├── CONTRIBUTED_TO ───► (Goal)
- │
- │                       ├── BUILT_SKILL ──────► (Skill)
- │
- │                       ├── HAS_PROOF ────────► (Proof)
- │
- │                       └── TRANSITION ───────► (Experience)
-```
+└── HAS_EXPERIENCE ───► Experience
+                         │
+                         ├── CONTRIBUTED_TO ─► Goal
+                         │
+                         ├── BUILT_SKILL ────► Skill
+                         │
+                         ├── HAS_PROOF ──────► Proof
+                         │
+                         └── TRANSITION ─────► Experience
 
 ---
+
+# Relationship Direction Rules
+
+- HAS_GOAL must always point User → Goal.
+- HAS_EXPERIENCE must always point User → Experience.
+- CONTRIBUTED_TO must always point Experience → Goal.
+- BUILT_SKILL must always point Experience → Skill.
+- HAS_PROOF must always point Experience → Proof.
+- TRANSITION must always point Experience → Experience.
+- Relationship directions are fixed and must never be reversed.
 
 # Graph Constraints
 
@@ -440,24 +459,6 @@ None.
 * Relationship directions are fixed.
 * Node labels are fixed.
 * Property names are fixed.
-
----
-
-# Anti-Patterns
-
-Do not create:
-
-* Achievement nodes
-* Interest nodes
-* Company nodes
-* Education nodes
-* Milestone nodes
-* Failure nodes
-* Success nodes
-* Career nodes
-* Application nodes
-
-Store these as properties on Experience instead.
 
 ---
 
