@@ -72,6 +72,9 @@ async function executeStatements(
 
     for (let i = 0; i < statements.length; i++) {
         const statement = statements[i]
+        if (!statement) {
+            continue
+        }
 
         // Extract a short description from the first comment line
         // above the statement for readable logging

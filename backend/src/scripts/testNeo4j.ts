@@ -23,6 +23,10 @@ async function testNeo4j(): Promise<void> {
 
       const record = result.records[0];
 
+      if (!record) {
+        throw new Error("No records returned")
+     }
+
       console.log("\nQuery Result:");
       console.log("Message:", record.get("message"));
       console.log("Timestamp:", record.get("timestamp").toString());
