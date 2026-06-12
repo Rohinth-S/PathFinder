@@ -17,6 +17,11 @@ To run the Neo4j connection test script, use:
 ```bash
 npm run test:neo4j
 ```
+To run the Gemini, Grok connection test script, use:
+
+```bash
+npm run test:geminiGroq
+```
 To run the migrate script, use:
 
 ```bash
@@ -26,6 +31,7 @@ npm run migrate
 Notes:
 - The script name in `package.json` is `test:upstash`.
 - The Neo4j test script is `test:neo4j`.
+- The Gemini, Groq test script is `test:geminiGroq`.
 - The migration script is `migrate`.
 - `npm run dev` starts the backend in watch mode from `src/server.ts`.
 
