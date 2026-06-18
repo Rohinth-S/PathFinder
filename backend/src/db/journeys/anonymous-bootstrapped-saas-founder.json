@@ -1,0 +1,680 @@
+{
+  "user": {
+    "username": "indie-operator-96",
+    "clerkId": null,
+    "preferredLanguage": "en",
+    "reputationScore": 45,
+    "flagCount": 0,
+    "isFlagged": false
+  },
+  "goals": [
+    {
+      "id": "io-96-g-mcasep",
+      "title": "Mastering Core Algorithmic and Software Engineering Paradigms",
+      "description": "The target was to internalize theoretical computer science fundamentals and system engineering fundamentals through a formal academic undergraduate degree program.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Getting Into IITs/NITs", "Cracking Placements"],
+      "startDate": "2014-07-01",
+      "endDate": "2018-05-31"
+    },
+    {
+      "id": "io-96-g-sppecf",
+      "title": "Securing Professional Production Exposure and Capital Foundation",
+      "description": "The objective was to acquire hands-on engineering experience within scalable production codebases while building an emergency cash runway from corporate employment wages.",
+      "status": "achieved",
+      "topics": ["Professionals"],
+      "subtopics": ["Software Engineering"],
+      "startDate": "2018-06-01",
+      "endDate": "2020-12-31"
+    },
+    {
+      "id": "io-96-g-dphcd",
+      "title": "De-Risking Product Hypotheses through Non-Leading Client Discovery",
+      "description": "The target was to isolate high-value B2B operational pain points and validate structural workflow patterns before writing programmatic application code.",
+      "status": "achieved",
+      "topics": ["Startup"],
+      "subtopics": ["SaaS / Tech", "Fintech"],
+      "startDate": "2021-01-01",
+      "endDate": "2021-12-31"
+    },
+    {
+      "id": "io-96-g-eimvp",
+      "title": "Engineering and Iterating a Minimal Viable Transaction Pipeline",
+      "description": "The objective was to build, scope-prune, and deploy a core functional data utility within strict timelines to test market activation parameters.",
+      "status": "achieved",
+      "topics": ["Startup", "Professionals"],
+      "subtopics": ["SaaS / Tech", "Product Management", "Software Engineering"],
+      "startDate": "2021-09-01",
+      "endDate": "2022-06-30"
+    },
+    {
+      "id": "io-96-g-rptmhpl",
+      "title": "Repositioning Product Trust, Messaging, and High-Tier Pricing Layers",
+      "description": "The strategic goal was to refactor low-end pricing tiers, optimize visual ingestion workflows, and change marketing frameworks to capture high-intent business assets.",
+      "status": "achieved",
+      "topics": ["Startup", "Professionals"],
+      "subtopics": ["SaaS / Tech", "Product Management", "Design", "Sales / GTM"],
+      "startDate": "2022-07-01",
+      "endDate": "2022-12-31"
+    },
+    {
+      "id": "io-96-g-cdsaice",
+      "title": "Converting Direct Sales Moats into Automated Inbound Content Engines",
+      "description": "The growth target was to scale monthly recurring revenue past personal baseline post-tax expenditures by shifting from high-touch sales loops to programmatic search engine optimization pipelines.",
+      "status": "achieved",
+      "topics": ["Startup", "Professionals"],
+      "subtopics": ["SaaS / Tech", "Sales / GTM"],
+      "startDate": "2022-10-01",
+      "endDate": "2023-11-30"
+    },
+    {
+      "id": "io-96-g-bsbsi",
+      "title": "Building a Sovereign, Lean Bootstrapped Software Infrastructure",
+      "description": "The ongoing target is to achieve absolute corporate control by completely bypassing institutional venture funding, stabilizing system runtimes against customer churn, and maintaining thin operational costs.",
+      "status": "ongoing",
+      "topics": ["Startup"],
+      "subtopics": ["SaaS / Tech", "Data / AI", "Social Impact"],
+      "startDate": "2023-12-01",
+      "endDate": null
+    }
+  ],
+  "experiences": [
+    {
+      "id": "io-96-e-pucsf",
+      "title": "Pursuing Undergraduate Computer Science Foundations",
+      "startDate": "2014-07-01",
+      "endDate": "2018-05-31",
+      "context": "I completed a formal four-year engineering curriculum focused heavily on the theoretical mechanics of relational databases, operating systems core structures, and advanced data structures.",
+      "outcome": "Graduated with strong analytical engineering baselines, though I had to self-teach modern industry tools like Git, cloud instances, and web frameworks during personal hours.",
+      "organization": "School of Engineering",
+      "isVerified": true,
+      "goalIds": ["io-96-g-mcasep"],
+      "skills": [
+        { "name": "Relational Database Principles", "type": "Technical" },
+        { "name": "Algorithmic Process Analysis", "type": "Technical" }
+      ],
+      "proofs": [
+        {
+          "id": "io-96-proof-1",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-pemtc",
+      "title": "Production Engineering at Mid-Sized Tech Corporate",
+      "startDate": "2018-06-01",
+      "endDate": "2020-12-31",
+      "context": "Entering the workforce full-time, I navigated legacy codebases, scheduled automated test executions, and managed zero-downtime database transformations for active business software segments.",
+      "outcome": "Mastered real-world scale testing models and telemetry logging while building a personal liquid financial runway to fund future independent exploration.",
+      "organization": "TechCorp Systems Enterprise",
+      "isVerified": false,
+      "goalIds": ["io-96-g-sppecf"],
+      "skills": [
+        { "name": "Zero-Downtime Migration Architecture", "type": "Technical" },
+        { "name": "System Telemetry & Error Logging", "type": "Technical" }
+      ],
+      "proofs": [
+        {
+          "id": "io-96-proof-2",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "rejected",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-eicbs",
+      "title": "Ecosystem Immersion and Capital-Efficient Business Study",
+      "startDate": "2018-09-01",
+      "endDate": "2021-06-30",
+      "context": "During off-hours, I actively tracked bootstrapped software frameworks on Indie Hackers and Hacker News, deconstructing unit economic metrics, conversion funnels, and distribution channels.",
+      "outcome": "Shifted my personal engineering paradigm away from vanity code complexity toward building specific, high-intent user return-on-investment utilities.",
+      "organization": "Indie Hacking Independent Research",
+      "isVerified": true,
+      "goalIds": ["io-96-g-sppecf"],
+      "skills": [
+        { "name": "Unit Economic Modeling", "type": "Domain" },
+        { "name": "Conversion Funnel Mapping", "type": "Domain" }
+      ],
+      "proofs": [
+        {
+          "id": "io-96-proof-3",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-ibsspm",
+      "title": "Iterating Boilerplate Stacks via Side Project Post-Mortems",
+      "startDate": "2019-03-01",
+      "endDate": "2021-03-01",
+      "context": "I built several small consumer productivity apps and developer tool packages during weekends, experiencing typical engineer over-engineering loops without user input.",
+      "outcome": "Converted these failed launches into an analytical playground, constructing an integrated, ready-to-use boilerplate code stack covering Stripe billing, database connectors, and authentication layers.",
+      "organization": "SaaS Sandbox Incubations",
+      "isVerified": true,
+      "goalIds": ["io-96-g-sppecf"],
+      "skills": [
+        { "name": "Rapid Boilerplate Assembly", "type": "Technical" },
+        { "name": "Rapid Feature Micro-Scoping", "type": "Domain" }
+      ],
+      "proofs": [
+        {
+          "id": "io-96-proof-4",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-pebua",
+      "title": "Pivoting Exclusively to B2B Utility Analysis",
+      "startDate": "2021-01-01",
+      "endDate": "2021-06-30",
+      "context": "Analysing early consumer side project behaviors, I identified high customer churn loops and low price sensitivities inherent within B2C models.",
+      "outcome": "Consciously pivoted my long-term business focus to target high-intent enterprise utility workflows that actively bleed corporate hours.",
+      "organization": "SaaS Sandbox Incubations",
+      "isVerified": true,
+      "goalIds": ["io-96-g-dphcd"],
+      "skills": [
+        { "name": "B2B Friction Mapping", "type": "Domain" }
+      ],
+      "proofs": [
+        {
+          "id": "io-96-proof-5",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-encdt",
+      "title": "Executing Non-Leading Customer Discovery Tracks",
+      "startDate": "2021-06-01",
+      "endDate": "2021-11-30",
+      "context": "I conducted highly structured LinkedIn and cold email discovery loops targeting operations directors, bypassing pitch scripts to investigate real retrospective workflow friction loops.",
+      "challengeFaced": "Filtering polite but highly inaccurate hypothetical feedback to uncover genuine operational budget allocation indicators.",
+      "outcome": "Synthesized raw data from 35 qualitative interviews, identifying a systemic operational data pipeline block holding back corporate engineering squads.",
+      "organization": "SaaS Startup Incubation",
+      "isVerified": true,
+      "goalIds": ["io-96-g-dphcd"],
+      "skills": [
+        { "name": "Qualitative Interview Sequencing", "type": "Soft" },
+        { "name": "Problem Space Synthesis", "type": "Domain" }
+      ],
+      "proofs": [
+        {
+          "id": "io-96-proof-6",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-csdam",
+      "title": "Constructing and Scope-Pruning the Data Automation MVP",
+      "startDate": "2021-09-01",
+      "endDate": "2022-01-31",
+      "context": "I set a firm 12-week feature execution timeline, building out a Node.js/React pipeline to automate database data dumps into flat spreadsheets while working full-time corporate shifts.",
+      "outcome": "Successfully built a functional minimum product configuration, forcefully dropping non-essential permission dashboards and collaboration layers.",
+      "organization": "SaaS Startup Incubation",
+      "isVerified": true,
+      "goalIds": ["io-96-g-eimvp"],
+      "skills": [
+        { "name": "Node.js System Engineering", "type": "Technical" },
+        { "name": "Asynchronous Task Scheduling", "type": "Technical" }
+      ],
+      "proofs": [
+        {
+          "id": "io-96-proof-7",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-eaapd",
+      "title": "Executing the Anti-Climactic Alpha Product Drop",
+      "startDate": "2022-02-01",
+      "endDate": "2022-04-30",
+      "context": "I launched the initial configuration across product search forums, monitoring early acquisition analytics and onboarding user conversion data maps.",
+      "challengeFaced": "Zero conversion onto paid tiers due to deep enterprise user anxieties surrounding plugging production database keys into an unbacked indie app.",
+      "outcome": "Analyzed early platform abandonment patterns, tracking how a lack of ingestion data trust paths killed early active user retention indices.",
+      "organization": "SaaS Startup Incubation",
+      "isVerified": false,
+      "goalIds": ["io-96-g-eimvp"],
+      "skills": [
+        { "name": "Product Drop Analytics Tracking", "type": "Domain" },
+        { "name": "Trust Deficit Identification", "type": "Soft" }
+      ],
+      "proofs": [
+        {
+          "id": "io-96-proof-8",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "rejected",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-ditl",
+      "title": "De-Risking Ingestion Trust Loops",
+      "startDate": "2022-05-01",
+      "endDate": "2022-08-31",
+      "context": "To completely eliminate user infrastructure security fears, I refactored the ingestion core away from direct database connections into secure OAuth sandboxes and flat file inputs.",
+      "outcome": "Redesigned our data access models, making the platform fully compatible with standard enterprise information security risk thresholds.",
+      "organization": "SaaS Startup Incubation",
+      "isVerified": true,
+      "goalIds": ["io-96-g-rptmhpl"],
+      "skills": [
+        { "name": "OAuth Sandbox Integration", "type": "Technical" },
+        { "name": "Platform Ingestion De-risking", "type": "Technical" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-9",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-rpvpl",
+      "title": "Refactoring Product Value Positioning Layouts",
+      "startDate": "2022-06-01",
+      "endDate": "2022-09-30",
+      "context": "I swapped out complex engineering-centric marketing terms for concrete business metrics on our web pages, matching our copywriting styles to operational user expectations.",
+      "outcome": "Transformed the landing page framework into a clean, value-driven channel focused on saving team time over showcasing code configurations.",
+      "organization": "SaaS Startup Incubation",
+      "isVerified": true,
+      "goalIds": ["io-96-g-rptmhpl"],
+      "skills": [
+        { "name": "Value-Based Copywriting Layout", "type": "Soft" },
+        { "name": "User-Centric Asset Positioning", "type": "Domain" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-10",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-ihvpe",
+      "title": "Implementing a High-Tier Value Pricing Engine",
+      "startDate": "2022-07-01",
+      "endDate": "2022-10-31",
+      "context": "I scrapped the initial low-margin $29 subscription and restructured our financial layers into premium $99 Team and $249 Growth configurations.",
+      "outcome": "Successfully re-categorized the application from an optimized utility widget to an essential, premium business pipeline choice.",
+      "organization": "SaaS Startup Incubation",
+      "isVerified": true,
+      "goalIds": ["io-96-g-rptmhpl"],
+      "skills": [
+        { "name": "Premium Tier Structuring", "type": "Domain" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-11",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-mshoe",
+      "title": "Manual Hand-Touch Sales Onboarding Experiments",
+      "startDate": "2022-10-01",
+      "endDate": "2023-02-28",
+      "context": "Abandoning broad open public distributions, I ran highly targeted direct outbound sales sequences, leading live technical onboarding walks for regional operations directors.",
+      "outcome": "Closed the first enterprise account at the $249 monthly recurring revenue level by automating a manual spreadsheet task.",
+      "organization": "SaaS Startup Incubation",
+      "isVerified": true,
+      "goalIds": ["io-96-g-cdsaice"],
+      "skills": [
+        { "name": "Hyper-Targeted Direct Outreach", "type": "Soft" },
+        { "name": "Interactive Technical Product Demos", "type": "Soft" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-12",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": "io-96-e-btsecp",
+      "title": "Building a Technical Search Engine Content Pipeline",
+      "startDate": "2023-01-01",
+      "endDate": "2023-06-30",
+      "context": "I drafted pragmatic, deeply technical long-form analysis solving explicit spreadsheet parsing limits and data automation edge cases to drive organic reach profiles.",
+      "outcome": "Constructed an automated marketing foundation, pulling in self-serve client conversions cleanly without manual outreach requirements.",
+      "organization": "SaaS Startup Incubation",
+      "isVerified": true,
+      "goalIds": ["io-96-g-cdsaice"],
+      "skills": [
+        { "name": "Search Engine Optimization Planning", "type": "Technical" },
+        { "name": "Pragmatic Technical Writing", "type": "Soft" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-13",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+  },
+  {
+    "id": "io-96-e-msoai",
+    "title": "Managing Scaled Organic Account Influx",
+    "startDate": "2023-04-01",
+    "endDate": "2023-09-30",
+    "context": "As the site content indexed across major engines, I monitored automated client activation pathways, capturing conversion milestones as baseline software tracking revenues grew past $5,000 monthly.",
+    "outcome": "Validated a robust self-serve customer onboarding model that continuously brought in corporate user accounts.",
+    "organization": "SaaS Startup Incubation",
+    "isVerified": true,
+    "goalIds": ["io-96-g-cdsaice"],
+    "skills": [
+      { "name": "Automated User Funnel Tracking", "type": "Domain" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-14",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+  },
+  {
+    "id": "io-96-e-fcefl",
+    "title": "Formulating the Corporate Exit Financial Layer",
+    "startDate": "2023-06-01",
+    "endDate": "2023-11-30",
+    "context": "I managed long-term asset calculations, tracking monthly income baselines against fixed household expenditures for six consecutive stable execution windows.",
+    "outcome": "Confirmed my operational safety metrics, matching platform recurring revenues cleanly to senior corporate software engineering salary structures.",
+    "organization": "SaaS Startup Incubation",
+    "isVerified": true,
+    "goalIds": ["io-96-g-cdsaice"],
+    "skills": [
+      { "name": "Corporate Venture Risk Modeling", "type": "Domain" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-15",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+  },
+  {
+    "id": "io-96-e-rcser",
+    "title": "Resigning from Corporate Senior Engineering Ranks",
+    "startDate": "2023-11-01",
+    "endDate": "2023-11-30",
+    "context": "With platform recurring revenues solidifying at a stable $7,200 baseline with high net margins, I processed my exit loops from enterprise tech employment.",
+    "outcome": "Unlocked 100% of my baseline daily operational hours to prioritize scaling my independent software enterprise fully.",
+    "organization": "TechCorp Systems Enterprise",
+    "isVerified": true,
+    "goalIds": ["io-96-g-cdsaice"],
+    "skills": [
+      { "name": "Strategic Corporate Resignation", "type": "Soft" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-16",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+  },
+  {
+    "id": "io-96-e-rsdfcc",
+    "title": "Resolving Scale Data Format Churn Crises",
+    "startDate": "2023-12-01",
+    "endDate": "2024-03-31",
+    "context": "As corporate account counts scaled up, non-standard user data configurations caused processing bottlenecks, driving subscriber churn numbers up to an 8% marker.",
+    "challengeFaced": "Background application tasks failing silently due to corrupted cell characters and international date encoding configurations.",
+    "outcome": "Halted new feature builds to run explicit data format hardening cycles, driving active user retention parameters back to a healthy state.",
+    "organization": "SaaS Startup Incubation",
+    "isVerified": true,
+    "goalIds": ["io-96-g-bsbsi"],
+    "skills": [
+      { "name": "Data Type Ingestion Hardening", "type": "Technical" },
+      { "name": "Retention Churn Mitigation", "type": "Technical" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-17",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+  },
+  {
+    "id": "io-96-e-astw",
+    "title": "Automating Support Ticket Workflows",
+    "startDate": "2024-01-01",
+    "endDate": "2024-05-31",
+    "context": "As our active user base grew, I found myself acting as a major operational bottleneck. I was spending up to five hours a day manually triageing incoming user bugs, handling repetitive configuration queries, and resolving complex billing anomalies, which completely stalled our core development momentum.",
+    "outcome": "Deployed centralized automated documentation vaults and embedded video walk-through guides inside empty dashboard screens to drop support backlogs.",
+    "organization": "SaaS Startup Incubation",
+    "isVerified": true,
+    "goalIds": ["io-96-g-bsbsi"],
+    "skills": [
+      { "name": "Asynchronous Support Architecture", "type": "Soft" },
+      { "name": "In-App Help Flow Mapping", "type": "Domain" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-18",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+  },
+  {
+    "id": "io-96-e-itshp",
+    "title": "Integrating Tier-1 Service Helpdesk Platforms",
+    "startDate": "2024-02-01",
+    "endDate": "2024-06-30",
+    "context": "To permanently escape the unmanaged email logging queue, I orchestrated a clean system configuration tracking Help Scout layers into our master tracking dashboards.",
+    "outcome": "Streamlined operational request triage systems, cutting first-response turnaround intervals by more than half.",
+    "organization": "SaaS Startup Incubation",
+    "isVerified": true,
+    "goalIds": ["io-96-g-bsbsi"],
+    "skills": [
+      { "name": "Helpdesk API Integration", "type": "Technical" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-19",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+  },
+  {
+    "id": "io-96-e-mlcaie",
+    "title": "Managing Lean Cloud Asset Infrastructure Expenses",
+    "startDate": "2024-06-01",
+    "endDate": null,
+    "context": "Operating a growing $22,000 monthly engine, I systematically tracked container footprints across managed cloud instances to minimize computing expenses to a strict $450 base.",
+    "outcome": "Maintained an exceptional pre-tax margin exceeding 90% through careful resource scoping decisions.",
+    "organization": "SaaS Startup Incubation",
+    "isVerified": true,
+    "goalIds": ["io-96-g-bsbsi"],
+    "skills": [
+      { "name": "Cloud Infrastructure Cost Scoping", "type": "Technical" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-20",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+  },
+  {
+    "id": "io-96-e-scecr",
+    "title": "Sourcing and Coordinating Elite Contract Resources",
+    "startDate": "2024-08-01",
+    "endDate": null,
+    "context": "To protect solo operational freedom while tracking scale parameters, I onboarded specialized contract technical authors and weekend platform support engineers on thin retainers.",
+    "outcome": "Expanded execution capabilities dynamically while maintaining zero structural full-time overhead metrics.",
+    "organization": "SaaS Startup Incubation",
+    "isVerified": true,
+    "goalIds": ["io-96-g-bsbsi"],
+    "skills": [
+      { "name": "Contingent Workforce Coordination", "type": "Soft" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-21",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+  },
+  {
+    "id": "io-96-e-dbct",
+    "title": "Defending a Bootstrapped Cap Table",
+    "startDate": "2024-01-01",
+    "endDate": null,
+    "context": "As annual recurring revenue markers crossed past a stable quarter-million-dollar valuation, I vetted and rejected multiple inbound acquisition proposals from venture funds.",
+    "outcome": "Preserved 100% absolute ownership and founder independence, free from external board mandate pressures.",
+    "organization": "SaaS Startup Incubation",
+    "isVerified": true,
+    "goalIds": ["io-96-g-bsbsi"],
+    "skills": [
+      { "name": "Cap Table Equity Defense", "type": "Domain" }
+    ],
+      "proofs": [
+        {
+          "id": "io-96-proof-22",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }
+      ]
+  }
+],
+"transitions":[
+  {
+    "fromExperienceId": "io-96-e-pemtc",
+    "toExperienceId": "io-96-e-pebua",
+    "decisionLabel": "Pivoting my strategic focus exclusively toward B2B utility setups after analyzing the high churn and low price sensitivity common in consumer markets."
+  },
+  {
+    "fromExperienceId": "io-96-e-pebua",
+    "toExperienceId": "io-96-e-encdt",
+    "decisionLabel": "Commencing direct cold outreach loops to run discovery interviews before writing code, forcing myself to validate a core workflow problem first."
+  },
+  {
+    "fromExperienceId": "io-96-e-encdt",
+    "toExperienceId": "io-96-e-csdam",
+    "decisionLabel": "Imposing a strict twelve-week development deadline to construct the data automation MVP, aggressively cutting non-essential platform features."
+  },
+  {
+    "fromExperienceId": "io-96-e-eaapd",
+    "toExperienceId": "io-96-e-ditl",
+    "decisionLabel": "Halting broad promotional drops to completely rebuild our data ingestion mechanics, bypassing direct database connection requests to secure user trust."
+  },
+  {
+    "fromExperienceId": "io-96-e-rpvpl",
+    "toExperienceId": "io-96-e-ihvpe",
+    "decisionLabel": "Scrapping the low-end subscription model to implement high-tier premium plans, repositioning the app out of the cheap widget class."
+  },
+  {
+    "fromExperienceId": "io-96-e-ihvpe",
+    "toExperienceId": "io-96-e-mshoe",
+    "decisionLabel": "Abandoning broad public marketing platforms to close accounts through personalized direct sales and high-touch manual onboarding loops."
+  },
+  {
+    "fromExperienceId": "io-96-e-mshoe",
+    "toExperienceId": "io-96-e-btsecp",
+    "decisionLabel": "Transitioning from manual outbound sales execution to building a programmatic organic content engine to scale customer acquisition asynchronously."
+  },
+  {
+    "fromExperienceId": "io-96-e-fcefl",
+    "toExperienceId": "io-96-e-rcser",
+    "decisionLabel": "Formally resigning from full-time tech employment after validating that our monthly recurring revenue could cover structural living costs for half a year."
+  },
+  {
+    "fromExperienceId": "io-96-e-rcser",
+    "toExperienceId": "io-96-e-rsdfcc",
+    "decisionLabel": "Pausing all forward feature roadmaps to dedicate all available development cycles toward hardening our system ingestion against data anomalies."
+  },
+  {
+    "fromExperienceId": "io-96-e-astw",
+    "toExperienceId": "io-96-e-mlcaie",
+    "decisionLabel": "Optimizing server containers and shifting to low-overhead retaining models to maximize pre-tax margins above ninety percent while operating as a solo worker."
+  }
+]
+}

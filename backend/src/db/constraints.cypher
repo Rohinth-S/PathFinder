@@ -7,10 +7,9 @@
 
 // User Constraints
 
-// Every User must have a unique internal id
-CREATE CONSTRAINT user_id_unique IF NOT EXISTS
+CREATE CONSTRAINT user_username_unique IF NOT EXISTS
 FOR (u:User)
-REQUIRE u.id IS UNIQUE;
+REQUIRE u.username IS UNIQUE;
 
 // Every User must have a unique Clerk authentication id
 // This is the lookup key used by the auth processor
@@ -38,10 +37,6 @@ REQUIRE e.id IS UNIQUE;
 
 // Skill Constraints
 
-// Every Skill must have a unique internal id
-CREATE CONSTRAINT skill_id_unique IF NOT EXISTS
-FOR (s:Skill)
-REQUIRE s.id IS UNIQUE;
 
 // Skill names must be globally unique
 // Skills are shared across all users — duplicate skill nodes
