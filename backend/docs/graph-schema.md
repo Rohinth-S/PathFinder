@@ -107,13 +107,12 @@ Represents a platform member.
 
 | Property          | Type     | Description                                                   |
 | ----------------- | -------- | ------------------------------------------------------------- |
-| id                | UUID     | Internal unique identifier.                                   |
+| username         | String     | Username                                  |
 | clerkId           | String   | Clerk authentication identifier.                              |
 | preferredLanguage | String?   | Preferred language for AI responses and translations.         |
 | reputationScore   | Integer  | Community reputation score.                                   |
 | flagCount         | Integer  | Number of accepted flags received.                            |
 | isFlagged         | Boolean  | Indicates whether the user is hidden from discovery features. |
-| journeySummary    | String?   | AI-generated summary of the user's journey.                   |
 | createdAt         | DateTime | Timestamp when the user was created.                          |
 
 ---
@@ -130,8 +129,8 @@ Represents an objective pursued by a user.
 | title       | String | Short title of the goal.                   |
 | description | String | Detailed description of the objective.     |
 | status      | String | Current state of the goal.                 |
-| topic       | String | Top-level community category.              |
-| subtopic    | String | Specific category within a topic.          |
+| topics       | String[] | Top-level community category.              |
+| subtopics    | String[] | Specific category within a topic.          |
 | startDate   | Date   | Date when the goal started.                |
 | endDate     | Date   | Date when the goal ended or was completed. |
 
@@ -148,6 +147,7 @@ Represents an objective pursued by a user.
 * Fintech
 * Edtech
 * Social Impact
+* Other
 
 ### Professionals Subtopics
 
@@ -156,6 +156,7 @@ Represents an objective pursued by a user.
 * Data / AI
 * Design
 * Sales / GTM
+* Other
 
 ### College Students Subtopics
 
@@ -163,11 +164,12 @@ Represents an objective pursued by a user.
 * MS Abroad Applications
 * Dropping Out To Build
 * Getting Into IITs/NITs
-* First Internship
+* Internship
+* Competition
+* Other
 
 ### Allowed Status Values
 
-* active
 * achieved
 * abandoned
 * ongoing
@@ -190,7 +192,6 @@ Represents a single meaningful phase, project, role, internship, startup attempt
 | context           | String   | Background information and circumstances surrounding the experience.                    |
 | challengeFaced    | String?   | Main difficulties encountered during the experience.                                    |
 | outcome           | String?  | Result or outcome of the experience.                                                    |
-| emotionText       | String?   | Optional emotional reflections associated with the experience.                          |
 | organization      | String?   | Company, institution, university, startup, or organization involved.                    |
 | applicationStatus | String?  | Status of an application if the experience represents an application process.           |
 | achievements      | String[]? | Significant achievements, milestones, awards, or accomplishments during the experience. |
@@ -224,7 +225,6 @@ Represents a skill gained or demonstrated through one or more experiences.
 
 | Property | Type   | Description              |
 | -------- | ------ | ------------------------ |
-| id       | UUID   | Unique skill identifier. |
 | name     | String | Canonical skill name.    |
 | type     | String | Skill classification.    |
 
@@ -233,7 +233,7 @@ Represents a skill gained or demonstrated through one or more experiences.
 * Technical
 * Soft
 * Domain
-* ExtraCurricural
+* ExtraCurricular
 
 ### Skill Rules
 
@@ -369,8 +369,6 @@ Relationship Properties:
 | Property | Type | Description |
 |-----------|--------|-------------|
 | decisionLabel | String | Key decision that caused the transition. |
-| gapMonths | Integer | Number of months between experiences. |
-| gapReason | String? | Explanation for the gap if one existed. |
 
 Example:
 
@@ -379,8 +377,6 @@ College
 ↓ TRANSITION
 
 decisionLabel = "Rejected Placement Offer"
-
-gapMonths = 4
 
 ↓
 
@@ -436,7 +432,7 @@ User
 
 | Constraint           |
 | -------------------- |
-| User.id UNIQUE       |
+| User.username UNIQUE       |
 | User.clerkId UNIQUE  |
 | Goal.id UNIQUE       |
 | Experience.id UNIQUE |
@@ -468,7 +464,7 @@ User
 | ------------------- | ------------------------------------ |
 | Onboarding          | User, Goal, Experience, Skill, Proof |
 | Journey Querying    | Goal, Experience, Skill, TRANSITION  |
-| Community Browsing  | Goal.topic, Goal.subtopic            |
+| Community Browsing  | Goal.topics, Goal.subtopics            |
 | Similarity Matching | Experience, Skill, embedding         |
 | Reputation          | User.reputationScore                 |
 | Flagging            | User.flagCount, User.isFlagged       |

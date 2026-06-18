@@ -17,7 +17,7 @@
 // simultaneously and returns relevance scores per result.
 CREATE FULLTEXT INDEX experience_content_search IF NOT EXISTS
 FOR (n:Experience)
-ON EACH [n.context, n.challengeFaced, n.outcome, n.emotionText];
+ON EACH [n.context, n.challengeFaced, n.outcome];
 
 // Title search index for Experience
 // Used when matching on specific role or project names
@@ -46,7 +46,7 @@ FOR (n:Experience)
 ON n.embedding
 OPTIONS {
   indexConfig: {
-    `vector.dimensions`: 768,
+    `vector.dimensions`: 384,
     `vector.similarity_function`: 'cosine'
   }
 };
@@ -90,7 +90,7 @@ CREATE INDEX goal_topic_subtopic_composite_index IF NOT EXISTS
 FOR (g:Goal)
 ON (g.topic, g.subtopic);
 
-// Index on status — used to filter active vs completed goals
+// Index on status — used to filter ongoing vs completed goals
 CREATE INDEX goal_status_index IF NOT EXISTS
 FOR (g:Goal)
 ON (g.status);
