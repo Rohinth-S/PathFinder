@@ -1,18 +1,49 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function ProfilePage() {
   const router = useRouter();
   const [username, setUsername] = useState('');
-  const [language, setLanguage] = useState('English');
+  const [languageCode, setLanguageCode] = useState('en');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const languages = ['English', 'Spanish', 'French', 'Hindi'];
+  const languages = [
+    { label: 'English', code: 'en' },
+    { label: 'Spanish', code: 'es' },
+    { label: 'French', code: 'fr' },
+    { label: 'Hindi', code: 'hi' },
+  ];
 
-  const onSave = () => {
-    console.log("Profile Saved!", { username, language });
-    // In the future this would sync to the backend
-    router.push('/query');
+  const handleProfileSubmit = async () => {
+    if (!username) return;
+    setIsSubmitting(true);
+    
+    try {
+      // @Rohita: Replace with actual backend endpoint to save user profile
+      const response = await fetch('API_URL/user/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          preferredLanguage: languageCode,
+        }),
+      });
+      
+      // Even if fetch fails since it's a dummy endpoint, we'll log it and proceed for the demo
+      console.log("Profile submission payload:", { username, preferredLanguage: languageCode });
+      
+      // Route back to the community landing page
+      router.replace('/');
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      // Fallback redirect for UI demonstration
+      router.replace('/');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -36,12 +67,12 @@ export default function ProfilePage() {
         <View style={styles.pillContainer}>
           {languages.map((lang) => (
             <TouchableOpacity 
-              key={lang}
-              style={[styles.pill, language === lang && styles.pillActive]}
-              onPress={() => setLanguage(lang)}
+              key={lang.code}
+              style={[styles.pill, languageCode === lang.code && styles.pillActive]}
+              onPress={() => setLanguageCode(lang.code)}
             >
-              <Text style={[styles.pillText, language === lang && styles.pillTextActive]}>
-                {lang}
+              <Text style={[styles.pillText, languageCode === lang.code && styles.pillTextActive]}>
+                {lang.label}
               </Text>
             </TouchableOpacity>
           ))}
@@ -49,11 +80,15 @@ export default function ProfilePage() {
       </View>
 
       <TouchableOpacity 
-        style={[styles.button, !username && styles.buttonDisabled]} 
-        onPress={onSave}
-        disabled={!username}
+        style={[styles.button, (!username || isSubmitting) && styles.buttonDisabled]} 
+        onPress={handleProfileSubmit}
+        disabled={!username || isSubmitting}
       >
-        <Text style={styles.buttonText}>Save & Continue</Text>
+        {isSubmitting ? (
+          <ActivityIndicator color="#FFFFFF" />
+        ) : (
+          <Text style={styles.buttonText}>Save & Continue</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
