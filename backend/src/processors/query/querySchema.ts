@@ -8,6 +8,10 @@ export const queryTypeSchema = z.enum([
   "similar_journey",
 ]);
 
+export type QueryType = z.infer<
+  typeof queryTypeSchema
+>;
+
 export const topicSchema = z.enum([
   "Startup",
   "Professionals",

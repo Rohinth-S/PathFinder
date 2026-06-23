@@ -78,6 +78,7 @@ export interface JourneyExperience {
   goalIds: string[];
   skills: JourneySkill[];
   proofs: JourneyProof[];
+  timelineSummary: string;
 }
 
 export interface JourneyTransition {

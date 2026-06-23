@@ -40,7 +40,7 @@ function buildEmbeddingText(
 
 async function storeEmbedding(
   experienceId: string,
-  embedding: number[]
+  embedding: number[],
 ): Promise<void> {
   const session = getSession();
 
@@ -63,9 +63,11 @@ async function storeEmbedding(
 export async function generateExperienceEmbedding(
   experience: ExperienceEmbeddingInput
 ): Promise<void> {
-  const embeddingText = buildEmbeddingText(experience);
+  const embeddingText =buildEmbeddingText(experience);
+  const embedding =await generateEmbedding(embeddingText);
 
-  const embedding = await generateEmbedding(embeddingText);
-
-  await storeEmbedding(experience.id, embedding);
+await storeEmbedding(
+  experience.id,
+  embedding
+);
 }

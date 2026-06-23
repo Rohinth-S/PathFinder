@@ -13,13 +13,18 @@ interface StructuredJsonOptions {
 }
 
 class GroqProvider {
-  async generateText(prompt: string): Promise<string> {
+  async generateText(systemPrompt: string,
+  userPrompt: string): Promise<string> {
     const response = await groqClient.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       messages: [
         {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
           role: "user",
-          content: prompt,
+          content: userPrompt,
         },
       ],
       temperature: 0.2,

@@ -197,6 +197,7 @@ Represents a single meaningful phase, project, role, internship, startup attempt
 | achievements      | String[]? | Significant achievements, milestones, awards, or accomplishments during the experience. |
 | isVerified        | Boolean  | Indicates whether proof verification succeeded.                                         |
 | embedding         | Float[]?  | Vector embedding used for similarity matching and future vector search.                 |
+| timelineSummary        | String[]  | Summary of experience             |
 
 ### Allowed Application Status Values
 
