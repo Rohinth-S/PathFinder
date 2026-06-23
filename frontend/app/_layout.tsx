@@ -1,6 +1,7 @@
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
 import * as SecureStore from "expo-secure-store";
+import { View, StyleSheet, Platform } from "react-native";
 
 // Token cache implementation for secure storage of session tokens
 const tokenCache = {
@@ -38,8 +39,36 @@ export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
-        <Slot />
+        <View style={layoutStyles.outer}>
+          <View style={layoutStyles.inner}>
+            <Slot />
+          </View>
+        </View>
       </ClerkLoaded>
     </ClerkProvider>
   );
 }
+
+const layoutStyles = StyleSheet.create({
+  outer: {
+    flex: 1,
+    backgroundColor: '#E8ECF2',
+    alignItems: 'center',
+  },
+  inner: {
+    flex: 1,
+    width: '100%',
+    ...(Platform.OS === 'web'
+      ? {
+          maxWidth: 480,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.15,
+          shadowRadius: 20,
+          borderLeftWidth: 1,
+          borderRightWidth: 1,
+          borderColor: '#D1D5DB',
+        }
+      : {}),
+  },
+});
