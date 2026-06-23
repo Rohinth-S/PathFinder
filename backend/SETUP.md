@@ -22,6 +22,11 @@ To run the Gemini, Groq connection test script, use:
 ```bash
 npm run test:geminiGroq
 ```
+To run the Sarvam connection test script, use:
+
+```bash
+npm run test:sarvam
+```
 To run the migrate script, use:
 
 ```bash
@@ -50,6 +55,7 @@ Notes:
 - The script name in `package.json` is `test:upstash`.
 - The Neo4j test script is `test:neo4j`.
 - The Gemini, Groq test script is `test:geminiGroq`.
+- The Sarvam test script is `test:sarvam`.
 - The migration script is `migrate`.
 - The upload seed script is `upload-seeds`.
 - The embeddings script is `generate-embeddings`.
