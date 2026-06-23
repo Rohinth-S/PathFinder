@@ -42,6 +42,7 @@ function experienceParams(experience: JourneyExperience, order: number) {
   return {
     id: experience.id,
     title: experience.title,
+    timelineSummary: experience.timelineSummary,
     startDate: experience.startDate,
     endDate: nullIfUndefined(experience.endDate),
     context: experience.context,
@@ -121,6 +122,7 @@ async function upsertExperience(
     MERGE (e:Experience {id: $id})
     SET
       e.title = $title,
+      e.timelineSummary = $timelineSummary,
       e.startDate = date($startDate),
       e.endDate = CASE
         WHEN $endDate IS NULL THEN null

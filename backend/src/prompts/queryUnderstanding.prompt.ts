@@ -103,19 +103,6 @@ focus:
 Choose exactly one value from focus_values.
 If no specific focus can be inferred: valuse should be → "general"
 
-requiresAggregation:
-true if the user is asking for:
-
-- patterns
-- trends
-- statistics
-- comparisons
-- common behaviors
-- common skills
-- common transitions
-- lists across multiple journeys
-Otherwise false.
-
 </field_rules>
 
 <output_schema>
@@ -126,8 +113,6 @@ Otherwise false.
   "skills": [],
   "semanticQuery": "",
   "focus": "general",
-  "requiresAggregation": false,
-  "requiresInsights": false
 }
 </output_schema>
 

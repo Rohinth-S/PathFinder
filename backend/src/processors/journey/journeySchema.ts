@@ -123,6 +123,7 @@ export const journeyExperienceSchema = z
     goalIds: z.array(z.string().trim().min(1)),
     skills: z.array(journeySkillSchema),
     proofs: z.array(journeyProofSchema),
+    timelineSummary: z.string().trim().min(1),
   })
   .strict();
 

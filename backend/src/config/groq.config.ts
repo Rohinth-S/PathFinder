@@ -1,4 +1,5 @@
 import Groq from "groq-sdk";
+import "../config/env.js";
 
 const apiKey = process.env.GROQ_API_KEY;
 
