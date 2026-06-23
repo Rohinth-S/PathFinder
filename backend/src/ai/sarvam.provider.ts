@@ -89,7 +89,7 @@ export class SarvamProvider {
    */
   async speechToText(
     audioBuffer: Buffer,
-    mode: "transcribe" | "translate" | "verbatim" | "translit" | "codemix" = "transcribe"
+    mode: "transcribe" | "translate" | "verbatim" | "translit" | "codemix" = "translate"
   ): Promise<string> {
     const formData = new FormData();
     const blob = new Blob([new Uint8Array(audioBuffer)], { type: "audio/wav" });

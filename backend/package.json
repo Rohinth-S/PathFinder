@@ -15,7 +15,8 @@
     "upload-seeds": "tsx src/scripts/uploadSeedJourneys.ts",
     "generate-embeddings": "tsx src/scripts/generateEmbeddings.ts",
     "test:query": "tsx src/scripts/testQueryUnderstanding.ts",
-    "test:sarvam": "tsx src/scripts/testSarvam.ts"
+    "test:sarvam": "tsx src/scripts/testSarvam.ts",
+    "test:voiceQuery": "tsx src/scripts/testVoiceQuery.ts"
   },
   "keywords": [],
   "author": "",
