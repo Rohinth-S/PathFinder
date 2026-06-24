@@ -18,3 +18,13 @@ const groqOutput =
 console.log(
   `Groq Response: ${groqOutput}`
 );
+
+const geminiOutput=
+  await geminiProvider.generateText(
+    systemPrompt,
+    userPrompt
+  );
+
+console.log(
+  `Gemini Response: ${geminiOutput}`
+);  
