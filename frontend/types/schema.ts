@@ -25,10 +25,14 @@ export interface ExpandedDetails {
   outcome: string;
   achievements: string | null;
   applicationStatus: string | null;
+  emotionNote: string | null;
   goals: Goal[];
   skills: string[];
   transitions: Transition[];
 }
+
+export type NodeType = 'Education' | 'Job' | 'Decision' | 'Failure' | 'Startup' | 'Achievement';
+export type EmotionLabel = 'Confident' | 'Uncertain' | 'Pivoting' | 'Pushing through' | string;
 
 export interface TimelineEvent {
   id: string;
@@ -38,6 +42,8 @@ export interface TimelineEvent {
   organization: string;
   isVerified: boolean;
   timelineSummary: string;
+  nodeType: NodeType;
+  emotionLabel: EmotionLabel;
   expandedDetails: ExpandedDetails;
 }
 
@@ -60,11 +66,15 @@ export interface AiInsights {
   actionableTakeaway: string;
 }
 
+export interface JourneyStatistics {
+  usersAnalyzed: number;
+  experiencesAnalyzed: number;
+  pathSplit: { workedFirst: number; startedDirectly: number };
+  averageTimeToRevenue: number;
+}
+
 export interface AggregatedContext {
-  journeyStatistics: {
-    usersAnalyzed: number;
-    experiencesAnalyzed: number;
-  };
+  journeyStatistics: JourneyStatistics;
   timelineFeed: UserTrajectory[];
   commonPatterns: CommonPattern[];
   aiInsights: AiInsights;

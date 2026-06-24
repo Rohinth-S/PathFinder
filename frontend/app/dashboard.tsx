@@ -14,16 +14,16 @@ const MY_TIMELINE: TimelineEvent[] = [
   {
     id: 'my-1', title: 'CS Undergraduate',
     startDate: '2020', endDate: '2024', organization: 'Anna University',
-    isVerified: true,
+    isVerified: true, nodeType: 'Education', emotionLabel: 'Confident',
     timelineSummary: 'Studied Computer Science, built projects in React Native and ML.',
-    expandedDetails: { context: 'Formal education.', challengeFaced: 'Balancing academics and side projects.', outcome: 'Built 5+ production apps.', achievements: null, applicationStatus: null, goals: [], skills: ['React Native', 'Python', 'ML'], transitions: [] },
+    expandedDetails: { context: 'Formal education.', challengeFaced: 'Balancing academics and side projects.', outcome: 'Built 5+ production apps.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['React Native', 'Python', 'ML'], transitions: [] },
   },
   {
     id: 'my-2', title: 'Hackathon Builder',
     startDate: '2024', endDate: 'Present', organization: 'Self',
-    isVerified: false,
+    isVerified: false, nodeType: 'Startup', emotionLabel: 'Confident',
     timelineSummary: 'Participating in hackathons and building PathFinder.',
-    expandedDetails: { context: 'Building real products.', challengeFaced: 'Time pressure and team coordination.', outcome: 'Shipped PathFinder MVP.', achievements: null, applicationStatus: null, goals: [], skills: ['Expo', 'TypeScript', 'Neo4j'], transitions: [] },
+    expandedDetails: { context: 'Building real products.', challengeFaced: 'Time pressure and team coordination.', outcome: 'Shipped PathFinder MVP.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Expo', 'TypeScript', 'Neo4j'], transitions: [] },
   },
 ];
 

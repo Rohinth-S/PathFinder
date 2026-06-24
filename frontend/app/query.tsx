@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
+
+const MOCK_TRANSCRIPT = "I'm a CS grad, want to build a fintech startup, should I work first or start directly?";
 
 export default function QueryPage() {
   const router = useRouter();
@@ -8,13 +10,34 @@ export default function QueryPage() {
   const [intent, setIntent] = useState<'exploring' | 'myself'>('exploring');
   const [isRecording, setIsRecording] = useState(false);
 
-  const handleSubmit = () => {
-    router.push('/results');
-  };
+  // Pulse animation
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const pulseLoop = useRef<Animated.CompositeAnimation | null>(null);
+
+  useEffect(() => {
+    if (isRecording) {
+      pulseLoop.current = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 1.4, duration: 600, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
+        ])
+      );
+      pulseLoop.current.start();
+
+      // Auto-stop after 3s and fill mock transcript
+      const timer = setTimeout(() => {
+        setIsRecording(false);
+        setQuery(MOCK_TRANSCRIPT);
+      }, 3000);
+      return () => { clearTimeout(timer); pulseLoop.current?.stop(); };
+    } else {
+      pulseAnim.setValue(1);
+      pulseLoop.current?.stop();
+    }
+  }, [isRecording, pulseAnim]);
 
   return (
     <View style={s.container}>
-      {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={s.backArrow}>←</Text>
@@ -56,20 +79,25 @@ export default function QueryPage() {
             onChangeText={setQuery}
             multiline
           />
-          <TouchableOpacity
-            style={[s.micButton, isRecording && s.micButtonRecording]}
-            onPress={() => setIsRecording(!isRecording)}
-          >
-            <Text style={s.micIcon}>{isRecording ? '⏹️' : '🎤'}</Text>
-          </TouchableOpacity>
+          <View style={s.micArea}>
+            {isRecording && (
+              <Animated.View style={[s.pulseRing, { transform: [{ scale: pulseAnim }] }]} />
+            )}
+            <TouchableOpacity
+              style={[s.micButton, isRecording && s.micButtonRecording]}
+              onPress={() => setIsRecording(!isRecording)}
+            >
+              <Text style={s.micIcon}>{isRecording ? '⏹️' : '🎤'}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {isRecording && (
-          <Text style={s.recordingLabel}>🔴  Recording audio...</Text>
+          <Text style={s.recordingLabel}>🔴  Listening... speak now</Text>
         )}
 
         {/* Submit */}
-        <TouchableOpacity style={s.submitBtn} onPress={handleSubmit}>
+        <TouchableOpacity style={s.submitBtn} onPress={() => router.push('/results')}>
           <Text style={s.submitText}>Search Pathways  →</Text>
         </TouchableOpacity>
       </View>
@@ -94,7 +122,10 @@ const s = StyleSheet.create({
 
   inputWrapper: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1.5, borderColor: '#E2E8F0', alignItems: 'center', paddingRight: 8, marginBottom: 12 },
   textInput: { flex: 1, color: '#0F172A', fontSize: 16, padding: 18, minHeight: 100, textAlignVertical: 'top' },
-  micButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center', marginRight: 4 },
+
+  micArea: { justifyContent: 'center', alignItems: 'center', width: 56, height: 56, marginRight: 4 },
+  pulseRing: { position: 'absolute', width: 52, height: 52, borderRadius: 26, backgroundColor: 'rgba(239, 68, 68, 0.15)', borderWidth: 2, borderColor: 'rgba(239, 68, 68, 0.3)' },
+  micButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center', zIndex: 1 },
   micButtonRecording: { backgroundColor: '#FEE2E2' },
   micIcon: { fontSize: 22 },
   recordingLabel: { color: '#EF4444', textAlign: 'center', marginBottom: 12, fontWeight: '600', fontSize: 14 },

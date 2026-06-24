@@ -6,14 +6,14 @@ import { TimelineEvent } from '@/types/schema';
 const FALLBACK_EVENT: TimelineEvent = {
   id: 'fallback', title: 'Offered Custom Software Services',
   startDate: '1998', endDate: '2001', organization: 'AdventNet',
-  isVerified: true,
+  isVerified: true, nodeType: 'Job', emotionLabel: 'Confident',
   timelineSummary: 'Solved business problems for small companies',
   expandedDetails: {
     context: 'Worked with small businesses to build custom software solutions.',
     challengeFaced: 'Projects were non-repeatable and hard to scale.',
     outcome: 'Realized the need for a simple, affordable CRM for small businesses.',
     achievements: 'Served 25+ small businesses\nBuilt strong domain understanding',
-    applicationStatus: null,
+    applicationStatus: null, emotionNote: null,
     goals: [],
     skills: ['Customer Understanding', 'Problem Solving', 'Sales', 'Product Thinking'],
     transitions: [{ decisionLabel: 'Decided to build a product that solves their common problems at scale.', toExperienceId: 'sv-3' }],

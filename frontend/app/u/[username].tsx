@@ -7,16 +7,16 @@ const PUBLIC_TIMELINE: TimelineEvent[] = [
   {
     id: 'pub-1', title: 'CS Undergraduate',
     startDate: '2020', endDate: '2024', organization: 'Anna University',
-    isVerified: true,
+    isVerified: true, nodeType: 'Education', emotionLabel: 'Confident',
     timelineSummary: 'Studied Computer Science, built projects in React Native and ML.',
-    expandedDetails: { context: '', challengeFaced: '', outcome: '', achievements: null, applicationStatus: null, goals: [], skills: [], transitions: [] },
+    expandedDetails: { context: '', challengeFaced: '', outcome: '', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: [], transitions: [] },
   },
   {
     id: 'pub-2', title: 'Hackathon Builder',
     startDate: '2024', endDate: 'Present', organization: 'Self',
-    isVerified: false,
+    isVerified: false, nodeType: 'Startup', emotionLabel: 'Confident',
     timelineSummary: 'Participating in hackathons and building PathFinder.',
-    expandedDetails: { context: '', challengeFaced: '', outcome: '', achievements: null, applicationStatus: null, goals: [], skills: [], transitions: [] },
+    expandedDetails: { context: '', challengeFaced: '', outcome: '', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: [], transitions: [] },
   },
 ];
 
