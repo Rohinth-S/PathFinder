@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Animated } from 'react-native';
+import {
+  View, Text, StyleSheet, TextInput, TouchableOpacity,
+  Animated, Alert, ActivityIndicator, Platform,
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import { Audio } from 'expo-av';
+
+const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
 const MOCK_TRANSCRIPT = "I'm a CS grad, want to build a fintech startup, should I work first or start directly?";
 
@@ -9,6 +15,8 @@ export default function QueryPage() {
   const [query, setQuery] = useState('');
   const [intent, setIntent] = useState<'exploring' | 'myself'>('exploring');
   const [isRecording, setIsRecording] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
 
   // Pulse animation
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -23,18 +31,132 @@ export default function QueryPage() {
         ])
       );
       pulseLoop.current.start();
-
-      // Auto-stop after 3s and fill mock transcript
-      const timer = setTimeout(() => {
-        setIsRecording(false);
-        setQuery(MOCK_TRANSCRIPT);
-      }, 3000);
-      return () => { clearTimeout(timer); pulseLoop.current?.stop(); };
+      return () => { pulseLoop.current?.stop(); };
     } else {
       pulseAnim.setValue(1);
       pulseLoop.current?.stop();
     }
   }, [isRecording, pulseAnim]);
+
+  /* ── Audio Recording ──────────────────────────────── */
+
+  async function startRecording() {
+    try {
+      const permission = await Audio.requestPermissionsAsync();
+      if (permission.status !== 'granted') {
+        Alert.alert('Permission Denied', 'Please grant microphone access to use voice search.');
+        return;
+      }
+
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording: rec } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      setRecording(rec);
+      setIsRecording(true);
+    } catch (err) {
+      console.error('Failed to start recording', err);
+      // Fallback: just do the mock pulse animation
+      setIsRecording(true);
+      setTimeout(() => {
+        setIsRecording(false);
+        setQuery(MOCK_TRANSCRIPT);
+      }, 3000);
+    }
+  }
+
+  async function stopRecording() {
+    setIsRecording(false);
+
+    if (!recording) {
+      // Fallback mode — no real recording, use mock text
+      return;
+    }
+
+    try {
+      await recording.stopAndUnloadAsync();
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
+      const uri = recording.getURI();
+      setRecording(null);
+
+      if (uri) {
+        handleSubmit(null, uri);
+      }
+    } catch (error) {
+      console.error('Failed to stop recording', error);
+      setRecording(null);
+    }
+  }
+
+  /* ── Submit Handler ───────────────────────────────── */
+
+  async function handleSubmit(searchText?: string | null, audioUri?: string | null) {
+    const text = searchText ?? query;
+    if (!text?.trim() && !audioUri) return;
+
+    setIsSearching(true);
+    try {
+      let response: Response;
+
+      if (audioUri) {
+        // Audio submission — multipart/form-data
+        const formData = new FormData();
+        formData.append('audio', {
+          uri: audioUri,
+          name: 'recording.m4a',
+          type: 'audio/m4a',
+        } as any);
+
+        response = await fetch(`${API_BASE}/query`, {
+          method: 'POST',
+          body: formData,
+          // NOTE: Do NOT set Content-Type — fetch sets multipart boundary automatically
+        });
+      } else {
+        // Text submission — JSON
+        response = await fetch(`${API_BASE}/query`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: text }),
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      // If the backend transcribed audio, show it
+      if (result.transcribed && result.query) {
+        setQuery(result.query);
+      }
+
+      router.push({
+        pathname: '/results',
+        params: { payload: JSON.stringify(result) },
+      });
+    } catch (error) {
+      console.error('Query Pipeline Error:', error);
+      // Fallback: navigate with no payload (results screen will use mock data)
+      Alert.alert(
+        'Connection Error',
+        'Could not reach the backend. Showing demo results instead.',
+        [
+          { text: 'Show Demo', onPress: () => router.push('/results') },
+          { text: 'Cancel', style: 'cancel' },
+        ]
+      );
+    } finally {
+      setIsSearching(false);
+    }
+  }
+
+  /* ── UI ────────────────────────────────────────────── */
 
   return (
     <View style={s.container}>
@@ -78,6 +200,7 @@ export default function QueryPage() {
             value={query}
             onChangeText={setQuery}
             multiline
+            editable={!isSearching}
           />
           <View style={s.micArea}>
             {isRecording && (
@@ -85,7 +208,8 @@ export default function QueryPage() {
             )}
             <TouchableOpacity
               style={[s.micButton, isRecording && s.micButtonRecording]}
-              onPress={() => setIsRecording(!isRecording)}
+              onPress={isRecording ? stopRecording : startRecording}
+              disabled={isSearching}
             >
               <Text style={s.micIcon}>{isRecording ? '⏹️' : '🎤'}</Text>
             </TouchableOpacity>
@@ -93,12 +217,23 @@ export default function QueryPage() {
         </View>
 
         {isRecording && (
-          <Text style={s.recordingLabel}>🔴  Listening... speak now</Text>
+          <Text style={s.recordingLabel}>🔴  Listening... tap to stop</Text>
         )}
 
         {/* Submit */}
-        <TouchableOpacity style={s.submitBtn} onPress={() => router.push('/results')}>
-          <Text style={s.submitText}>Search Pathways  →</Text>
+        <TouchableOpacity
+          style={[s.submitBtn, isSearching && { opacity: 0.6 }]}
+          onPress={() => handleSubmit()}
+          disabled={isSearching || (!query.trim() && !isRecording)}
+        >
+          {isSearching ? (
+            <View style={s.loadingRow}>
+              <ActivityIndicator color="#FFF" size="small" />
+              <Text style={s.submitText}>  Searching pathways...</Text>
+            </View>
+          ) : (
+            <Text style={s.submitText}>Search Pathways  →</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -132,4 +267,5 @@ const s = StyleSheet.create({
 
   submitBtn: { backgroundColor: '#6366F1', paddingVertical: 18, borderRadius: 14, alignItems: 'center', marginTop: 8 },
   submitText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
+  loadingRow: { flexDirection: 'row', alignItems: 'center' },
 });
