@@ -50,7 +50,7 @@ export class SarvamProvider {
     targetLanguageCode: string,
     speaker: string = "shubh",
     pace: number = 1.0
-  ): Promise<string> {
+  ): Promise<Buffer> {
     const response = await fetch(`${sarvamConfig.baseUrl}/text-to-speech`, {
       method: "POST",
       headers: {
@@ -77,7 +77,7 @@ export class SarvamProvider {
       throw new Error("Sarvam TTS API returned no audio content");
     }
 
-    return audio;
+    return Buffer.from(audio,"base64");
   }
 
   /**
@@ -88,15 +88,17 @@ export class SarvamProvider {
    * @returns The transcribed/translated text
    */
   async speechToText(
-    audioBuffer: Buffer,
-    mode: "transcribe" | "translate" | "verbatim" | "translit" | "codemix" = "translate"
-  ): Promise<string> {
+  audioBuffer: Buffer,
+  fileName: string,
+  mimeType: string,
+  mode: "transcribe" | "translate" | "verbatim" | "translit" | "codemix" = "translate"
+): Promise<string> {
     const formData = new FormData();
-    const blob = new Blob([new Uint8Array(audioBuffer)], { type: "audio/wav" });
-    formData.append("file", blob, "audio.wav");
-    formData.append("model", "saaras:v3");
-    formData.append("mode", mode);
-
+    const blob = new Blob([new Uint8Array(audioBuffer)],{ type: mimeType,});
+    formData.append("file", blob,fileName);
+    formData.append("model","saaras:v3");
+    formData.append("mode",mode);
+    
     const response = await fetch(`${sarvamConfig.baseUrl}/speech-to-text`, {
       method: "POST",
       headers: {
