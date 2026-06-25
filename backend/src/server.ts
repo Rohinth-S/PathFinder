@@ -3,11 +3,13 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import queryRoutes from "./routes/query.routes.js";
+import outputRoutes from "./routes/output.routes.js";
 
 const app = express();
 app.use(express.json());
 
 app.use("/api", queryRoutes);
+app.use("/api",outputRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Backend running");
