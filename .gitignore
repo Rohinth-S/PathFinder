@@ -1,1 +1,6 @@
 node_modules
+.expo/
+.claude/
+CLAUDE.md
+AGENTS.md
+index.ts
