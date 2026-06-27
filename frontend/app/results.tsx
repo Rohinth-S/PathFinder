@@ -7,7 +7,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
-import { DecisionAtlasBackendResponse, UserTrajectory, TimelineEvent, AiInsights } from '@/types/schema';
+import { DecisionAtlasBackendResponse, BackendQueryResponse, UserTrajectory, TimelineEvent, AiInsights } from '@/types/schema';
 import { getEmotionStyle, NODE_ICONS } from '@/constants/colors';
 import { extractKeyMilestones } from '@/utils/helpers';
 
@@ -113,7 +113,21 @@ export default function ResultsPage() {
   // Parse live data from query screen, or fall back to mock
   let data: DecisionAtlasBackendResponse;
   try {
-    data = params.payload ? JSON.parse(params.payload) : MOCK;
+    if (params.payload) {
+      const raw = JSON.parse(params.payload);
+      // Normalize: live backend returns { query, transcribed, structuredQuery, aggregatedContext }
+      // Mock uses { structuredQuery, aggregatedContext }
+      if (raw.aggregatedContext) {
+        data = {
+          structuredQuery: raw.structuredQuery || {},
+          aggregatedContext: raw.aggregatedContext,
+        };
+      } else {
+        data = MOCK;
+      }
+    } else {
+      data = MOCK;
+    }
   } catch {
     data = MOCK;
   }
