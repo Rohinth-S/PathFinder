@@ -59,7 +59,7 @@ export default function QueryPage() {
       setRecording(rec);
       setIsRecording(true);
     } catch (err) {
-      console.error('Failed to start recording', err);
+      console.warn('Failed to start recording', err);
       // Fallback: just do the mock pulse animation
       setIsRecording(true);
       setTimeout(() => {
@@ -87,7 +87,7 @@ export default function QueryPage() {
         handleSubmit(null, uri);
       }
     } catch (error) {
-      console.error('Failed to stop recording', error);
+      console.warn('Failed to stop recording', error);
       setRecording(null);
     }
   }
@@ -141,7 +141,7 @@ export default function QueryPage() {
         params: { payload: JSON.stringify(result) },
       });
     } catch (error) {
-      console.error('Query Pipeline Error:', error);
+      console.warn('Query Pipeline Error:', error);
       // Fallback: navigate with no payload (results screen will use mock data)
       Alert.alert(
         'Connection Error',

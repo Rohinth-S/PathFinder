@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 
+const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
+
 export default function ProfilePage() {
   const router = useRouter();
   const [username, setUsername] = useState('');
@@ -21,7 +23,7 @@ export default function ProfilePage() {
     
     try {
       // @Rohita: Replace with actual backend endpoint to save user profile
-      const response = await fetch('API_URL/user/profile', {
+      const response = await fetch(`${API_BASE}/user/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,12 +37,11 @@ export default function ProfilePage() {
       // Even if fetch fails since it's a dummy endpoint, we'll log it and proceed for the demo
       console.log("Profile submission payload:", { username, preferredLanguage: languageCode });
       
-      // Route back to the community landing page
-      router.replace('/');
+      // Route to the dashboard page instead of the landing page
+      router.replace('/dashboard');
     } catch (error) {
-      console.error("Error saving profile:", error);
-      // Fallback redirect for UI demonstration
-      router.replace('/');
+      console.warn("Error saving profile (dummy endpoint):", error);
+      router.replace('/dashboard');
     } finally {
       setIsSubmitting(false);
     }

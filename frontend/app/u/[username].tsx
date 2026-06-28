@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { TimelineEvent } from '@/types/schema';
 
@@ -23,6 +23,16 @@ const PUBLIC_TIMELINE: TimelineEvent[] = [
 export default function PublicProfilePage() {
   const router = useRouter();
   const { username } = useLocalSearchParams<{ username: string }>();
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Check out ${username || 'this user'}'s professional journey on PathFinder! https://pathfinder.app/u/${username || 'unknown'}`,
+      });
+    } catch (error: any) {
+      console.warn(error.message);
+    }
+  };
 
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content}>
@@ -48,7 +58,7 @@ export default function PublicProfilePage() {
       </View>
 
       {/* Share Button */}
-      <TouchableOpacity style={s.shareBtn}>
+      <TouchableOpacity style={s.shareBtn} onPress={handleShare}>
         <Text style={s.shareIcon}>🔗</Text>
         <Text style={s.shareText}>Share this Journey</Text>
       </TouchableOpacity>

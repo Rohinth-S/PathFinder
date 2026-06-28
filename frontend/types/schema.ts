@@ -30,6 +30,7 @@ export interface ExpandedDetails {
   goals: Goal[];
   skills: string[];
   transitions: Transition[];
+  emotionNote?: string | null;
 }
 
 /* Frontend display fields — not returned by backend,
@@ -50,7 +51,6 @@ export interface TimelineEvent {
   /* Client-side display fields (set by enrichTimeline helper) */
   nodeType?: NodeType;
   emotionLabel?: EmotionLabel;
-  emotionNote?: string | null;
 }
 
 export interface UserTrajectory {

@@ -13,13 +13,13 @@ const FALLBACK: UserTrajectory = {
   username: 'fintech-founder-01', reputationScore: 94,
   timeline: [
     { id: 'f1', title: 'B.Tech in Computer Science', startDate: '2016', endDate: '2019', organization: 'University', isVerified: true, nodeType: 'Education', emotionLabel: 'Confident', timelineSummary: 'CS degree', expandedDetails: { context: 'Undergraduate CS education with focus on systems.', challengeFaced: 'Balancing academics and projects.', outcome: 'Strong fundamentals.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Algorithms', 'Java'], transitions: [{ decisionLabel: 'Joined a SaaS startup', toExperienceId: 'f2' }] } },
-    { id: 'f2', title: 'Software Engineer at SaaS Startup', startDate: '2019', endDate: '2021', organization: 'SaaS Corp', isVerified: true, nodeType: 'Job', emotionLabel: 'Confident', timelineSummary: 'Full-stack development', expandedDetails: { context: 'Joined as employee #12 at an early-stage B2B SaaS.', challengeFaced: 'Wearing many hats, resource constraints.', outcome: 'Built full-stack skills, understood sales cycles.', achievements: 'Shipped 3 major features\nPromoted in 18 months', applicationStatus: null, emotionNote: null, goals: [], skills: ['React', 'Node.js', 'PostgreSQL'], transitions: [{ decisionLabel: 'Decided to learn the industry deeply', toExperienceId: 'f3' }] } },
+    { id: 'f2', title: 'Software Engineer at SaaS Startup', startDate: '2019', endDate: '2021', organization: 'SaaS Corp', isVerified: true, nodeType: 'Job', emotionLabel: 'Confident', timelineSummary: 'Full-stack development', expandedDetails: { context: 'Joined as employee #12 at an early-stage B2B SaaS.', challengeFaced: 'Wearing many hats, resource constraints.', outcome: 'Built full-stack skills, understood sales cycles.', achievements: ['Shipped 3 major features', 'Promoted in 18 months'], applicationStatus: null, emotionNote: null, goals: [], skills: ['React', 'Node.js', 'PostgreSQL'], transitions: [{ decisionLabel: 'Decided to learn the industry deeply', toExperienceId: 'f3' }] } },
     { id: 'f3', title: 'Worked for 2 years to learn industry', startDate: '2021', endDate: '2021', organization: '', isVerified: false, nodeType: 'Decision', emotionLabel: 'Uncertain', timelineSummary: 'Stayed to understand fintech deeply', expandedDetails: { context: 'Felt I lacked real-world experience in payments and lending. Wanted to understand how fintech products work, how teams operate, and build my network.', challengeFaced: 'Uncertainty about timing — was I wasting time?', outcome: 'Built deep domain knowledge and professional network.', achievements: null, applicationStatus: null, emotionNote: "'I was unsure if I was wasting time by not starting early, but deep down I knew this would make me stronger in the long run.'", goals: [], skills: ['Domain Knowledge', 'Networking'], transitions: [{ decisionLabel: 'Left to build own product', toExperienceId: 'f4' }] } },
     { id: 'f4', title: 'Senior Software Engineer at Fintech Company', startDate: '2021', endDate: '2022', organization: 'Fintech Co', isVerified: true, nodeType: 'Job', emotionLabel: 'Confident', timelineSummary: 'Deepened fintech domain expertise', expandedDetails: { context: 'Moved to a fintech company to gain direct domain knowledge.', challengeFaced: 'Complex regulatory environment.', outcome: 'Understood payments infrastructure deeply.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Payments', 'Compliance'], transitions: [{ decisionLabel: 'Left job to build fintech product', toExperienceId: 'f5' }] } },
     { id: 'f5', title: 'Left job to build fintech product', startDate: '2022', endDate: '2022', organization: '', isVerified: false, nodeType: 'Decision', emotionLabel: 'Pivoting', timelineSummary: 'Took the leap', expandedDetails: { context: 'Had enough domain knowledge and savings.', challengeFaced: 'Leaving stability.', outcome: 'Started building full-time.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Entrepreneurship'], transitions: [{ decisionLabel: 'Building startup', toExperienceId: 'f7' }] } },
     { id: 'f6', title: 'First startup idea failed', startDate: '2022', endDate: '2022', organization: '', isVerified: false, nodeType: 'Failure', emotionLabel: 'Pushing through', timelineSummary: 'Initial idea did not gain traction', expandedDetails: { context: 'First attempt at a lending product failed due to regulatory issues.', challengeFaced: 'Compliance complexity and no legal team.', outcome: 'Learned what NOT to build. Pivoted approach.', achievements: null, applicationStatus: null, emotionNote: "'It felt like everything was crumbling, but I refused to give up.'", goals: [], skills: ['Resilience'], transitions: [] } },
     { id: 'f7', title: 'Building fintech startup', startDate: '2023', endDate: 'Present', organization: 'FinServe', isVerified: true, nodeType: 'Startup', emotionLabel: 'Confident', timelineSummary: 'Building B2B payments infrastructure', expandedDetails: { context: 'Applied all learnings from the failed attempt.', challengeFaced: 'Scaling team and product.', outcome: 'Growing steadily with strong retention.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Leadership', 'Fundraising'], transitions: [{ decisionLabel: 'Reached $150K ARR', toExperienceId: 'f8' }] } },
-    { id: 'f8', title: 'First revenue $150K ARR', startDate: '2024', endDate: '2024', organization: 'FinServe', isVerified: true, nodeType: 'Achievement', emotionLabel: 'Confident', timelineSummary: 'Hit product-market fit', expandedDetails: { context: 'Milestone achieved.', challengeFaced: 'Maintaining growth rate.', outcome: 'Strong ARR with enterprise customers.', achievements: '$150K ARR\n10 enterprise clients', applicationStatus: null, emotionNote: null, goals: [], skills: ['Scaling'], transitions: [] } },
+    { id: 'f8', title: 'First revenue $150K ARR', startDate: '2024', endDate: '2024', organization: 'FinServe', isVerified: true, nodeType: 'Achievement', emotionLabel: 'Confident', timelineSummary: 'Hit product-market fit', expandedDetails: { context: 'Milestone achieved.', challengeFaced: 'Maintaining growth rate.', outcome: 'Strong ARR with enterprise customers.', achievements: ['$150K ARR', '10 enterprise clients'], applicationStatus: null, emotionNote: null, goals: [], skills: ['Scaling'], transitions: [] } },
   ],
 };
 
@@ -64,8 +64,8 @@ export default function FullJourneyPage() {
         <Animated.View style={{ transform: [{ scale }] }}>
           {mainTimeline.map((event, idx) => {
             const isLast = idx === mainTimeline.length - 1;
-            const borderColor = NODE_BORDER_COLORS[event.nodeType] || '#94A3B8';
-            const emotionStyle = getEmotionStyle(event.emotionLabel);
+            const borderColor = NODE_BORDER_COLORS[event.nodeType || 'Job'] || '#94A3B8';
+            const emotionStyle = getEmotionStyle(event.emotionLabel || 'Confident');
             const faded = showRelevant && (event.nodeType === 'Education' || (event.nodeType === 'Job' && idx === 0));
             const hasBranch = idx === failureBranchAfterIdx + 1 && failureNodes.length > 0;
 
@@ -101,7 +101,7 @@ export default function FullJourneyPage() {
 
                   {/* Branch connector + failure node */}
                   {hasBranch && failureNodes.map(fn => {
-                    const fEmotion = getEmotionStyle(fn.emotionLabel);
+                    const fEmotion = getEmotionStyle(fn.emotionLabel || 'Confident');
                     return (
                       <View key={fn.id} style={st.branchWrap}>
                         <View style={st.branchConnector}>
@@ -149,11 +149,11 @@ export default function FullJourneyPage() {
           <View style={st.sheet}>
             <View style={st.sheetHeader}>
               <View style={{ flex: 1 }}>
-                <Text style={[st.sheetType, { color: NODE_BORDER_COLORS[selectedNode.nodeType] }]}>{selectedNode.nodeType}</Text>
+                <Text style={[st.sheetType, { color: NODE_BORDER_COLORS[selectedNode.nodeType || 'Job'] }]}>{selectedNode.nodeType}</Text>
                 <Text style={st.sheetTitle}>{selectedNode.title}</Text>
                 <Text style={st.sheetYear}>{selectedNode.startDate}</Text>
-                <View style={[st.emotionPill, { backgroundColor: getEmotionStyle(selectedNode.emotionLabel).bg, alignSelf: 'flex-start', marginTop: 8 }]}>
-                  <Text style={[st.emotionText, { color: getEmotionStyle(selectedNode.emotionLabel).text }]}>{selectedNode.emotionLabel}</Text>
+                <View style={[st.emotionPill, { backgroundColor: getEmotionStyle(selectedNode.emotionLabel || 'Confident').bg, alignSelf: 'flex-start', marginTop: 8 }]}>
+                  <Text style={[st.emotionText, { color: getEmotionStyle(selectedNode.emotionLabel || 'Confident').text }]}>{selectedNode.emotionLabel}</Text>
                 </View>
               </View>
               <TouchableOpacity onPress={() => setSelectedNode(null)} hitSlop={16}>
