@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Audio } from 'expo-av';
+import { BRAND_COLORS } from '../constants/colors';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
@@ -241,31 +242,31 @@ export default function QueryPage() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
+  container: { flex: 1, backgroundColor: BRAND_COLORS.cream },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 20 },
-  backArrow: { fontSize: 22, color: '#1E293B' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#0F172A' },
+  backArrow: { fontSize: 22, color: BRAND_COLORS.navy },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: BRAND_COLORS.navy },
 
   body: { flex: 1, padding: 24, justifyContent: 'center' },
-  heroText: { fontSize: 30, fontWeight: '800', color: '#0F172A', lineHeight: 38, marginBottom: 28 },
+  heroText: { fontSize: 30, fontWeight: '800', color: BRAND_COLORS.navy, lineHeight: 38, marginBottom: 28 },
 
-  toggleContainer: { flexDirection: 'row', backgroundColor: '#F1F5F9', borderRadius: 12, padding: 4, marginBottom: 24, gap: 4 },
+  toggleContainer: { flexDirection: 'row', backgroundColor: BRAND_COLORS.white, borderRadius: 12, padding: 4, marginBottom: 24, gap: 4, borderWidth: 1, borderColor: BRAND_COLORS.border },
   toggleBtn: { flex: 1, paddingVertical: 12, alignItems: 'center', borderRadius: 8 },
-  toggleBtnActive: { backgroundColor: '#6366F1' },
-  toggleText: { color: '#64748B', fontWeight: '600', fontSize: 14 },
-  toggleTextActive: { color: '#FFFFFF' },
+  toggleBtnActive: { backgroundColor: BRAND_COLORS.teal },
+  toggleText: { color: BRAND_COLORS.slate, fontWeight: '600', fontSize: 14 },
+  toggleTextActive: { color: BRAND_COLORS.white },
 
-  inputWrapper: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1.5, borderColor: '#E2E8F0', alignItems: 'center', paddingRight: 8, marginBottom: 12 },
-  textInput: { flex: 1, color: '#0F172A', fontSize: 16, padding: 18, minHeight: 100, textAlignVertical: 'top' },
+  inputWrapper: { flexDirection: 'row', backgroundColor: BRAND_COLORS.white, borderRadius: 16, borderWidth: 1.5, borderColor: BRAND_COLORS.border, alignItems: 'center', paddingRight: 8, marginBottom: 12 },
+  textInput: { flex: 1, color: BRAND_COLORS.navy, fontSize: 16, padding: 18, minHeight: 100, textAlignVertical: 'top' },
 
   micArea: { justifyContent: 'center', alignItems: 'center', width: 56, height: 56, marginRight: 4 },
-  pulseRing: { position: 'absolute', width: 52, height: 52, borderRadius: 26, backgroundColor: 'rgba(239, 68, 68, 0.15)', borderWidth: 2, borderColor: 'rgba(239, 68, 68, 0.3)' },
-  micButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center', zIndex: 1 },
-  micButtonRecording: { backgroundColor: '#FEE2E2' },
+  pulseRing: { position: 'absolute', width: 52, height: 52, borderRadius: 26, backgroundColor: 'rgba(208, 103, 87, 0.15)', borderWidth: 2, borderColor: 'rgba(208, 103, 87, 0.3)' },
+  micButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: BRAND_COLORS.lightGray, justifyContent: 'center', alignItems: 'center', zIndex: 1 },
+  micButtonRecording: { backgroundColor: BRAND_COLORS.tan },
   micIcon: { fontSize: 22 },
-  recordingLabel: { color: '#EF4444', textAlign: 'center', marginBottom: 12, fontWeight: '600', fontSize: 14 },
+  recordingLabel: { color: BRAND_COLORS.rust, textAlign: 'center', marginBottom: 12, fontWeight: '700', fontSize: 14 },
 
-  submitBtn: { backgroundColor: '#6366F1', paddingVertical: 18, borderRadius: 14, alignItems: 'center', marginTop: 8 },
-  submitText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
+  submitBtn: { backgroundColor: BRAND_COLORS.rust, paddingVertical: 18, borderRadius: 14, alignItems: 'center', marginTop: 8, shadowColor: BRAND_COLORS.rust, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
+  submitText: { color: BRAND_COLORS.white, fontSize: 17, fontWeight: '800' },
   loadingRow: { flexDirection: 'row', alignItems: 'center' },
 });

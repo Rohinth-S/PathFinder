@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
+import { BRAND_COLORS } from '../constants/colors';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -36,8 +37,8 @@ export default function LandingPage() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Decision Atlas</Text>
-      <Text style={styles.subtitle}>Welcome to your life's GPS</Text>
+      <Text style={styles.title}>P A T H F I N D E R</Text>
+      <Text style={styles.subtitle}>REAL JOURNEYS. BETTER DECISIONS.</Text>
       
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.googleButton} onPress={onPressGoogle}>
@@ -57,19 +58,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0F172A', // A nice dark theme
+    backgroundColor: BRAND_COLORS.cream,
     padding: 24,
   },
   title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#F8FAFC',
+    fontSize: 32,
+    fontWeight: '800',
+    color: BRAND_COLORS.navy,
+    letterSpacing: 2,
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 18,
-    color: '#94A3B8',
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    color: BRAND_COLORS.rust,
     marginBottom: 48,
     textAlign: 'center',
   },
@@ -79,21 +83,21 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   googleButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: BRAND_COLORS.rust,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 12,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowColor: BRAND_COLORS.rust,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   googleButtonText: {
-    color: '#0F172A',
+    color: BRAND_COLORS.white,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   emailButton: {
     backgroundColor: 'transparent',
@@ -101,11 +105,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 12,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#334155',
+    borderWidth: 1.5,
+    borderColor: BRAND_COLORS.navy,
   },
   emailButtonText: {
-    color: '#F8FAFC',
+    color: BRAND_COLORS.navy,
     fontSize: 16,
     fontWeight: '600',
   },

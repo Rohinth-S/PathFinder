@@ -6,6 +6,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { UserTrajectory, TimelineEvent } from '@/types/schema';
 import { NODE_BORDER_COLORS, NODE_ICONS, getEmotionStyle } from '@/constants/colors';
+import { BRAND_COLORS } from '../constants/colors';
 
 /* ── Fallback data ─────────────────────────────────────── */
 
@@ -55,7 +56,7 @@ export default function FullJourneyPage() {
         </View>
         <View style={st.toggleRow}>
           <Text style={st.toggleLabel}>Show relevant only</Text>
-          <Switch value={showRelevant} onValueChange={setShowRelevant} trackColor={{ false: '#CBD5E1', true: '#6366F1' }} thumbColor="#FFF" style={{ transform: [{ scale: 0.7 }] }} />
+          <Switch value={showRelevant} onValueChange={setShowRelevant} trackColor={{ false: BRAND_COLORS.border, true: BRAND_COLORS.teal }} thumbColor={BRAND_COLORS.white} style={{ transform: [{ scale: 0.7 }] }} />
         </View>
       </View>
 
@@ -197,50 +198,50 @@ export default function FullJourneyPage() {
 /* ── Styles ──────────────────────────────────────────── */
 
 const st = StyleSheet.create({
-  wrapper: { flex: 1, backgroundColor: '#F8FAFC' },
-  header: { flexDirection: 'row', alignItems: 'flex-start', padding: 16, paddingTop: 20, gap: 12, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
-  back: { fontSize: 24, color: '#0F172A', marginTop: 2 },
-  headerTitle: { fontSize: 20, fontWeight: '800', color: '#0F172A' },
-  headerSub: { fontSize: 13, color: '#64748B', marginTop: 2 },
+  wrapper: { flex: 1, backgroundColor: BRAND_COLORS.cream },
+  header: { flexDirection: 'row', alignItems: 'flex-start', padding: 16, paddingTop: 20, gap: 12, borderBottomWidth: 1, borderBottomColor: BRAND_COLORS.border },
+  back: { fontSize: 24, color: BRAND_COLORS.navy, marginTop: 2 },
+  headerTitle: { fontSize: 20, fontWeight: '800', color: BRAND_COLORS.navy },
+  headerSub: { fontSize: 13, color: BRAND_COLORS.slate, marginTop: 2 },
   toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  toggleLabel: { fontSize: 11, color: '#64748B', fontWeight: '500' },
+  toggleLabel: { fontSize: 11, color: BRAND_COLORS.slate, fontWeight: '600' },
 
   scrollArea: { flex: 1 },
   scrollContent: { padding: 20, paddingBottom: 80, alignItems: 'center' },
 
   edgeLabelWrap: { alignItems: 'center', marginVertical: 4, gap: 4 },
-  dashedSeg: { width: 2, height: 20, borderStyle: 'dashed', borderWidth: 1, borderColor: '#CBD5E1' },
-  edgeLabel: { fontSize: 12, color: '#64748B', backgroundColor: '#F8FAFC', paddingHorizontal: 8 },
+  dashedSeg: { width: 2, height: 20, borderStyle: 'dashed', borderWidth: 1, borderColor: BRAND_COLORS.border },
+  edgeLabel: { fontSize: 12, color: BRAND_COLORS.slate, backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 8, fontWeight: '500' },
 
   nodeRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
 
-  nodeCard: { backgroundColor: '#FFF', borderRadius: 12, padding: 16, borderWidth: 2, width: 200, alignItems: 'center' },
+  nodeCard: { backgroundColor: BRAND_COLORS.white, borderRadius: 12, padding: 16, borderWidth: 2, width: 200, alignItems: 'center' },
   nodeType: { fontSize: 12, fontWeight: '600', marginBottom: 2 },
-  diamondIcon: { fontSize: 20, color: '#F59E0B', marginVertical: 2 },
-  nodeTitle: { fontSize: 15, fontWeight: '700', color: '#0F172A', textAlign: 'center', marginBottom: 4 },
-  nodeYear: { fontSize: 12, color: '#64748B', marginBottom: 8 },
+  diamondIcon: { fontSize: 20, color: BRAND_COLORS.tan, marginVertical: 2 },
+  nodeTitle: { fontSize: 15, fontWeight: '800', color: BRAND_COLORS.navy, textAlign: 'center', marginBottom: 4 },
+  nodeYear: { fontSize: 12, color: BRAND_COLORS.slate, marginBottom: 8, fontWeight: '600' },
   emotionPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
-  emotionText: { fontSize: 11, fontWeight: '600' },
+  emotionText: { fontSize: 11, fontWeight: '700' },
 
-  failureCard: { borderColor: '#FCA5A5', backgroundColor: '#FEF2F2', width: 160 },
+  failureCard: { borderColor: BRAND_COLORS.rust, backgroundColor: BRAND_COLORS.cream, width: 160 },
 
   branchWrap: { alignItems: 'center', marginTop: 20 },
-  branchConnector: { width: 40, height: 2, backgroundColor: '#94A3B8', marginBottom: 8 },
-  branchLabel: { position: 'absolute', top: -14, fontSize: 10, color: '#64748B', backgroundColor: '#F8FAFC', paddingHorizontal: 4 },
+  branchConnector: { width: 40, height: 2, backgroundColor: BRAND_COLORS.slate, marginBottom: 8 },
+  branchLabel: { position: 'absolute', top: -14, fontSize: 10, color: BRAND_COLORS.slate, backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 4, fontWeight: '600' },
 
-  zoomBar: { position: 'absolute', bottom: 20, right: 16, flexDirection: 'row', backgroundColor: '#FFF', borderRadius: 20, paddingHorizontal: 4, paddingVertical: 4, gap: 2, borderWidth: 1, borderColor: '#E2E8F0', elevation: 4, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
+  zoomBar: { position: 'absolute', bottom: 20, right: 16, flexDirection: 'row', backgroundColor: BRAND_COLORS.white, borderRadius: 20, paddingHorizontal: 4, paddingVertical: 4, gap: 2, borderWidth: 1, borderColor: BRAND_COLORS.border, elevation: 4, shadowColor: BRAND_COLORS.navy, shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
   zoomBtn: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
   zoomIcon: { fontSize: 16 },
 
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
-  sheet: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, maxHeight: '55%' },
+  overlay: { flex: 1, backgroundColor: 'rgba(26, 32, 44, 0.6)' },
+  sheet: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: BRAND_COLORS.cream, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, maxHeight: '55%' },
   sheetHeader: { flexDirection: 'row', justifyContent: 'space-between' },
-  sheetType: { fontSize: 14, fontWeight: '600', marginBottom: 4 },
-  sheetTitle: { fontSize: 24, fontWeight: '800', color: '#0F172A', lineHeight: 30 },
-  sheetYear: { fontSize: 14, color: '#64748B', marginTop: 4 },
-  closeX: { fontSize: 22, color: '#94A3B8' },
+  sheetType: { fontSize: 14, fontWeight: '700', marginBottom: 4 },
+  sheetTitle: { fontSize: 24, fontWeight: '800', color: BRAND_COLORS.navy, lineHeight: 30 },
+  sheetYear: { fontSize: 14, color: BRAND_COLORS.slate, marginTop: 4, fontWeight: '600' },
+  closeX: { fontSize: 22, color: BRAND_COLORS.slate },
 
   sheetSection: { marginBottom: 16 },
-  sheetSectionTitle: { fontSize: 16, fontWeight: '700', color: '#0F172A', marginBottom: 6 },
-  sheetBody: { fontSize: 15, color: '#475569', lineHeight: 22 },
+  sheetSectionTitle: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.navy, marginBottom: 6 },
+  sheetBody: { fontSize: 15, color: BRAND_COLORS.slate, lineHeight: 22, fontWeight: '500' },
 });

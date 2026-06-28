@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { BRAND_COLORS } from '../constants/colors';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
@@ -99,37 +100,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: '#0F172A', // Keeping consistent dark theme
+    backgroundColor: BRAND_COLORS.cream,
     justifyContent: 'center',
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#F8FAFC',
+    color: BRAND_COLORS.navy,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#94A3B8',
+    color: BRAND_COLORS.slate,
     marginBottom: 32,
   },
   formGroup: {
     marginBottom: 24,
   },
   label: {
-    color: '#CBD5E1',
+    color: BRAND_COLORS.navy,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#1E293B',
-    borderRadius: 8,
+    backgroundColor: BRAND_COLORS.white,
+    borderRadius: 12,
     padding: 16,
-    color: '#F8FAFC',
+    color: BRAND_COLORS.navy,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#334155',
+    borderWidth: 1.5,
+    borderColor: BRAND_COLORS.border,
   },
   pillContainer: {
     flexDirection: 'row',
@@ -137,38 +138,45 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   pill: {
-    backgroundColor: '#1E293B',
+    backgroundColor: BRAND_COLORS.white,
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#334155',
+    borderWidth: 1.5,
+    borderColor: BRAND_COLORS.border,
   },
   pillActive: {
-    backgroundColor: '#3B82F6',
-    borderColor: '#3B82F6',
+    backgroundColor: BRAND_COLORS.teal,
+    borderColor: BRAND_COLORS.teal,
   },
   pillText: {
-    color: '#94A3B8',
+    color: BRAND_COLORS.slate,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   pillTextActive: {
-    color: '#FFFFFF',
+    color: BRAND_COLORS.white,
   },
   button: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: BRAND_COLORS.rust,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 16,
+    shadowColor: BRAND_COLORS.rust,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonDisabled: {
-    backgroundColor: '#1E293B',
+    backgroundColor: BRAND_COLORS.tan,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: BRAND_COLORS.white,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });

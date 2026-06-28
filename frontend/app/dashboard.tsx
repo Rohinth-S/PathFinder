@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'rea
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { TimelineEvent } from '@/types/schema';
+import { BRAND_COLORS } from '../constants/colors';
 
 const MOCK_USER = {
   username: 'rohinth-s',
@@ -118,43 +119,43 @@ export default function DashboardPage() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
+  container: { flex: 1, backgroundColor: BRAND_COLORS.cream },
   content: { padding: 20, paddingBottom: 40 },
 
   profileHeader: { alignItems: 'center', marginBottom: 24 },
-  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#6366F1', justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  avatarText: { fontSize: 28, fontWeight: '800', color: '#FFFFFF' },
-  username: { fontSize: 20, fontWeight: '700', color: '#0F172A', marginBottom: 8 },
+  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: BRAND_COLORS.navy, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
+  avatarText: { fontSize: 28, fontWeight: '800', color: BRAND_COLORS.white },
+  username: { fontSize: 20, fontWeight: '700', color: BRAND_COLORS.navy, marginBottom: 8 },
   repRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   repStar: { fontSize: 14 },
-  repLabel: { fontSize: 14, color: '#64748B' },
-  repValue: { fontSize: 16, fontWeight: '800', color: '#6366F1' },
+  repLabel: { fontSize: 14, color: BRAND_COLORS.slate },
+  repValue: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.rust },
 
-  signOutBtn: { marginTop: 12, paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, backgroundColor: '#FEE2E2' },
-  signOutText: { color: '#EF4444', fontSize: 12, fontWeight: '600' },
+  signOutBtn: { marginTop: 12, paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, backgroundColor: BRAND_COLORS.tan },
+  signOutText: { color: BRAND_COLORS.navy, fontSize: 12, fontWeight: '700' },
 
   statsRow: { flexDirection: 'row', gap: 12, marginBottom: 20 },
-  statCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, alignItems: 'center', borderWidth: 1, borderColor: '#E2E8F0' },
-  statNum: { fontSize: 28, fontWeight: '800', color: '#6366F1' },
-  statLabel: { fontSize: 13, color: '#64748B', marginTop: 4, fontWeight: '500' },
+  statCard: { flex: 1, backgroundColor: BRAND_COLORS.white, borderRadius: 16, padding: 20, alignItems: 'center', borderWidth: 1, borderColor: BRAND_COLORS.border },
+  statNum: { fontSize: 28, fontWeight: '800', color: BRAND_COLORS.rust },
+  statLabel: { fontSize: 13, color: BRAND_COLORS.slate, marginTop: 4, fontWeight: '600' },
 
-  ctaBtn: { backgroundColor: '#6366F1', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, borderRadius: 12, gap: 8, marginBottom: 28 },
+  ctaBtn: { backgroundColor: BRAND_COLORS.rust, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, borderRadius: 12, gap: 8, marginBottom: 28, shadowColor: BRAND_COLORS.rust, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
   ctaEmoji: { fontSize: 18 },
-  ctaText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  ctaText: { color: BRAND_COLORS.white, fontSize: 16, fontWeight: '700' },
 
-  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#0F172A', marginBottom: 16 },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: BRAND_COLORS.navy, marginBottom: 16 },
 
   stepRow: { flexDirection: 'row', marginBottom: 0 },
   stepLineCol: { width: 24, alignItems: 'center' },
-  stepDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#CBD5E1', marginTop: 16, zIndex: 1 },
-  stepDotVerified: { backgroundColor: '#10B981' },
-  stepLine: { width: 2, flex: 1, backgroundColor: '#E2E8F0', marginTop: -2 },
-  stepCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginLeft: 10, marginBottom: 12, borderWidth: 1, borderColor: '#E2E8F0' },
-  stepTitle: { fontSize: 16, fontWeight: '700', color: '#0F172A', marginBottom: 2 },
-  stepMeta: { fontSize: 12, color: '#94A3B8', marginBottom: 6 },
-  stepSummary: { fontSize: 14, color: '#64748B', lineHeight: 20 },
+  stepDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: BRAND_COLORS.tan, marginTop: 16, zIndex: 1 },
+  stepDotVerified: { backgroundColor: BRAND_COLORS.teal },
+  stepLine: { width: 3, flex: 1, backgroundColor: BRAND_COLORS.teal, marginTop: -2 },
+  stepCard: { flex: 1, backgroundColor: BRAND_COLORS.white, borderRadius: 12, padding: 14, marginLeft: 10, marginBottom: 12, borderWidth: 1, borderColor: BRAND_COLORS.border },
+  stepTitle: { fontSize: 16, fontWeight: '700', color: BRAND_COLORS.navy, marginBottom: 2 },
+  stepMeta: { fontSize: 12, color: BRAND_COLORS.slate, marginBottom: 6, fontWeight: '500' },
+  stepSummary: { fontSize: 14, color: BRAND_COLORS.slate, lineHeight: 20 },
 
-  shareBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, borderWidth: 1.5, borderColor: '#6366F1', marginTop: 20 },
+  shareBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, borderWidth: 1.5, borderColor: BRAND_COLORS.navy, marginTop: 20 },
   shareIcon: { fontSize: 16 },
-  shareText: { fontSize: 15, fontWeight: '600', color: '#6366F1' },
+  shareText: { fontSize: 15, fontWeight: '700', color: BRAND_COLORS.navy },
 });
