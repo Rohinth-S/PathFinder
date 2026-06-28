@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
 import { BRAND_COLORS } from '../constants/colors';
@@ -37,6 +37,11 @@ export default function LandingPage() {
 
   return (
     <View style={styles.container}>
+      <Image 
+        source={require('../assets/logo.jpg')} 
+        style={styles.logo} 
+        resizeMode="contain" 
+      />
       <Text style={styles.title}>P A T H F I N D E R</Text>
       <Text style={styles.subtitle}>REAL JOURNEYS. BETTER DECISIONS.</Text>
       
@@ -60,6 +65,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: BRAND_COLORS.cream,
     padding: 24,
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    marginBottom: 24,
+    borderRadius: 24, // Optional, in case the logo looks better with rounded corners
   },
   title: {
     fontSize: 32,
