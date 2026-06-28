@@ -89,3 +89,11 @@ frontend/
 | `/api/query` | POST | Send text query (JSON) or voice audio (FormData) |
 | `/api/translate` | POST | Translate AI insights to user's preferred language |
 | `/api/speech` | POST | Generate text-to-speech audio for AI summary |
+
+## Recent Changes (Bug Fixes & UI)
+- **UI & Visualization:** Redesigned the `results.tsx` page with a structured visual hierarchy and stable percentage tracking (removed random render-loop jumping). Fixed missing color variables in `full-journey.tsx`.
+- **Authentication:** Created `oauth-native-callback.tsx` to handle Clerk OAuth redirects without hitting "unmatched route" errors in Expo Router.
+- **Routing & Navigation:** Fixed an infinite redirect loop between the Landing Page and Profile sequence. Added a "Sign Out" button to the Dashboard, and wired up the native OS share sheet for profile links.
+- **Data Handling:** Fixed `NaN` errors for "Present" timeline events.
+- **Expo Quality of Life:** Swapped `console.error` to `console.warn` for expected fallback API calls, stopping Expo's LogBox from taking over the screen.
+- **Config:** Removed deprecated `baseUrl` from `tsconfig.json` to fix build warnings.
