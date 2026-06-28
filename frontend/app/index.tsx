@@ -13,7 +13,7 @@ export default function LandingPage() {
   useEffect(() => {
     // If the user is already signed in, redirect them to the profile page
     if (isSignedIn) {
-      router.replace('/profile');
+      router.replace('/dashboard');
     }
   }, [isSignedIn]);
 
@@ -25,7 +25,7 @@ export default function LandingPage() {
         // After setting active session, the useEffect above will trigger the redirect
       }
     } catch (err) {
-      console.error("OAuth error", err);
+      console.warn("OAuth error", err);
     }
   };
 

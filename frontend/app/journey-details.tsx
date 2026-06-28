@@ -12,7 +12,7 @@ const FALLBACK_EVENT: TimelineEvent = {
     context: 'Worked with small businesses to build custom software solutions.',
     challengeFaced: 'Projects were non-repeatable and hard to scale.',
     outcome: 'Realized the need for a simple, affordable CRM for small businesses.',
-    achievements: 'Served 25+ small businesses\nBuilt strong domain understanding',
+    achievements: ['Served 25+ small businesses', 'Built strong domain understanding'],
     applicationStatus: null, emotionNote: null,
     goals: [],
     skills: ['Customer Understanding', 'Problem Solving', 'Sales', 'Product Thinking'],
@@ -32,15 +32,13 @@ export default function JourneyDetailsPage() {
   const { expandedDetails } = event;
   const duration = `${event.startDate} – ${event.endDate}`;
   const yearSpan = (() => {
-    const s = parseInt(event.startDate, 10);
-    const e = event.endDate === 'Present' ? new Date().getFullYear() : parseInt(event.endDate, 10);
-    if (isNaN(s) || isNaN(e)) return '';
+    const s = parseInt(event.startDate || '0', 10);
+    const e = event.endDate === 'Present' ? new Date().getFullYear() : parseInt(event.endDate || '0', 10);
+    if (isNaN(s) || isNaN(e) || s === 0 || e === 0) return '';
     return `${e - s} years`;
   })();
 
-  const achievementsList = expandedDetails.achievements
-    ? expandedDetails.achievements.split('\n').filter(Boolean)
-    : [];
+  const achievementsList = expandedDetails.achievements || [];
 
   const tags = expandedDetails.skills.slice(0, 2).map(s =>
     s.length > 18 ? s.slice(0, 18) + '…' : s
@@ -79,17 +77,17 @@ export default function JourneyDetailsPage() {
         {/* Detail Sections */}
         <View style={s.detailsCard}>
           {/* Context */}
-          <DetailSection icon="💼" iconBg="#DBEAFE" title="Context" body={expandedDetails.context} />
+          {expandedDetails.context && <DetailSection icon="💼" iconBg="#DBEAFE" title="Context" body={expandedDetails.context} />}
 
           <View style={s.divider} />
 
           {/* Challenge */}
-          <DetailSection icon="⚠️" iconBg="#FEF3C7" title="Challenge" body={expandedDetails.challengeFaced} />
+          {expandedDetails.challengeFaced && <DetailSection icon="⚠️" iconBg="#FEF3C7" title="Challenge" body={expandedDetails.challengeFaced} />}
 
           <View style={s.divider} />
 
           {/* Outcome / Learning */}
-          <DetailSection icon="🎯" iconBg="#D1FAE5" title="Outcome / Learning" body={expandedDetails.outcome} />
+          {expandedDetails.outcome && <DetailSection icon="🎯" iconBg="#D1FAE5" title="Outcome / Learning" body={expandedDetails.outcome} />}
 
           {/* Achievements */}
           {achievementsList.length > 0 && (
@@ -102,7 +100,7 @@ export default function JourneyDetailsPage() {
                   </View>
                   <Text style={s.sectionTitle}>Key Achievements</Text>
                 </View>
-                {achievementsList.map((a, i) => (
+                {achievementsList.map((a: string, i: number) => (
                   <View key={i} style={s.bulletRow}>
                     <Text style={s.bullet}>•</Text>
                     <Text style={s.bulletText}>{a}</Text>
@@ -156,7 +154,7 @@ export default function JourneyDetailsPage() {
   );
 }
 
-function DetailSection({ icon, iconBg, title, body }: { icon: string; iconBg: string; title: string; body: string }) {
+function DetailSection({ icon, iconBg, title, body }: { icon: string; iconBg: string; title: string; body: string | null | undefined }) {
   return (
     <View style={s.section}>
       <View style={s.sectionHeader}>

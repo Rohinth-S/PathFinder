@@ -59,6 +59,7 @@ frontend/
 │   ├── full-journey.tsx    # Vertical flowchart visualization
 │   ├── journey-details.tsx # Expanded journey event details
 │   ├── share-journey.tsx   # Chat-based journey submission
+│   ├── oauth-native-callback.tsx # Clerk OAuth redirect handler
 │   └── u/[username].tsx    # Public profile (dynamic route)
 ├── constants/
 │   └── colors.ts           # Emotion & node-type color system

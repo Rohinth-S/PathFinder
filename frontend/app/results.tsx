@@ -1,75 +1,58 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  FlatList, Dimensions, Animated, Switch, Alert,
-  ActivityIndicator,
+  Animated, Switch, Alert, ActivityIndicator,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
-import { DecisionAtlasBackendResponse, UserTrajectory, TimelineEvent, AiInsights } from '@/types/schema';
-import { getEmotionStyle, NODE_ICONS } from '@/constants/colors';
-import { extractKeyMilestones } from '@/utils/helpers';
+import { DecisionAtlasBackendResponse, BackendQueryResponse, UserTrajectory, TimelineEvent, AiInsights, CommonPattern } from '@/types/schema';
+import { NODE_COLORS, NODE_ICONS, CATEGORY_COLORS } from '@/constants/colors';
 
-const SCREEN_W = Dimensions.get('window').width;
-const CARD_W = SCREEN_W - 64;
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
 /* ── Mock Fallback ─────────────────────────────────── */
-
 const MOCK: DecisionAtlasBackendResponse = {
   structuredQuery: {
-    queryType: 'exploration', topics: ['Startup'], subtopics: ['Fintech'],
+    queryType: 'exploration', topics: ['Startup'], subtopics: ['SaaS'],
     skills: [], focus: 'career path',
-    semanticQuery: "I'm a CS grad, want to build a fintech startup, should I work first or start directly?",
+    semanticQuery: "What products did SaaS founders build before PMF?",
   },
   aggregatedContext: {
     journeyStatistics: {
-      usersAnalyzed: 18, experiencesAnalyzed: 72,
-      pathSplit: { workedFirst: 11, startedDirectly: 7 },
-      averageTimeToRevenue: 2.1,
+      usersAnalyzed: 43, experiencesAnalyzed: 180,
     },
     commonPatterns: [
-      { title: 'Career Path', description: 'Worked in industry before founding', frequency: 11, percentage: 61 },
-      { title: 'Direct Start', description: 'Started building immediately after education', frequency: 7, percentage: 39 },
+      { title: 'Internal Tools', description: 'Built tools for internal use first', frequency: 18, percentage: 42 },
+      { title: 'Agency Services', description: 'Started with services/consulting', frequency: 13, percentage: 31 },
+      { title: 'Productivity Apps', description: 'Consumer productivity apps', frequency: 10, percentage: 24 },
+      { title: 'Marketplaces', description: 'B2B Marketplaces', frequency: 8, percentage: 18 },
+      { title: 'Customer Validation', description: 'Validated with real customers early', frequency: 23, percentage: 53 },
     ],
     aiInsights: {
-      directAnswer: 'Most people who worked first said 2 years of industry experience made fundraising significantly easier.',
+      directAnswer: 'Most successful SaaS founders didn\'t start with their final product. They first solved small, real problems and evolved.',
       keyPoints: [
-        'Those who started directly took ~1.5 years longer on average to reach first revenue.',
-        'Having strong domain knowledge (finance + tech) was a common advantage across both paths.',
-        'Network and mentors played a key role in early traction for both groups.',
-        'Confidence and clarity of problem > the path taken.',
+        'Starting as an agency allows building deep domain expertise.',
+        'Internal tools naturally evolve into SaaS products.',
       ],
-      actionableTakeaway: 'Work first for 2 years, build domain expertise, then start.',
+      actionableTakeaway: 'Focus on solving immediate problems before scaling a product.',
     },
     timelineFeed: [
       {
-        username: 'fintech-founder-01', reputationScore: 94,
+        username: 'Sridhar Vembu', reputationScore: 94,
         timeline: [
-          { id: 'ff1-1', title: 'SDE at SaaS startup', startDate: '2019', endDate: '2021', organization: 'SaaS Corp', isVerified: true, nodeType: 'Job', emotionLabel: 'Confident', timelineSummary: 'Software Engineer at a SaaS product company.', expandedDetails: { context: 'Joined early-stage SaaS startup as employee #12.', challengeFaced: 'Wearing many hats in a resource-constrained team.', outcome: 'Built full-stack skills and understood B2B sales cycles.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Full-Stack', 'B2B SaaS'], transitions: [{ decisionLabel: 'Worked for 2 years to learn industry', toExperienceId: 'ff1-2' }] } },
-          { id: 'ff1-2', title: 'Worked for 2 yrs to learn industry', startDate: '2021', endDate: '2021', organization: '', isVerified: false, nodeType: 'Decision', emotionLabel: 'Uncertain', timelineSummary: 'Worked for 2 years to understand the industry and build network before starting.', expandedDetails: { context: 'Felt I lacked real-world experience in payments and lending.', challengeFaced: 'Uncertainty about timing.', outcome: 'Built deep domain knowledge and professional network.', achievements: null, applicationStatus: null, emotionNote: "'I was unsure if I was wasting time by not starting early, but deep down I knew this would make me stronger in the long run.'", goals: [], skills: ['Domain Knowledge', 'Networking'], transitions: [{ decisionLabel: 'Left job to build fintech product', toExperienceId: 'ff1-3' }] } },
-          { id: 'ff1-3', title: 'Left job to build fintech product', startDate: '2022', endDate: '2022', organization: '', isVerified: false, nodeType: 'Decision', emotionLabel: 'Pivoting', timelineSummary: 'Left job to build fintech product', expandedDetails: { context: 'Had enough domain knowledge and savings.', challengeFaced: 'Leaving stability.', outcome: 'Started building full-time.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Risk-taking'], transitions: [{ decisionLabel: 'First revenue', toExperienceId: 'ff1-4' }] } },
-          { id: 'ff1-4', title: 'First revenue $150K ARR', startDate: '2024', endDate: '2024', organization: 'FinServe', isVerified: true, nodeType: 'Startup', emotionLabel: 'Confident', timelineSummary: 'Building a fintech startup, reached $150K ARR.', expandedDetails: { context: 'Product-market fit achieved.', challengeFaced: 'Scaling the team.', outcome: 'Reached $150K ARR with strong retention.', achievements: '$150K ARR\n10 enterprise customers', applicationStatus: null, emotionNote: null, goals: [], skills: ['Fundraising', 'Leadership'], transitions: [] } },
-        ],
-      },
-      {
-        username: 'direct-starter-05', reputationScore: 82,
-        timeline: [
-          { id: 'ds5-1', title: 'B.Tech Computer Science', startDate: '2016', endDate: '2020', organization: 'IIT Madras', isVerified: true, nodeType: 'Education', emotionLabel: 'Confident', timelineSummary: 'Studied CS, focused on ML and fintech projects.', expandedDetails: { context: 'Undergraduate education.', challengeFaced: 'Academic pressure.', outcome: 'Strong CS fundamentals.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['ML', 'Python'], transitions: [{ decisionLabel: 'Started building immediately', toExperienceId: 'ds5-2' }] } },
-          { id: 'ds5-2', title: 'Started lending platform', startDate: '2020', endDate: '2021', organization: 'Self', isVerified: false, nodeType: 'Startup', emotionLabel: 'Pivoting', timelineSummary: 'Built peer-to-peer lending platform from scratch.', expandedDetails: { context: 'Direct start after graduation.', challengeFaced: 'No industry network.', outcome: 'Learned fast but struggled with compliance.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Fintech', 'Compliance'], transitions: [{ decisionLabel: 'Pivoted', toExperienceId: 'ds5-3' }] } },
-          { id: 'ds5-3', title: 'Pivoted to payments infra', startDate: '2022', endDate: 'Present', organization: 'PayBridge', isVerified: true, nodeType: 'Achievement', emotionLabel: 'Confident', timelineSummary: 'Pivoted to B2B payments infrastructure, growing steadily.', expandedDetails: { context: 'Applied lending learnings to payments.', challengeFaced: 'Rebuilding from scratch.', outcome: 'Reached $80K ARR.', achievements: '$80K ARR\nYC Interview', applicationStatus: null, emotionNote: null, goals: [], skills: ['Payments', 'B2B Sales'], transitions: [] } },
+          { id: 'sv-1', title: 'Built Internal Network Tool', startDate: '1996', endDate: '1998', organization: '', isVerified: true, nodeType: 'Job', emotionLabel: 'Confident', timelineSummary: 'Automated workflows for internal teams and clients.', expandedDetails: { context: 'Started by building network management tools.', challengeFaced: 'Scaling network operations manually was inefficient.', outcome: 'Created automated tools that improved efficiency by 40%.', achievements: ['Deployed across 5 offices', 'Saved 20hrs/week'], applicationStatus: null, emotionNote: null, goals: [], skills: ['Automation', 'Networking'], transitions: [{ decisionLabel: 'Started offering as a service', toExperienceId: 'sv-2' }] } },
+          { id: 'sv-2', title: 'Offered Custom Software Services', startDate: '1998', endDate: '2001', organization: '', isVerified: true, nodeType: 'Startup', emotionLabel: 'Pivoting', timelineSummary: 'Solved business problems for small companies.', expandedDetails: { context: 'Worked with small businesses to build custom software solutions.', challengeFaced: 'Projects were non-repeatable and hard to scale.', outcome: 'Realized the need for a simple, affordable CRM for small businesses.', achievements: ['Served 25+ small businesses', 'Built strong domain understanding'], applicationStatus: null, emotionNote: null, goals: [], skills: ['Customer Understanding', 'Problem Solving', 'Sales', 'Product Thinking'], transitions: [{ decisionLabel: 'Decided to build a product that solves common problems at scale.', toExperienceId: 'sv-3' }] } },
+          { id: 'sv-3', title: 'Launched Zoho CRM (MVP)', startDate: '2001', endDate: '2003', organization: '', isVerified: true, nodeType: 'Achievement', emotionLabel: 'Confident', timelineSummary: 'Early CRM for small businesses.', expandedDetails: { context: 'Launched first version of CRM.', challengeFaced: 'Gaining initial traction.', outcome: 'Acquired first 100 paying customers.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Product Launch'], transitions: [{ decisionLabel: 'Found PMF', toExperienceId: 'sv-4' }] } },
+          { id: 'sv-4', title: 'Found Product Market Fit', startDate: '2003', endDate: null, organization: 'Zoho', isVerified: true, nodeType: 'Achievement', emotionLabel: 'Confident', timelineSummary: 'Strong retention & paying customers.', expandedDetails: { context: 'SaaS model started scaling.', challengeFaced: 'Scaling infrastructure.', outcome: 'Consistent growth and low churn.', achievements: ['Product Market Fit'], applicationStatus: null, emotionNote: null, goals: [], skills: ['Scaling'], transitions: [] } },
         ],
       },
     ],
   },
 };
 
-const AI_ICONS = ['📊', '💡', '⭐', '👥', '📈'];
-
 /* ── Skeleton ──────────────────────────────────────── */
-
-function Shimmer({ w, h, r = 8 }: { w: number | string; h: number; r?: number }) {
+function Shimmer({ w, h, r = 8, mb = 0 }: { w: number | string; h: number; r?: number; mb?: number }) {
   const anim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.loop(Animated.sequence([
@@ -77,407 +60,338 @@ function Shimmer({ w, h, r = 8 }: { w: number | string; h: number; r?: number })
       Animated.timing(anim, { toValue: 0, duration: 900, useNativeDriver: true }),
     ])).start();
   }, [anim]);
-  return <Animated.View style={{ width: w as any, height: h, borderRadius: r, backgroundColor: '#E2E8F0', opacity: anim.interpolate({ inputRange: [0, 1], outputRange: [0.4, 0.8] }) }} />;
+  return <Animated.View style={{ width: w as any, height: h, borderRadius: r, marginBottom: mb, backgroundColor: '#E2E8F0', opacity: anim.interpolate({ inputRange: [0, 1], outputRange: [0.4, 0.8] }) }} />;
 }
 
 function LoadingSkeleton() {
   return (
     <View style={s.container}>
-      <View style={{ padding: 20, gap: 16 }}>
-        <Shimmer w="40%" h={14} />
-        <Shimmer w="90%" h={24} />
-        <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
-          {[1, 2, 3].map(i => <Shimmer key={i} w={110} h={80} r={12} />)}
-        </View>
-        <Shimmer w="50%" h={18} />
-        <Shimmer w="100%" h={280} r={16} />
-        <Shimmer w="100%" h={160} r={16} />
+      <View style={{ padding: 20 }}>
+        <Shimmer w="60%" h={24} mb={8} />
+        <Shimmer w="40%" h={14} mb={24} />
+        <Shimmer w="100%" h={120} r={16} mb={24} />
+        <Shimmer w="100%" h={300} r={16} mb={24} />
       </View>
     </View>
   );
 }
 
-/* ── Main ──────────────────────────────────────────── */
+/* ── Timeline Node Component ───────────────────────── */
+function TimelineNodeItem({ event, isLast }: { event: TimelineEvent, isLast: boolean }) {
+  const [expanded, setExpanded] = useState(false);
+  const nodeType = event.nodeType || 'Job';
+  const colors = NODE_COLORS[nodeType] || NODE_COLORS.Job;
+  const icon = NODE_ICONS[nodeType] || NODE_ICONS.Job;
 
+  const getDuration = (start: string, end: string | null) => {
+    if (!start) return '';
+    const endStr = end || 'Present';
+    if (start.length === 4) {
+      const s = parseInt(start);
+      if (!isNaN(s)) {
+        if (endStr === 'Present') {
+          return ` • ${new Date().getFullYear() - s} yrs`;
+        } else if (endStr.length === 4) {
+          const e = parseInt(endStr);
+          if (!isNaN(e)) return ` • ${e - s} yrs`;
+        }
+      }
+    }
+    return '';
+  };
+
+  return (
+    <View style={s.nodeContainer}>
+      {/* Left side: Vertical line and Icon */}
+      <View style={s.nodeLeft}>
+        <View style={[s.iconWrapper, { backgroundColor: colors.iconBg }]}>
+          <Text style={[s.iconText, { color: colors.iconText }]}>{icon}</Text>
+        </View>
+        {!isLast && <View style={s.verticalLine} />}
+      </View>
+
+      {/* Right side: Content Card */}
+      <View style={s.nodeRight}>
+        <TouchableOpacity style={[s.nodeCard, expanded && s.nodeCardExpanded]} onPress={() => setExpanded(!expanded)} activeOpacity={0.7}>
+          <View style={s.nodeCardHeader}>
+            <View style={{ flex: 1 }}>
+              <Text style={s.nodeTitle}>{event.title}</Text>
+              <Text style={s.nodeMeta}>
+                {event.startDate}{event.endDate ? ` - ${event.endDate}` : ''}{getDuration(event.startDate, event.endDate)}
+              </Text>
+              <Text style={s.nodeSummary} numberOfLines={expanded ? undefined : 2}>{event.timelineSummary}</Text>
+            </View>
+            <Text style={s.chevron}>{expanded ? '︿' : '﹀'}</Text>
+          </View>
+
+          {expanded && (
+            <View style={s.expandedContent}>
+              <View style={s.divider} />
+              
+              {event.expandedDetails.context && (
+                <View style={s.detailBlock}>
+                  <View style={s.detailHeader}><Text style={s.detailIcon}>💼</Text><Text style={s.detailTitle}>Context</Text></View>
+                  <Text style={s.detailText}>{event.expandedDetails.context}</Text>
+                </View>
+              )}
+              
+              {event.expandedDetails.challengeFaced && (
+                <View style={s.detailBlock}>
+                  <View style={s.detailHeader}><Text style={s.detailIcon}>⚠️</Text><Text style={s.detailTitle}>Challenge</Text></View>
+                  <Text style={s.detailText}>{event.expandedDetails.challengeFaced}</Text>
+                </View>
+              )}
+
+              {event.expandedDetails.outcome && (
+                <View style={s.detailBlock}>
+                  <View style={s.detailHeader}><Text style={s.detailIcon}>🎯</Text><Text style={s.detailTitle}>Outcome / Learning</Text></View>
+                  <Text style={s.detailText}>{event.expandedDetails.outcome}</Text>
+                </View>
+              )}
+
+              {event.expandedDetails.achievements && event.expandedDetails.achievements.length > 0 && (
+                <View style={s.detailBlock}>
+                  <View style={s.detailHeader}><Text style={s.detailIcon}>🏆</Text><Text style={s.detailTitle}>Key Achievements</Text></View>
+                  {event.expandedDetails.achievements.map((ach, i) => (
+                    <Text key={i} style={s.detailListItem}>• {ach}</Text>
+                  ))}
+                </View>
+              )}
+
+              {event.expandedDetails.skills && event.expandedDetails.skills.length > 0 && (
+                <View style={s.detailBlock}>
+                  <View style={s.detailHeader}><Text style={s.detailIcon}>{'</>'}</Text><Text style={s.detailTitle}>Skills Built</Text></View>
+                  <View style={s.skillsRow}>
+                    {event.expandedDetails.skills.map((skill, i) => (
+                      <View key={i} style={s.skillPill}><Text style={s.skillPillText}>{skill}</Text></View>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {event.expandedDetails.transitions && event.expandedDetails.transitions.length > 0 && (
+                <View style={[s.detailBlock, { marginBottom: 0 }]}>
+                  <View style={s.detailHeader}><Text style={s.detailIcon}>↪</Text><Text style={s.detailTitle}>Decision That Led Next</Text></View>
+                  <Text style={s.detailText}>{event.expandedDetails.transitions[0].decisionLabel}</Text>
+                </View>
+              )}
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const getPseudoPct = (str: string, min: number, max: number) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return (Math.abs(hash) % (max - min + 1)) + min;
+};
+
+/* ── Main ──────────────────────────────────────────── */
 export default function ResultsPage() {
   const router = useRouter();
   const params = useLocalSearchParams<{ payload?: string }>();
   const [loading, setLoading] = useState(true);
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [aiOn, setAiOn] = useState(true);
-  const [isTranslating, setIsTranslating] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [translatedInsights, setTranslatedInsights] = useState<AiInsights | null>(null);
-  const soundRef = useRef<Audio.Sound | null>(null);
 
-  // Parse live data from query screen, or fall back to mock
+  // Parse live data
   let data: DecisionAtlasBackendResponse;
   try {
-    data = params.payload ? JSON.parse(params.payload) : MOCK;
+    if (params.payload) {
+      const raw = JSON.parse(params.payload);
+      if (raw.aggregatedContext) {
+        data = {
+          structuredQuery: raw.structuredQuery || {},
+          aggregatedContext: raw.aggregatedContext,
+        };
+      } else {
+        data = MOCK;
+      }
+    } else {
+      data = MOCK;
+    }
   } catch {
     data = MOCK;
   }
 
-  const queryText = data.structuredQuery?.semanticQuery || data.structuredQuery?.queryType || '';
-  const { journeyStatistics: stats, aiInsights: originalInsights, timelineFeed, commonPatterns } = data.aggregatedContext;
-  const aiInsights = translatedInsights || originalInsights;
-
-  useEffect(() => { setTimeout(() => setLoading(false), 1600); }, []);
-
-  // Cleanup audio on unmount
-  useEffect(() => {
-    return () => { soundRef.current?.unloadAsync(); };
-  }, []);
+  useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
 
   if (loading) return <LoadingSkeleton />;
 
-  const onScroll = (e: any) => {
-    const idx = Math.round(e.nativeEvent.contentOffset.x / CARD_W);
-    setCurrentIdx(idx);
-  };
+  const queryText = data.structuredQuery?.semanticQuery || data.structuredQuery?.queryType || 'Search Results';
+  const { journeyStatistics: stats, aiInsights, timelineFeed, commonPatterns } = data.aggregatedContext;
 
-  /* ── Translation handler ───────────────────────── */
-
-  async function handleTranslateToggle(val: boolean) {
-    setAiOn(val);
-    if (!val) {
-      setTranslatedInsights(null);
-      return;
-    }
-
-    // Only translate if we haven't already
-    if (translatedInsights) return;
-
-    setIsTranslating(true);
-    try {
-      const response = await fetch(`${API_BASE}/translate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          aiInsights: originalInsights,
-          language: 'hi-IN', // TODO: pull from user's preferred language in profile
-        }),
-      });
-      if (response.ok) {
-        const result = await response.json();
-        setTranslatedInsights(result.translatedAiInsights);
-      }
-    } catch (err) {
-      console.error('Translation error:', err);
-    } finally {
-      setIsTranslating(false);
-    }
-  }
-
-  /* ── Speech playback handler ───────────────────── */
-
-  async function handlePlaySummary() {
-    if (isPlaying) {
-      await soundRef.current?.stopAsync();
-      setIsPlaying(false);
-      return;
-    }
-
-    setIsPlaying(true);
-    try {
-      const response = await fetch(`${API_BASE}/speech`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          aiInsights: aiInsights,
-          language: 'hi-IN', // TODO: pull from user's preferred language
-        }),
-      });
-
-      if (!response.ok) throw new Error('Speech generation failed');
-
-      const blob = await response.blob();
-      const reader = new FileReader();
-
-      reader.onload = async () => {
-        try {
-          const base64 = (reader.result as string).split(',')[1];
-          const fileUri = FileSystem.documentDirectory + 'summary.wav';
-
-          await FileSystem.writeAsStringAsync(fileUri, base64, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-
-          await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
-          const { sound } = await Audio.Sound.createAsync({ uri: fileUri });
-          soundRef.current = sound;
-
-          sound.setOnPlaybackStatusUpdate((status) => {
-            if (status.isLoaded && status.didJustFinish) {
-              setIsPlaying(false);
-            }
-          });
-
-          await sound.playAsync();
-        } catch (e) {
-          console.error('Audio save/play error:', e);
-          setIsPlaying(false);
-        }
-      };
-      reader.readAsDataURL(blob);
-    } catch (err) {
-      console.error('Speech error:', err);
-      Alert.alert('Playback Error', 'Could not generate audio summary.');
-      setIsPlaying(false);
-    }
-  }
-
-  /* ── Journey Card Renderer ─────────────────────── */
-
-  const renderJourneyCard = ({ item }: { item: UserTrajectory }) => {
-    const milestones = extractKeyMilestones(item.timeline);
-    const first = item.timeline[0];
-    const last = item.timeline[item.timeline.length - 1];
-    const decisionNode = item.timeline.find(e => e.nodeType === 'Decision');
-    const emotionStyle = getEmotionStyle(last?.emotionLabel || 'Confident');
-
-    return (
-      <View style={[s.card, { width: CARD_W }]}>
-        {/* Mini horizontal timeline */}
-        <View style={s.miniTimeline}>
-          {milestones.map((m, i) => {
-            const c = m.nodeType === 'Decision' ? '#F59E0B' : m.nodeType === 'Failure' ? '#EF4444' : '#6366F1';
-            return (
-              <React.Fragment key={m.id}>
-                {i > 0 && <View style={[s.miniLine, { backgroundColor: c }]} />}
-                <View style={s.miniNode}>
-                  <View style={[s.miniDot, { backgroundColor: c }]}>
-                    <Text style={s.miniIcon}>{NODE_ICONS[m.nodeType] || '●'}</Text>
-                  </View>
-                  <Text style={[s.miniYear, { color: c }]}>{m.startDate}</Text>
-                  <Text style={s.miniLabel} numberOfLines={1}>{m.nodeType}</Text>
-                  <Text style={s.miniSublabel} numberOfLines={2}>{m.title}</Text>
-                </View>
-              </React.Fragment>
-            );
-          })}
-        </View>
-
-        {/* Summary sections */}
-        <View style={s.summaryBlock}>
-          <View style={s.summaryRow}>
-            <Text style={s.summaryIcon}>💼</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={s.summaryLabel}>Where they started:</Text>
-              <Text style={s.summaryText}>{first?.timelineSummary}</Text>
-            </View>
-          </View>
-          {decisionNode && (
-            <View style={s.summaryRow}>
-              <Text style={s.summaryIcon}>◆</Text>
-              <View style={{ flex: 1 }}>
-                <Text style={s.summaryLabel}>Key decision:</Text>
-                <Text style={s.summaryText}>{decisionNode.timelineSummary}</Text>
-              </View>
-            </View>
-          )}
-          <View style={s.summaryRow}>
-            <Text style={s.summaryIcon}>🚀</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={s.summaryLabel}>Where they are now:</Text>
-              <Text style={s.summaryText}>{last?.timelineSummary}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Bottom bar */}
-        <View style={s.cardBottom}>
-          <View style={s.pill}><Text style={s.pillText}>Subtopic: Career Path</Text></View>
-          <View style={[s.pill, { backgroundColor: emotionStyle.bg }]}>
-            <Text style={[s.pillText, { color: emotionStyle.text }]}>Emotion: {last?.emotionLabel}</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => router.push({ pathname: '/full-journey', params: { userData: JSON.stringify(item) } })}
-          >
-            <Text style={s.seeFullText}>See full journey →</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  /* ── Render ────────────────────────────────────── */
+  // Extract top products for the summary card (we pick the top 4 patterns as a proxy if we don't have explicit products)
+  const topProducts = commonPatterns?.slice(0, 4) || [];
+  const topDecisions = commonPatterns?.slice(1, 4) || []; // Just for UI variety if needed
 
   return (
-    <ScrollView style={s.container} contentContainerStyle={s.content}>
+    <View style={s.container}>
       {/* Header */}
-      <View style={s.headerRow}>
-        <TouchableOpacity onPress={() => router.back()}><Text style={s.back}>←</Text></TouchableOpacity>
-        <View style={s.aiTogglePill}>
-          <Text style={s.aiToggleIcon}>✨</Text>
-          <Text style={s.aiToggleLabel}>AI insight</Text>
-          <Switch value={aiOn} onValueChange={handleTranslateToggle} trackColor={{ false: '#CBD5E1', true: '#6366F1' }} thumbColor="#FFF" style={{ transform: [{ scale: 0.7 }] }} />
-        </View>
-      </View>
-
-      <Text style={s.queryLabel}>Your question</Text>
-      <View style={s.queryRow}>
-        <Text style={s.queryText}>{queryText || data.structuredQuery?.semanticQuery}</Text>
-        <TouchableOpacity onPress={handlePlaySummary}>
-          <Text style={s.audioIcon}>{isPlaying ? '⏸️' : '🔊'}</Text>
+      <View style={s.headerContainer}>
+        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
+          <Text style={s.backIcon}>←</Text>
         </TouchableOpacity>
-      </View>
-
-      {/* Stat cards */}
-      <View style={s.statsRow}>
-        <View style={s.statCard}>
-          <Text style={s.statIcon}>👥</Text>
-          <Text style={s.statNum}>{stats?.usersAnalyzed || 0}</Text>
-          <Text style={s.statLabel}>journeys{'\n'}matched.</Text>
-        </View>
-        <View style={s.statCard}>
-          <Text style={s.statIcon}>⚡</Text>
-          <Text style={s.statNum}>{stats?.pathSplit?.workedFirst || 0}, {stats?.pathSplit?.startedDirectly || 0}</Text>
-          <Text style={s.statLabel}>worked first,{'\n'}started directly</Text>
-        </View>
-        <View style={s.statCard}>
-          <Text style={s.statIcon}>⏱️</Text>
-          <Text style={s.statNum}>{stats?.averageTimeToRevenue || '–'} <Text style={s.statUnit}>yrs</Text></Text>
-          <Text style={s.statLabel}>avg time to{'\n'}first revenue</Text>
+        <View style={{ flex: 1, paddingHorizontal: 12 }}>
+          <Text style={s.headerTitle} numberOfLines={2}>{queryText}</Text>
+          <Text style={s.headerSubtitle}>Analyzed {stats?.usersAnalyzed || 0} Founders</Text>
         </View>
       </View>
 
-      {/* Journey carousel */}
-      <View style={s.carouselHeader}>
-        <Text style={s.carouselTitle}>Journey {currentIdx + 1} of {timelineFeed?.length || 0}</Text>
-        <View style={s.carouselArrows}>
-          <Text style={s.arrow}>‹</Text>
-          <Text style={s.arrow}>›</Text>
-        </View>
-      </View>
-
-      {timelineFeed?.length > 0 ? (
-        <>
-          <FlatList
-            data={timelineFeed}
-            renderItem={renderJourneyCard}
-            horizontal pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onMomentumScrollEnd={onScroll}
-            keyExtractor={(_, i) => i.toString()}
-            snapToInterval={CARD_W + 16}
-            decelerationRate="fast"
-            contentContainerStyle={{ gap: 16, paddingRight: 32 }}
-          />
-          <View style={s.dotsRow}>
-            {timelineFeed.map((_, i) => (
-              <View key={i} style={[s.dot, currentIdx === i && s.dotActive]} />
-            ))}
-          </View>
-        </>
-      ) : (
-        <View style={s.emptyCard}><Text style={s.emptyText}>No journeys found. Try a different query.</Text></View>
-      )}
-
-      {/* AI Summary */}
-      {aiOn && (
-        <View style={s.aiCard}>
-          <View style={s.aiCardHeader}>
-            <Text style={s.aiCardIcon}>✨</Text>
-            <Text style={s.aiCardTitle}>AI Summary</Text>
-            <View style={{ flex: 1 }} />
-            {isTranslating && <ActivityIndicator size="small" color="#6366F1" />}
-            <Text style={s.aiToggleSmLabel}>AI insight</Text>
-            <Switch value={aiOn} onValueChange={handleTranslateToggle} trackColor={{ false: '#CBD5E1', true: '#6366F1' }} thumbColor="#FFF" style={{ transform: [{ scale: 0.6 }] }} />
-          </View>
-          {aiInsights?.keyPoints?.map((point, i) => (
-            <View key={i} style={s.aiRow}>
-              <Text style={s.aiRowIcon}>{AI_ICONS[i] || '•'}</Text>
-              <Text style={s.aiRowText}>{point}</Text>
+      <ScrollView contentContainerStyle={s.content}>
+        
+        {/* Product Summary Card */}
+        {topProducts.length > 0 && (
+          <View style={s.section}>
+            <View style={s.sectionHeader}>
+              <Text style={s.sectionIcon}>✨</Text>
+              <Text style={s.sectionTitle}>Top Pre-PMF Products</Text>
+              <View style={{ flex: 1 }} />
+              <Text style={s.graphIcon}>📊</Text>
             </View>
-          ))}
-          {aiInsights?.directAnswer && (
-            <View style={s.aiRow}>
-              <Text style={s.aiRowIcon}>{AI_ICONS[4]}</Text>
-              <Text style={s.aiRowText}>{aiInsights.directAnswer}</Text>
+            <View style={s.productsGrid}>
+              {topProducts.map((p, i) => {
+                const colorKeys = Object.keys(CATEGORY_COLORS);
+                const colorTheme = CATEGORY_COLORS[colorKeys[i % colorKeys.length] as keyof typeof CATEGORY_COLORS];
+                return (
+                  <View key={i} style={s.productItem}>
+                    <View style={s.productIconRow}>
+                      <View style={[s.catIconWrapper, { backgroundColor: colorTheme.iconBg }]}>
+                        <Text style={[s.catIconText, { color: colorTheme.iconText }]}>{colorTheme.icon}</Text>
+                      </View>
+                      <Text style={s.productPct}>{p.percentage || getPseudoPct(p.title, 10, 50)}%</Text>
+                    </View>
+                    <Text style={s.productTitle} numberOfLines={2}>{p.title}</Text>
+                  </View>
+                );
+              })}
             </View>
-          )}
+          </View>
+        )}
 
-          {/* Listen to Summary button */}
-          <TouchableOpacity style={s.listenBtn} onPress={handlePlaySummary} disabled={isPlaying}>
-            <Text style={s.listenIcon}>{isPlaying ? '⏸️' : '🔉'}</Text>
-            <Text style={s.listenText}>{isPlaying ? 'Playing...' : 'Listen to Summary'}</Text>
-            {isPlaying && <ActivityIndicator size="small" color="#6366F1" style={{ marginLeft: 8 }} />}
-          </TouchableOpacity>
-        </View>
-      )}
-    </ScrollView>
+        {/* Journey Timelines */}
+        {timelineFeed?.map((userJourney, index) => (
+          <View key={index} style={s.section}>
+            <Text style={s.journeyHeaderTitle}>Journey Timeline <Text style={{fontWeight: '400', color: '#64748B'}}>({userJourney.username})</Text></Text>
+            <View style={s.timelineWrapper}>
+              {userJourney.timeline.map((event, i) => (
+                <TimelineNodeItem 
+                  key={event.id} 
+                  event={event} 
+                  isLast={i === userJourney.timeline.length - 1} 
+                />
+              ))}
+            </View>
+          </View>
+        ))}
+
+        {/* Common Decisions */}
+        {topDecisions.length > 0 && (
+          <View style={s.section}>
+            <View style={s.decisionsHeader}>
+              <Text style={s.journeyHeaderTitle}>Common Decisions</Text>
+              <Text style={s.decisionsTopText}>Top 3</Text>
+            </View>
+            <View style={s.decisionsList}>
+              {topDecisions.map((d, i) => (
+                <View key={i} style={s.decisionRow}>
+                  <View style={s.decisionIconWrapper}><Text style={s.decisionIcon}>◆</Text></View>
+                  <Text style={s.decisionText}>{d.description}</Text>
+                  <Text style={s.decisionPct}>{d.percentage || getPseudoPct(d.description, 20, 70)}%</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* AI Insight */}
+        {aiInsights && (
+          <View style={s.aiCard}>
+            <View style={s.aiCardHeader}>
+              <Text style={s.aiCardIcon}>✨</Text>
+              <Text style={s.aiCardTitle}>AI Insight</Text>
+            </View>
+            <Text style={s.aiCardText}>{aiInsights.directAnswer || aiInsights.actionableTakeaway}</Text>
+            <Text style={s.brainIcon}>🧠</Text>
+          </View>
+        )}
+
+      </ScrollView>
+    </View>
   );
 }
 
-/* ── Styles ──────────────────────────────────────── */
-
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
-  content: { padding: 20, paddingBottom: 40 },
+  headerContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', paddingHorizontal: 16, paddingTop: 50, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  backBtn: { padding: 8, marginLeft: -8 },
+  backIcon: { fontSize: 24, color: '#0F172A' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: '#0F172A', lineHeight: 22 },
+  headerSubtitle: { fontSize: 13, color: '#6366F1', fontWeight: '600', marginTop: 4 },
+  
+  content: { padding: 16, paddingBottom: 40 },
+  
+  section: { backgroundColor: '#FFF', borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#E2E8F0' },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 16 },
+  sectionIcon: { fontSize: 16 },
+  sectionTitle: { fontSize: 15, fontWeight: '700', color: '#0F172A' },
+  graphIcon: { fontSize: 18, color: '#8B5CF6' },
+  
+  productsGrid: { flexDirection: 'row', gap: 12 },
+  productItem: { flex: 1 },
+  productIconRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
+  catIconWrapper: { width: 32, height: 32, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
+  catIconText: { fontSize: 16 },
+  productPct: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
+  productTitle: { fontSize: 12, color: '#475569', lineHeight: 16, fontWeight: '500' },
 
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  back: { fontSize: 24, color: '#0F172A' },
-  aiTogglePill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#F1F5F9', paddingLeft: 10, paddingRight: 4, paddingVertical: 4, borderRadius: 20, borderWidth: 1, borderColor: '#E2E8F0' },
-  aiToggleIcon: { fontSize: 14 },
-  aiToggleLabel: { fontSize: 12, fontWeight: '600', color: '#334155' },
+  journeyHeaderTitle: { fontSize: 16, fontWeight: '700', color: '#0F172A', marginBottom: 16 },
+  timelineWrapper: { paddingLeft: 4, paddingBottom: 8 },
+  
+  nodeContainer: { flexDirection: 'row' },
+  nodeLeft: { width: 44, alignItems: 'center' },
+  iconWrapper: { width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', zIndex: 2 },
+  iconText: { fontSize: 14 },
+  verticalLine: { width: 2, flex: 1, backgroundColor: '#E2E8F0', marginTop: -4, marginBottom: -4 },
+  
+  nodeRight: { flex: 1, paddingBottom: 16 },
+  nodeCard: { backgroundColor: '#F8FAFC', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#E2E8F0' },
+  nodeCardExpanded: { backgroundColor: '#FFF', borderColor: '#CBD5E1', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
+  nodeCardHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  nodeTitle: { fontSize: 15, fontWeight: '700', color: '#0F172A', marginBottom: 4 },
+  nodeMeta: { fontSize: 12, color: '#64748B', marginBottom: 6, fontWeight: '500' },
+  nodeSummary: { fontSize: 13, color: '#475569', lineHeight: 18 },
+  chevron: { fontSize: 16, color: '#94A3B8', marginTop: 2, paddingLeft: 8 },
+  
+  expandedContent: { marginTop: 12 },
+  divider: { height: 1, backgroundColor: '#E2E8F0', marginVertical: 12 },
+  detailBlock: { marginBottom: 16 },
+  detailHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
+  detailIcon: { fontSize: 14 },
+  detailTitle: { fontSize: 13, fontWeight: '700', color: '#1E293B' },
+  detailText: { fontSize: 14, color: '#475569', lineHeight: 20 },
+  detailListItem: { fontSize: 14, color: '#475569', lineHeight: 20, marginBottom: 4 },
+  
+  skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
+  skillPill: { backgroundColor: '#EEF2FF', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
+  skillPillText: { color: '#4338CA', fontSize: 12, fontWeight: '600' },
 
-  queryLabel: { fontSize: 12, color: '#64748B', marginBottom: 4 },
-  queryRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 20 },
-  queryText: { flex: 1, fontSize: 22, fontWeight: '800', color: '#0F172A', lineHeight: 28 },
-  audioIcon: { fontSize: 22, marginTop: 4 },
+  decisionsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
+  decisionsTopText: { fontSize: 13, color: '#6366F1', fontWeight: '600' },
+  decisionsList: { gap: 12 },
+  decisionRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  decisionIconWrapper: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#F5F3FF', justifyContent: 'center', alignItems: 'center' },
+  decisionIcon: { color: '#8B5CF6', fontSize: 12 },
+  decisionText: { flex: 1, fontSize: 14, color: '#334155' },
+  decisionPct: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
 
-  statsRow: { flexDirection: 'row', gap: 10, marginBottom: 24 },
-  statCard: { flex: 1, backgroundColor: '#FFF', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#E2E8F0' },
-  statIcon: { fontSize: 18, marginBottom: 6 },
-  statNum: { fontSize: 24, fontWeight: '800', color: '#0F172A' },
-  statUnit: { fontSize: 16, fontWeight: '600' },
-  statLabel: { fontSize: 11, color: '#64748B', marginTop: 2, lineHeight: 15 },
-
-  carouselHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  carouselTitle: { fontSize: 16, fontWeight: '700', color: '#0F172A' },
-  carouselArrows: { flexDirection: 'row', gap: 12 },
-  arrow: { fontSize: 22, color: '#94A3B8' },
-
-  card: { backgroundColor: '#FFF', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' },
-
-  miniTimeline: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20, paddingHorizontal: 4 },
-  miniNode: { alignItems: 'center', width: 70 },
-  miniDot: { width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginBottom: 6 },
-  miniIcon: { fontSize: 14, color: '#FFF' },
-  miniLine: { height: 2, flex: 1, alignSelf: 'center', marginTop: 16, marginHorizontal: -4, opacity: 0.4 },
-  miniYear: { fontSize: 12, fontWeight: '700', marginBottom: 2 },
-  miniLabel: { fontSize: 10, color: '#64748B', textAlign: 'center' },
-  miniSublabel: { fontSize: 9, color: '#94A3B8', textAlign: 'center', marginTop: 1 },
-
-  summaryBlock: { gap: 14, marginBottom: 16 },
-  summaryRow: { flexDirection: 'row', gap: 10 },
-  summaryIcon: { fontSize: 16, marginTop: 2 },
-  summaryLabel: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
-  summaryText: { fontSize: 14, color: '#475569', lineHeight: 20 },
-
-  cardBottom: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
-  pill: { backgroundColor: '#EEF2FF', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 14 },
-  pillText: { fontSize: 11, fontWeight: '600', color: '#4338CA' },
-  seeFullText: { fontSize: 13, fontWeight: '600', color: '#6366F1' },
-
-  dotsRow: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginTop: 12, marginBottom: 24 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#CBD5E1' },
-  dotActive: { backgroundColor: '#6366F1', width: 20 },
-
-  emptyCard: { backgroundColor: '#FFF', borderRadius: 16, padding: 32, alignItems: 'center', borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 24 },
-  emptyText: { fontSize: 15, color: '#64748B', textAlign: 'center' },
-
-  aiCard: { backgroundColor: '#F5F3FF', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#DDD6FE' },
-  aiCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 14 },
+  aiCard: { backgroundColor: '#FAF5FF', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#E9D5FF', overflow: 'hidden' },
+  aiCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
   aiCardIcon: { fontSize: 18 },
-  aiCardTitle: { fontSize: 16, fontWeight: '700', color: '#1E1B4B' },
-  aiToggleSmLabel: { fontSize: 11, color: '#6366F1', fontWeight: '600' },
-  aiRow: { flexDirection: 'row', gap: 10, marginBottom: 12 },
-  aiRowIcon: { fontSize: 16, marginTop: 1 },
-  aiRowText: { flex: 1, fontSize: 14, color: '#334155', lineHeight: 20 },
-
-  listenBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 8, paddingVertical: 12, borderRadius: 10, backgroundColor: '#EDE9FE', borderWidth: 1, borderColor: '#DDD6FE' },
-  listenIcon: { fontSize: 16 },
-  listenText: { fontSize: 13, fontWeight: '600', color: '#6366F1' },
+  aiCardTitle: { fontSize: 16, fontWeight: '700', color: '#4C1D95' },
+  aiCardText: { fontSize: 15, color: '#4C1D95', lineHeight: 22, fontWeight: '500', paddingRight: 40 },
+  brainIcon: { position: 'absolute', bottom: -10, right: -10, fontSize: 60, opacity: 0.15 },
 });

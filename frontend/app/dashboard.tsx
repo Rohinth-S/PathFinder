@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@clerk/clerk-expo';
 import { TimelineEvent } from '@/types/schema';
 
 const MOCK_USER = {
@@ -29,6 +30,22 @@ const MY_TIMELINE: TimelineEvent[] = [
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { signOut } = useAuth();
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Check out my professional journey on PathFinder! https://pathfinder.app/u/${MOCK_USER.username}`,
+      });
+    } catch (error: any) {
+      console.warn(error.message);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.replace('/');
+  };
 
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content}>
@@ -43,6 +60,10 @@ export default function DashboardPage() {
           <Text style={s.repLabel}>Reputation Score: </Text>
           <Text style={s.repValue}>{MOCK_USER.reputationScore}</Text>
         </View>
+        
+        <TouchableOpacity style={s.signOutBtn} onPress={handleSignOut}>
+          <Text style={s.signOutText}>Sign Out</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Stats Row */}
@@ -88,7 +109,7 @@ export default function DashboardPage() {
       })}
 
       {/* Share Profile */}
-      <TouchableOpacity style={s.shareBtn}>
+      <TouchableOpacity style={s.shareBtn} onPress={handleShare}>
         <Text style={s.shareIcon}>🔗</Text>
         <Text style={s.shareText}>Share Profile Link</Text>
       </TouchableOpacity>
@@ -108,6 +129,9 @@ const s = StyleSheet.create({
   repStar: { fontSize: 14 },
   repLabel: { fontSize: 14, color: '#64748B' },
   repValue: { fontSize: 16, fontWeight: '800', color: '#6366F1' },
+
+  signOutBtn: { marginTop: 12, paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, backgroundColor: '#FEE2E2' },
+  signOutText: { color: '#EF4444', fontSize: 12, fontWeight: '600' },
 
   statsRow: { flexDirection: 'row', gap: 12, marginBottom: 20 },
   statCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, alignItems: 'center', borderWidth: 1, borderColor: '#E2E8F0' },
