@@ -1,3 +1,4 @@
+import "../global.css";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
 import * as SecureStore from "expo-secure-store";
