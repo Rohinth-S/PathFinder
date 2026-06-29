@@ -8,6 +8,7 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { DecisionAtlasBackendResponse, BackendQueryResponse, UserTrajectory, TimelineEvent, AiInsights, CommonPattern } from '@/types/schema';
 import { NODE_COLORS, NODE_ICONS, CATEGORY_COLORS } from '@/constants/colors';
+import { BRAND_COLORS } from '../constants/colors';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
@@ -275,7 +276,7 @@ export default function ResultsPage() {
         {/* Journey Timelines */}
         {timelineFeed?.map((userJourney, index) => (
           <View key={index} style={s.section}>
-            <Text style={s.journeyHeaderTitle}>Journey Timeline <Text style={{fontWeight: '400', color: '#64748B'}}>({userJourney.username})</Text></Text>
+            <Text style={s.journeyHeaderTitle}>Journey Timeline <Text style={{fontWeight: '400', color: BRAND_COLORS.slate}}>({userJourney.username})</Text></Text>
             <View style={s.timelineWrapper}>
               {userJourney.timeline.map((event, i) => (
                 <TimelineNodeItem 
@@ -325,73 +326,73 @@ export default function ResultsPage() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
-  headerContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', paddingHorizontal: 16, paddingTop: 50, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  container: { flex: 1, backgroundColor: BRAND_COLORS.cream },
+  headerContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: BRAND_COLORS.white, paddingHorizontal: 16, paddingTop: 50, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: BRAND_COLORS.border },
   backBtn: { padding: 8, marginLeft: -8 },
-  backIcon: { fontSize: 24, color: '#0F172A' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#0F172A', lineHeight: 22 },
-  headerSubtitle: { fontSize: 13, color: '#6366F1', fontWeight: '600', marginTop: 4 },
+  backIcon: { fontSize: 24, color: BRAND_COLORS.navy },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: BRAND_COLORS.navy, lineHeight: 22 },
+  headerSubtitle: { fontSize: 13, color: BRAND_COLORS.rust, fontWeight: '700', marginTop: 4 },
   
   content: { padding: 16, paddingBottom: 40 },
   
-  section: { backgroundColor: '#FFF', borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#E2E8F0' },
+  section: { backgroundColor: BRAND_COLORS.white, borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: BRAND_COLORS.border },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 16 },
   sectionIcon: { fontSize: 16 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: '#0F172A' },
-  graphIcon: { fontSize: 18, color: '#8B5CF6' },
+  sectionTitle: { fontSize: 15, fontWeight: '700', color: BRAND_COLORS.navy },
+  graphIcon: { fontSize: 18, color: BRAND_COLORS.teal },
   
   productsGrid: { flexDirection: 'row', gap: 12 },
   productItem: { flex: 1 },
   productIconRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
   catIconWrapper: { width: 32, height: 32, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
   catIconText: { fontSize: 16 },
-  productPct: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
-  productTitle: { fontSize: 12, color: '#475569', lineHeight: 16, fontWeight: '500' },
+  productPct: { fontSize: 14, fontWeight: '800', color: BRAND_COLORS.navy },
+  productTitle: { fontSize: 12, color: BRAND_COLORS.slate, lineHeight: 16, fontWeight: '600' },
 
-  journeyHeaderTitle: { fontSize: 16, fontWeight: '700', color: '#0F172A', marginBottom: 16 },
+  journeyHeaderTitle: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.navy, marginBottom: 16 },
   timelineWrapper: { paddingLeft: 4, paddingBottom: 8 },
   
   nodeContainer: { flexDirection: 'row' },
   nodeLeft: { width: 44, alignItems: 'center' },
   iconWrapper: { width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', zIndex: 2 },
   iconText: { fontSize: 14 },
-  verticalLine: { width: 2, flex: 1, backgroundColor: '#E2E8F0', marginTop: -4, marginBottom: -4 },
+  verticalLine: { width: 3, flex: 1, backgroundColor: BRAND_COLORS.teal, marginTop: -4, marginBottom: -4 },
   
   nodeRight: { flex: 1, paddingBottom: 16 },
-  nodeCard: { backgroundColor: '#F8FAFC', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#E2E8F0' },
-  nodeCardExpanded: { backgroundColor: '#FFF', borderColor: '#CBD5E1', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
+  nodeCard: { backgroundColor: BRAND_COLORS.cream, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: BRAND_COLORS.border },
+  nodeCardExpanded: { backgroundColor: BRAND_COLORS.white, borderColor: BRAND_COLORS.teal, shadowColor: BRAND_COLORS.teal, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 2 },
   nodeCardHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
-  nodeTitle: { fontSize: 15, fontWeight: '700', color: '#0F172A', marginBottom: 4 },
-  nodeMeta: { fontSize: 12, color: '#64748B', marginBottom: 6, fontWeight: '500' },
-  nodeSummary: { fontSize: 13, color: '#475569', lineHeight: 18 },
-  chevron: { fontSize: 16, color: '#94A3B8', marginTop: 2, paddingLeft: 8 },
+  nodeTitle: { fontSize: 15, fontWeight: '800', color: BRAND_COLORS.navy, marginBottom: 4 },
+  nodeMeta: { fontSize: 12, color: BRAND_COLORS.slate, marginBottom: 6, fontWeight: '600' },
+  nodeSummary: { fontSize: 13, color: BRAND_COLORS.slate, lineHeight: 18, fontWeight: '500' },
+  chevron: { fontSize: 16, color: BRAND_COLORS.slate, marginTop: 2, paddingLeft: 8 },
   
   expandedContent: { marginTop: 12 },
-  divider: { height: 1, backgroundColor: '#E2E8F0', marginVertical: 12 },
+  divider: { height: 1, backgroundColor: BRAND_COLORS.border, marginVertical: 12 },
   detailBlock: { marginBottom: 16 },
   detailHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   detailIcon: { fontSize: 14 },
-  detailTitle: { fontSize: 13, fontWeight: '700', color: '#1E293B' },
-  detailText: { fontSize: 14, color: '#475569', lineHeight: 20 },
-  detailListItem: { fontSize: 14, color: '#475569', lineHeight: 20, marginBottom: 4 },
+  detailTitle: { fontSize: 13, fontWeight: '800', color: BRAND_COLORS.navy },
+  detailText: { fontSize: 14, color: BRAND_COLORS.slate, lineHeight: 20, fontWeight: '500' },
+  detailListItem: { fontSize: 14, color: BRAND_COLORS.slate, lineHeight: 20, marginBottom: 4, fontWeight: '500' },
   
   skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
-  skillPill: { backgroundColor: '#EEF2FF', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
-  skillPillText: { color: '#4338CA', fontSize: 12, fontWeight: '600' },
+  skillPill: { backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: BRAND_COLORS.border },
+  skillPillText: { color: BRAND_COLORS.teal, fontSize: 12, fontWeight: '700' },
 
   decisionsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
-  decisionsTopText: { fontSize: 13, color: '#6366F1', fontWeight: '600' },
+  decisionsTopText: { fontSize: 13, color: BRAND_COLORS.rust, fontWeight: '700' },
   decisionsList: { gap: 12 },
   decisionRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  decisionIconWrapper: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#F5F3FF', justifyContent: 'center', alignItems: 'center' },
-  decisionIcon: { color: '#8B5CF6', fontSize: 12 },
-  decisionText: { flex: 1, fontSize: 14, color: '#334155' },
-  decisionPct: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
+  decisionIconWrapper: { width: 24, height: 24, borderRadius: 12, backgroundColor: BRAND_COLORS.cream, justifyContent: 'center', alignItems: 'center' },
+  decisionIcon: { color: BRAND_COLORS.teal, fontSize: 12 },
+  decisionText: { flex: 1, fontSize: 14, color: BRAND_COLORS.slate, fontWeight: '500' },
+  decisionPct: { fontSize: 14, fontWeight: '800', color: BRAND_COLORS.navy },
 
-  aiCard: { backgroundColor: '#FAF5FF', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#E9D5FF', overflow: 'hidden' },
+  aiCard: { backgroundColor: BRAND_COLORS.cream, borderRadius: 16, padding: 20, borderWidth: 1, borderColor: BRAND_COLORS.tan, overflow: 'hidden' },
   aiCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
   aiCardIcon: { fontSize: 18 },
-  aiCardTitle: { fontSize: 16, fontWeight: '700', color: '#4C1D95' },
-  aiCardText: { fontSize: 15, color: '#4C1D95', lineHeight: 22, fontWeight: '500', paddingRight: 40 },
-  brainIcon: { position: 'absolute', bottom: -10, right: -10, fontSize: 60, opacity: 0.15 },
+  aiCardTitle: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.navy },
+  aiCardText: { fontSize: 15, color: BRAND_COLORS.navy, lineHeight: 22, fontWeight: '600', paddingRight: 40 },
+  brainIcon: { position: 'absolute', bottom: -10, right: -10, fontSize: 60, opacity: 0.1 },
 });

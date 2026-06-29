@@ -4,6 +4,7 @@ import {
   TouchableOpacity, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { BRAND_COLORS } from '../constants/colors';
 
 interface ChatMessage {
   id: string;
@@ -110,29 +111,29 @@ export default function ShareJourneyPage() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 20, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
-  backArrow: { fontSize: 22, color: '#1E293B' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#0F172A' },
-  nodeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EEF2FF', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, borderWidth: 1, borderColor: '#C7D2FE' },
+  container: { flex: 1, backgroundColor: BRAND_COLORS.cream },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 20, borderBottomWidth: 1, borderBottomColor: BRAND_COLORS.border },
+  backArrow: { fontSize: 22, color: BRAND_COLORS.navy },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: BRAND_COLORS.navy },
+  nodeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, borderWidth: 1, borderColor: BRAND_COLORS.border },
   nodeIcon: { fontSize: 12 },
-  nodeText: { fontSize: 12, fontWeight: '700', color: '#4338CA' },
+  nodeText: { fontSize: 12, fontWeight: '700', color: BRAND_COLORS.teal },
 
   chatContent: { padding: 16, gap: 12, paddingBottom: 8 },
   bubble: { maxWidth: '80%', padding: 14, borderRadius: 16 },
-  bubbleAi: { alignSelf: 'flex-start', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderBottomLeftRadius: 4 },
-  bubbleUser: { alignSelf: 'flex-end', backgroundColor: '#6366F1', borderBottomRightRadius: 4 },
-  bubbleText: { fontSize: 15, color: '#334155', lineHeight: 22 },
-  bubbleTextUser: { color: '#FFFFFF' },
+  bubbleAi: { alignSelf: 'flex-start', backgroundColor: BRAND_COLORS.white, borderWidth: 1, borderColor: BRAND_COLORS.border, borderBottomLeftRadius: 4 },
+  bubbleUser: { alignSelf: 'flex-end', backgroundColor: BRAND_COLORS.teal, borderBottomRightRadius: 4 },
+  bubbleText: { fontSize: 15, color: BRAND_COLORS.slate, lineHeight: 22 },
+  bubbleTextUser: { color: BRAND_COLORS.white },
 
-  inputBar: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 8, borderTopWidth: 1, borderTopColor: '#E2E8F0', backgroundColor: '#FFFFFF' },
-  micBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center' },
-  micBtnRecording: { backgroundColor: '#FEE2E2' },
+  inputBar: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 8, borderTopWidth: 1, borderTopColor: BRAND_COLORS.border, backgroundColor: BRAND_COLORS.white },
+  micBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: BRAND_COLORS.cream, justifyContent: 'center', alignItems: 'center' },
+  micBtnRecording: { backgroundColor: BRAND_COLORS.tan },
   micEmoji: { fontSize: 18 },
-  textInput: { flex: 1, backgroundColor: '#F1F5F9', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, fontSize: 15, color: '#0F172A', maxHeight: 80 },
-  sendBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#6366F1', justifyContent: 'center', alignItems: 'center' },
-  sendIcon: { fontSize: 18, color: '#FFFFFF' },
+  textInput: { flex: 1, backgroundColor: BRAND_COLORS.cream, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, fontSize: 15, color: BRAND_COLORS.navy, maxHeight: 80 },
+  sendBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: BRAND_COLORS.rust, justifyContent: 'center', alignItems: 'center' },
+  sendIcon: { fontSize: 18, color: BRAND_COLORS.white },
 
-  finishBtn: { backgroundColor: '#10B981', marginHorizontal: 16, marginBottom: 16, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
-  finishText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  finishBtn: { backgroundColor: BRAND_COLORS.navy, marginHorizontal: 16, marginBottom: 16, paddingVertical: 14, borderRadius: 12, alignItems: 'center', shadowColor: BRAND_COLORS.navy, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
+  finishText: { color: BRAND_COLORS.white, fontSize: 16, fontWeight: '700' },
 });

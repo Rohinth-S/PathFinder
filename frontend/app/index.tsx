@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
 import { initializeUser } from '@/services/auth.service';
@@ -12,17 +12,18 @@ export default function LandingPage() {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
 
   useEffect(() => {
-    // If the user is already signed in, redirect them to the profile page
+    // If the user is already signed in, redirect them to the appropriate tab
     async function initialize() {
       if (!isSignedIn) return;
-        const token = await getToken();
-        if (!token) return;
-        const user = await initializeUser(token);
-        if (user.username) {
-            router.replace("/dashboard");
-        } else {
-            router.replace("/profile");
-        }
+      const token = await getToken();
+      if (!token) return;
+      
+      const user = await initializeUser(token);
+      if (user.username) {
+          router.replace("/(tabs)");
+      } else {
+          router.replace("/(tabs)/profile");
+      }
     }
 
     initialize();
@@ -46,78 +47,40 @@ export default function LandingPage() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Decision Atlas</Text>
-      <Text style={styles.subtitle}>Welcome to your life's GPS</Text>
+    <View className="flex-1 justify-center items-center bg-brand-cream px-6">
+      <Image 
+        source={require('../assets/logo.jpg')} 
+        className="w-32 h-32 mb-6 rounded-3xl"
+        resizeMode="contain" 
+      />
+      <Text className="text-3xl font-extrabold text-brand-navy tracking-widest mb-2 text-center">
+        PATHFINDER
+      </Text>
+      <Text className="text-sm font-semibold tracking-wider text-brand-rust mb-8 text-center uppercase">
+        Real Journeys. Better Decisions.
+      </Text>
       
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.googleButton} onPress={onPressGoogle}>
-          <Text style={styles.googleButtonText}>Continue with Google</Text>
+      <View className="w-full max-w-sm mb-12">
+        <Text className="text-center text-brand-slate text-base leading-6">
+          Navigate your career with confidence. Explore verified timelines of professionals, learn from their decisions, and map out your own success story.
+        </Text>
+      </View>
+      
+      <View className="w-full max-w-sm gap-4">
+        <TouchableOpacity 
+          className="bg-brand-rust py-4 px-6 rounded-xl items-center shadow-sm"
+          onPress={onPressGoogle}
+        >
+          <Text className="text-brand-white text-base font-bold">Continue with Google</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.emailButton} onPress={onPressEmail}>
-          <Text style={styles.emailButtonText}>Sign in with Email</Text>
+        <TouchableOpacity 
+          className="bg-transparent py-4 px-6 rounded-xl items-center border-2 border-brand-navy"
+          onPress={onPressEmail}
+        >
+          <Text className="text-brand-navy text-base font-bold">Sign in with Email</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#0F172A', // A nice dark theme
-    padding: 24,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#F8FAFC',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#94A3B8',
-    marginBottom: 48,
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    width: '100%',
-    maxWidth: 320,
-    gap: 16,
-  },
-  googleButton: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  googleButtonText: {
-    color: '#0F172A',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  emailButton: {
-    backgroundColor: 'transparent',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  emailButtonText: {
-    color: '#F8FAFC',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

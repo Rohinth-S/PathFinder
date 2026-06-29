@@ -7,6 +7,10 @@ Expo React Native app for PathFinder. Built with [Expo SDK 56](https://docs.expo
 - [Node.js](https://nodejs.org/) >= 18
 - [Expo Go](https://expo.dev/go) app on your phone (for physical device testing)
 
+## Recent Updates
+- **UI Overhaul:** The app has been fully updated to a Premium Light Theme using a new brand palette (`#1A202C`, `#36585E`, `#D06757`, `#FBFBF9`).
+- **Stability:** Fixed infinite redirect loops in authentication and swapped `console.error` for `console.warn` to prevent disruptive LogBox popups during async failures.
+
 ## Setup
 
 1. **Navigate to the frontend directory**

@@ -1,28 +1,40 @@
 import { EmotionLabel, NodeType } from '../types/schema';
 
+export const BRAND_COLORS = {
+  navy: '#1A202C',
+  teal: '#36585E',
+  rust: '#D06757',
+  tan: '#CBB79F',
+  slate: '#587187',
+  cream: '#FBFBF9',
+  white: '#FFFFFF',
+  lightGray: '#F1F5F9',
+  border: '#E2E8F0'
+};
+
 export const EMOTION_COLORS: Record<string, { bg: string; text: string }> = {
-  'Confident':        { bg: '#D1FAE5', text: '#059669' },
-  'Uncertain':        { bg: '#FEF3C7', text: '#D97706' },
-  'Pivoting':         { bg: '#FFEDD5', text: '#C2410C' },
-  'Pushing through':  { bg: '#FEE2E2', text: '#DC2626' },
+  'Confident':        { bg: '#EAF4F4', text: '#36585E' }, // Teal tint
+  'Uncertain':        { bg: '#FAF5EF', text: '#CBB79F' }, // Tan tint
+  'Pivoting':         { bg: '#F3E9E8', text: '#587187' }, // Slate tint
+  'Pushing through':  { bg: '#F9ECEB', text: '#D06757' }, // Rust tint
 };
 
 export const NODE_COLORS: Record<NodeType, { bg: string; iconBg: string; iconText: string }> = {
-  Education:   { bg: '#F1F5F9', iconBg: '#E2E8F0', iconText: '#64748B' },
-  Job:         { bg: '#F5F3FF', iconBg: '#EDE9FE', iconText: '#8B5CF6' },
-  Decision:    { bg: '#FEF3C7', iconBg: '#FEF3C7', iconText: '#D97706' },
-  Failure:     { bg: '#FEE2E2', iconBg: '#FEE2E2', iconText: '#DC2626' },
-  Startup:     { bg: '#EFF6FF', iconBg: '#DBEAFE', iconText: '#3B82F6' },
-  Achievement: { bg: '#D1FAE5', iconBg: '#D1FAE5', iconText: '#10B981' },
+  Education:   { bg: '#FBFBF9', iconBg: '#EAF4F4', iconText: '#36585E' }, // Teal
+  Job:         { bg: '#FBFBF9', iconBg: '#F3E9E8', iconText: '#587187' }, // Slate
+  Decision:    { bg: '#FBFBF9', iconBg: '#FAF5EF', iconText: '#CBB79F' }, // Tan
+  Failure:     { bg: '#FBFBF9', iconBg: '#F9ECEB', iconText: '#D06757' }, // Rust
+  Startup:     { bg: '#FBFBF9', iconBg: '#EAF4F4', iconText: '#36585E' }, // Teal
+  Achievement: { bg: '#FBFBF9', iconBg: '#E2E8F0', iconText: '#1A202C' }, // Navy
 };
 
 export const NODE_BORDER_COLORS: Record<NodeType, string> = {
-  Education:   '#94A3B8',
-  Job:         '#8B5CF6',
-  Decision:    '#F59E0B',
-  Failure:     '#EF4444',
-  Startup:     '#8B5CF6',
-  Achievement: '#10B981',
+  Education:   '#36585E',
+  Job:         '#587187',
+  Decision:    '#CBB79F',
+  Failure:     '#D06757',
+  Startup:     '#36585E',
+  Achievement: '#1A202C',
 };
 
 export const NODE_ICONS: Record<NodeType, string> = {

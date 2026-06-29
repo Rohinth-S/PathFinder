@@ -1,7 +1,8 @@
+import "../global.css";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { View, StyleSheet, Platform } from "react-native";
+import { View, Platform, StyleSheet } from "react-native";
 
 // Token cache implementation for secure storage of session tokens
 const tokenCache = {

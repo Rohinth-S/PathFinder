@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { TimelineEvent } from '@/types/schema';
+import { BRAND_COLORS } from '../../constants/colors';
 
 const PUBLIC_TIMELINE: TimelineEvent[] = [
   {
@@ -93,37 +94,37 @@ export default function PublicProfilePage() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
+  container: { flex: 1, backgroundColor: BRAND_COLORS.cream },
   content: { padding: 20, paddingBottom: 40 },
 
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 },
-  backArrow: { fontSize: 22, color: '#1E293B' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#0F172A' },
+  backArrow: { fontSize: 22, color: BRAND_COLORS.navy },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: BRAND_COLORS.navy },
 
   profileBlock: { alignItems: 'center', marginBottom: 20 },
-  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#6366F1', justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  avatarText: { fontSize: 28, fontWeight: '800', color: '#FFFFFF' },
-  username: { fontSize: 20, fontWeight: '700', color: '#0F172A', marginBottom: 6 },
+  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: BRAND_COLORS.navy, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
+  avatarText: { fontSize: 28, fontWeight: '800', color: BRAND_COLORS.white },
+  username: { fontSize: 20, fontWeight: '700', color: BRAND_COLORS.navy, marginBottom: 6 },
   repRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   repStar: { fontSize: 14 },
-  repValue: { fontSize: 16, fontWeight: '800', color: '#6366F1' },
+  repValue: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.teal },
 
-  shareBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: '#6366F1', marginBottom: 28 },
+  shareBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: BRAND_COLORS.rust, marginBottom: 28, shadowColor: BRAND_COLORS.rust, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
   shareIcon: { fontSize: 16 },
-  shareText: { fontSize: 15, fontWeight: '600', color: '#FFFFFF' },
+  shareText: { fontSize: 15, fontWeight: '700', color: BRAND_COLORS.white },
 
-  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#0F172A', marginBottom: 16 },
+  sectionTitle: { fontSize: 18, fontWeight: '800', color: BRAND_COLORS.navy, marginBottom: 16 },
 
   stepRow: { flexDirection: 'row', marginBottom: 0 },
   stepLineCol: { width: 24, alignItems: 'center' },
-  stepDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#CBD5E1', marginTop: 16, zIndex: 1 },
-  stepDotVerified: { backgroundColor: '#10B981' },
-  stepLine: { width: 2, flex: 1, backgroundColor: '#E2E8F0', marginTop: -2 },
-  stepCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginLeft: 10, marginBottom: 12, borderWidth: 1, borderColor: '#E2E8F0' },
+  stepDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: BRAND_COLORS.border, marginTop: 16, zIndex: 1 },
+  stepDotVerified: { backgroundColor: BRAND_COLORS.teal },
+  stepLine: { width: 2, flex: 1, backgroundColor: BRAND_COLORS.border, marginTop: -2 },
+  stepCard: { flex: 1, backgroundColor: BRAND_COLORS.white, borderRadius: 12, padding: 14, marginLeft: 10, marginBottom: 12, borderWidth: 1, borderColor: BRAND_COLORS.border },
   stepTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 },
-  stepTitle: { fontSize: 16, fontWeight: '700', color: '#0F172A', flex: 1 },
-  verifiedBadge: { backgroundColor: '#D1FAE5', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  verifiedText: { color: '#059669', fontSize: 10, fontWeight: '700' },
-  stepMeta: { fontSize: 12, color: '#94A3B8', marginBottom: 6 },
-  stepSummary: { fontSize: 14, color: '#64748B', lineHeight: 20 },
+  stepTitle: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.navy, flex: 1 },
+  verifiedBadge: { backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  verifiedText: { color: BRAND_COLORS.teal, fontSize: 10, fontWeight: '700' },
+  stepMeta: { fontSize: 12, color: BRAND_COLORS.slate, marginBottom: 6, fontWeight: '600' },
+  stepSummary: { fontSize: 14, color: BRAND_COLORS.slate, lineHeight: 20, fontWeight: '500' },
 });

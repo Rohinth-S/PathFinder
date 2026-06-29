@@ -159,42 +159,43 @@ export default function QueryPage() {
   /* ── UI ────────────────────────────────────────────── */
 
   return (
-    <View style={s.container}>
-      <View style={s.header}>
+    <View className="flex-1 bg-brand-cream">
+      <View className="flex-row items-center justify-between p-4 pt-5">
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={s.backArrow}>←</Text>
+          <Text className="text-2xl text-brand-navy">←</Text>
         </TouchableOpacity>
-        <Text style={s.headerTitle}>Ask PathFinder</Text>
+        <Text className="text-lg font-bold text-brand-navy">Ask PathFinder</Text>
         <View style={{ width: 22 }} />
       </View>
 
-      <View style={s.body}>
-        <Text style={s.heroText}>What do you want{'\n'}to learn from{'\n'}real journeys?</Text>
+      <View className="flex-1 p-6 justify-center">
+        <Text className="text-3xl font-extrabold text-brand-navy leading-10 mb-7">What do you want{'\n'}to learn from{'\n'}real journeys?</Text>
 
         {/* Intent Toggle */}
-        <View style={s.toggleContainer}>
+        <View className="flex-row bg-brand-white rounded-xl p-1 mb-6 gap-1 border border-brand-border">
           <TouchableOpacity
-            style={[s.toggleBtn, intent === 'exploring' && s.toggleBtnActive]}
+            className={`flex-1 py-3 items-center rounded-lg ${intent === 'exploring' ? 'bg-brand-teal' : ''}`}
             onPress={() => setIntent('exploring')}
           >
-            <Text style={[s.toggleText, intent === 'exploring' && s.toggleTextActive]}>
+            <Text className={`font-semibold text-sm ${intent === 'exploring' ? 'text-brand-white' : 'text-brand-slate'}`}>
               🔍  Just Exploring
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[s.toggleBtn, intent === 'myself' && s.toggleBtnActive]}
+            className={`flex-1 py-3 items-center rounded-lg ${intent === 'myself' ? 'bg-brand-teal' : ''}`}
             onPress={() => setIntent('myself')}
           >
-            <Text style={[s.toggleText, intent === 'myself' && s.toggleTextActive]}>
-              🎯  For Myself
+            <Text className={`font-semibold text-sm ${intent === 'myself' ? 'text-brand-white' : 'text-brand-slate'}`}>
+              For Myself
             </Text>
           </TouchableOpacity>
         </View>
 
         {/* Input */}
-        <View style={s.inputWrapper}>
+        <View className="flex-row bg-brand-white rounded-2xl border-2 border-brand-border items-center pr-2 mb-3">
           <TextInput
-            style={s.textInput}
+            className="flex-1 text-brand-navy text-base p-4 min-h-[100px]"
+            style={{ textAlignVertical: 'top' }}
             placeholder="e.g. Should I drop out to build a startup?"
             placeholderTextColor="#94A3B8"
             value={query}
@@ -202,37 +203,44 @@ export default function QueryPage() {
             multiline
             editable={!isSearching}
           />
-          <View style={s.micArea}>
+          <View className="justify-center items-center w-14 h-14 mr-1">
             {isRecording && (
-              <Animated.View style={[s.pulseRing, { transform: [{ scale: pulseAnim }] }]} />
+              <Animated.View
+                className="absolute w-12 h-12 rounded-full border-2"
+                style={{
+                  backgroundColor: 'rgba(208, 103, 87, 0.15)',
+                  borderColor: 'rgba(208, 103, 87, 0.3)',
+                  transform: [{ scale: pulseAnim }]
+                }}
+              />
             )}
             <TouchableOpacity
-              style={[s.micButton, isRecording && s.micButtonRecording]}
+              className={`w-12 h-12 rounded-full justify-center items-center z-10 ${isRecording ? 'bg-brand-tan' : 'bg-brand-lightGray'}`}
               onPress={isRecording ? stopRecording : startRecording}
               disabled={isSearching}
             >
-              <Text style={s.micIcon}>{isRecording ? '⏹️' : '🎤'}</Text>
+              <Text className="text-xl">{isRecording ? '⏹️' : '🎤'}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {isRecording && (
-          <Text style={s.recordingLabel}>🔴  Listening... tap to stop</Text>
+          <Text className="text-brand-rust text-center mb-3 font-bold text-sm">🔴  Listening... tap to stop</Text>
         )}
 
         {/* Submit */}
         <TouchableOpacity
-          style={[s.submitBtn, isSearching && { opacity: 0.6 }]}
+          className={`bg-brand-rust py-4 rounded-2xl items-center mt-2 shadow-sm ${isSearching ? 'opacity-60' : ''}`}
           onPress={() => handleSubmit()}
           disabled={isSearching || (!query.trim() && !isRecording)}
         >
           {isSearching ? (
-            <View style={s.loadingRow}>
+            <View className="flex-row items-center">
               <ActivityIndicator color="#FFF" size="small" />
-              <Text style={s.submitText}>  Searching pathways...</Text>
+              <Text className="text-brand-white text-base font-extrabold ml-2">Searching pathways...</Text>
             </View>
           ) : (
-            <Text style={s.submitText}>Search Pathways  →</Text>
+            <Text className="text-brand-white text-lg font-extrabold">Search Pathways  →</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -240,32 +248,3 @@ export default function QueryPage() {
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 20 },
-  backArrow: { fontSize: 22, color: '#1E293B' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#0F172A' },
-
-  body: { flex: 1, padding: 24, justifyContent: 'center' },
-  heroText: { fontSize: 30, fontWeight: '800', color: '#0F172A', lineHeight: 38, marginBottom: 28 },
-
-  toggleContainer: { flexDirection: 'row', backgroundColor: '#F1F5F9', borderRadius: 12, padding: 4, marginBottom: 24, gap: 4 },
-  toggleBtn: { flex: 1, paddingVertical: 12, alignItems: 'center', borderRadius: 8 },
-  toggleBtnActive: { backgroundColor: '#6366F1' },
-  toggleText: { color: '#64748B', fontWeight: '600', fontSize: 14 },
-  toggleTextActive: { color: '#FFFFFF' },
-
-  inputWrapper: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1.5, borderColor: '#E2E8F0', alignItems: 'center', paddingRight: 8, marginBottom: 12 },
-  textInput: { flex: 1, color: '#0F172A', fontSize: 16, padding: 18, minHeight: 100, textAlignVertical: 'top' },
-
-  micArea: { justifyContent: 'center', alignItems: 'center', width: 56, height: 56, marginRight: 4 },
-  pulseRing: { position: 'absolute', width: 52, height: 52, borderRadius: 26, backgroundColor: 'rgba(239, 68, 68, 0.15)', borderWidth: 2, borderColor: 'rgba(239, 68, 68, 0.3)' },
-  micButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center', zIndex: 1 },
-  micButtonRecording: { backgroundColor: '#FEE2E2' },
-  micIcon: { fontSize: 22 },
-  recordingLabel: { color: '#EF4444', textAlign: 'center', marginBottom: 12, fontWeight: '600', fontSize: 14 },
-
-  submitBtn: { backgroundColor: '#6366F1', paddingVertical: 18, borderRadius: 14, alignItems: 'center', marginTop: 8 },
-  submitText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
-  loadingRow: { flexDirection: 'row', alignItems: 'center' },
-});

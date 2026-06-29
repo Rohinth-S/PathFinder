@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { TimelineEvent } from '@/types/schema';
+import { BRAND_COLORS } from '../constants/colors';
 
 const FALLBACK_EVENT: TimelineEvent = {
   id: 'fallback', title: 'Offered Custom Software Services',
@@ -77,17 +78,17 @@ export default function JourneyDetailsPage() {
         {/* Detail Sections */}
         <View style={s.detailsCard}>
           {/* Context */}
-          {expandedDetails.context && <DetailSection icon="💼" iconBg="#DBEAFE" title="Context" body={expandedDetails.context} />}
+          {expandedDetails.context && <DetailSection icon="💼" iconBg={BRAND_COLORS.cream} title="Context" body={expandedDetails.context} />}
 
           <View style={s.divider} />
 
           {/* Challenge */}
-          {expandedDetails.challengeFaced && <DetailSection icon="⚠️" iconBg="#FEF3C7" title="Challenge" body={expandedDetails.challengeFaced} />}
+          {expandedDetails.challengeFaced && <DetailSection icon="⚠️" iconBg={BRAND_COLORS.cream} title="Challenge" body={expandedDetails.challengeFaced} />}
 
           <View style={s.divider} />
 
           {/* Outcome / Learning */}
-          {expandedDetails.outcome && <DetailSection icon="🎯" iconBg="#D1FAE5" title="Outcome / Learning" body={expandedDetails.outcome} />}
+          {expandedDetails.outcome && <DetailSection icon="🎯" iconBg={BRAND_COLORS.cream} title="Outcome / Learning" body={expandedDetails.outcome} />}
 
           {/* Achievements */}
           {achievementsList.length > 0 && (
@@ -95,7 +96,7 @@ export default function JourneyDetailsPage() {
               <View style={s.divider} />
               <View style={s.section}>
                 <View style={s.sectionHeader}>
-                  <View style={[s.sectionIconWrap, { backgroundColor: '#EDE9FE' }]}>
+                  <View style={[s.sectionIconWrap, { backgroundColor: BRAND_COLORS.cream }]}>
                     <Text style={s.sectionEmoji}>🏆</Text>
                   </View>
                   <Text style={s.sectionTitle}>Key Achievements</Text>
@@ -115,7 +116,7 @@ export default function JourneyDetailsPage() {
           {/* Skills Built */}
           <View style={s.section}>
             <View style={s.sectionHeader}>
-              <View style={[s.sectionIconWrap, { backgroundColor: '#DBEAFE' }]}>
+              <View style={[s.sectionIconWrap, { backgroundColor: BRAND_COLORS.cream }]}>
                 <Text style={s.sectionEmoji}>{'</>'}</Text>
               </View>
               <Text style={s.sectionTitle}>Skills Built</Text>
@@ -135,7 +136,7 @@ export default function JourneyDetailsPage() {
               <View style={s.divider} />
               <DetailSection
                 icon="➡️"
-                iconBg="#FEE2E2"
+                iconBg={BRAND_COLORS.cream}
                 title="Decision That Led Next"
                 body={expandedDetails.transitions[0].decisionLabel}
               />
@@ -169,43 +170,43 @@ function DetailSection({ icon, iconBg, title, body }: { icon: string; iconBg: st
 }
 
 const s = StyleSheet.create({
-  wrapper: { flex: 1, backgroundColor: '#F8FAFC' },
+  wrapper: { flex: 1, backgroundColor: BRAND_COLORS.cream },
   container: { flex: 1 },
   content: { padding: 20, paddingBottom: 100 },
 
   headerBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
-  backArrow: { fontSize: 22, color: '#1E293B' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#0F172A' },
-  moreIcon: { fontSize: 22, color: '#64748B' },
+  backArrow: { fontSize: 22, color: BRAND_COLORS.navy },
+  headerTitle: { fontSize: 18, fontWeight: '800', color: BRAND_COLORS.navy },
+  moreIcon: { fontSize: 22, color: BRAND_COLORS.slate },
 
   hero: { alignItems: 'center', marginBottom: 24 },
-  heroIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#D1FAE5', justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
+  heroIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: BRAND_COLORS.cream, justifyContent: 'center', alignItems: 'center', marginBottom: 12, borderWidth: 1, borderColor: BRAND_COLORS.border },
   heroEmoji: { fontSize: 28 },
-  heroTitle: { fontSize: 22, fontWeight: '800', color: '#0F172A', textAlign: 'center', marginBottom: 4 },
-  heroMeta: { fontSize: 14, color: '#64748B', marginBottom: 12 },
+  heroTitle: { fontSize: 22, fontWeight: '800', color: BRAND_COLORS.navy, textAlign: 'center', marginBottom: 4 },
+  heroMeta: { fontSize: 14, color: BRAND_COLORS.slate, marginBottom: 12, fontWeight: '600' },
   tagRow: { flexDirection: 'row', gap: 8 },
-  tag: { backgroundColor: '#EEF2FF', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: '#C7D2FE' },
-  tagText: { fontSize: 12, fontWeight: '600', color: '#4338CA' },
+  tag: { backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: BRAND_COLORS.border },
+  tagText: { fontSize: 12, fontWeight: '700', color: BRAND_COLORS.teal },
 
-  detailsCard: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#E2E8F0' },
-  divider: { height: 1, backgroundColor: '#F1F5F9', marginVertical: 16 },
+  detailsCard: { backgroundColor: BRAND_COLORS.white, borderRadius: 16, padding: 20, borderWidth: 1, borderColor: BRAND_COLORS.border },
+  divider: { height: 1, backgroundColor: BRAND_COLORS.border, marginVertical: 16 },
 
   section: {},
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
-  sectionIconWrap: { width: 32, height: 32, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
+  sectionIconWrap: { width: 32, height: 32, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: BRAND_COLORS.border },
   sectionEmoji: { fontSize: 16 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#0F172A' },
-  sectionBody: { fontSize: 15, color: '#475569', lineHeight: 22, paddingLeft: 42 },
+  sectionTitle: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.navy },
+  sectionBody: { fontSize: 15, color: BRAND_COLORS.slate, lineHeight: 22, paddingLeft: 42, fontWeight: '500' },
 
   bulletRow: { flexDirection: 'row', paddingLeft: 42, marginTop: 4 },
-  bullet: { color: '#6366F1', fontSize: 14, marginRight: 8, lineHeight: 22 },
-  bulletText: { flex: 1, fontSize: 15, color: '#475569', lineHeight: 22 },
+  bullet: { color: BRAND_COLORS.rust, fontSize: 14, marginRight: 8, lineHeight: 22 },
+  bulletText: { flex: 1, fontSize: 15, color: BRAND_COLORS.slate, lineHeight: 22, fontWeight: '500' },
 
   skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingLeft: 42, marginTop: 4 },
-  skillPill: { backgroundColor: '#F1F5F9', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0' },
-  skillText: { fontSize: 13, fontWeight: '500', color: '#334155' },
+  skillPill: { backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: BRAND_COLORS.border },
+  skillText: { fontSize: 13, fontWeight: '600', color: BRAND_COLORS.slate },
 
-  footer: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FFFFFF', padding: 16, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
-  footerBtn: { backgroundColor: '#6366F1', paddingVertical: 16, borderRadius: 12, alignItems: 'center' },
-  footerBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  footer: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: BRAND_COLORS.white, padding: 16, borderTopWidth: 1, borderTopColor: BRAND_COLORS.border },
+  footerBtn: { backgroundColor: BRAND_COLORS.rust, paddingVertical: 16, borderRadius: 12, alignItems: 'center', shadowColor: BRAND_COLORS.rust, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
+  footerBtnText: { color: BRAND_COLORS.white, fontSize: 16, fontWeight: '800' },
 });
