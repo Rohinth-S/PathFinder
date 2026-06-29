@@ -73,6 +73,7 @@ export const journeyUserSchema = z
     reputationScore: z.number().int().min(0).optional(),
     flagCount: z.number().int().min(0).optional(),
     isFlagged: z.boolean().optional(),
+    email: z.string().email().nullable().optional(),
   })
   .strict();
 
