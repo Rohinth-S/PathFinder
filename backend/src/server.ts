@@ -7,6 +7,7 @@ dotenv.config();
 import queryRoutes from "./routes/query.routes.js";
 import outputRoutes from "./routes/output.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(clerkMiddleware());
 app.use("/api", queryRoutes);
 app.use("/api",outputRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Backend running");

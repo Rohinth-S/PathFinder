@@ -18,20 +18,22 @@ export async function submitQuery(
   let response: Response;
 
   if (audioUri) {
-    const base64Audio = await FileSystem.readAsStringAsync(audioUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
+    const formData = new FormData();
+    formData.append('audio', {
+      uri: audioUri,
+      name: 'recording.m4a',
+      type: 'audio/m4a',
+    } as any);
 
-    response = await fetch(`${API_BASE_URL}/query/query`, {
+    response = await fetch(`${API_BASE_URL}/query`, {
       method: 'POST',
+      body: formData,
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ audio: base64Audio }),
     });
   } else if (searchText) {
-    response = await fetch(`${API_BASE_URL}/query/query`, {
+    response = await fetch(`${API_BASE_URL}/query`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
