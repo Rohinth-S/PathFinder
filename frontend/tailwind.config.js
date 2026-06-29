@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   // Update the content paths to include all your components
   content: [
     "./app/**/*.{js,jsx,ts,tsx}",

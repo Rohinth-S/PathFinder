@@ -186,7 +186,7 @@ export default function QueryPage() {
             onPress={() => setIntent('myself')}
           >
             <Text className={`font-semibold text-sm ${intent === 'myself' ? 'text-brand-white' : 'text-brand-slate'}`}>
-              🎯  For Myself
+              For Myself
             </Text>
           </TouchableOpacity>
         </View>
@@ -205,13 +205,13 @@ export default function QueryPage() {
           />
           <View className="justify-center items-center w-14 h-14 mr-1">
             {isRecording && (
-              <Animated.View 
-                className="absolute w-12 h-12 rounded-full border-2" 
-                style={{ 
-                  backgroundColor: 'rgba(208, 103, 87, 0.15)', 
+              <Animated.View
+                className="absolute w-12 h-12 rounded-full border-2"
+                style={{
+                  backgroundColor: 'rgba(208, 103, 87, 0.15)',
                   borderColor: 'rgba(208, 103, 87, 0.3)',
-                  transform: [{ scale: pulseAnim }] 
-                }} 
+                  transform: [{ scale: pulseAnim }]
+                }}
               />
             )}
             <TouchableOpacity
