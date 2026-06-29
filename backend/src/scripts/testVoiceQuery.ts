@@ -11,10 +11,8 @@ async function main() {
     console.error(
       `Audio file "${audioFile}" not found.`
     );
-
     process.exit(1);
   }
-
 
   console.log(`Reading audio file: ${audioPath}`);
   const audioBuffer = fs.readFileSync(audioPath);

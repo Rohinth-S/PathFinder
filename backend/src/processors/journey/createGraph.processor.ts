@@ -22,6 +22,7 @@ function userParams(user: JourneyUser) {
     reputationScore: user.reputationScore ?? 0,
     flagCount: user.flagCount ?? 0,
     isFlagged: user.isFlagged ?? false,
+    email: nullIfUndefined(user.email),
   };
 }
 
@@ -74,7 +75,9 @@ async function upsertUser(tx: Transaction, user: JourneyUser): Promise<void> {
     ON CREATE SET
       u.createdAt = datetime()
     SET
+      u.updatedAt = datetime(),
       u.clerkId = $clerkId,
+      u.email = $email,
       u.preferredLanguage = $preferredLanguage,
       u.reputationScore = $reputationScore,
       u.flagCount = $flagCount,

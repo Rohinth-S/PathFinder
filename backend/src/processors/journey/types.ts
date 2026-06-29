@@ -36,6 +36,7 @@ export interface JourneyUser {
   reputationScore?: number;
   flagCount?: number;
   isFlagged?: boolean;
+  email?: string | null;
 }
 
 export interface JourneyGoal {
