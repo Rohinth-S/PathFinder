@@ -8,6 +8,8 @@ export interface QueryResponse {
   aggregatedContext?: string;
 }
 
+import * as FileSystem from 'expo-file-system';
+
 export async function submitQuery(
   token: string,
   searchText?: string | null,
@@ -16,19 +18,17 @@ export async function submitQuery(
   let response: Response;
 
   if (audioUri) {
-    const formData = new FormData();
-    formData.append('audio', {
-      uri: audioUri,
-      name: 'recording.m4a',
-      type: 'audio/m4a',
-    } as any);
+    const base64Audio = await FileSystem.readAsStringAsync(audioUri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
 
     response = await fetch(`${API_BASE_URL}/query/query`, {
       method: 'POST',
-      body: formData,
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ audio: base64Audio }),
     });
   } else if (searchText) {
     response = await fetch(`${API_BASE_URL}/query/query`, {

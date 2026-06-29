@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  Animated, Switch, Alert, ActivityIndicator,
+  Animated, Switch, Alert, ActivityIndicator, KeyboardAvoidingView, TextInput, Platform
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
+import { useAuth } from '@clerk/clerk-expo';
+import { syncUser } from '../api/auth.api';
+import { translateInsights, generateSpeechUri } from '../api/output.api';
+import { submitQuery } from '../api/query.api';
 import { DecisionAtlasBackendResponse, BackendQueryResponse, UserTrajectory, TimelineEvent, AiInsights, CommonPattern } from '@/types/schema';
 import { NODE_COLORS, NODE_ICONS, CATEGORY_COLORS } from '@/constants/colors';
 import { BRAND_COLORS } from '../constants/colors';
@@ -197,6 +201,15 @@ export default function ResultsPage() {
   const router = useRouter();
   const params = useLocalSearchParams<{ payload?: string }>();
   const [loading, setLoading] = useState(true);
+  
+  const { getToken } = useAuth();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translatedInsight, setTranslatedInsight] = useState<string | null>(null);
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [preferredLang, setPreferredLang] = useState('en');
+  const [followUpQuery, setFollowUpQuery] = useState('');
+  const [isSubmittingFollowUp, setIsSubmittingFollowUp] = useState(false);
 
   // Parse live data
   let data: DecisionAtlasBackendResponse;
@@ -218,19 +231,186 @@ export default function ResultsPage() {
     data = MOCK;
   }
 
-  useEffect(() => { setTimeout(() => setLoading(false), 800); }, []);
+  useEffect(() => {
+    async function init() {
+      try {
+        const token = await getToken();
+        if (token) {
+          const user = await syncUser(token);
+          if (user.preferredLanguage) {
+            setPreferredLang(user.preferredLanguage);
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to sync user for language preference", err);
+      }
+      setLoading(false);
+    }
+    init();
+  }, [getToken]);
 
   if (loading) return <LoadingSkeleton />;
 
   const queryText = data.structuredQuery?.semanticQuery || data.structuredQuery?.queryType || 'Search Results';
+  const queryType = data.structuredQuery?.queryType || 'exploration';
+  const isRecommendation = queryType === 'recommendation';
+  const isSimilarJourney = queryType === 'similar_journey';
+
   const { journeyStatistics: stats, aiInsights, timelineFeed, commonPatterns } = data.aggregatedContext;
 
-  // Extract top products for the summary card (we pick the top 4 patterns as a proxy if we don't have explicit products)
   const topProducts = commonPatterns?.slice(0, 4) || [];
-  const topDecisions = commonPatterns?.slice(1, 4) || []; // Just for UI variety if needed
+  const topDecisions = commonPatterns?.slice(1, 4) || [];
+
+  async function handleFollowUp() {
+    if (!followUpQuery.trim()) return;
+    setIsSubmittingFollowUp(true);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      const result = await submitQuery(token, followUpQuery);
+      router.push({
+        pathname: '/results',
+        params: { payload: JSON.stringify(result) },
+      });
+      setFollowUpQuery('');
+    } catch (err) {
+      console.warn("Failed follow-up", err);
+      Alert.alert("Error", "Could not submit follow-up query.");
+    } finally {
+      setIsSubmittingFollowUp(false);
+    }
+  }
+
+  const renderProducts = () => topProducts.length > 0 && (
+    <View key="products" style={s.section}>
+      <View style={s.sectionHeader}>
+        <Text style={s.sectionIcon}>✨</Text>
+        <Text style={s.sectionTitle}>{isSimilarJourney ? "Common Patterns" : "Top Pre-PMF Products"}</Text>
+        <View style={{ flex: 1 }} />
+        <Text style={s.graphIcon}>📊</Text>
+      </View>
+      <View style={s.productsGrid}>
+        {topProducts.map((p, i) => {
+          const colorKeys = Object.keys(CATEGORY_COLORS);
+          const colorTheme = CATEGORY_COLORS[colorKeys[i % colorKeys.length] as keyof typeof CATEGORY_COLORS];
+          return (
+            <View key={i} style={s.productItem}>
+              <View style={s.productIconRow}>
+                <View style={[s.catIconWrapper, { backgroundColor: colorTheme.iconBg }]}>
+                  <Text style={[s.catIconText, { color: colorTheme.iconText }]}>{colorTheme.icon}</Text>
+                </View>
+                <Text style={s.productPct}>{p.percentage || getPseudoPct(p.title, 10, 50)}%</Text>
+              </View>
+              <Text style={s.productTitle} numberOfLines={2}>{p.title}</Text>
+            </View>
+          );
+        })}
+      </View>
+    </View>
+  );
+
+  const renderTimelines = () => timelineFeed?.map((userJourney, index) => (
+    <View key={`timeline-${index}`} style={s.section}>
+      <Text style={s.journeyHeaderTitle}>{isSimilarJourney ? "Similar Founder" : "Journey Timeline"} <Text style={{fontWeight: '400', color: BRAND_COLORS.slate}}>({userJourney.username})</Text></Text>
+      <View style={s.timelineWrapper}>
+        {userJourney.timeline.map((event, i) => (
+          <TimelineNodeItem 
+            key={event.id} 
+            event={event} 
+            isLast={i === userJourney.timeline.length - 1} 
+          />
+        ))}
+      </View>
+    </View>
+  ));
+
+  const renderDecisions = () => topDecisions.length > 0 && (
+    <View key="decisions" style={s.section}>
+      <View style={s.decisionsHeader}>
+        <Text style={s.journeyHeaderTitle}>Common Decisions</Text>
+        <Text style={s.decisionsTopText}>Top 3</Text>
+      </View>
+      <View style={s.decisionsList}>
+        {topDecisions.map((d, i) => (
+          <View key={i} style={s.decisionRow}>
+            <View style={s.decisionIconWrapper}><Text style={s.decisionIcon}>◆</Text></View>
+            <Text style={s.decisionText}>{d.description}</Text>
+            <Text style={s.decisionPct}>{d.percentage || getPseudoPct(d.description, 20, 70)}%</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+
+  const renderAIInsight = () => aiInsights && (
+    <View key="aiInsight" style={[s.aiCard, { marginBottom: 16 }]}>
+      <View style={s.aiCardHeader}>
+        <View style={{flexDirection: 'row', alignItems: 'center', gap: 6}}>
+          <Text style={s.aiCardIcon}>✨</Text>
+          <Text style={s.aiCardTitle}>AI Insight</Text>
+        </View>
+        <View style={{flexDirection: 'row', gap: 12}}>
+          <TouchableOpacity 
+            onPress={async () => {
+              if (isPlaying) {
+                sound?.stopAsync();
+                setIsPlaying(false);
+                return;
+              }
+              setIsPlaying(true);
+              try {
+                const token = await getToken();
+                if (!token) return;
+                const uri = await generateSpeechUri(token, aiInsights, preferredLang);
+                const { sound: newSound } = await Audio.Sound.createAsync({ uri });
+                setSound(newSound);
+                await newSound.playAsync();
+                newSound.setOnPlaybackStatusUpdate((status) => {
+                  if (status.isLoaded && status.didJustFinish) {
+                    setIsPlaying(false);
+                  }
+                });
+              } catch (err) {
+                console.warn(err);
+                setIsPlaying(false);
+              }
+            }}
+            disabled={isTranslating}
+          >
+            {isPlaying ? <Text style={{fontSize: 20}}>⏹️</Text> : <Text style={{fontSize: 20}}>🔊</Text>}
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={async () => {
+              setIsTranslating(true);
+              try {
+                const token = await getToken();
+                if (!token) return;
+                const res = await translateInsights(token, aiInsights, preferredLang);
+                setTranslatedInsight(res.translatedAiInsights.directAnswer || res.translatedAiInsights.actionableTakeaway);
+              } catch (err) {
+                console.warn(err);
+              } finally {
+                setIsTranslating(false);
+              }
+            }}
+            disabled={isTranslating || isPlaying}
+          >
+            {isTranslating ? <ActivityIndicator color={BRAND_COLORS.navy} size="small" /> : <Text style={{fontSize: 20}}>🌐</Text>}
+          </TouchableOpacity>
+        </View>
+      </View>
+      <Text style={s.aiCardText}>{translatedInsight || aiInsights.directAnswer || aiInsights.actionableTakeaway}</Text>
+      <Text style={s.brainIcon}>🧠</Text>
+    </View>
+  );
 
   return (
-    <View style={s.container}>
+    <KeyboardAvoidingView 
+      style={s.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={60}
+    >
       {/* Header */}
       <View style={s.headerContainer}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
@@ -238,90 +418,60 @@ export default function ResultsPage() {
         </TouchableOpacity>
         <View style={{ flex: 1, paddingHorizontal: 12 }}>
           <Text style={s.headerTitle} numberOfLines={2}>{queryText}</Text>
-          <Text style={s.headerSubtitle}>Analyzed {stats?.usersAnalyzed || 0} Founders</Text>
+          <Text style={s.headerSubtitle}>{isSimilarJourney ? `Found ${stats?.usersAnalyzed || 0} Similar Founders` : `Analyzed ${stats?.usersAnalyzed || 0} Founders`}</Text>
         </View>
       </View>
 
       <ScrollView contentContainerStyle={s.content}>
-        
-        {/* Product Summary Card */}
-        {topProducts.length > 0 && (
-          <View style={s.section}>
-            <View style={s.sectionHeader}>
-              <Text style={s.sectionIcon}>✨</Text>
-              <Text style={s.sectionTitle}>Top Pre-PMF Products</Text>
-              <View style={{ flex: 1 }} />
-              <Text style={s.graphIcon}>📊</Text>
-            </View>
-            <View style={s.productsGrid}>
-              {topProducts.map((p, i) => {
-                const colorKeys = Object.keys(CATEGORY_COLORS);
-                const colorTheme = CATEGORY_COLORS[colorKeys[i % colorKeys.length] as keyof typeof CATEGORY_COLORS];
-                return (
-                  <View key={i} style={s.productItem}>
-                    <View style={s.productIconRow}>
-                      <View style={[s.catIconWrapper, { backgroundColor: colorTheme.iconBg }]}>
-                        <Text style={[s.catIconText, { color: colorTheme.iconText }]}>{colorTheme.icon}</Text>
-                      </View>
-                      <Text style={s.productPct}>{p.percentage || getPseudoPct(p.title, 10, 50)}%</Text>
-                    </View>
-                    <Text style={s.productTitle} numberOfLines={2}>{p.title}</Text>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
+        {isRecommendation ? (
+          <>
+            {renderAIInsight()}
+            {renderProducts()}
+            {renderTimelines()}
+            {renderDecisions()}
+          </>
+        ) : isSimilarJourney ? (
+          <>
+            {renderTimelines()}
+            {renderAIInsight()}
+            {renderProducts()}
+            {renderDecisions()}
+          </>
+        ) : (
+          <>
+            {renderProducts()}
+            {renderTimelines()}
+            {renderDecisions()}
+            {renderAIInsight()}
+          </>
         )}
-
-        {/* Journey Timelines */}
-        {timelineFeed?.map((userJourney, index) => (
-          <View key={index} style={s.section}>
-            <Text style={s.journeyHeaderTitle}>Journey Timeline <Text style={{fontWeight: '400', color: BRAND_COLORS.slate}}>({userJourney.username})</Text></Text>
-            <View style={s.timelineWrapper}>
-              {userJourney.timeline.map((event, i) => (
-                <TimelineNodeItem 
-                  key={event.id} 
-                  event={event} 
-                  isLast={i === userJourney.timeline.length - 1} 
-                />
-              ))}
-            </View>
-          </View>
-        ))}
-
-        {/* Common Decisions */}
-        {topDecisions.length > 0 && (
-          <View style={s.section}>
-            <View style={s.decisionsHeader}>
-              <Text style={s.journeyHeaderTitle}>Common Decisions</Text>
-              <Text style={s.decisionsTopText}>Top 3</Text>
-            </View>
-            <View style={s.decisionsList}>
-              {topDecisions.map((d, i) => (
-                <View key={i} style={s.decisionRow}>
-                  <View style={s.decisionIconWrapper}><Text style={s.decisionIcon}>◆</Text></View>
-                  <Text style={s.decisionText}>{d.description}</Text>
-                  <Text style={s.decisionPct}>{d.percentage || getPseudoPct(d.description, 20, 70)}%</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* AI Insight */}
-        {aiInsights && (
-          <View style={s.aiCard}>
-            <View style={s.aiCardHeader}>
-              <Text style={s.aiCardIcon}>✨</Text>
-              <Text style={s.aiCardTitle}>AI Insight</Text>
-            </View>
-            <Text style={s.aiCardText}>{aiInsights.directAnswer || aiInsights.actionableTakeaway}</Text>
-            <Text style={s.brainIcon}>🧠</Text>
-          </View>
-        )}
-
       </ScrollView>
-    </View>
+
+      {/* Follow-up Question Interface */}
+      <View style={s.followUpContainer}>
+        <TextInput
+          style={s.followUpInput}
+          placeholder="Ask a follow-up question..."
+          placeholderTextColor={BRAND_COLORS.slate}
+          value={followUpQuery}
+          onChangeText={setFollowUpQuery}
+          onSubmitEditing={handleFollowUp}
+          returnKeyType="send"
+          editable={!isSubmittingFollowUp}
+        />
+        <TouchableOpacity 
+          style={s.followUpBtn} 
+          onPress={handleFollowUp}
+          disabled={isSubmittingFollowUp || !followUpQuery.trim()}
+        >
+          {isSubmittingFollowUp ? (
+            <ActivityIndicator color={BRAND_COLORS.white} size="small" />
+          ) : (
+            <Text style={s.followUpBtnText}>➤</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -395,4 +545,9 @@ const s = StyleSheet.create({
   aiCardTitle: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.navy },
   aiCardText: { fontSize: 15, color: BRAND_COLORS.navy, lineHeight: 22, fontWeight: '600', paddingRight: 40 },
   brainIcon: { position: 'absolute', bottom: -10, right: -10, fontSize: 60, opacity: 0.1 },
+
+  followUpContainer: { flexDirection: 'row', alignItems: 'center', padding: 12, backgroundColor: BRAND_COLORS.white, borderTopWidth: 1, borderTopColor: BRAND_COLORS.border },
+  followUpInput: { flex: 1, backgroundColor: BRAND_COLORS.cream, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, fontSize: 15, color: BRAND_COLORS.navy },
+  followUpBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: BRAND_COLORS.teal, justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
+  followUpBtnText: { color: BRAND_COLORS.white, fontSize: 18, paddingLeft: 2 },
 });
