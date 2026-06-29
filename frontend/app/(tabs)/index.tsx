@@ -5,6 +5,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Audio } from 'expo-av';
+import { useAuth } from '@clerk/clerk-expo';
+import { submitQuery } from '../../api/query.api';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
@@ -12,6 +14,7 @@ const MOCK_TRANSCRIPT = "I'm a CS grad, want to build a fintech startup, should 
 
 export default function QueryPage() {
   const router = useRouter();
+  const { getToken } = useAuth();
   const [query, setQuery] = useState('');
   const [intent, setIntent] = useState<'exploring' | 'myself'>('exploring');
   const [isRecording, setIsRecording] = useState(false);
@@ -100,36 +103,10 @@ export default function QueryPage() {
 
     setIsSearching(true);
     try {
-      let response: Response;
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
 
-      if (audioUri) {
-        // Audio submission — multipart/form-data
-        const formData = new FormData();
-        formData.append('audio', {
-          uri: audioUri,
-          name: 'recording.m4a',
-          type: 'audio/m4a',
-        } as any);
-
-        response = await fetch(`${API_BASE}/query`, {
-          method: 'POST',
-          body: formData,
-          // NOTE: Do NOT set Content-Type — fetch sets multipart boundary automatically
-        });
-      } else {
-        // Text submission — JSON
-        response = await fetch(`${API_BASE}/query`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: text }),
-        });
-      }
-
-      if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
-      }
-
-      const result = await response.json();
+      const result = await submitQuery(token, text, audioUri);
 
       // If the backend transcribed audio, show it
       if (result.transcribed && result.query) {

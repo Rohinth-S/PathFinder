@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Share } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
+import { updateProfile } from '../../api/auth.api';
 
 const MOCK_USER = {
   reputationScore: 72,
@@ -9,7 +10,7 @@ const MOCK_USER = {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { signOut } = useAuth();
+  const { signOut, getToken } = useAuth();
   
   const [username, setUsername] = useState('rohinth-s');
   const [languageCode, setLanguageCode] = useState('en');
@@ -25,11 +26,22 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     setIsSubmitting(true);
-    // Simulating save to backend
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+
+      const user = await updateProfile(token, {
+        username,
+        preferredLanguage: languageCode
+      });
+      setUsername(user.username ?? username);
+      setLanguageCode(user.preferredLanguage ?? languageCode);
       setIsEditing(false);
-    }, 1000);
+    } catch (error) {
+      console.warn("Failed to update profile", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleShare = async () => {
