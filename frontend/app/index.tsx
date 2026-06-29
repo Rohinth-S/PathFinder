@@ -2,26 +2,37 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
+import { initializeUser } from '@/services/auth.service';
 
 export default function LandingPage() {
   const router = useRouter();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, getToken } = useAuth();
   
   // startOAuthFlow allows us to use Google login
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
 
   useEffect(() => {
     // If the user is already signed in, redirect them to the profile page
-    if (isSignedIn) {
-      router.replace('/dashboard');
+    async function initialize() {
+      if (!isSignedIn) return;
+        const token = await getToken();
+        if (!token) return;
+        const user = await initializeUser(token);
+        if (user.username) {
+            router.replace("/dashboard");
+        } else {
+            router.replace("/profile");
+        }
     }
-  }, [isSignedIn]);
+
+    initialize();
+  },[isSignedIn, getToken, router]);
 
   const onPressGoogle = async () => {
     try {
       const { createdSessionId, setActive } = await startOAuthFlow();
       if (createdSessionId && setActive) {
-        setActive({ session: createdSessionId });
+        await setActive({ session: createdSessionId });
         // After setting active session, the useEffect above will trigger the redirect
       }
     } catch (err) {
