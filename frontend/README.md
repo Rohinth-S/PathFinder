@@ -92,5 +92,6 @@ frontend/
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/query` | POST | Send text query (JSON) or voice audio (FormData) |
-| `/api/translate` | POST | Translate AI insights to user's preferred language |
-| `/api/speech` | POST | Generate text-to-speech audio for AI summary |
+| `/api/output/translate` | POST | Translate AI insights to user's preferred language |
+| `/api/output/speech` | POST | Generate text-to-speech audio for AI summary |
+| `/api/journey/extract` | POST | Extract structured user journey from natural language |
