@@ -21,22 +21,20 @@ const MOCK_USER = {
   reputationScore: 72,
 };
 
-// Visible grid pattern
-function GridBackground() {
-  const lines = [];
-  // Vertical lines
-  for (let i = 0; i < 8; i++) {
-    lines.push(
-      <View key={`v${i}`} style={{ position: 'absolute', top: 0, bottom: 0, left: `${(i + 1) * 12.5}%`, width: 1, backgroundColor: C.gridLine }} />
-    );
-  }
-  // Horizontal lines
-  for (let i = 0; i < 16; i++) {
-    lines.push(
-      <View key={`h${i}`} style={{ position: 'absolute', left: 0, right: 0, top: i * 50, height: 1, backgroundColor: C.gridLine }} />
-    );
-  }
-  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>{lines}</View>;
+// Soft spotlight glow
+function SoftGlow({ top, left, right, bottom, size, opacity = 0.04 }: any) {
+  return (
+    <View style={{
+      position: 'absolute',
+      top, left, right, bottom,
+      width: size, height: size,
+      borderRadius: size / 2,
+      backgroundColor: '#ffffff',
+      opacity,
+      // @ts-ignore - web specific styling
+      filter: 'blur(100px)',
+    }} />
+  );
 }
 
 
@@ -83,10 +81,9 @@ export default function ProfilePage() {
 
         {/* ── Header ── */}
         <View style={{ paddingTop: 64, paddingBottom: 48, alignItems: 'center', overflow: 'hidden', backgroundColor: C.bg }}>
-          <GridBackground />
           
-          {/* Decorative ring */}
-          <View style={{ position: 'absolute', top: -80, right: -60, width: 240, height: 240, borderRadius: 120, borderWidth: 1, borderColor: C.accent, opacity: 0.8 }} />
+          {/* Subtle glow behind avatar */}
+          <SoftGlow size={400} top={-100} opacity={0.03} />
 
           {/* Avatar */}
           <View style={{
@@ -224,8 +221,7 @@ export default function ProfilePage() {
         <View style={{ paddingHorizontal: 24, paddingVertical: 48, gap: 14, backgroundColor: C.bg, overflow: 'hidden' }}>
           <View style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
 
-          {/* Decorative circle */}
-          <View style={{ position: 'absolute', bottom: -40, left: -60, width: 220, height: 220, borderRadius: 110, borderWidth: 1, borderColor: C.accent, opacity: 0.8 }} />
+          <SoftGlow size={500} bottom={-200} left={-150} opacity={0.02} />
           
           <TouchableOpacity
             onPress={() => router.push('/share-journey')}

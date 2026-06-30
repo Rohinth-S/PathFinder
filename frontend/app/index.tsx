@@ -23,22 +23,20 @@ const FEATURES = [
   { num: '03', title: 'Community', desc: 'Real people. Real stories. No influencers — just verified journeys you can actually learn from.' },
 ];
 
-// Visible grid pattern
-function GridBackground() {
-  const lines = [];
-  // Vertical lines
-  for (let i = 0; i < 8; i++) {
-    lines.push(
-      <View key={`v${i}`} style={{ position: 'absolute', top: 0, bottom: 0, left: `${(i + 1) * 12.5}%`, width: 1, backgroundColor: C.gridLine }} />
-    );
-  }
-  // Horizontal lines
-  for (let i = 0; i < 16; i++) {
-    lines.push(
-      <View key={`h${i}`} style={{ position: 'absolute', left: 0, right: 0, top: i * 50, height: 1, backgroundColor: C.gridLine }} />
-    );
-  }
-  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>{lines}</View>;
+// Soft spotlight glow (uses web-only blur filter for smooth gradients)
+function SoftGlow({ top, left, right, bottom, size, opacity = 0.04 }: any) {
+  return (
+    <View style={{
+      position: 'absolute',
+      top, left, right, bottom,
+      width: size, height: size,
+      borderRadius: size / 2,
+      backgroundColor: '#ffffff',
+      opacity,
+      // @ts-ignore - web specific styling
+      filter: 'blur(100px)',
+    }} />
+  );
 }
 
 export default function LandingPage() {
@@ -82,17 +80,10 @@ export default function LandingPage() {
 
         {/* ── HERO ── */}
         <View style={{ minHeight: 720, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 100, overflow: 'hidden', backgroundColor: C.bg }}>
-          {/* Grid texture */}
-          <GridBackground />
-
-          {/* Soft glow */}
-          <View style={{
-            position: 'absolute', top: '20%', alignSelf: 'center',
-            width: 400, height: 400, borderRadius: 200,
-            backgroundColor: '#ffffff', opacity: 0.03,
-          }} />
-
-          {/* Content */}
+          {/* Soft background glows */}
+          <SoftGlow size={600} top={-150} left={-200} opacity={0.03} />
+          <SoftGlow size={500} top={400} right={-150} opacity={0.02} />
+          
           <Text style={{ color: C.dimGray, fontSize: 13, fontWeight: '500', letterSpacing: 6, textTransform: 'uppercase', marginBottom: 48, zIndex: 1 }}>
             PathFinder
           </Text>
@@ -146,8 +137,7 @@ export default function LandingPage() {
         {/* ── HOW IT WORKS ── */}
         <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.bg, overflow: 'hidden' }}>
           
-          {/* Decorative circle — clearly visible */}
-          <View style={{ position: 'absolute', top: -60, right: -80, width: 280, height: 280, borderRadius: 140, borderWidth: 1, borderColor: C.accent }} />
+          <SoftGlow size={700} top={200} left={-300} opacity={0.02} />
 
           <Text style={{ color: C.dimGray, fontSize: 12, fontWeight: '600', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 24 }}>
             How it works
@@ -205,8 +195,8 @@ export default function LandingPage() {
 
         {/* ── FINAL CTA ── */}
         <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.bg, overflow: 'hidden' }}>
-          {/* Decorative circle */}
-          <View style={{ position: 'absolute', bottom: -40, left: -60, width: 220, height: 220, borderRadius: 110, borderWidth: 1, borderColor: C.accent }} />
+          
+          <SoftGlow size={500} bottom={-200} right={-100} opacity={0.03} />
 
           <Text style={{ color: C.white, fontSize: 36, fontWeight: '700', textAlign: 'center', lineHeight: 46, letterSpacing: -1, marginBottom: 20, zIndex: 1 }}>
             Ready?
