@@ -8,6 +8,8 @@ export interface QueryResponse {
   aggregatedContext?: string;
 }
 
+import * as FileSystem from 'expo-file-system';
+
 export async function submitQuery(
   token: string,
   searchText?: string | null,
@@ -23,7 +25,7 @@ export async function submitQuery(
       type: 'audio/m4a',
     } as any);
 
-    response = await fetch(`${API_BASE_URL}/query/query`, {
+    response = await fetch(`${API_BASE_URL}/query`, {
       method: 'POST',
       body: formData,
       headers: {
@@ -31,7 +33,7 @@ export async function submitQuery(
       },
     });
   } else if (searchText) {
-    response = await fetch(`${API_BASE_URL}/query/query`, {
+    response = await fetch(`${API_BASE_URL}/query`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
