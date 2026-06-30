@@ -82,17 +82,17 @@ export default function CommunityPage() {
   };
 
   const renderUserCard = ({ item }: { item: SearchCommunityUser }) => (
-    <TouchableOpacity
-      style={s.userCard}
-      onPress={() => router.push(`/u/${item.username}`)}
-    >
-      <View style={s.cardHeader}>
-        <View style={s.avatar}>
-          <Text style={s.avatarText}>{item.username[0].toUpperCase()}</Text>
-        </View>
-        <View style={s.userInfo}>
-          <Text style={s.username}>@{item.username}</Text>
-          <View style={s.repRow}>
+      <TouchableOpacity
+        style={s.userCard}
+        onPress={() => router.push(`/u/${item.username || 'unknown'}`)}
+      >
+        <View style={s.cardHeader}>
+          <View style={s.avatar}>
+            <Text style={s.avatarText}>{item.username ? item.username[0].toUpperCase() : '?'}</Text>
+          </View>
+          <View style={s.userInfo}>
+            <Text style={s.username}>@{item.username || 'unknown'}</Text>
+            <View style={s.repRow}>
             <Text style={s.repStar}>⭐</Text>
             <Text style={s.repValue}>{item.reputationScore}</Text>
             <Text style={s.expCount}> • {item.experienceCount} experiences</Text>
