@@ -49,7 +49,7 @@ export default function FullJourneyPage() {
     <View style={st.wrapper}>
       {/* Header */}
       <View style={st.header}>
-        <TouchableOpacity onPress={() => router.back()}><Text style={st.back}>←</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}><Text style={st.back}>←</Text></TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={st.headerTitle}>Full Journey</Text>
           <Text style={st.headerSub}>Journey 1 of 18</Text>

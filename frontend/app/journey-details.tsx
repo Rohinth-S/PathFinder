@@ -50,7 +50,7 @@ export default function JourneyDetailsPage() {
       <ScrollView style={s.container} contentContainerStyle={s.content}>
         {/* Header Bar */}
         <View style={s.headerBar}>
-          <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
+          <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} hitSlop={12}>
             <Text style={s.backArrow}>←</Text>
           </TouchableOpacity>
           <Text style={s.headerTitle}>Journey Details</Text>
@@ -147,7 +147,7 @@ export default function JourneyDetailsPage() {
 
       {/* Sticky Footer */}
       <View style={s.footer}>
-        <TouchableOpacity style={s.footerBtn} onPress={() => router.back()}>
+        <TouchableOpacity style={s.footerBtn} onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}>
           <Text style={s.footerBtnText}>View Next Step  →</Text>
         </TouchableOpacity>
       </View>

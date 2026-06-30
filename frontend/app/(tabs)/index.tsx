@@ -138,7 +138,7 @@ export default function QueryPage() {
   return (
     <View className="flex-1 bg-brand-cream">
       <View className="flex-row items-center justify-between p-4 pt-5">
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}>
           <Text className="text-2xl text-brand-navy">←</Text>
         </TouchableOpacity>
         <Text className="text-lg font-bold text-brand-navy">Ask PathFinder</Text>
