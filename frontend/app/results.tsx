@@ -413,7 +413,7 @@ export default function ResultsPage() {
     >
       {/* Header */}
       <View style={s.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
+        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={s.backBtn}>
           <Text style={s.backIcon}>←</Text>
         </TouchableOpacity>
         <View style={{ flex: 1, paddingHorizontal: 12 }}>

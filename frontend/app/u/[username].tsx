@@ -71,7 +71,7 @@ export default function PublicProfilePage() {
     <ScrollView style={s.container} contentContainerStyle={s.content}>
       {/* Header */}
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}>
           <Text style={s.backArrow}>←</Text>
         </TouchableOpacity>
         <Text style={s.headerTitle}>Public Profile</Text>
