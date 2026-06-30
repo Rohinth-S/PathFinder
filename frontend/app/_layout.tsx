@@ -40,8 +40,11 @@ export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
-        <View className="flex-1 bg-black">
-          <View className="flex-1 w-full">
+        <View className="flex-1 bg-[#E8ECF2] items-center">
+          <View 
+            className="flex-1 w-full web:max-w-[480px] web:border-x web:border-[#D1D5DB]"
+            style={Platform.OS === 'web' ? { shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 20 } : {}}
+          >
             <Slot />
           </View>
         </View>

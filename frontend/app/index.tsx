@@ -27,9 +27,29 @@ const FEATURES = [
 function GlowBackground() {
   return (
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
-      <View style={{ position: 'absolute', top: -200, left: -200, width: 600, height: 600, borderRadius: 300, backgroundColor: C.white, opacity: 0.02 }} />
-      <View style={{ position: 'absolute', bottom: -300, right: -100, width: 800, height: 800, borderRadius: 400, backgroundColor: C.white, opacity: 0.015 }} />
-      <View style={{ position: 'absolute', top: '30%', left: '30%', width: 500, height: 500, borderRadius: 250, backgroundColor: C.white, opacity: 0.01 }} />
+      <View style={{ position: 'absolute', top: -150, left: -150, width: 500, height: 500, borderRadius: 250, backgroundColor: C.white, opacity: 0.04 }} />
+      <View style={{ position: 'absolute', bottom: -200, right: -100, width: 600, height: 600, borderRadius: 300, backgroundColor: C.white, opacity: 0.03 }} />
+      <View style={{ position: 'absolute', top: '30%', left: '30%', width: 500, height: 500, borderRadius: 250, backgroundColor: C.white, opacity: 0.02 }} />
+    </View>
+  );
+}
+
+// Minimal floating elements to break up empty space in Hero
+function HeroDecorations() {
+  return (
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
+      {/* Tiny crosshairs */}
+      <View style={{ position: 'absolute', top: 120, left: '15%' }}><Text style={{ color: C.accent, fontSize: 16, fontWeight: '300' }}>+</Text></View>
+      <View style={{ position: 'absolute', top: 180, right: '15%' }}><Text style={{ color: C.accent, fontSize: 16, fontWeight: '300' }}>+</Text></View>
+      <View style={{ position: 'absolute', bottom: 150, left: '20%' }}><Text style={{ color: C.accent, fontSize: 16, fontWeight: '300' }}>+</Text></View>
+      <View style={{ position: 'absolute', bottom: 250, right: '25%' }}><Text style={{ color: C.accent, fontSize: 16, fontWeight: '300' }}>+</Text></View>
+      
+      {/* Decorative outline rings */}
+      <View style={{ position: 'absolute', top: -50, right: -150, width: 400, height: 400, borderRadius: 200, borderWidth: 1, borderColor: C.border }} />
+      <View style={{ position: 'absolute', bottom: -100, left: -150, width: 500, height: 500, borderRadius: 250, borderWidth: 1, borderColor: C.border, borderStyle: 'dashed' }} />
+      
+      {/* Vertical subtle line */}
+      <View style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 1, backgroundColor: C.white, opacity: 0.03 }} />
     </View>
   );
 }
@@ -101,6 +121,7 @@ export default function LandingPage() {
         <View style={{ minHeight: 720, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 100, overflow: 'hidden', backgroundColor: C.bg }}>
           {/* Elegant Glow texture */}
           <GlowBackground />
+          <HeroDecorations />
 
           {/* Content */}
           <Text style={{ color: C.dimGray, fontSize: 13, fontWeight: '500', letterSpacing: 6, textTransform: 'uppercase', marginBottom: 48, zIndex: 1 }}>
