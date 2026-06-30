@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-na
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
 import { initializeUser } from '@/services/auth.service';
-import AmbientBackground from '../components/AmbientBackground';
 
 const C = {
   bg: '#050505',
@@ -24,20 +23,39 @@ const FEATURES = [
   { num: '03', title: 'Community', desc: 'Real people. Real stories. No influencers — just verified journeys you can actually learn from.' },
 ];
 
-// Soft spotlight glow (uses web-only blur filter for smooth gradients)
-function SoftGlow({ top, left, right, bottom, size, opacity = 0.04 }: any) {
+// Subtle Glowing Orbs (Aurora effect)
+function GlowBackground() {
   return (
-    <View style={{
-      position: 'absolute',
-      top, left, right, bottom,
-      width: size, height: size,
-      borderRadius: size / 2,
-      backgroundColor: '#ffffff',
-      opacity,
-      // @ts-ignore - web specific styling
-      filter: 'blur(100px)',
-    }} />
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
+      <View style={{ position: 'absolute', top: -200, left: -200, width: 600, height: 600, borderRadius: 300, backgroundColor: C.white, opacity: 0.02 }} />
+      <View style={{ position: 'absolute', bottom: -300, right: -100, width: 800, height: 800, borderRadius: 400, backgroundColor: C.white, opacity: 0.015 }} />
+      <View style={{ position: 'absolute', top: '30%', left: '30%', width: 500, height: 500, borderRadius: 250, backgroundColor: C.white, opacity: 0.01 }} />
+    </View>
   );
+}
+
+// Elegant widely-spaced dot matrix
+function DotBackground() {
+  const dots = [];
+  for (let row = 0; row < 15; row++) {
+    for (let col = 0; col < 10; col++) {
+      dots.push(
+        <View key={`d${row}-${col}`} style={{ position: 'absolute', top: row * 60 + 30, left: `${col * 10 + 5}%`, width: 3, height: 3, borderRadius: 1.5, backgroundColor: C.accent }} />
+      );
+    }
+  }
+  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>{dots}</View>;
+}
+
+// Diagonal hash lines
+function DiagonalLinesBackground() {
+  const lines = [];
+  for (let i = 0; i < 60; i++) {
+    lines.push(
+      <View key={`dl${i}`} style={{ position: 'absolute', top: -500 + (i * 30), left: -200, width: '200%', height: 1, backgroundColor: C.border, transform: [{ rotate: '-30deg' }], opacity: 0.8 }} />
+    );
+  }
+  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>{lines}</View>;
 }
 
 export default function LandingPage() {
@@ -77,15 +95,14 @@ export default function LandingPage() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
-      <AmbientBackground />
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
         {/* ── HERO ── */}
-        <View style={{ minHeight: 720, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 100, overflow: 'hidden' }}>
-          {/* Soft background glows */}
-          <SoftGlow size={600} top={-150} left={-200} opacity={0.03} />
-          <SoftGlow size={500} top={400} right={-150} opacity={0.02} />
-          
+        <View style={{ minHeight: 720, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 100, overflow: 'hidden', backgroundColor: C.bg }}>
+          {/* Elegant Glow texture */}
+          <GlowBackground />
+
+          {/* Content */}
           <Text style={{ color: C.dimGray, fontSize: 13, fontWeight: '500', letterSpacing: 6, textTransform: 'uppercase', marginBottom: 48, zIndex: 1 }}>
             PathFinder
           </Text>
@@ -117,8 +134,9 @@ export default function LandingPage() {
 
 
         {/* ── THE PROBLEM ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.surface }}>
-          <View style={{ position: 'absolute', top: 48, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.surface, overflow: 'hidden' }}>
+          <DiagonalLinesBackground />
+          <View style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
 
           <Text style={{ color: C.dimGray, fontSize: 12, fontWeight: '600', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 24 }}>
             The problem
@@ -137,9 +155,10 @@ export default function LandingPage() {
 
 
         {/* ── HOW IT WORKS ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', overflow: 'hidden' }}>
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.bg, overflow: 'hidden' }}>
           
-          <SoftGlow size={700} top={200} left={-300} opacity={0.02} />
+          {/* Dotted texture */}
+          <DotBackground />
 
           <Text style={{ color: C.dimGray, fontSize: 12, fontWeight: '600', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 24 }}>
             How it works
@@ -196,9 +215,8 @@ export default function LandingPage() {
 
 
         {/* ── FINAL CTA ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', overflow: 'hidden' }}>
-          
-          <SoftGlow size={500} bottom={-200} right={-100} opacity={0.03} />
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.bg, overflow: 'hidden' }}>
+          <GlowBackground />
 
           <Text style={{ color: C.white, fontSize: 36, fontWeight: '700', textAlign: 'center', lineHeight: 46, letterSpacing: -1, marginBottom: 20, zIndex: 1 }}>
             Ready?

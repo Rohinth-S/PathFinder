@@ -3,7 +3,6 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator,
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { updateProfile } from '../../api/auth.api';
-import AmbientBackground from '../../components/AmbientBackground';
 
 const C = {
   bg: '#050505',
@@ -22,20 +21,27 @@ const MOCK_USER = {
   reputationScore: 72,
 };
 
-// Soft spotlight glow
-function SoftGlow({ top, left, right, bottom, size, opacity = 0.04 }: any) {
+// Subtle Glowing Orbs (Aurora effect)
+function GlowBackground() {
   return (
-    <View style={{
-      position: 'absolute',
-      top, left, right, bottom,
-      width: size, height: size,
-      borderRadius: size / 2,
-      backgroundColor: '#ffffff',
-      opacity,
-      // @ts-ignore - web specific styling
-      filter: 'blur(100px)',
-    }} />
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
+      <View style={{ position: 'absolute', top: -150, right: -150, width: 400, height: 400, borderRadius: 200, backgroundColor: C.white, opacity: 0.02 }} />
+      <View style={{ position: 'absolute', bottom: -100, left: -200, width: 500, height: 500, borderRadius: 250, backgroundColor: C.white, opacity: 0.015 }} />
+    </View>
   );
+}
+
+// Elegant widely-spaced dot matrix
+function DotBackground() {
+  const dots = [];
+  for (let row = 0; row < 15; row++) {
+    for (let col = 0; col < 10; col++) {
+      dots.push(
+        <View key={`d${row}-${col}`} style={{ position: 'absolute', top: row * 60 + 30, left: `${col * 10 + 5}%`, width: 3, height: 3, borderRadius: 1.5, backgroundColor: C.accent }} />
+      );
+    }
+  }
+  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>{dots}</View>;
 }
 
 
@@ -78,14 +84,11 @@ export default function ProfilePage() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
-      <AmbientBackground />
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
         {/* ── Header ── */}
-        <View style={{ paddingTop: 64, paddingBottom: 48, alignItems: 'center', overflow: 'hidden' }}>
-          
-          {/* Subtle glow behind avatar */}
-          <SoftGlow size={400} top={-100} opacity={0.03} />
+        <View style={{ paddingTop: 64, paddingBottom: 48, alignItems: 'center', overflow: 'hidden', backgroundColor: C.bg }}>
+          <GlowBackground />
 
           {/* Avatar */}
           <View style={{
@@ -220,10 +223,9 @@ export default function ProfilePage() {
 
 
         {/* ── Action Buttons ── */}
-        <View style={{ paddingHorizontal: 24, paddingVertical: 48, gap: 14, overflow: 'hidden' }}>
+        <View style={{ paddingHorizontal: 24, paddingVertical: 48, gap: 14, backgroundColor: C.bg, overflow: 'hidden' }}>
+          <DotBackground />
           <View style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
-
-          <SoftGlow size={500} bottom={-200} left={-150} opacity={0.02} />
           
           <TouchableOpacity
             onPress={() => router.push('/share-journey')}
