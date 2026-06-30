@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator,
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { updateProfile } from '../../api/auth.api';
-import Starfield from '../../components/Starfield';
+import AmbientBackground from '../../components/AmbientBackground';
 
 const C = {
   bg: '#050505',
@@ -78,7 +78,7 @@ export default function ProfilePage() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
-      <Starfield count={40} />
+      <AmbientBackground />
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
         {/* ── Header ── */}

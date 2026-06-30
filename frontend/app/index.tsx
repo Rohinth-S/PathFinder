@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-na
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
 import { initializeUser } from '@/services/auth.service';
-import Starfield from '../components/Starfield';
+import AmbientBackground from '../components/AmbientBackground';
 
 const C = {
   bg: '#050505',
@@ -77,7 +77,7 @@ export default function LandingPage() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
-      <Starfield count={50} />
+      <AmbientBackground />
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
         {/* ── HERO ── */}
