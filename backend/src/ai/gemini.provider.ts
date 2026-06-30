@@ -14,25 +14,28 @@ export class GeminiProvider {
     return result.response.text();
   }
 
- async generateStructuredJson<T>({
-  systemPrompt,
-  userPrompt,
-  schema,
-}: {
-  systemPrompt: string;
-  userPrompt: string;
-  schema: Schema;
-}): Promise<T> {
-  const model =
-    geminiClient.getGenerativeModel({
-      model: "gemini-2.5-flash",
-      systemInstruction: systemPrompt,
+  async generateStructuredJson<T>({
+    systemPrompt,
+    userPrompt,
+    schema,
+    temperature,
+  }: {
+    systemPrompt: string;
+    userPrompt: string;
+    schema: Schema;
+    temperature?: number;
+  }): Promise<T> {
+    const model =
+      geminiClient.getGenerativeModel({
+        model: "gemini-2.5-flash",
+        systemInstruction: systemPrompt,
 
-      generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: schema,
-      },
-    });
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: schema,
+          temperature: temperature ?? 0.1,
+        },
+      });
 
   const result =
     await model.generateContent(

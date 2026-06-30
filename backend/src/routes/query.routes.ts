@@ -8,6 +8,6 @@ const router = Router();
 
 const upload = multer({storage: multer.memoryStorage(),});
 
-router.post("/query", requireAuth(), upload.single("audio"), queryController);
+router.post("/", requireAuth(), upload.single("audio"), queryController);
 
 export default router;

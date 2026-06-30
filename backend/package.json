@@ -17,7 +17,8 @@
     "test:query": "tsx src/scripts/testQueryUnderstanding.ts",
     "test:sarvam": "tsx src/scripts/testSarvam.ts",
     "test:voiceQuery": "tsx src/scripts/testVoiceQuery.ts",
-    "test:audioroute": "tsx src/scripts/testaudioQuery.ts"
+    "test:audioroute": "tsx src/scripts/testaudioQuery.ts",
+    "test:journey-extract": "tsx src/scripts/testJourneyExtraction.ts"
   },
   "keywords": [],
   "author": "",
