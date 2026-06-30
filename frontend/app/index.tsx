@@ -5,65 +5,40 @@ import { useRouter } from 'expo-router';
 import { initializeUser } from '@/services/auth.service';
 
 const C = {
-  bg: '#000000',
+  bg: '#050505',
+  surface: '#0e0e0e',
+  card: '#141414',
   white: '#FFFFFF',
+  offWhite: '#e0e0e0',
   gray: '#888888',
   dimGray: '#555555',
-  border: '#222222',
-  dot: '#1a1a1a',
-  accent: '#333333',
+  border: '#1e1e1e',
+  gridLine: '#141414',
+  accent: '#2a2a2a',
 };
 
 const FEATURES = [
-  { title: 'Life Graphs', desc: 'See how real people navigated their careers — every step, every pivot, every outcome.' },
-  { title: 'Decision Points', desc: 'Understand the critical choices that shaped someone\'s trajectory and why they made them.' },
-  { title: 'Community', desc: 'Real people. Real stories. No influencers — just verified journeys you can actually learn from.' },
+  { num: '01', title: 'Life Graphs', desc: 'See how real people navigated their careers — every step, every pivot, every outcome.' },
+  { num: '02', title: 'Decision Points', desc: 'Understand the critical choices that shaped someone\'s trajectory and why they made them.' },
+  { num: '03', title: 'Community', desc: 'Real people. Real stories. No influencers — just verified journeys you can actually learn from.' },
 ];
 
-// Subtle dot grid overlay
-function DotGrid() {
-  const dots = [];
-  for (let row = 0; row < 20; row++) {
-    for (let col = 0; col < 12; col++) {
-      dots.push(
-        <View
-          key={`${row}-${col}`}
-          style={{
-            position: 'absolute',
-            top: row * 40 + 20,
-            left: `${col * 8.33}%`,
-            width: 1.5,
-            height: 1.5,
-            borderRadius: 1,
-            backgroundColor: C.dot,
-          }}
-        />
-      );
-    }
+// Visible grid pattern
+function GridBackground() {
+  const lines = [];
+  // Vertical lines
+  for (let i = 0; i < 8; i++) {
+    lines.push(
+      <View key={`v${i}`} style={{ position: 'absolute', top: 0, bottom: 0, left: `${(i + 1) * 12.5}%`, width: 1, backgroundColor: C.gridLine }} />
+    );
   }
-  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>{dots}</View>;
-}
-
-// Decorative ring
-function Ring({ size, top, left, opacity = 0.06 }: { size: number; top: number; left: string; opacity?: number }) {
-  return (
-    <View style={{
-      position: 'absolute', top, left: left as any,
-      width: size, height: size, borderRadius: size / 2,
-      borderWidth: 1, borderColor: C.white,
-      opacity,
-    }} />
-  );
-}
-
-// Thin decorative crosshair
-function Crosshair({ top, left }: { top: number; left: string }) {
-  return (
-    <View style={{ position: 'absolute', top, left: left as any, opacity: 0.08 }}>
-      <View style={{ width: 24, height: 1, backgroundColor: C.white, position: 'absolute', top: 12, left: 0 }} />
-      <View style={{ width: 1, height: 24, backgroundColor: C.white, position: 'absolute', top: 0, left: 12 }} />
-    </View>
-  );
+  // Horizontal lines
+  for (let i = 0; i < 16; i++) {
+    lines.push(
+      <View key={`h${i}`} style={{ position: 'absolute', left: 0, right: 0, top: i * 50, height: 1, backgroundColor: C.gridLine }} />
+    );
+  }
+  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', opacity: 0.6 }}>{lines}</View>;
 }
 
 export default function LandingPage() {
@@ -106,30 +81,27 @@ export default function LandingPage() {
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
         {/* ── HERO ── */}
-        <View style={{ minHeight: 700, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 100, overflow: 'hidden' }}>
-          {/* Background texture */}
-          <DotGrid />
-          <Ring size={500} top={-100} left="60%" opacity={0.04} />
-          <Ring size={300} top={400} left="-10%" opacity={0.03} />
-          <Crosshair top={120} left="15%" />
-          <Crosshair top={520} left="80%" />
+        <View style={{ minHeight: 720, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 100, overflow: 'hidden', backgroundColor: C.bg }}>
+          {/* Grid texture */}
+          <GridBackground />
 
-          {/* Subtle glow behind headline */}
+          {/* Soft glow */}
           <View style={{
-            position: 'absolute', top: '30%', left: '25%',
-            width: 300, height: 300, borderRadius: 150,
-            backgroundColor: '#ffffff', opacity: 0.015,
+            position: 'absolute', top: '20%', alignSelf: 'center',
+            width: 400, height: 400, borderRadius: 200,
+            backgroundColor: '#ffffff', opacity: 0.03,
           }} />
 
-          <Text style={{ color: C.dimGray, fontSize: 13, fontWeight: '500', letterSpacing: 6, textTransform: 'uppercase', marginBottom: 48 }}>
+          {/* Content */}
+          <Text style={{ color: C.dimGray, fontSize: 13, fontWeight: '500', letterSpacing: 6, textTransform: 'uppercase', marginBottom: 48, zIndex: 1 }}>
             PathFinder
           </Text>
 
-          <Text style={{ color: C.white, fontSize: 52, fontWeight: '700', textAlign: 'center', lineHeight: 62, letterSpacing: -2, marginBottom: 28 }}>
+          <Text style={{ color: C.white, fontSize: 52, fontWeight: '700', textAlign: 'center', lineHeight: 62, letterSpacing: -2, marginBottom: 28, zIndex: 1 }}>
             Real Journeys.{"\n"}Better Decisions.
           </Text>
 
-          <Text style={{ color: C.gray, fontSize: 18, textAlign: 'center', lineHeight: 28, maxWidth: 460, marginBottom: 56 }}>
+          <Text style={{ color: C.gray, fontSize: 18, textAlign: 'center', lineHeight: 28, maxWidth: 460, marginBottom: 56, zIndex: 1 }}>
             Explore verified career timelines. Learn from real decisions. Chart your own path with confidence.
           </Text>
 
@@ -143,7 +115,7 @@ export default function LandingPage() {
 
             <TouchableOpacity
               onPress={onPressEmail}
-              style={{ paddingVertical: 16, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: C.border }}
+              style={{ paddingVertical: 16, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: C.accent }}
             >
               <Text style={{ color: C.dimGray, fontSize: 15, fontWeight: '500' }}>Sign in with Email</Text>
             </TouchableOpacity>
@@ -151,14 +123,9 @@ export default function LandingPage() {
         </View>
 
 
-        {/* ── DIVIDER ── */}
-        <View style={{ height: 1, backgroundColor: C.border, marginHorizontal: 32 }} />
-
-
         {/* ── THE PROBLEM ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', overflow: 'hidden' }}>
-          {/* Decorative accent line */}
-          <View style={{ position: 'absolute', top: 60, right: '10%', width: 60, height: 1, backgroundColor: C.white, opacity: 0.06 }} />
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.surface }}>
+          <View style={{ position: 'absolute', top: 48, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
 
           <Text style={{ color: C.dimGray, fontSize: 12, fontWeight: '600', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 24 }}>
             The problem
@@ -171,17 +138,16 @@ export default function LandingPage() {
           <Text style={{ color: C.gray, fontSize: 17, textAlign: 'center', lineHeight: 28, maxWidth: 520 }}>
             Nobody shows you the actual steps. The pivots. The failures. The decisions that mattered. You're left guessing — and that needs to change.
           </Text>
+
+          <View style={{ position: 'absolute', bottom: 48, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
         </View>
 
 
-        {/* ── DIVIDER ── */}
-        <View style={{ height: 1, backgroundColor: C.border, marginHorizontal: 32 }} />
-
-
         {/* ── HOW IT WORKS ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', overflow: 'hidden' }}>
-          <Ring size={200} top={30} left="75%" opacity={0.04} />
-          <Crosshair top={60} left="5%" />
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.bg, overflow: 'hidden' }}>
+          
+          {/* Decorative circle — clearly visible */}
+          <View style={{ position: 'absolute', top: -60, right: -80, width: 280, height: 280, borderRadius: 140, borderWidth: 1, borderColor: C.accent }} />
 
           <Text style={{ color: C.dimGray, fontSize: 12, fontWeight: '600', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 24 }}>
             How it works
@@ -198,11 +164,11 @@ export default function LandingPage() {
                 style={{
                   borderWidth: 1, borderColor: C.border, borderRadius: 16,
                   padding: 32, width: '100%', maxWidth: 280, minWidth: 250,
+                  backgroundColor: C.surface,
                 }}
               >
-                {/* Small decorative number */}
-                <Text style={{ color: C.accent, fontSize: 48, fontWeight: '700', marginBottom: 16, lineHeight: 48 }}>
-                  0{i + 1}
+                <Text style={{ color: C.accent, fontSize: 56, fontWeight: '800', marginBottom: 20, lineHeight: 56 }}>
+                  {f.num}
                 </Text>
                 <Text style={{ color: C.white, fontSize: 20, fontWeight: '600', marginBottom: 12 }}>
                   {f.title}
@@ -216,23 +182,41 @@ export default function LandingPage() {
         </View>
 
 
-        {/* ── DIVIDER ── */}
-        <View style={{ height: 1, backgroundColor: C.border, marginHorizontal: 32 }} />
+        {/* ── STATS ── */}
+        <View style={{ backgroundColor: C.surface, paddingHorizontal: 32, paddingVertical: 72, alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 48, maxWidth: 700 }}>
+            {[
+              { val: '1,200+', label: 'Journeys' },
+              { val: '85%', label: 'Found Clarity' },
+              { val: '40+', label: 'Industries' },
+            ].map((s, i) => (
+              <View key={i} style={{ alignItems: 'center', minWidth: 140 }}>
+                <Text style={{ fontSize: 44, fontWeight: '700', color: C.white, letterSpacing: -2, marginBottom: 4 }}>
+                  {s.val}
+                </Text>
+                <Text style={{ fontSize: 13, fontWeight: '500', color: C.dimGray, letterSpacing: 1, textTransform: 'uppercase' }}>
+                  {s.label}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
 
 
         {/* ── FINAL CTA ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', overflow: 'hidden' }}>
-          <Ring size={400} top={-50} left="-20%" opacity={0.03} />
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.bg, overflow: 'hidden' }}>
+          {/* Decorative circle */}
+          <View style={{ position: 'absolute', bottom: -40, left: -60, width: 220, height: 220, borderRadius: 110, borderWidth: 1, borderColor: C.accent }} />
 
-          <Text style={{ color: C.white, fontSize: 36, fontWeight: '700', textAlign: 'center', lineHeight: 46, letterSpacing: -1, marginBottom: 20 }}>
+          <Text style={{ color: C.white, fontSize: 36, fontWeight: '700', textAlign: 'center', lineHeight: 46, letterSpacing: -1, marginBottom: 20, zIndex: 1 }}>
             Ready?
           </Text>
 
-          <Text style={{ color: C.gray, fontSize: 17, textAlign: 'center', lineHeight: 28, maxWidth: 400, marginBottom: 48 }}>
+          <Text style={{ color: C.gray, fontSize: 17, textAlign: 'center', lineHeight: 28, maxWidth: 400, marginBottom: 48, zIndex: 1 }}>
             Join thousands mapping their careers with clarity.
           </Text>
 
-          <View style={{ width: '100%', maxWidth: 340, gap: 14 }}>
+          <View style={{ width: '100%', maxWidth: 340, gap: 14, zIndex: 1 }}>
             <TouchableOpacity
               onPress={onPressGoogle}
               style={{ backgroundColor: C.white, paddingVertical: 16, borderRadius: 12, alignItems: 'center' }}
@@ -242,7 +226,7 @@ export default function LandingPage() {
 
             <TouchableOpacity
               onPress={onPressEmail}
-              style={{ paddingVertical: 16, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: C.border }}
+              style={{ paddingVertical: 16, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: C.accent }}
             >
               <Text style={{ color: C.dimGray, fontSize: 15, fontWeight: '500' }}>Sign in with Email</Text>
             </TouchableOpacity>
@@ -251,8 +235,8 @@ export default function LandingPage() {
 
 
         {/* ── FOOTER ── */}
-        <View style={{ paddingVertical: 40, alignItems: 'center', borderTopWidth: 1, borderTopColor: C.border }}>
-          <Text style={{ color: C.border, fontSize: 12, fontWeight: '500' }}>© 2025 PathFinder</Text>
+        <View style={{ paddingVertical: 40, alignItems: 'center', borderTopWidth: 1, borderTopColor: C.border, backgroundColor: C.bg }}>
+          <Text style={{ color: C.accent, fontSize: 12, fontWeight: '500' }}>© 2025 PathFinder</Text>
         </View>
 
       </ScrollView>
