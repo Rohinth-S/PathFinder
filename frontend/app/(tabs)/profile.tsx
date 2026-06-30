@@ -5,17 +5,40 @@ import { useAuth } from '@clerk/clerk-expo';
 import { updateProfile } from '../../api/auth.api';
 
 const C = {
-  bg: '#000000',
+  bg: '#050505',
+  surface: '#0e0e0e',
+  card: '#141414',
   white: '#FFFFFF',
+  offWhite: '#e0e0e0',
   gray: '#888888',
   dimGray: '#555555',
-  border: '#222222',
-  accent: '#333333',
+  border: '#1e1e1e',
+  gridLine: '#141414',
+  accent: '#2a2a2a',
 };
 
 const MOCK_USER = {
   reputationScore: 72,
 };
+
+// Visible grid pattern
+function GridBackground() {
+  const lines = [];
+  // Vertical lines
+  for (let i = 0; i < 8; i++) {
+    lines.push(
+      <View key={`v${i}`} style={{ position: 'absolute', top: 0, bottom: 0, left: `${(i + 1) * 12.5}%`, width: 1, backgroundColor: C.gridLine }} />
+    );
+  }
+  // Horizontal lines
+  for (let i = 0; i < 16; i++) {
+    lines.push(
+      <View key={`h${i}`} style={{ position: 'absolute', left: 0, right: 0, top: i * 50, height: 1, backgroundColor: C.gridLine }} />
+    );
+  }
+  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', opacity: 0.6 }}>{lines}</View>;
+}
+
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -59,24 +82,27 @@ export default function ProfilePage() {
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
         {/* ── Header ── */}
-        <View style={{ paddingTop: 64, paddingBottom: 48, alignItems: 'center', overflow: 'hidden' }}>
+        <View style={{ paddingTop: 64, paddingBottom: 48, alignItems: 'center', overflow: 'hidden', backgroundColor: C.bg }}>
+          <GridBackground />
+          
           {/* Decorative ring */}
-          <View style={{ position: 'absolute', top: -80, right: -60, width: 240, height: 240, borderRadius: 120, borderWidth: 1, borderColor: C.white, opacity: 0.04 }} />
+          <View style={{ position: 'absolute', top: -80, right: -60, width: 240, height: 240, borderRadius: 120, borderWidth: 1, borderColor: C.accent, opacity: 0.5 }} />
 
           {/* Avatar */}
           <View style={{
             width: 96, height: 96, borderRadius: 48,
-            borderWidth: 1.5, borderColor: C.accent,
-            backgroundColor: C.bg,
+            borderWidth: 1.5, borderColor: C.border,
+            backgroundColor: C.surface,
             alignItems: 'center', justifyContent: 'center',
             marginBottom: 20,
+            zIndex: 1,
           }}>
             <Text style={{ fontSize: 38, fontWeight: '700', color: C.white }}>
               {username[0].toUpperCase()}
             </Text>
           </View>
 
-          <Text style={{ fontSize: 26, fontWeight: '700', color: C.white, letterSpacing: -0.5, marginBottom: 12 }}>
+          <Text style={{ fontSize: 26, fontWeight: '700', color: C.white, letterSpacing: -0.5, marginBottom: 12, zIndex: 1 }}>
             @{username}
           </Text>
 
@@ -86,6 +112,8 @@ export default function ProfilePage() {
             borderWidth: 1, borderColor: C.border,
             paddingHorizontal: 14, paddingVertical: 6,
             borderRadius: 20,
+            backgroundColor: C.surface,
+            zIndex: 1,
           }}>
             <Text style={{ fontSize: 13, color: C.dimGray, fontWeight: '500', marginRight: 6 }}>reputation</Text>
             <Text style={{ fontSize: 15, color: C.white, fontWeight: '700' }}>{MOCK_USER.reputationScore}</Text>
@@ -93,22 +121,21 @@ export default function ProfilePage() {
         </View>
 
 
-        {/* ── Divider ── */}
-        <View style={{ height: 1, backgroundColor: C.border, marginHorizontal: 32 }} />
-
-
         {/* ── Details Card ── */}
-        <View style={{ paddingHorizontal: 24, paddingVertical: 40 }}>
+        <View style={{ paddingHorizontal: 24, paddingVertical: 40, backgroundColor: C.surface }}>
+          <View style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
+
           <View style={{
             borderWidth: 1, borderColor: C.border,
             borderRadius: 16, padding: 28,
+            backgroundColor: C.card,
           }}>
             {/* Header */}
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
               <Text style={{ fontSize: 16, fontWeight: '600', color: C.white }}>Details</Text>
               <TouchableOpacity
                 onPress={() => setIsEditing(!isEditing)}
-                style={{ borderWidth: 1, borderColor: C.border, paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20 }}
+                style={{ borderWidth: 1, borderColor: C.border, paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20, backgroundColor: C.surface }}
               >
                 <Text style={{ color: C.gray, fontWeight: '600', fontSize: 13 }}>
                   {isEditing ? 'Cancel' : 'Edit'}
@@ -127,7 +154,7 @@ export default function ProfilePage() {
                     borderWidth: 1, borderColor: C.accent,
                     borderRadius: 10, padding: 14,
                     color: C.white, fontWeight: '600', fontSize: 15,
-                    backgroundColor: C.bg,
+                    backgroundColor: C.surface,
                   }}
                   value={username}
                   onChangeText={setUsername}
@@ -154,7 +181,7 @@ export default function ProfilePage() {
                         style={{
                           paddingHorizontal: 18, paddingVertical: 10,
                           borderRadius: 20, borderWidth: 1,
-                          backgroundColor: sel ? C.white : C.bg,
+                          backgroundColor: sel ? C.white : C.surface,
                           borderColor: sel ? C.white : C.border,
                         }}
                       >
@@ -194,13 +221,20 @@ export default function ProfilePage() {
 
 
         {/* ── Action Buttons ── */}
-        <View style={{ paddingHorizontal: 24, gap: 14, marginBottom: 48 }}>
+        <View style={{ paddingHorizontal: 24, paddingVertical: 48, gap: 14, backgroundColor: C.bg, overflow: 'hidden' }}>
+          <View style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
+
+          {/* Decorative circle */}
+          <View style={{ position: 'absolute', bottom: -40, left: -60, width: 220, height: 220, borderRadius: 110, borderWidth: 1, borderColor: C.accent, opacity: 0.5 }} />
+          
           <TouchableOpacity
             onPress={() => router.push('/share-journey')}
             style={{
               paddingVertical: 16, borderRadius: 12,
               flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
               borderWidth: 1, borderColor: C.accent,
+              backgroundColor: C.surface,
+              zIndex: 1,
             }}
           >
             <Text style={{ color: C.white, fontWeight: '600', fontSize: 15 }}>Share / Update Journey</Text>
@@ -212,6 +246,8 @@ export default function ProfilePage() {
               paddingVertical: 16, borderRadius: 12,
               flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
               borderWidth: 1, borderColor: C.border,
+              backgroundColor: C.bg,
+              zIndex: 1,
             }}
           >
             <Text style={{ color: C.dimGray, fontWeight: '500', fontSize: 15 }}>View Full Journey</Text>
@@ -219,9 +255,9 @@ export default function ProfilePage() {
 
           <TouchableOpacity
             onPress={handleSignOut}
-            style={{ paddingVertical: 16, alignItems: 'center', marginTop: 8 }}
+            style={{ paddingVertical: 16, alignItems: 'center', marginTop: 8, zIndex: 1 }}
           >
-            <Text style={{ color: C.accent, fontWeight: '500', fontSize: 13 }}>Sign Out</Text>
+            <Text style={{ color: C.dimGray, fontWeight: '500', fontSize: 13 }}>Sign Out</Text>
           </TouchableOpacity>
         </View>
 
