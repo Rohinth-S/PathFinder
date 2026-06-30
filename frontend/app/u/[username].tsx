@@ -1,29 +1,35 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { TimelineEvent } from '@/types/schema';
 import { BRAND_COLORS } from '../../constants/colors';
-
-const PUBLIC_TIMELINE: TimelineEvent[] = [
-  {
-    id: 'pub-1', title: 'CS Undergraduate',
-    startDate: '2020', endDate: '2024', organization: 'Anna University',
-    isVerified: true, nodeType: 'Education', emotionLabel: 'Confident',
-    timelineSummary: 'Studied Computer Science, built projects in React Native and ML.',
-    expandedDetails: { context: '', challengeFaced: '', outcome: '', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: [], transitions: [] },
-  },
-  {
-    id: 'pub-2', title: 'Hackathon Builder',
-    startDate: '2024', endDate: 'Present', organization: 'Self',
-    isVerified: false, nodeType: 'Startup', emotionLabel: 'Confident',
-    timelineSummary: 'Participating in hackathons and building PathFinder.',
-    expandedDetails: { context: '', challengeFaced: '', outcome: '', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: [], transitions: [] },
-  },
-];
+import { getCommunityJourney, CommunityJourney } from '../../api/community.api';
 
 export default function PublicProfilePage() {
   const router = useRouter();
   const { username } = useLocalSearchParams<{ username: string }>();
+
+  const [journey, setJourney] = useState<CommunityJourney | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (username) {
+      fetchJourney();
+    }
+  }, [username]);
+
+  const fetchJourney = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getCommunityJourney(username!);
+      setJourney(data);
+    } catch (e: any) {
+      setError(e.message || "Failed to load profile");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -34,6 +40,32 @@ export default function PublicProfilePage() {
       console.warn(error.message);
     }
   };
+
+  if (isLoading) {
+    return (
+      <View style={[s.container, s.center]}>
+        <ActivityIndicator size="large" color={BRAND_COLORS.navy} />
+      </View>
+    );
+  }
+
+  if (error || !journey) {
+    return (
+      <View style={[s.container, s.center]}>
+        <Text style={s.errorText}>{error || "User not found"}</Text>
+        <TouchableOpacity style={s.retryBtn} onPress={fetchJourney}>
+          <Text style={s.retryText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const { user, experiences } = journey;
+  const sortedExperiences = [...experiences].sort((a, b) => {
+    const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
+    const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
+    return dateB - dateA;
+  });
 
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content}>
@@ -49,12 +81,12 @@ export default function PublicProfilePage() {
       {/* Profile */}
       <View style={s.profileBlock}>
         <View style={s.avatar}>
-          <Text style={s.avatarText}>{(username || 'U')[0].toUpperCase()}</Text>
+          <Text style={s.avatarText}>{(user.username || 'U')[0].toUpperCase()}</Text>
         </View>
-        <Text style={s.username}>@{username || 'unknown'}</Text>
+        <Text style={s.username}>@{user.username || 'unknown'}</Text>
         <View style={s.repRow}>
           <Text style={s.repStar}>⭐</Text>
-          <Text style={s.repValue}>72</Text>
+          <Text style={s.repValue}>{user.reputationScore}</Text>
         </View>
       </View>
 
@@ -66,36 +98,47 @@ export default function PublicProfilePage() {
 
       {/* Timeline */}
       <Text style={s.sectionTitle}>Life Graph</Text>
-      {PUBLIC_TIMELINE.map((event, idx) => {
-        const isLast = idx === PUBLIC_TIMELINE.length - 1;
-        return (
-          <View key={event.id} style={s.stepRow}>
-            <View style={s.stepLineCol}>
-              <View style={[s.stepDot, event.isVerified && s.stepDotVerified]} />
-              {!isLast && <View style={s.stepLine} />}
-            </View>
-            <View style={s.stepCard}>
-              <View style={s.stepTitleRow}>
-                <Text style={s.stepTitle}>{event.title}</Text>
-                {event.isVerified && (
-                  <View style={s.verifiedBadge}>
-                    <Text style={s.verifiedText}>✓ Verified</Text>
-                  </View>
-                )}
+      {sortedExperiences.length === 0 ? (
+        <Text style={s.emptyText}>This user hasn't added any experiences yet.</Text>
+      ) : (
+        sortedExperiences.map((event, idx) => {
+          const isLast = idx === sortedExperiences.length - 1;
+          return (
+            <View key={event.id} style={s.stepRow}>
+              <View style={s.stepLineCol}>
+                <View style={[s.stepDot, event.isVerified && s.stepDotVerified]} />
+                {!isLast && <View style={s.stepLine} />}
               </View>
-              <Text style={s.stepMeta}>{event.startDate} – {event.endDate}  •  {event.organization}</Text>
-              <Text style={s.stepSummary}>{event.timelineSummary}</Text>
+              <View style={s.stepCard}>
+                <View style={s.stepTitleRow}>
+                  <Text style={s.stepTitle}>{event.title}</Text>
+                  {event.isVerified && (
+                    <View style={s.verifiedBadge}>
+                      <Text style={s.verifiedText}>✓ Verified</Text>
+                    </View>
+                  )}
+                </View>
+                <Text style={s.stepMeta}>
+                  {event.startDate ? new Date(event.startDate).getFullYear() : 'Unknown'} 
+                  {event.endDate ? ` – ${new Date(event.endDate).getFullYear()}` : ' – Present'}  •  {event.organization}
+                </Text>
+                <Text style={s.stepSummary}>{event.timelineSummary}</Text>
+              </View>
             </View>
-          </View>
-        );
-      })}
+          );
+        })
+      )}
     </ScrollView>
   );
 }
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: BRAND_COLORS.cream },
+  center: { justifyContent: 'center', alignItems: 'center', padding: 20 },
   content: { padding: 20, paddingBottom: 40 },
+  errorText: { fontSize: 16, color: BRAND_COLORS.rust, marginBottom: 16 },
+  retryBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: BRAND_COLORS.navy, borderRadius: 8 },
+  retryText: { color: BRAND_COLORS.white, fontWeight: '700' },
 
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 },
   backArrow: { fontSize: 22, color: BRAND_COLORS.navy },
@@ -114,6 +157,7 @@ const s = StyleSheet.create({
   shareText: { fontSize: 15, fontWeight: '700', color: BRAND_COLORS.white },
 
   sectionTitle: { fontSize: 18, fontWeight: '800', color: BRAND_COLORS.navy, marginBottom: 16 },
+  emptyText: { fontSize: 14, color: BRAND_COLORS.slate, fontStyle: 'italic', textAlign: 'center', marginTop: 20 },
 
   stepRow: { flexDirection: 'row', marginBottom: 0 },
   stepLineCol: { width: 24, alignItems: 'center' },
