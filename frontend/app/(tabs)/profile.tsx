@@ -13,8 +13,8 @@ const C = {
   gray: '#888888',
   dimGray: '#555555',
   border: '#1e1e1e',
-  gridLine: '#141414',
-  accent: '#2a2a2a',
+  gridLine: '#262626',
+  accent: '#3a3a3a',
 };
 
 const MOCK_USER = {
@@ -36,7 +36,7 @@ function GridBackground() {
       <View key={`h${i}`} style={{ position: 'absolute', left: 0, right: 0, top: i * 50, height: 1, backgroundColor: C.gridLine }} />
     );
   }
-  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', opacity: 0.6 }}>{lines}</View>;
+  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>{lines}</View>;
 }
 
 
@@ -86,7 +86,7 @@ export default function ProfilePage() {
           <GridBackground />
           
           {/* Decorative ring */}
-          <View style={{ position: 'absolute', top: -80, right: -60, width: 240, height: 240, borderRadius: 120, borderWidth: 1, borderColor: C.accent, opacity: 0.5 }} />
+          <View style={{ position: 'absolute', top: -80, right: -60, width: 240, height: 240, borderRadius: 120, borderWidth: 1, borderColor: C.accent, opacity: 0.8 }} />
 
           {/* Avatar */}
           <View style={{
@@ -225,7 +225,7 @@ export default function ProfilePage() {
           <View style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
 
           {/* Decorative circle */}
-          <View style={{ position: 'absolute', bottom: -40, left: -60, width: 220, height: 220, borderRadius: 110, borderWidth: 1, borderColor: C.accent, opacity: 0.5 }} />
+          <View style={{ position: 'absolute', bottom: -40, left: -60, width: 220, height: 220, borderRadius: 110, borderWidth: 1, borderColor: C.accent, opacity: 0.8 }} />
           
           <TouchableOpacity
             onPress={() => router.push('/share-journey')}
