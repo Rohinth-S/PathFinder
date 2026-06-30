@@ -1,34 +1,70 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
 import { initializeUser } from '@/services/auth.service';
-import { BRAND_COLORS } from '../constants/colors';
 
-// ── Feature data ──
+const C = {
+  bg: '#000000',
+  white: '#FFFFFF',
+  gray: '#888888',
+  dimGray: '#555555',
+  border: '#222222',
+  dot: '#1a1a1a',
+  accent: '#333333',
+};
+
 const FEATURES = [
-  {
-    icon: '🗺️',
-    title: 'Life Graphs',
-    desc: 'Visualize real career trajectories as interactive timelines. See education, jobs, pivots, and achievements mapped out step-by-step.',
-  },
-  {
-    icon: '🔀',
-    title: 'Decision Points',
-    desc: 'Understand the critical choices that shaped someone\'s path. Every pivot, failure, and breakthrough — laid bare.',
-  },
-  {
-    icon: '🤝',
-    title: 'Real Community',
-    desc: 'No influencer advice. Just real people sharing verified journeys. Ask questions, share yours, build reputation.',
-  },
+  { title: 'Life Graphs', desc: 'See how real people navigated their careers — every step, every pivot, every outcome.' },
+  { title: 'Decision Points', desc: 'Understand the critical choices that shaped someone\'s trajectory and why they made them.' },
+  { title: 'Community', desc: 'Real people. Real stories. No influencers — just verified journeys you can actually learn from.' },
 ];
 
-const STATS = [
-  { value: '1,200+', label: 'Journeys Mapped' },
-  { value: '85%', label: 'Users Found Clarity' },
-  { value: '40+', label: 'Industries Covered' },
-];
+// Subtle dot grid overlay
+function DotGrid() {
+  const dots = [];
+  for (let row = 0; row < 20; row++) {
+    for (let col = 0; col < 12; col++) {
+      dots.push(
+        <View
+          key={`${row}-${col}`}
+          style={{
+            position: 'absolute',
+            top: row * 40 + 20,
+            left: `${col * 8.33}%`,
+            width: 1.5,
+            height: 1.5,
+            borderRadius: 1,
+            backgroundColor: C.dot,
+          }}
+        />
+      );
+    }
+  }
+  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>{dots}</View>;
+}
+
+// Decorative ring
+function Ring({ size, top, left, opacity = 0.06 }: { size: number; top: number; left: string; opacity?: number }) {
+  return (
+    <View style={{
+      position: 'absolute', top, left: left as any,
+      width: size, height: size, borderRadius: size / 2,
+      borderWidth: 1, borderColor: C.white,
+      opacity,
+    }} />
+  );
+}
+
+// Thin decorative crosshair
+function Crosshair({ top, left }: { top: number; left: string }) {
+  return (
+    <View style={{ position: 'absolute', top, left: left as any, opacity: 0.08 }}>
+      <View style={{ width: 24, height: 1, backgroundColor: C.white, position: 'absolute', top: 12, left: 0 }} />
+      <View style={{ width: 1, height: 24, backgroundColor: C.white, position: 'absolute', top: 0, left: 12 }} />
+    </View>
+  );
+}
 
 export default function LandingPage() {
   const router = useRouter();
@@ -40,7 +76,6 @@ export default function LandingPage() {
       if (!isSignedIn) return;
       const token = await getToken();
       if (!token) return;
-      
       const user = await initializeUser(token);
       if (user.username) {
         router.replace("/(tabs)");
@@ -63,140 +98,117 @@ export default function LandingPage() {
   };
 
   const onPressEmail = () => {
-    console.log("Email sign in clicked - functionality to be added");
+    console.log("Email sign in clicked");
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: BRAND_COLORS.dark }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
-        {/* ═══════════════════════════════════════════
-            SECTION 1 — HERO
-            ═══════════════════════════════════════════ */}
-        <View style={{ backgroundColor: BRAND_COLORS.dark, paddingHorizontal: 24, paddingTop: 80, paddingBottom: 80, alignItems: 'center', justifyContent: 'center', minHeight: 600 }}>
-          
-          {/* Logo */}
-          <Image 
-            source={require('../assets/logo.jpg')} 
-            style={{ width: 120, height: 120, borderRadius: 28, marginBottom: 40, opacity: 0.95 }}
-            resizeMode="contain" 
-          />
+        {/* ── HERO ── */}
+        <View style={{ minHeight: 700, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 100, overflow: 'hidden' }}>
+          {/* Background texture */}
+          <DotGrid />
+          <Ring size={500} top={-100} left="60%" opacity={0.04} />
+          <Ring size={300} top={400} left="-10%" opacity={0.03} />
+          <Crosshair top={120} left="15%" />
+          <Crosshair top={520} left="80%" />
 
-          {/* Headline */}
-          <Text style={{ fontSize: 44, fontWeight: '800', color: BRAND_COLORS.white, textAlign: 'center', letterSpacing: -1, lineHeight: 52, marginBottom: 16 }}>
+          {/* Subtle glow behind headline */}
+          <View style={{
+            position: 'absolute', top: '30%', left: '25%',
+            width: 300, height: 300, borderRadius: 150,
+            backgroundColor: '#ffffff', opacity: 0.015,
+          }} />
+
+          <Text style={{ color: C.dimGray, fontSize: 13, fontWeight: '500', letterSpacing: 6, textTransform: 'uppercase', marginBottom: 48 }}>
+            PathFinder
+          </Text>
+
+          <Text style={{ color: C.white, fontSize: 52, fontWeight: '700', textAlign: 'center', lineHeight: 62, letterSpacing: -2, marginBottom: 28 }}>
             Real Journeys.{"\n"}Better Decisions.
           </Text>
 
-          {/* Tagline */}
-          <Text style={{ fontSize: 18, color: BRAND_COLORS.mutedText, textAlign: 'center', lineHeight: 28, maxWidth: 440, marginBottom: 48 }}>
-            Navigate your career with confidence. Explore verified timelines of professionals, learn from their choices, and chart your own path.
+          <Text style={{ color: C.gray, fontSize: 18, textAlign: 'center', lineHeight: 28, maxWidth: 460, marginBottom: 56 }}>
+            Explore verified career timelines. Learn from real decisions. Chart your own path with confidence.
           </Text>
 
-          {/* CTA Buttons */}
-          <View style={{ width: '100%', maxWidth: 400, gap: 16 }}>
-            <TouchableOpacity 
+          <View style={{ width: '100%', maxWidth: 340, gap: 14, zIndex: 1 }}>
+            <TouchableOpacity
               onPress={onPressGoogle}
-              style={{ backgroundColor: BRAND_COLORS.tealBright, paddingVertical: 18, borderRadius: 16, alignItems: 'center' }}
+              style={{ backgroundColor: C.white, paddingVertical: 16, borderRadius: 12, alignItems: 'center' }}
             >
-              <Text style={{ color: BRAND_COLORS.white, fontSize: 16, fontWeight: '700' }}>Continue with Google</Text>
+              <Text style={{ color: C.bg, fontSize: 15, fontWeight: '600' }}>Continue with Google</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               onPress={onPressEmail}
-              style={{ paddingVertical: 18, borderRadius: 16, alignItems: 'center', borderWidth: 1.5, borderColor: BRAND_COLORS.darkBorder }}
+              style={{ paddingVertical: 16, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: C.border }}
             >
-              <Text style={{ color: BRAND_COLORS.mutedText, fontSize: 16, fontWeight: '600' }}>Sign in with Email</Text>
+              <Text style={{ color: C.dimGray, fontSize: 15, fontWeight: '500' }}>Sign in with Email</Text>
             </TouchableOpacity>
           </View>
         </View>
 
 
-        {/* ═══════════════════════════════════════════
-            SECTION 2 — THE PROBLEM
-            ═══════════════════════════════════════════ */}
-        <View style={{ backgroundColor: BRAND_COLORS.darkCard, paddingHorizontal: 24, paddingVertical: 80, alignItems: 'center' }}>
-          <View style={{ maxWidth: 600, width: '100%' }}>
-            
-            <Text style={{ fontSize: 13, fontWeight: '700', color: BRAND_COLORS.tealBright, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 12, textAlign: 'center' }}>
-              The Problem
-            </Text>
-            
-            <Text style={{ fontSize: 32, fontWeight: '800', color: BRAND_COLORS.white, textAlign: 'center', marginBottom: 20, lineHeight: 40 }}>
-              Career advice is broken.
-            </Text>
-            
-            <Text style={{ fontSize: 17, color: BRAND_COLORS.mutedText, textAlign: 'center', lineHeight: 28 }}>
-              People tell you "just follow your passion" or "work hard and you'll make it." But nobody shows you the actual steps. The pivots. The failures. The decisions that actually mattered. You're left guessing in the dark.
-            </Text>
-          </View>
+        {/* ── DIVIDER ── */}
+        <View style={{ height: 1, backgroundColor: C.border, marginHorizontal: 32 }} />
+
+
+        {/* ── THE PROBLEM ── */}
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', overflow: 'hidden' }}>
+          {/* Decorative accent line */}
+          <View style={{ position: 'absolute', top: 60, right: '10%', width: 60, height: 1, backgroundColor: C.white, opacity: 0.06 }} />
+
+          <Text style={{ color: C.dimGray, fontSize: 12, fontWeight: '600', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 24 }}>
+            The problem
+          </Text>
+
+          <Text style={{ color: C.white, fontSize: 36, fontWeight: '700', textAlign: 'center', lineHeight: 46, letterSpacing: -1, maxWidth: 600, marginBottom: 24 }}>
+            Career advice is broken.
+          </Text>
+
+          <Text style={{ color: C.gray, fontSize: 17, textAlign: 'center', lineHeight: 28, maxWidth: 520 }}>
+            Nobody shows you the actual steps. The pivots. The failures. The decisions that mattered. You're left guessing — and that needs to change.
+          </Text>
         </View>
 
 
-        {/* ═══════════════════════════════════════════
-            SECTION 3 — HOW IT WORKS (FEATURES)
-            ═══════════════════════════════════════════ */}
-        <View style={{ backgroundColor: BRAND_COLORS.dark, paddingHorizontal: 24, paddingVertical: 80, alignItems: 'center' }}>
-          <View style={{ maxWidth: 900, width: '100%' }}>
-            
-            <Text style={{ fontSize: 13, fontWeight: '700', color: BRAND_COLORS.tealBright, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 12, textAlign: 'center' }}>
-              How It Works
-            </Text>
-            
-            <Text style={{ fontSize: 32, fontWeight: '800', color: BRAND_COLORS.white, textAlign: 'center', marginBottom: 48, lineHeight: 40 }}>
-              Your career, visualized.
-            </Text>
-
-            {/* Feature Cards */}
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 20 }}>
-              {FEATURES.map((f, i) => (
-                <View 
-                  key={i} 
-                  style={{ 
-                    backgroundColor: BRAND_COLORS.darkCard, 
-                    borderWidth: 1, 
-                    borderColor: BRAND_COLORS.darkBorder, 
-                    borderRadius: 20, 
-                    padding: 28, 
-                    width: '100%',
-                    maxWidth: 280,
-                    minWidth: 260,
-                  }}
-                >
-                  {/* Icon circle */}
-                  <View style={{ 
-                    width: 56, height: 56, borderRadius: 16, 
-                    backgroundColor: BRAND_COLORS.dark, 
-                    borderWidth: 1, borderColor: BRAND_COLORS.darkBorder,
-                    alignItems: 'center', justifyContent: 'center', marginBottom: 20 
-                  }}>
-                    <Text style={{ fontSize: 24 }}>{f.icon}</Text>
-                  </View>
-                  
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: BRAND_COLORS.white, marginBottom: 10 }}>
-                    {f.title}
-                  </Text>
-                  <Text style={{ fontSize: 15, color: BRAND_COLORS.mutedText, lineHeight: 24 }}>
-                    {f.desc}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
+        {/* ── DIVIDER ── */}
+        <View style={{ height: 1, backgroundColor: C.border, marginHorizontal: 32 }} />
 
 
-        {/* ═══════════════════════════════════════════
-            SECTION 4 — STATS / SOCIAL PROOF
-            ═══════════════════════════════════════════ */}
-        <View style={{ backgroundColor: BRAND_COLORS.darkCard, paddingHorizontal: 24, paddingVertical: 64, alignItems: 'center' }}>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 40, maxWidth: 700 }}>
-            {STATS.map((s, i) => (
-              <View key={i} style={{ alignItems: 'center', minWidth: 160 }}>
-                <Text style={{ fontSize: 40, fontWeight: '800', color: BRAND_COLORS.tealBright, marginBottom: 4 }}>
-                  {s.value}
+        {/* ── HOW IT WORKS ── */}
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', overflow: 'hidden' }}>
+          <Ring size={200} top={30} left="75%" opacity={0.04} />
+          <Crosshair top={60} left="5%" />
+
+          <Text style={{ color: C.dimGray, fontSize: 12, fontWeight: '600', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 24 }}>
+            How it works
+          </Text>
+
+          <Text style={{ color: C.white, fontSize: 36, fontWeight: '700', textAlign: 'center', lineHeight: 46, letterSpacing: -1, maxWidth: 600, marginBottom: 64 }}>
+            See the path before{"\n"}you walk it.
+          </Text>
+
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 20, width: '100%', maxWidth: 900 }}>
+            {FEATURES.map((f, i) => (
+              <View
+                key={i}
+                style={{
+                  borderWidth: 1, borderColor: C.border, borderRadius: 16,
+                  padding: 32, width: '100%', maxWidth: 280, minWidth: 250,
+                }}
+              >
+                {/* Small decorative number */}
+                <Text style={{ color: C.accent, fontSize: 48, fontWeight: '700', marginBottom: 16, lineHeight: 48 }}>
+                  0{i + 1}
                 </Text>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: BRAND_COLORS.mutedText, letterSpacing: 1, textTransform: 'uppercase' }}>
-                  {s.label}
+                <Text style={{ color: C.white, fontSize: 20, fontWeight: '600', marginBottom: 12 }}>
+                  {f.title}
+                </Text>
+                <Text style={{ color: C.gray, fontSize: 15, lineHeight: 24 }}>
+                  {f.desc}
                 </Text>
               </View>
             ))}
@@ -204,46 +216,43 @@ export default function LandingPage() {
         </View>
 
 
-        {/* ═══════════════════════════════════════════
-            SECTION 5 — FINAL CTA
-            ═══════════════════════════════════════════ */}
-        <View style={{ backgroundColor: BRAND_COLORS.dark, paddingHorizontal: 24, paddingVertical: 80, alignItems: 'center' }}>
-          <View style={{ 
-            maxWidth: 560, width: '100%', alignItems: 'center',
-            backgroundColor: BRAND_COLORS.darkCard,
-            borderWidth: 1, borderColor: BRAND_COLORS.darkBorder,
-            borderRadius: 24, padding: 40,
-          }}>
-            <Text style={{ fontSize: 30, fontWeight: '800', color: BRAND_COLORS.white, textAlign: 'center', marginBottom: 16, lineHeight: 38 }}>
-              Ready to map your{"\n"}success story?
-            </Text>
-            <Text style={{ fontSize: 16, color: BRAND_COLORS.mutedText, textAlign: 'center', lineHeight: 26, marginBottom: 36 }}>
-              Stop guessing. Start planning. Join PathFinder and make your next career move with confidence.
-            </Text>
+        {/* ── DIVIDER ── */}
+        <View style={{ height: 1, backgroundColor: C.border, marginHorizontal: 32 }} />
 
-            <View style={{ width: '100%', gap: 14 }}>
-              <TouchableOpacity 
-                onPress={onPressGoogle}
-                style={{ backgroundColor: BRAND_COLORS.tealBright, paddingVertical: 18, borderRadius: 16, alignItems: 'center' }}
-              >
-                <Text style={{ color: BRAND_COLORS.white, fontSize: 16, fontWeight: '700' }}>Get Started — It's Free</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                onPress={onPressEmail}
-                style={{ paddingVertical: 18, borderRadius: 16, alignItems: 'center', borderWidth: 1.5, borderColor: BRAND_COLORS.darkBorder }}
-              >
-                <Text style={{ color: BRAND_COLORS.mutedText, fontSize: 16, fontWeight: '600' }}>Sign in with Email</Text>
-              </TouchableOpacity>
-            </View>
+
+        {/* ── FINAL CTA ── */}
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', overflow: 'hidden' }}>
+          <Ring size={400} top={-50} left="-20%" opacity={0.03} />
+
+          <Text style={{ color: C.white, fontSize: 36, fontWeight: '700', textAlign: 'center', lineHeight: 46, letterSpacing: -1, marginBottom: 20 }}>
+            Ready?
+          </Text>
+
+          <Text style={{ color: C.gray, fontSize: 17, textAlign: 'center', lineHeight: 28, maxWidth: 400, marginBottom: 48 }}>
+            Join thousands mapping their careers with clarity.
+          </Text>
+
+          <View style={{ width: '100%', maxWidth: 340, gap: 14 }}>
+            <TouchableOpacity
+              onPress={onPressGoogle}
+              style={{ backgroundColor: C.white, paddingVertical: 16, borderRadius: 12, alignItems: 'center' }}
+            >
+              <Text style={{ color: C.bg, fontSize: 15, fontWeight: '600' }}>Get Started — Free</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={onPressEmail}
+              style={{ paddingVertical: 16, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: C.border }}
+            >
+              <Text style={{ color: C.dimGray, fontSize: 15, fontWeight: '500' }}>Sign in with Email</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* Footer */}
-        <View style={{ backgroundColor: BRAND_COLORS.dark, paddingVertical: 32, alignItems: 'center', borderTopWidth: 1, borderTopColor: BRAND_COLORS.darkBorder }}>
-          <Text style={{ fontSize: 13, color: BRAND_COLORS.darkBorder, fontWeight: '500' }}>
-            © 2025 PathFinder. All rights reserved.
-          </Text>
+
+        {/* ── FOOTER ── */}
+        <View style={{ paddingVertical: 40, alignItems: 'center', borderTopWidth: 1, borderTopColor: C.border }}>
+          <Text style={{ color: C.border, fontSize: 12, fontWeight: '500' }}>© 2025 PathFinder</Text>
         </View>
 
       </ScrollView>
