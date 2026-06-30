@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { TimelineEvent } from '@/types/schema';
 import { BRAND_COLORS } from '../constants/colors';
@@ -46,29 +46,29 @@ export default function JourneyDetailsPage() {
   );
 
   return (
-    <View style={s.wrapper}>
-      <ScrollView style={s.container} contentContainerStyle={s.content}>
+    <View className="flex-1 bg-brand-cream">
+      <ScrollView className="flex-1" contentContainerClassName="p-5 pb-[100px]">
         {/* Header Bar */}
-        <View style={s.headerBar}>
-          <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-            <Text style={s.backArrow}>←</Text>
+        <View className="flex-row items-center justify-between mb-5">
+          <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} hitSlop={12}>
+            <Text className="text-[22px] text-brand-navy">←</Text>
           </TouchableOpacity>
-          <Text style={s.headerTitle}>Journey Details</Text>
-          <Text style={s.moreIcon}>⋮</Text>
+          <Text className="text-lg font-extrabold text-brand-navy">Journey Details</Text>
+          <Text className="text-[22px] text-brand-slate">⋮</Text>
         </View>
 
         {/* Hero */}
-        <View style={s.hero}>
-          <View style={s.heroIcon}>
-            <Text style={s.heroEmoji}>💼</Text>
+        <View className="items-center mb-6">
+          <View className="w-16 h-16 rounded-full bg-brand-cream justify-center items-center mb-3 border border-brand-border">
+            <Text className="text-[28px]">💼</Text>
           </View>
-          <Text style={s.heroTitle}>{event.title}</Text>
-          <Text style={s.heroMeta}>{duration}  •  {yearSpan}</Text>
+          <Text className="text-[22px] font-extrabold text-brand-navy text-center mb-1">{event.title}</Text>
+          <Text className="text-sm text-brand-slate mb-3 font-semibold">{duration}  •  {yearSpan}</Text>
           {tags.length > 0 && (
-            <View style={s.tagRow}>
+            <View className="flex-row gap-2">
               {tags.map((t, i) => (
-                <View key={i} style={s.tag}>
-                  <Text style={s.tagText}>{t}</Text>
+                <View key={i} className="bg-brand-cream px-3 py-1.5 rounded-2xl border border-brand-border">
+                  <Text className="text-xs font-bold text-brand-teal">{t}</Text>
                 </View>
               ))}
             </View>
@@ -76,16 +76,16 @@ export default function JourneyDetailsPage() {
         </View>
 
         {/* Detail Sections */}
-        <View style={s.detailsCard}>
+        <View className="bg-brand-white rounded-2xl p-5 border border-brand-border">
           {/* Context */}
           {expandedDetails.context && <DetailSection icon="💼" iconBg={BRAND_COLORS.cream} title="Context" body={expandedDetails.context} />}
 
-          <View style={s.divider} />
+          <View className="h-px bg-brand-border my-4" />
 
           {/* Challenge */}
           {expandedDetails.challengeFaced && <DetailSection icon="⚠️" iconBg={BRAND_COLORS.cream} title="Challenge" body={expandedDetails.challengeFaced} />}
 
-          <View style={s.divider} />
+          <View className="h-px bg-brand-border my-4" />
 
           {/* Outcome / Learning */}
           {expandedDetails.outcome && <DetailSection icon="🎯" iconBg={BRAND_COLORS.cream} title="Outcome / Learning" body={expandedDetails.outcome} />}
@@ -93,38 +93,38 @@ export default function JourneyDetailsPage() {
           {/* Achievements */}
           {achievementsList.length > 0 && (
             <>
-              <View style={s.divider} />
-              <View style={s.section}>
-                <View style={s.sectionHeader}>
-                  <View style={[s.sectionIconWrap, { backgroundColor: BRAND_COLORS.cream }]}>
-                    <Text style={s.sectionEmoji}>🏆</Text>
+              <View className="h-px bg-brand-border my-4" />
+              <View>
+                <View className="flex-row items-center gap-2.5 mb-2">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center border border-brand-border" style={{ backgroundColor: BRAND_COLORS.cream }}>
+                    <Text className="text-base">🏆</Text>
                   </View>
-                  <Text style={s.sectionTitle}>Key Achievements</Text>
+                  <Text className="text-base font-extrabold text-brand-navy">Key Achievements</Text>
                 </View>
                 {achievementsList.map((a: string, i: number) => (
-                  <View key={i} style={s.bulletRow}>
-                    <Text style={s.bullet}>•</Text>
-                    <Text style={s.bulletText}>{a}</Text>
+                  <View key={i} className="flex-row pl-[42px] mt-1">
+                    <Text className="text-brand-rust text-sm mr-2 leading-[22px]">•</Text>
+                    <Text className="flex-1 text-[15px] text-brand-slate leading-[22px] font-medium">{a}</Text>
                   </View>
                 ))}
               </View>
             </>
           )}
 
-          <View style={s.divider} />
+          <View className="h-px bg-brand-border my-4" />
 
           {/* Skills Built */}
-          <View style={s.section}>
-            <View style={s.sectionHeader}>
-              <View style={[s.sectionIconWrap, { backgroundColor: BRAND_COLORS.cream }]}>
-                <Text style={s.sectionEmoji}>{'</>'}</Text>
+          <View>
+            <View className="flex-row items-center gap-2.5 mb-2">
+              <View className="w-8 h-8 rounded-lg justify-center items-center border border-brand-border" style={{ backgroundColor: BRAND_COLORS.cream }}>
+                <Text className="text-base">{'</>'}</Text>
               </View>
-              <Text style={s.sectionTitle}>Skills Built</Text>
+              <Text className="text-base font-extrabold text-brand-navy">Skills Built</Text>
             </View>
-            <View style={s.skillsRow}>
+            <View className="flex-row flex-wrap gap-2 pl-[42px] mt-1">
               {expandedDetails.skills.map((skill, i) => (
-                <View key={i} style={s.skillPill}>
-                  <Text style={s.skillText}>{skill}</Text>
+                <View key={i} className="bg-brand-cream px-3 py-1.5 rounded-2xl border border-brand-border">
+                  <Text className="text-[13px] font-semibold text-brand-slate">{skill}</Text>
                 </View>
               ))}
             </View>
@@ -133,7 +133,7 @@ export default function JourneyDetailsPage() {
           {/* Decision That Led Next */}
           {expandedDetails.transitions.length > 0 && (
             <>
-              <View style={s.divider} />
+              <View className="h-px bg-brand-border my-4" />
               <DetailSection
                 icon="➡️"
                 iconBg={BRAND_COLORS.cream}
@@ -146,9 +146,9 @@ export default function JourneyDetailsPage() {
       </ScrollView>
 
       {/* Sticky Footer */}
-      <View style={s.footer}>
-        <TouchableOpacity style={s.footerBtn} onPress={() => router.back()}>
-          <Text style={s.footerBtnText}>View Next Step  →</Text>
+      <View className="absolute bottom-0 left-0 right-0 bg-brand-white p-4 border-t border-brand-border">
+        <TouchableOpacity className="bg-brand-rust py-4 rounded-xl items-center elevation-4 shadow-sm" onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}>
+          <Text className="text-brand-white text-base font-extrabold">View Next Step  →</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -157,56 +157,16 @@ export default function JourneyDetailsPage() {
 
 function DetailSection({ icon, iconBg, title, body }: { icon: string; iconBg: string; title: string; body: string | null | undefined }) {
   return (
-    <View style={s.section}>
-      <View style={s.sectionHeader}>
-        <View style={[s.sectionIconWrap, { backgroundColor: iconBg }]}>
-          <Text style={s.sectionEmoji}>{icon}</Text>
+    <View>
+      <View className="flex-row items-center gap-2.5 mb-2">
+        <View className="w-8 h-8 rounded-lg justify-center items-center border border-brand-border" style={{ backgroundColor: iconBg }}>
+          <Text className="text-base">{icon}</Text>
         </View>
-        <Text style={s.sectionTitle}>{title}</Text>
+        <Text className="text-base font-extrabold text-brand-navy">{title}</Text>
       </View>
-      <Text style={s.sectionBody}>{body}</Text>
+      <Text className="text-[15px] text-brand-slate leading-[22px] pl-[42px] font-medium">{body}</Text>
     </View>
   );
 }
 
-const s = StyleSheet.create({
-  wrapper: { flex: 1, backgroundColor: BRAND_COLORS.cream },
-  container: { flex: 1 },
-  content: { padding: 20, paddingBottom: 100 },
 
-  headerBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
-  backArrow: { fontSize: 22, color: BRAND_COLORS.navy },
-  headerTitle: { fontSize: 18, fontWeight: '800', color: BRAND_COLORS.navy },
-  moreIcon: { fontSize: 22, color: BRAND_COLORS.slate },
-
-  hero: { alignItems: 'center', marginBottom: 24 },
-  heroIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: BRAND_COLORS.cream, justifyContent: 'center', alignItems: 'center', marginBottom: 12, borderWidth: 1, borderColor: BRAND_COLORS.border },
-  heroEmoji: { fontSize: 28 },
-  heroTitle: { fontSize: 22, fontWeight: '800', color: BRAND_COLORS.navy, textAlign: 'center', marginBottom: 4 },
-  heroMeta: { fontSize: 14, color: BRAND_COLORS.slate, marginBottom: 12, fontWeight: '600' },
-  tagRow: { flexDirection: 'row', gap: 8 },
-  tag: { backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: BRAND_COLORS.border },
-  tagText: { fontSize: 12, fontWeight: '700', color: BRAND_COLORS.teal },
-
-  detailsCard: { backgroundColor: BRAND_COLORS.white, borderRadius: 16, padding: 20, borderWidth: 1, borderColor: BRAND_COLORS.border },
-  divider: { height: 1, backgroundColor: BRAND_COLORS.border, marginVertical: 16 },
-
-  section: {},
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
-  sectionIconWrap: { width: 32, height: 32, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: BRAND_COLORS.border },
-  sectionEmoji: { fontSize: 16 },
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.navy },
-  sectionBody: { fontSize: 15, color: BRAND_COLORS.slate, lineHeight: 22, paddingLeft: 42, fontWeight: '500' },
-
-  bulletRow: { flexDirection: 'row', paddingLeft: 42, marginTop: 4 },
-  bullet: { color: BRAND_COLORS.rust, fontSize: 14, marginRight: 8, lineHeight: 22 },
-  bulletText: { flex: 1, fontSize: 15, color: BRAND_COLORS.slate, lineHeight: 22, fontWeight: '500' },
-
-  skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingLeft: 42, marginTop: 4 },
-  skillPill: { backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: BRAND_COLORS.border },
-  skillText: { fontSize: 13, fontWeight: '600', color: BRAND_COLORS.slate },
-
-  footer: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: BRAND_COLORS.white, padding: 16, borderTopWidth: 1, borderTopColor: BRAND_COLORS.border },
-  footerBtn: { backgroundColor: BRAND_COLORS.rust, paddingVertical: 16, borderRadius: 12, alignItems: 'center', shadowColor: BRAND_COLORS.rust, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
-  footerBtnText: { color: BRAND_COLORS.white, fontSize: 16, fontWeight: '800' },
-});

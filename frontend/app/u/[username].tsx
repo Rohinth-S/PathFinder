@@ -1,29 +1,35 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Share, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { TimelineEvent } from '@/types/schema';
 import { BRAND_COLORS } from '../../constants/colors';
-
-const PUBLIC_TIMELINE: TimelineEvent[] = [
-  {
-    id: 'pub-1', title: 'CS Undergraduate',
-    startDate: '2020', endDate: '2024', organization: 'Anna University',
-    isVerified: true, nodeType: 'Education', emotionLabel: 'Confident',
-    timelineSummary: 'Studied Computer Science, built projects in React Native and ML.',
-    expandedDetails: { context: '', challengeFaced: '', outcome: '', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: [], transitions: [] },
-  },
-  {
-    id: 'pub-2', title: 'Hackathon Builder',
-    startDate: '2024', endDate: 'Present', organization: 'Self',
-    isVerified: false, nodeType: 'Startup', emotionLabel: 'Confident',
-    timelineSummary: 'Participating in hackathons and building PathFinder.',
-    expandedDetails: { context: '', challengeFaced: '', outcome: '', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: [], transitions: [] },
-  },
-];
+import { getCommunityJourney, CommunityJourney } from '../../api/community.api';
 
 export default function PublicProfilePage() {
   const router = useRouter();
   const { username } = useLocalSearchParams<{ username: string }>();
+
+  const [journey, setJourney] = useState<CommunityJourney | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (username) {
+      fetchJourney();
+    }
+  }, [username]);
+
+  const fetchJourney = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getCommunityJourney(username!);
+      setJourney(data);
+    } catch (e: any) {
+      setError(e.message || "Failed to load profile");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -35,96 +41,98 @@ export default function PublicProfilePage() {
     }
   };
 
-  return (
-    <ScrollView style={s.container} contentContainerStyle={s.content}>
-      {/* Header */}
-      <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={s.backArrow}>←</Text>
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-brand-cream justify-center items-center p-5">
+        <ActivityIndicator size="large" color={BRAND_COLORS.navy} />
+      </View>
+    );
+  }
+
+  if (error || !journey) {
+    return (
+      <View className="flex-1 bg-brand-cream justify-center items-center p-5">
+        <Text className="text-base text-brand-rust mb-4">{error || "User not found"}</Text>
+        <TouchableOpacity className="px-5 py-2.5 bg-brand-navy rounded-lg" onPress={fetchJourney}>
+          <Text className="text-brand-white font-bold">Retry</Text>
         </TouchableOpacity>
-        <Text style={s.headerTitle}>Public Profile</Text>
+      </View>
+    );
+  }
+
+  const { user, experiences } = journey;
+  const sortedExperiences = [...experiences].sort((a, b) => {
+    const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
+    const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
+    return dateB - dateA;
+  });
+
+  return (
+    <ScrollView className="flex-1 bg-brand-cream" contentContainerClassName="p-5 pb-10">
+      {/* Header */}
+      <View className="flex-row items-center justify-between mb-6">
+        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}>
+          <Text className="text-[22px] text-brand-navy">←</Text>
+        </TouchableOpacity>
+        <Text className="text-lg font-bold text-brand-navy">Public Profile</Text>
         <View style={{ width: 22 }} />
       </View>
 
       {/* Profile */}
-      <View style={s.profileBlock}>
-        <View style={s.avatar}>
-          <Text style={s.avatarText}>{(username || 'U')[0].toUpperCase()}</Text>
+      <View className="items-center mb-5">
+        <View className="w-[72px] h-[72px] rounded-full bg-brand-navy justify-center items-center mb-3">
+          <Text className="text-[28px] font-extrabold text-brand-white">{(user.username || 'U')[0].toUpperCase()}</Text>
         </View>
-        <Text style={s.username}>@{username || 'unknown'}</Text>
-        <View style={s.repRow}>
-          <Text style={s.repStar}>⭐</Text>
-          <Text style={s.repValue}>72</Text>
+        <Text className="text-xl font-bold text-brand-navy mb-1.5">@{user.username || 'unknown'}</Text>
+        <View className="flex-row items-center gap-1.5">
+          <Text className="text-sm">⭐</Text>
+          <Text className="text-base font-extrabold text-brand-teal">{user.reputationScore}</Text>
         </View>
       </View>
 
       {/* Share Button */}
-      <TouchableOpacity style={s.shareBtn} onPress={handleShare}>
-        <Text style={s.shareIcon}>🔗</Text>
-        <Text style={s.shareText}>Share this Journey</Text>
+      <TouchableOpacity 
+        className="flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-brand-rust mb-7 elevation-4 shadow-sm" 
+        onPress={handleShare}
+      >
+        <Text className="text-base">🔗</Text>
+        <Text className="text-[15px] font-bold text-brand-white">Share this Journey</Text>
       </TouchableOpacity>
 
       {/* Timeline */}
-      <Text style={s.sectionTitle}>Life Graph</Text>
-      {PUBLIC_TIMELINE.map((event, idx) => {
-        const isLast = idx === PUBLIC_TIMELINE.length - 1;
-        return (
-          <View key={event.id} style={s.stepRow}>
-            <View style={s.stepLineCol}>
-              <View style={[s.stepDot, event.isVerified && s.stepDotVerified]} />
-              {!isLast && <View style={s.stepLine} />}
-            </View>
-            <View style={s.stepCard}>
-              <View style={s.stepTitleRow}>
-                <Text style={s.stepTitle}>{event.title}</Text>
-                {event.isVerified && (
-                  <View style={s.verifiedBadge}>
-                    <Text style={s.verifiedText}>✓ Verified</Text>
-                  </View>
-                )}
+      <Text className="text-lg font-extrabold text-brand-navy mb-4">Life Graph</Text>
+      {sortedExperiences.length === 0 ? (
+        <Text className="text-sm text-brand-slate italic text-center mt-5">This user hasn't added any experiences yet.</Text>
+      ) : (
+        sortedExperiences.map((event, idx) => {
+          const isLast = idx === sortedExperiences.length - 1;
+          return (
+            <View key={event.id} className="flex-row mb-0">
+              <View className="w-6 items-center">
+                <View className={`w-3 h-3 rounded-full mt-4 z-10 ${event.isVerified ? 'bg-brand-teal' : 'bg-brand-border'}`} />
+                {!isLast && <View className="w-[2px] flex-1 bg-brand-border -mt-0.5" />}
               </View>
-              <Text style={s.stepMeta}>{event.startDate} – {event.endDate}  •  {event.organization}</Text>
-              <Text style={s.stepSummary}>{event.timelineSummary}</Text>
+              <View className="flex-1 bg-brand-white rounded-xl p-3.5 ml-2.5 mb-3 border border-brand-border">
+                <View className="flex-row items-center justify-between mb-0.5">
+                  <Text className="text-base font-extrabold text-brand-navy flex-1">{event.title}</Text>
+                  {event.isVerified && (
+                    <View className="bg-brand-cream px-2 py-[3px] rounded-lg">
+                      <Text className="text-brand-teal text-[10px] font-bold">✓ Verified</Text>
+                    </View>
+                  )}
+                </View>
+                <Text className="text-xs text-brand-slate mb-1.5 font-semibold">
+                  {event.startDate ? new Date(event.startDate).getFullYear() : 'Unknown'} 
+                  {event.endDate ? ` – ${new Date(event.endDate).getFullYear()}` : ' – Present'}  •  {event.organization}
+                </Text>
+                <Text className="text-sm text-brand-slate leading-5 font-medium">{event.timelineSummary}</Text>
+              </View>
             </View>
-          </View>
-        );
-      })}
+          );
+        })
+      )}
     </ScrollView>
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: BRAND_COLORS.cream },
-  content: { padding: 20, paddingBottom: 40 },
 
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 },
-  backArrow: { fontSize: 22, color: BRAND_COLORS.navy },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: BRAND_COLORS.navy },
-
-  profileBlock: { alignItems: 'center', marginBottom: 20 },
-  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: BRAND_COLORS.navy, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  avatarText: { fontSize: 28, fontWeight: '800', color: BRAND_COLORS.white },
-  username: { fontSize: 20, fontWeight: '700', color: BRAND_COLORS.navy, marginBottom: 6 },
-  repRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  repStar: { fontSize: 14 },
-  repValue: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.teal },
-
-  shareBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: BRAND_COLORS.rust, marginBottom: 28, shadowColor: BRAND_COLORS.rust, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
-  shareIcon: { fontSize: 16 },
-  shareText: { fontSize: 15, fontWeight: '700', color: BRAND_COLORS.white },
-
-  sectionTitle: { fontSize: 18, fontWeight: '800', color: BRAND_COLORS.navy, marginBottom: 16 },
-
-  stepRow: { flexDirection: 'row', marginBottom: 0 },
-  stepLineCol: { width: 24, alignItems: 'center' },
-  stepDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: BRAND_COLORS.border, marginTop: 16, zIndex: 1 },
-  stepDotVerified: { backgroundColor: BRAND_COLORS.teal },
-  stepLine: { width: 2, flex: 1, backgroundColor: BRAND_COLORS.border, marginTop: -2 },
-  stepCard: { flex: 1, backgroundColor: BRAND_COLORS.white, borderRadius: 12, padding: 14, marginLeft: 10, marginBottom: 12, borderWidth: 1, borderColor: BRAND_COLORS.border },
-  stepTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 },
-  stepTitle: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.navy, flex: 1 },
-  verifiedBadge: { backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  verifiedText: { color: BRAND_COLORS.teal, fontSize: 10, fontWeight: '700' },
-  stepMeta: { fontSize: 12, color: BRAND_COLORS.slate, marginBottom: 6, fontWeight: '600' },
-  stepSummary: { fontSize: 14, color: BRAND_COLORS.slate, lineHeight: 20, fontWeight: '500' },
-});

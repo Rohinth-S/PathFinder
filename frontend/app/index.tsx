@@ -47,18 +47,12 @@ export default function LandingPage() {
   };
 
   return (
-    <View className="flex-1 justify-center items-center bg-brand-cream px-6">
+    <View className="flex-1 justify-center items-center bg-brand-white px-6">
       <Image 
         source={require('../assets/logo.jpg')} 
-        className="w-32 h-32 mb-6 rounded-3xl"
+        style={{ width: 280, height: 280, marginBottom: 32 }}
         resizeMode="contain" 
       />
-      <Text className="text-3xl font-extrabold text-brand-navy tracking-widest mb-2 text-center">
-        PATHFINDER
-      </Text>
-      <Text className="text-sm font-semibold tracking-wider text-brand-rust mb-8 text-center uppercase">
-        Real Journeys. Better Decisions.
-      </Text>
       
       <View className="w-full max-w-sm mb-12">
         <Text className="text-center text-brand-slate text-base leading-6">
