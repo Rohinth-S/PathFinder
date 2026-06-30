@@ -20,6 +20,16 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   { id: '5', sender: 'ai', text: "That's a strong foundation. What was the biggest challenge you faced during that time? Any moments that shifted your thinking?" },
 ];
 
+const MOCK_FOLLOW_UPS = [
+  "That's fascinating! How did you transition from that into your next role?",
+  "I see. What were the most valuable skills you picked up during that phase?",
+  "Makes sense. Did you have any specific mentors or key people who influenced you then?",
+  "Interesting! That connects to a pattern I'm seeing. What happened next in your career?",
+  "Wow, that must have been quite an experience. What was the turning point for your next big step?",
+  "Got it. Looking back, what is the one thing you would have done differently at that stage?",
+  "That sounds like a defining moment. How did that shape your long-term goals?"
+];
+
 export default function ShareJourneyPage() {
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
@@ -31,16 +41,21 @@ export default function ShareJourneyPage() {
   const sendMessage = () => {
     if (!inputText.trim()) return;
     const userMsg: ChatMessage = { id: Date.now().toString(), text: inputText, sender: 'user' };
+    
+    // Count how many user messages exist to pick a sequential follow-up
+    const userMessageCount = messages.filter(m => m.sender === 'user').length;
+    
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
     setGraphNodes(prev => prev + 1);
 
     // Mock AI response after short delay
     setTimeout(() => {
+      const followUpText = MOCK_FOLLOW_UPS[userMessageCount % MOCK_FOLLOW_UPS.length];
       const aiReply: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: 'ai',
-        text: "Interesting! That connects to a pattern I'm seeing. What happened next in your career after that realization?",
+        text: followUpText,
       };
       setMessages(prev => [...prev, aiReply]);
       setGraphNodes(prev => prev + 1);
