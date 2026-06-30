@@ -4,6 +4,7 @@ import { getSubtopics } from "../processors/community/getSubtopics.processor.js"
 import { searchCommunity } from "../processors/community/searchCommunity.processor.js";
 import { getJourney } from "../processors/community/getJourney.processor.js";
 
+
 export async function getTopicsController(
   _req: Request,
   res: Response
