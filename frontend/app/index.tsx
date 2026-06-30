@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-na
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
 import { initializeUser } from '@/services/auth.service';
+import Starfield from '../components/Starfield';
 
 const C = {
   bg: '#050505',
@@ -76,10 +77,11 @@ export default function LandingPage() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
+      <Starfield count={50} />
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
         {/* ── HERO ── */}
-        <View style={{ minHeight: 720, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 100, overflow: 'hidden', backgroundColor: C.bg }}>
+        <View style={{ minHeight: 720, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 100, overflow: 'hidden' }}>
           {/* Soft background glows */}
           <SoftGlow size={600} top={-150} left={-200} opacity={0.03} />
           <SoftGlow size={500} top={400} right={-150} opacity={0.02} />
@@ -135,7 +137,7 @@ export default function LandingPage() {
 
 
         {/* ── HOW IT WORKS ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.bg, overflow: 'hidden' }}>
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', overflow: 'hidden' }}>
           
           <SoftGlow size={700} top={200} left={-300} opacity={0.02} />
 
@@ -194,7 +196,7 @@ export default function LandingPage() {
 
 
         {/* ── FINAL CTA ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.bg, overflow: 'hidden' }}>
+        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', overflow: 'hidden' }}>
           
           <SoftGlow size={500} bottom={-200} right={-100} opacity={0.03} />
 

@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator,
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { updateProfile } from '../../api/auth.api';
+import Starfield from '../../components/Starfield';
 
 const C = {
   bg: '#050505',
@@ -77,10 +78,11 @@ export default function ProfilePage() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
+      <Starfield count={40} />
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
         {/* ── Header ── */}
-        <View style={{ paddingTop: 64, paddingBottom: 48, alignItems: 'center', overflow: 'hidden', backgroundColor: C.bg }}>
+        <View style={{ paddingTop: 64, paddingBottom: 48, alignItems: 'center', overflow: 'hidden' }}>
           
           {/* Subtle glow behind avatar */}
           <SoftGlow size={400} top={-100} opacity={0.03} />
@@ -218,7 +220,7 @@ export default function ProfilePage() {
 
 
         {/* ── Action Buttons ── */}
-        <View style={{ paddingHorizontal: 24, paddingVertical: 48, gap: 14, backgroundColor: C.bg, overflow: 'hidden' }}>
+        <View style={{ paddingHorizontal: 24, paddingVertical: 48, gap: 14, overflow: 'hidden' }}>
           <View style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
 
           <SoftGlow size={500} bottom={-200} left={-150} opacity={0.02} />
