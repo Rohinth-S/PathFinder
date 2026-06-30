@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
+  View, Text, ScrollView, TouchableOpacity,
   Switch, Modal, Pressable, Animated,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -46,22 +46,22 @@ export default function FullJourneyPage() {
   );
 
   return (
-    <View style={st.wrapper}>
+    <View className="flex-1 bg-brand-cream">
       {/* Header */}
-      <View style={st.header}>
-        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}><Text style={st.back}>←</Text></TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={st.headerTitle}>Full Journey</Text>
-          <Text style={st.headerSub}>Journey 1 of 18</Text>
+      <View className="flex-row items-start p-4 pt-5 gap-3 border-b border-brand-border">
+        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}><Text className="text-2xl text-brand-navy mt-0.5">←</Text></TouchableOpacity>
+        <View className="flex-1">
+          <Text className="text-xl font-extrabold text-brand-navy">Full Journey</Text>
+          <Text className="text-[13px] text-brand-slate mt-0.5">Journey 1 of 18</Text>
         </View>
-        <View style={st.toggleRow}>
-          <Text style={st.toggleLabel}>Show relevant only</Text>
+        <View className="flex-row items-center gap-1">
+          <Text className="text-[11px] text-brand-slate font-semibold">Show relevant only</Text>
           <Switch value={showRelevant} onValueChange={setShowRelevant} trackColor={{ false: BRAND_COLORS.border, true: BRAND_COLORS.teal }} thumbColor={BRAND_COLORS.white} style={{ transform: [{ scale: 0.7 }] }} />
         </View>
       </View>
 
       {/* Flowchart */}
-      <ScrollView style={st.scrollArea} contentContainerStyle={st.scrollContent}>
+      <ScrollView className="flex-1" contentContainerClassName="p-5 pb-20 items-center">
         <Animated.View style={{ transform: [{ scale }] }}>
           {mainTimeline.map((event, idx) => {
             const isLast = idx === mainTimeline.length - 1;
@@ -74,29 +74,30 @@ export default function FullJourneyPage() {
               <View key={event.id} style={{ opacity: faded ? 0.35 : 1 }}>
                 {/* Edge label */}
                 {idx > 0 && (
-                  <View style={st.edgeLabelWrap}>
-                    <View style={st.dashedSeg} />
-                    <Text style={st.edgeLabel}>
+                  <View className="items-center my-1 gap-1">
+                    <View className="w-[2px] h-5 border-l-2 border-dashed border-brand-border" />
+                    <Text className="text-xs text-brand-slate bg-brand-cream px-2 font-medium">
                       {event.nodeType === 'Failure' ? 'despite' : idx === mainTimeline.length - 1 ? 'led to' : event.expandedDetails.transitions.length > 0 ? 'led to' : 'caused'}
                     </Text>
-                    <View style={st.dashedSeg} />
+                    <View className="w-[2px] h-5 border-l-2 border-dashed border-brand-border" />
                   </View>
                 )}
 
                 {/* Row: main node + optional branch */}
-                <View style={st.nodeRow}>
+                <View className="flex-row gap-3 items-start">
                   {/* Main node */}
                   <TouchableOpacity
-                    style={[st.nodeCard, { borderColor }]}
+                    className="bg-brand-white rounded-xl p-4 border-2 w-[200px] items-center"
+                    style={{ borderColor }}
                     onPress={() => setSelectedNode(event)}
                     activeOpacity={0.8}
                   >
-                    <Text style={[st.nodeType, { color: borderColor }]}>{event.nodeType}</Text>
-                    {event.nodeType === 'Decision' && <Text style={st.diamondIcon}>◆</Text>}
-                    <Text style={st.nodeTitle}>{event.title}</Text>
-                    <Text style={st.nodeYear}>{event.startDate}{event.endDate && event.endDate !== event.startDate ? ` – ${event.endDate}` : ''}</Text>
-                    <View style={[st.emotionPill, { backgroundColor: emotionStyle.bg }]}>
-                      <Text style={[st.emotionText, { color: emotionStyle.text }]}>{event.emotionLabel}</Text>
+                    <Text className="text-xs font-semibold mb-0.5" style={{ color: borderColor }}>{event.nodeType}</Text>
+                    {event.nodeType === 'Decision' && <Text className="text-[20px] text-brand-tan my-0.5">◆</Text>}
+                    <Text className="text-[15px] font-extrabold text-brand-navy text-center mb-1">{event.title}</Text>
+                    <Text className="text-xs text-brand-slate mb-2 font-semibold">{event.startDate}{event.endDate && event.endDate !== event.startDate ? ` – ${event.endDate}` : ''}</Text>
+                    <View className="px-2.5 py-1 rounded-xl" style={{ backgroundColor: emotionStyle.bg }}>
+                      <Text className="text-[11px] font-bold" style={{ color: emotionStyle.text }}>{event.emotionLabel}</Text>
                     </View>
                   </TouchableOpacity>
 
@@ -104,20 +105,20 @@ export default function FullJourneyPage() {
                   {hasBranch && failureNodes.map(fn => {
                     const fEmotion = getEmotionStyle(fn.emotionLabel || 'Confident');
                     return (
-                      <View key={fn.id} style={st.branchWrap}>
-                        <View style={st.branchConnector}>
-                          <Text style={st.branchLabel}>despite</Text>
+                      <View key={fn.id} className="items-center mt-5">
+                        <View className="w-10 h-0.5 bg-brand-slate mb-2">
+                          <Text className="absolute -top-3.5 text-[10px] text-brand-slate bg-brand-cream px-1 font-semibold">despite</Text>
                         </View>
                         <TouchableOpacity
-                          style={[st.nodeCard, st.failureCard]}
+                          className="bg-brand-cream rounded-xl p-4 border-2 border-brand-rust w-[160px] items-center"
                           onPress={() => setSelectedNode(fn)}
                           activeOpacity={0.8}
                         >
-                          <Text style={[st.nodeType, { color: '#EF4444' }]}>Failure</Text>
-                          <Text style={st.nodeTitle}>{fn.title}</Text>
-                          <Text style={st.nodeYear}>{fn.startDate}</Text>
-                          <View style={[st.emotionPill, { backgroundColor: fEmotion.bg }]}>
-                            <Text style={[st.emotionText, { color: fEmotion.text }]}>{fn.emotionLabel}</Text>
+                          <Text className="text-xs font-semibold mb-0.5 text-red-500">Failure</Text>
+                          <Text className="text-[15px] font-extrabold text-brand-navy text-center mb-1">{fn.title}</Text>
+                          <Text className="text-xs text-brand-slate mb-2 font-semibold">{fn.startDate}</Text>
+                          <View className="px-2.5 py-1 rounded-xl" style={{ backgroundColor: fEmotion.bg }}>
+                            <Text className="text-[11px] font-bold" style={{ color: fEmotion.text }}>{fn.emotionLabel}</Text>
                           </View>
                         </TouchableOpacity>
                       </View>
@@ -131,60 +132,60 @@ export default function FullJourneyPage() {
       </ScrollView>
 
       {/* Zoom controls */}
-      <View style={st.zoomBar}>
-        <TouchableOpacity style={st.zoomBtn} onPress={() => setScale(Math.max(0.5, scale - 0.2))}>
-          <Text style={st.zoomIcon}>🔍−</Text>
+      <View className="absolute bottom-5 right-4 flex-row bg-brand-white rounded-[20px] px-1 py-1 gap-0.5 border border-brand-border elevation-4 shadow-sm">
+        <TouchableOpacity className="w-9 h-9 rounded-[18px] justify-center items-center" onPress={() => setScale(Math.max(0.5, scale - 0.2))}>
+          <Text className="text-base">🔍−</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={st.zoomBtn} onPress={() => setScale(1)}>
-          <Text style={st.zoomIcon}>⛶</Text>
+        <TouchableOpacity className="w-9 h-9 rounded-[18px] justify-center items-center" onPress={() => setScale(1)}>
+          <Text className="text-base">⛶</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={st.zoomBtn} onPress={() => setScale(Math.min(2, scale + 0.2))}>
-          <Text style={st.zoomIcon}>🔍+</Text>
+        <TouchableOpacity className="w-9 h-9 rounded-[18px] justify-center items-center" onPress={() => setScale(Math.min(2, scale + 0.2))}>
+          <Text className="text-base">🔍+</Text>
         </TouchableOpacity>
       </View>
 
       {/* Bottom Sheet Modal */}
       <Modal visible={selectedNode !== null} animationType="slide" transparent>
-        <Pressable style={st.overlay} onPress={() => setSelectedNode(null)} />
+        <Pressable className="flex-1" style={{ backgroundColor: 'rgba(26, 32, 44, 0.6)' }} onPress={() => setSelectedNode(null)} />
         {selectedNode && (
-          <View style={st.sheet}>
-            <View style={st.sheetHeader}>
-              <View style={{ flex: 1 }}>
-                <Text style={[st.sheetType, { color: NODE_BORDER_COLORS[selectedNode.nodeType || 'Job'] }]}>{selectedNode.nodeType}</Text>
-                <Text style={st.sheetTitle}>{selectedNode.title}</Text>
-                <Text style={st.sheetYear}>{selectedNode.startDate}</Text>
-                <View style={[st.emotionPill, { backgroundColor: getEmotionStyle(selectedNode.emotionLabel || 'Confident').bg, alignSelf: 'flex-start', marginTop: 8 }]}>
-                  <Text style={[st.emotionText, { color: getEmotionStyle(selectedNode.emotionLabel || 'Confident').text }]}>{selectedNode.emotionLabel}</Text>
+          <View className="absolute bottom-0 left-0 right-0 bg-brand-cream rounded-t-[20px] p-6 max-h-[55%]">
+            <View className="flex-row justify-between">
+              <View className="flex-1">
+                <Text className="text-sm font-bold mb-1" style={{ color: NODE_BORDER_COLORS[selectedNode.nodeType || 'Job'] }}>{selectedNode.nodeType}</Text>
+                <Text className="text-[24px] font-extrabold text-brand-navy leading-[30px]">{selectedNode.title}</Text>
+                <Text className="text-sm text-brand-slate mt-1 font-semibold">{selectedNode.startDate}</Text>
+                <View className="self-start mt-2 px-2.5 py-1 rounded-xl" style={{ backgroundColor: getEmotionStyle(selectedNode.emotionLabel || 'Confident').bg }}>
+                  <Text className="text-[11px] font-bold" style={{ color: getEmotionStyle(selectedNode.emotionLabel || 'Confident').text }}>{selectedNode.emotionLabel}</Text>
                 </View>
               </View>
               <TouchableOpacity onPress={() => setSelectedNode(null)} hitSlop={16}>
-                <Text style={st.closeX}>✕</Text>
+                <Text className="text-[22px] text-brand-slate">✕</Text>
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={{ marginTop: 16 }}>
+            <ScrollView className="mt-4">
               {selectedNode.expandedDetails.context ? (
-                <View style={st.sheetSection}>
-                  <Text style={st.sheetSectionTitle}>Context</Text>
-                  <Text style={st.sheetBody}>{selectedNode.expandedDetails.context}</Text>
+                <View className="mb-4">
+                  <Text className="text-base font-extrabold text-brand-navy mb-1.5">Context</Text>
+                  <Text className="text-[15px] text-brand-slate leading-[22px] font-medium">{selectedNode.expandedDetails.context}</Text>
                 </View>
               ) : null}
               {selectedNode.expandedDetails.challengeFaced ? (
-                <View style={st.sheetSection}>
-                  <Text style={st.sheetSectionTitle}>Challenge</Text>
-                  <Text style={st.sheetBody}>{selectedNode.expandedDetails.challengeFaced}</Text>
+                <View className="mb-4">
+                  <Text className="text-base font-extrabold text-brand-navy mb-1.5">Challenge</Text>
+                  <Text className="text-[15px] text-brand-slate leading-[22px] font-medium">{selectedNode.expandedDetails.challengeFaced}</Text>
                 </View>
               ) : null}
               {selectedNode.expandedDetails.emotionNote ? (
-                <View style={st.sheetSection}>
-                  <Text style={st.sheetSectionTitle}>Emotion note</Text>
-                  <Text style={[st.sheetBody, { fontStyle: 'italic', color: '#64748B' }]}>{selectedNode.expandedDetails.emotionNote}</Text>
+                <View className="mb-4">
+                  <Text className="text-base font-extrabold text-brand-navy mb-1.5">Emotion note</Text>
+                  <Text className="text-[15px] leading-[22px] font-medium italic text-slate-500">{selectedNode.expandedDetails.emotionNote}</Text>
                 </View>
               ) : null}
               {selectedNode.expandedDetails.outcome ? (
-                <View style={st.sheetSection}>
-                  <Text style={st.sheetSectionTitle}>Outcome</Text>
-                  <Text style={st.sheetBody}>{selectedNode.expandedDetails.outcome}</Text>
+                <View className="mb-4">
+                  <Text className="text-base font-extrabold text-brand-navy mb-1.5">Outcome</Text>
+                  <Text className="text-[15px] text-brand-slate leading-[22px] font-medium">{selectedNode.expandedDetails.outcome}</Text>
                 </View>
               ) : null}
             </ScrollView>
@@ -195,53 +196,4 @@ export default function FullJourneyPage() {
   );
 }
 
-/* ── Styles ──────────────────────────────────────────── */
 
-const st = StyleSheet.create({
-  wrapper: { flex: 1, backgroundColor: BRAND_COLORS.cream },
-  header: { flexDirection: 'row', alignItems: 'flex-start', padding: 16, paddingTop: 20, gap: 12, borderBottomWidth: 1, borderBottomColor: BRAND_COLORS.border },
-  back: { fontSize: 24, color: BRAND_COLORS.navy, marginTop: 2 },
-  headerTitle: { fontSize: 20, fontWeight: '800', color: BRAND_COLORS.navy },
-  headerSub: { fontSize: 13, color: BRAND_COLORS.slate, marginTop: 2 },
-  toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  toggleLabel: { fontSize: 11, color: BRAND_COLORS.slate, fontWeight: '600' },
-
-  scrollArea: { flex: 1 },
-  scrollContent: { padding: 20, paddingBottom: 80, alignItems: 'center' },
-
-  edgeLabelWrap: { alignItems: 'center', marginVertical: 4, gap: 4 },
-  dashedSeg: { width: 2, height: 20, borderStyle: 'dashed', borderWidth: 1, borderColor: BRAND_COLORS.border },
-  edgeLabel: { fontSize: 12, color: BRAND_COLORS.slate, backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 8, fontWeight: '500' },
-
-  nodeRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
-
-  nodeCard: { backgroundColor: BRAND_COLORS.white, borderRadius: 12, padding: 16, borderWidth: 2, width: 200, alignItems: 'center' },
-  nodeType: { fontSize: 12, fontWeight: '600', marginBottom: 2 },
-  diamondIcon: { fontSize: 20, color: BRAND_COLORS.tan, marginVertical: 2 },
-  nodeTitle: { fontSize: 15, fontWeight: '800', color: BRAND_COLORS.navy, textAlign: 'center', marginBottom: 4 },
-  nodeYear: { fontSize: 12, color: BRAND_COLORS.slate, marginBottom: 8, fontWeight: '600' },
-  emotionPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
-  emotionText: { fontSize: 11, fontWeight: '700' },
-
-  failureCard: { borderColor: BRAND_COLORS.rust, backgroundColor: BRAND_COLORS.cream, width: 160 },
-
-  branchWrap: { alignItems: 'center', marginTop: 20 },
-  branchConnector: { width: 40, height: 2, backgroundColor: BRAND_COLORS.slate, marginBottom: 8 },
-  branchLabel: { position: 'absolute', top: -14, fontSize: 10, color: BRAND_COLORS.slate, backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 4, fontWeight: '600' },
-
-  zoomBar: { position: 'absolute', bottom: 20, right: 16, flexDirection: 'row', backgroundColor: BRAND_COLORS.white, borderRadius: 20, paddingHorizontal: 4, paddingVertical: 4, gap: 2, borderWidth: 1, borderColor: BRAND_COLORS.border, elevation: 4, shadowColor: BRAND_COLORS.navy, shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
-  zoomBtn: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
-  zoomIcon: { fontSize: 16 },
-
-  overlay: { flex: 1, backgroundColor: 'rgba(26, 32, 44, 0.6)' },
-  sheet: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: BRAND_COLORS.cream, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, maxHeight: '55%' },
-  sheetHeader: { flexDirection: 'row', justifyContent: 'space-between' },
-  sheetType: { fontSize: 14, fontWeight: '700', marginBottom: 4 },
-  sheetTitle: { fontSize: 24, fontWeight: '800', color: BRAND_COLORS.navy, lineHeight: 30 },
-  sheetYear: { fontSize: 14, color: BRAND_COLORS.slate, marginTop: 4, fontWeight: '600' },
-  closeX: { fontSize: 22, color: BRAND_COLORS.slate },
-
-  sheetSection: { marginBottom: 16 },
-  sheetSectionTitle: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.navy, marginBottom: 6 },
-  sheetBody: { fontSize: 15, color: BRAND_COLORS.slate, lineHeight: 22, fontWeight: '500' },
-});

@@ -40,8 +40,11 @@ export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
-        <View style={layoutStyles.outer}>
-          <View style={layoutStyles.inner}>
+        <View className="flex-1 bg-[#E8ECF2] items-center">
+          <View 
+            className="flex-1 w-full web:max-w-[480px] web:border-x web:border-[#D1D5DB]"
+            style={Platform.OS === 'web' ? { shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 20 } : {}}
+          >
             <Slot />
           </View>
         </View>
@@ -49,27 +52,3 @@ export default function RootLayout() {
     </ClerkProvider>
   );
 }
-
-const layoutStyles = StyleSheet.create({
-  outer: {
-    flex: 1,
-    backgroundColor: '#E8ECF2',
-    alignItems: 'center',
-  },
-  inner: {
-    flex: 1,
-    width: '100%',
-    ...(Platform.OS === 'web'
-      ? {
-          maxWidth: 480,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.15,
-          shadowRadius: 20,
-          borderLeftWidth: 1,
-          borderRightWidth: 1,
-          borderColor: '#D1D5DB',
-        }
-      : {}),
-  },
-});
