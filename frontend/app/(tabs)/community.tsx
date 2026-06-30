@@ -94,8 +94,8 @@ export default function CommunityPage() {
             <Text style={s.username}>@{item.username || 'unknown'}</Text>
             <View style={s.repRow}>
             <Text style={s.repStar}>⭐</Text>
-            <Text style={s.repValue}>{item.reputationScore}</Text>
-            <Text style={s.expCount}> • {item.experienceCount} experiences</Text>
+            <Text style={s.repValue}>{typeof item.reputationScore === 'object' && item.reputationScore !== null ? (item.reputationScore as any).low : item.reputationScore}</Text>
+            <Text style={s.expCount}> • {typeof item.experienceCount === 'object' && item.experienceCount !== null ? (item.experienceCount as any).low : item.experienceCount} experiences</Text>
           </View>
         </View>
       </View>
