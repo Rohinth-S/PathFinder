@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Share, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { BRAND_COLORS } from '../../constants/colors';
 import { getCommunityJourney, CommunityJourney } from '../../api/community.api';
@@ -43,7 +43,7 @@ export default function PublicProfilePage() {
 
   if (isLoading) {
     return (
-      <View style={[s.container, s.center]}>
+      <View className="flex-1 bg-brand-cream justify-center items-center p-5">
         <ActivityIndicator size="large" color={BRAND_COLORS.navy} />
       </View>
     );
@@ -51,10 +51,10 @@ export default function PublicProfilePage() {
 
   if (error || !journey) {
     return (
-      <View style={[s.container, s.center]}>
-        <Text style={s.errorText}>{error || "User not found"}</Text>
-        <TouchableOpacity style={s.retryBtn} onPress={fetchJourney}>
-          <Text style={s.retryText}>Retry</Text>
+      <View className="flex-1 bg-brand-cream justify-center items-center p-5">
+        <Text className="text-base text-brand-rust mb-4">{error || "User not found"}</Text>
+        <TouchableOpacity className="px-5 py-2.5 bg-brand-navy rounded-lg" onPress={fetchJourney}>
+          <Text className="text-brand-white font-bold">Retry</Text>
         </TouchableOpacity>
       </View>
     );
@@ -68,61 +68,64 @@ export default function PublicProfilePage() {
   });
 
   return (
-    <ScrollView style={s.container} contentContainerStyle={s.content}>
+    <ScrollView className="flex-1 bg-brand-cream" contentContainerClassName="p-5 pb-10">
       {/* Header */}
-      <View style={s.header}>
+      <View className="flex-row items-center justify-between mb-6">
         <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}>
-          <Text style={s.backArrow}>←</Text>
+          <Text className="text-[22px] text-brand-navy">←</Text>
         </TouchableOpacity>
-        <Text style={s.headerTitle}>Public Profile</Text>
+        <Text className="text-lg font-bold text-brand-navy">Public Profile</Text>
         <View style={{ width: 22 }} />
       </View>
 
       {/* Profile */}
-      <View style={s.profileBlock}>
-        <View style={s.avatar}>
-          <Text style={s.avatarText}>{(user.username || 'U')[0].toUpperCase()}</Text>
+      <View className="items-center mb-5">
+        <View className="w-[72px] h-[72px] rounded-full bg-brand-navy justify-center items-center mb-3">
+          <Text className="text-[28px] font-extrabold text-brand-white">{(user.username || 'U')[0].toUpperCase()}</Text>
         </View>
-        <Text style={s.username}>@{user.username || 'unknown'}</Text>
-        <View style={s.repRow}>
-          <Text style={s.repStar}>⭐</Text>
-          <Text style={s.repValue}>{user.reputationScore}</Text>
+        <Text className="text-xl font-bold text-brand-navy mb-1.5">@{user.username || 'unknown'}</Text>
+        <View className="flex-row items-center gap-1.5">
+          <Text className="text-sm">⭐</Text>
+          <Text className="text-base font-extrabold text-brand-teal">{user.reputationScore}</Text>
         </View>
       </View>
 
       {/* Share Button */}
-      <TouchableOpacity style={s.shareBtn} onPress={handleShare}>
-        <Text style={s.shareIcon}>🔗</Text>
-        <Text style={s.shareText}>Share this Journey</Text>
+      <TouchableOpacity 
+        className="flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-brand-rust mb-7 elevation-4 shadow-sm" 
+        onPress={handleShare}
+      >
+        <Text className="text-base">🔗</Text>
+        <Text className="text-[15px] font-bold text-brand-white">Share this Journey</Text>
       </TouchableOpacity>
 
       {/* Timeline */}
-      <Text style={s.sectionTitle}>Life Graph</Text>
+      <Text className="text-lg font-extrabold text-brand-navy mb-4">Life Graph</Text>
       {sortedExperiences.length === 0 ? (
-        <Text style={s.emptyText}>This user hasn't added any experiences yet.</Text>
+        <Text className="text-sm text-brand-slate italic text-center mt-5">This user hasn't added any experiences yet.</Text>
       ) : (
         sortedExperiences.map((event, idx) => {
           const isLast = idx === sortedExperiences.length - 1;
           return (
-            <View key={event.id} style={s.stepRow}>
-              <View style={s.stepLineCol}>
-                <View style={[s.stepDot, event.isVerified && s.stepDotVerified]} />
-                {!isLast && <View style={s.stepLine} />}
+            <View key={event.id} className="flex-row mb-0">
+              <View className="w-6 items-center">
+                <View className={`w-3 h-3 rounded-full mt-4 z-10 ${event.isVerified ? 'bg-brand-teal' : 'bg-brand-border'}`} />
+                {!isLast && <View className="w-[2px] flex-1 bg-brand-border -mt-0.5" />}
               </View>
-              <View style={s.stepCard}>
-                <View style={s.stepTitleRow}>
-                  <Text style={s.stepTitle}>{event.title}</Text>
+              <View className="flex-1 bg-brand-white rounded-xl p-3.5 ml-2.5 mb-3 border border-brand-border">
+                <View className="flex-row items-center justify-between mb-0.5">
+                  <Text className="text-base font-extrabold text-brand-navy flex-1">{event.title}</Text>
                   {event.isVerified && (
-                    <View style={s.verifiedBadge}>
-                      <Text style={s.verifiedText}>✓ Verified</Text>
+                    <View className="bg-brand-cream px-2 py-[3px] rounded-lg">
+                      <Text className="text-brand-teal text-[10px] font-bold">✓ Verified</Text>
                     </View>
                   )}
                 </View>
-                <Text style={s.stepMeta}>
+                <Text className="text-xs text-brand-slate mb-1.5 font-semibold">
                   {event.startDate ? new Date(event.startDate).getFullYear() : 'Unknown'} 
                   {event.endDate ? ` – ${new Date(event.endDate).getFullYear()}` : ' – Present'}  •  {event.organization}
                 </Text>
-                <Text style={s.stepSummary}>{event.timelineSummary}</Text>
+                <Text className="text-sm text-brand-slate leading-5 font-medium">{event.timelineSummary}</Text>
               </View>
             </View>
           );
@@ -132,43 +135,4 @@ export default function PublicProfilePage() {
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: BRAND_COLORS.cream },
-  center: { justifyContent: 'center', alignItems: 'center', padding: 20 },
-  content: { padding: 20, paddingBottom: 40 },
-  errorText: { fontSize: 16, color: BRAND_COLORS.rust, marginBottom: 16 },
-  retryBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: BRAND_COLORS.navy, borderRadius: 8 },
-  retryText: { color: BRAND_COLORS.white, fontWeight: '700' },
 
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 },
-  backArrow: { fontSize: 22, color: BRAND_COLORS.navy },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: BRAND_COLORS.navy },
-
-  profileBlock: { alignItems: 'center', marginBottom: 20 },
-  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: BRAND_COLORS.navy, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  avatarText: { fontSize: 28, fontWeight: '800', color: BRAND_COLORS.white },
-  username: { fontSize: 20, fontWeight: '700', color: BRAND_COLORS.navy, marginBottom: 6 },
-  repRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  repStar: { fontSize: 14 },
-  repValue: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.teal },
-
-  shareBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: BRAND_COLORS.rust, marginBottom: 28, shadowColor: BRAND_COLORS.rust, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
-  shareIcon: { fontSize: 16 },
-  shareText: { fontSize: 15, fontWeight: '700', color: BRAND_COLORS.white },
-
-  sectionTitle: { fontSize: 18, fontWeight: '800', color: BRAND_COLORS.navy, marginBottom: 16 },
-  emptyText: { fontSize: 14, color: BRAND_COLORS.slate, fontStyle: 'italic', textAlign: 'center', marginTop: 20 },
-
-  stepRow: { flexDirection: 'row', marginBottom: 0 },
-  stepLineCol: { width: 24, alignItems: 'center' },
-  stepDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: BRAND_COLORS.border, marginTop: 16, zIndex: 1 },
-  stepDotVerified: { backgroundColor: BRAND_COLORS.teal },
-  stepLine: { width: 2, flex: 1, backgroundColor: BRAND_COLORS.border, marginTop: -2 },
-  stepCard: { flex: 1, backgroundColor: BRAND_COLORS.white, borderRadius: 12, padding: 14, marginLeft: 10, marginBottom: 12, borderWidth: 1, borderColor: BRAND_COLORS.border },
-  stepTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 },
-  stepTitle: { fontSize: 16, fontWeight: '800', color: BRAND_COLORS.navy, flex: 1 },
-  verifiedBadge: { backgroundColor: BRAND_COLORS.cream, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  verifiedText: { color: BRAND_COLORS.teal, fontSize: 10, fontWeight: '700' },
-  stepMeta: { fontSize: 12, color: BRAND_COLORS.slate, marginBottom: 6, fontWeight: '600' },
-  stepSummary: { fontSize: 14, color: BRAND_COLORS.slate, lineHeight: 20, fontWeight: '500' },
-});
