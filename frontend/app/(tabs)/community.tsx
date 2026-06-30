@@ -187,7 +187,7 @@ export default function CommunityPage() {
       ) : (
         <FlatList
           data={users}
-          keyExtractor={(item) => item.username}
+          keyExtractor={(item, index) => item.username || `unknown-${index}`}
           renderItem={renderUserCard}
           contentContainerStyle={s.listContent}
           refreshControl={
