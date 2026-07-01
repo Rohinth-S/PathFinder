@@ -16,7 +16,7 @@ export async function extractJourneyController(
       return;
     }
 
-    const extractedGraph = await extractJourney(journey, user);
+    const extractedGraph = await extractJourney([{ role: "user", content: journey }], user);
     const validationResult = validateJourneySchema(extractedGraph);
 
     if (!validationResult.success) {
