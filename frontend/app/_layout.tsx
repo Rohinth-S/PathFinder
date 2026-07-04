@@ -2,7 +2,13 @@ import "../global.css";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { View, Platform, StyleSheet } from "react-native";
+import { View, Platform, StyleSheet, ActivityIndicator } from "react-native";
+import { useFonts, Manrope_400Regular, Manrope_600SemiBold, Manrope_700Bold } from "@expo-google-fonts/manrope";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect, useCallback } from "react";
+
+// Prevent splash from auto-hiding until fonts are ready
+SplashScreen.preventAutoHideAsync();
 
 // Token cache implementation for secure storage of session tokens
 const tokenCache = {
@@ -37,13 +43,33 @@ if (!process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY) {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Manrope_400Regular,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#FAF9F6', alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color="#3E6B66" />
+      </View>
+    );
+  }
+
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
-        <View className="flex-1 bg-[#E8ECF2] items-center">
+        <View className="flex-1 bg-[#FAF9F6] items-center">
           <View 
-            className="flex-1 w-full web:max-w-[480px] web:border-x web:border-[#D1D5DB]"
-            style={Platform.OS === 'web' ? { shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 20 } : {}}
+            className="flex-1 w-full web:max-w-[480px] web:border-x web:border-[#EAE7E0]"
+            style={Platform.OS === 'web' ? { shadowColor: '#152238', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.06, shadowRadius: 20 } : {}}
           >
             <Slot />
           </View>

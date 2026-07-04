@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
-  // Update the content paths to include all your components
   content: [
     "./app/**/*.{js,jsx,ts,tsx}",
     "./components/**/*.{js,jsx,ts,tsx}"
@@ -10,8 +9,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // ── Landing page design system (DESIGN.md) ──
+        background: '#FAF9F6',
+        surface: '#FFFFFF',
+        navy: '#152238',
+        'navy-soft': '#152238CC',
+        teal: '#3E6B66',
+        'teal-tint': '#E7EFEE',
+        terracotta: '#C1603F',
+        'terracotta-tint': '#F5E4DD',
+        sand: '#D9C9A8',
+        border: '#EAE7E0',
+        // ── Legacy brand colors (used by journey/timeline views) ──
         brand: {
-          // Core palette
           navy: '#1A202C',
           teal: '#36585E',
           rust: '#D06757',
@@ -21,7 +31,6 @@ module.exports = {
           white: '#FFFFFF',
           lightGray: '#F1F5F9',
           border: '#E2E8F0',
-          // Dark theme
           dark: '#0F172A',
           darkCard: '#1E293B',
           darkBorder: '#334155',
@@ -30,6 +39,9 @@ module.exports = {
           tealBright: '#14B8A6',
           indigoLight: '#818CF8',
         },
+      },
+      fontFamily: {
+        manrope: ['Manrope'],
       },
     },
   },

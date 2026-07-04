@@ -22,6 +22,20 @@ export const BRAND_COLORS = {
   indigoLight: '#818CF8',
 };
 
+// Landing page design system (DESIGN.md)
+export const L = {
+  background:     '#FAF9F6',
+  surface:        '#FFFFFF',
+  navy:           '#152238',
+  navySoft:       '#152238CC',
+  teal:           '#3E6B66',
+  tealTint:       '#E7EFEE',
+  terracotta:     '#C1603F',
+  terracottaTint: '#F5E4DD',
+  sand:           '#D9C9A8',
+  border:         '#EAE7E0',
+};
+
 export const EMOTION_COLORS: Record<string, { bg: string; text: string }> = {
   'Confident':        { bg: '#EAF4F4', text: '#36585E' }, // Teal tint
   'Uncertain':        { bg: '#FAF5EF', text: '#CBB79F' }, // Tan tint

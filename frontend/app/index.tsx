@@ -1,82 +1,23 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { ScrollView, SafeAreaView } from 'react-native';
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { initializeUser } from '@/services/auth.service';
-
-const C = {
-  bg: '#050505',
-  surface: '#0e0e0e',
-  card: '#141414',
-  white: '#FFFFFF',
-  offWhite: '#e0e0e0',
-  gray: '#888888',
-  dimGray: '#555555',
-  border: '#1e1e1e',
-  gridLine: '#262626',
-  accent: '#3a3a3a',
-};
-
-const FEATURES = [
-  { num: '01', title: 'Life Graphs', desc: 'See how real people navigated their careers — every step, every pivot, every outcome.' },
-  { num: '02', title: 'Decision Points', desc: 'Understand the critical choices that shaped someone\'s trajectory and why they made them.' },
-  { num: '03', title: 'Community', desc: 'Real people. Real stories. No influencers — just verified journeys you can actually learn from.' },
-];
-
-// Subtle Glowing Orbs (Aurora effect)
-function GlowBackground() {
-  return (
-    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
-      <View style={{ position: 'absolute', top: -150, left: -150, width: 500, height: 500, borderRadius: 250, backgroundColor: C.white, opacity: 0.04 }} />
-      <View style={{ position: 'absolute', bottom: -200, right: -100, width: 600, height: 600, borderRadius: 300, backgroundColor: C.white, opacity: 0.03 }} />
-      <View style={{ position: 'absolute', top: '30%', left: '30%', width: 500, height: 500, borderRadius: 250, backgroundColor: C.white, opacity: 0.02 }} />
-    </View>
-  );
-}
-
-// Minimal floating elements to break up empty space in Hero
-function HeroDecorations() {
-  return (
-    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
-      {/* Tiny crosshairs */}
-      <View style={{ position: 'absolute', top: 120, left: '15%' }}><Text style={{ color: C.accent, fontSize: 16, fontWeight: '300' }}>+</Text></View>
-      <View style={{ position: 'absolute', top: 180, right: '15%' }}><Text style={{ color: C.accent, fontSize: 16, fontWeight: '300' }}>+</Text></View>
-      <View style={{ position: 'absolute', bottom: 150, left: '20%' }}><Text style={{ color: C.accent, fontSize: 16, fontWeight: '300' }}>+</Text></View>
-      <View style={{ position: 'absolute', bottom: 250, right: '25%' }}><Text style={{ color: C.accent, fontSize: 16, fontWeight: '300' }}>+</Text></View>
-      
-      {/* Decorative outline rings */}
-      <View style={{ position: 'absolute', top: -50, right: -150, width: 400, height: 400, borderRadius: 200, borderWidth: 1, borderColor: C.border }} />
-      <View style={{ position: 'absolute', bottom: -100, left: -150, width: 500, height: 500, borderRadius: 250, borderWidth: 1, borderColor: C.border, borderStyle: 'dashed' }} />
-      
-      {/* Vertical subtle line */}
-      <View style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 1, backgroundColor: C.white, opacity: 0.03 }} />
-    </View>
-  );
-}
-
-// Elegant widely-spaced dot matrix
-function DotBackground() {
-  const dots = [];
-  for (let row = 0; row < 15; row++) {
-    for (let col = 0; col < 10; col++) {
-      dots.push(
-        <View key={`d${row}-${col}`} style={{ position: 'absolute', top: row * 60 + 30, left: `${col * 10 + 5}%`, width: 3, height: 3, borderRadius: 1.5, backgroundColor: C.accent }} />
-      );
-    }
-  }
-  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>{dots}</View>;
-}
-
-// Diagonal hash lines
-function DiagonalLinesBackground() {
-  const lines = [];
-  for (let i = 0; i < 60; i++) {
-    lines.push(
-      <View key={`dl${i}`} style={{ position: 'absolute', top: -500 + (i * 30), left: -200, width: '200%', height: 1, backgroundColor: C.border, transform: [{ rotate: '-30deg' }], opacity: 0.8 }} />
-    );
-  }
-  return <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>{lines}</View>;
-}
+import { L } from '../constants/colors';
+import {
+  HeroSection,
+  ProblemSection,
+  ComparisonSection,
+  JourneySequenceSection,
+  SampleQuestionsSection,
+  HowItWorksSection,
+  TrustSection,
+  CommunitySection,
+  AccessibilitySection,
+  ClosingVisionSection,
+  FooterSection,
+} from '../components/landing/LandingSections';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -114,162 +55,20 @@ export default function LandingPage() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
+      <StatusBar style="dark" />
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-
-        {/* ── HERO ── */}
-        <View style={{ minHeight: 720, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 100, overflow: 'hidden', backgroundColor: C.bg }}>
-          {/* Elegant Glow texture */}
-          <GlowBackground />
-          <HeroDecorations />
-
-          {/* Content */}
-          <Text style={{ color: C.dimGray, fontSize: 13, fontWeight: '500', letterSpacing: 6, textTransform: 'uppercase', marginBottom: 48, zIndex: 1 }}>
-            PathFinder
-          </Text>
-
-          <Text style={{ color: C.white, fontSize: 52, fontWeight: '700', textAlign: 'center', lineHeight: 62, letterSpacing: -2, marginBottom: 28, zIndex: 1 }}>
-            Real Journeys.{"\n"}Better Decisions.
-          </Text>
-
-          <Text style={{ color: C.gray, fontSize: 18, textAlign: 'center', lineHeight: 28, maxWidth: 460, marginBottom: 56, zIndex: 1 }}>
-            Explore verified career timelines. Learn from real decisions. Chart your own path with confidence.
-          </Text>
-
-          <View style={{ width: '100%', maxWidth: 340, gap: 14, zIndex: 1 }}>
-            <TouchableOpacity
-              onPress={onPressGoogle}
-              style={{ backgroundColor: C.white, paddingVertical: 16, borderRadius: 12, alignItems: 'center' }}
-            >
-              <Text style={{ color: C.bg, fontSize: 15, fontWeight: '600' }}>Continue with Google</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={onPressEmail}
-              style={{ paddingVertical: 16, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: C.accent }}
-            >
-              <Text style={{ color: C.dimGray, fontSize: 15, fontWeight: '500' }}>Sign in with Email</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-
-        {/* ── THE PROBLEM ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.surface, overflow: 'hidden' }}>
-          <DiagonalLinesBackground />
-          <View style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
-
-          <Text style={{ color: C.dimGray, fontSize: 12, fontWeight: '600', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 24 }}>
-            The problem
-          </Text>
-
-          <Text style={{ color: C.white, fontSize: 36, fontWeight: '700', textAlign: 'center', lineHeight: 46, letterSpacing: -1, maxWidth: 600, marginBottom: 24 }}>
-            Career advice is broken.
-          </Text>
-
-          <Text style={{ color: C.gray, fontSize: 17, textAlign: 'center', lineHeight: 28, maxWidth: 520 }}>
-            Nobody shows you the actual steps. The pivots. The failures. The decisions that mattered. You're left guessing — and that needs to change.
-          </Text>
-
-          <View style={{ position: 'absolute', bottom: 48, left: 32, right: 32, height: 1, backgroundColor: C.border }} />
-        </View>
-
-
-        {/* ── HOW IT WORKS ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.bg, overflow: 'hidden' }}>
-          
-          {/* Dotted texture */}
-          <DotBackground />
-
-          <Text style={{ color: C.dimGray, fontSize: 12, fontWeight: '600', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 24 }}>
-            How it works
-          </Text>
-
-          <Text style={{ color: C.white, fontSize: 36, fontWeight: '700', textAlign: 'center', lineHeight: 46, letterSpacing: -1, maxWidth: 600, marginBottom: 64 }}>
-            See the path before{"\n"}you walk it.
-          </Text>
-
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 20, width: '100%', maxWidth: 900 }}>
-            {FEATURES.map((f, i) => (
-              <View
-                key={i}
-                style={{
-                  borderWidth: 1, borderColor: C.border, borderRadius: 16,
-                  padding: 32, width: '100%', maxWidth: 280, minWidth: 250,
-                  backgroundColor: C.surface,
-                }}
-              >
-                <Text style={{ color: C.accent, fontSize: 56, fontWeight: '800', marginBottom: 20, lineHeight: 56 }}>
-                  {f.num}
-                </Text>
-                <Text style={{ color: C.white, fontSize: 20, fontWeight: '600', marginBottom: 12 }}>
-                  {f.title}
-                </Text>
-                <Text style={{ color: C.gray, fontSize: 15, lineHeight: 24 }}>
-                  {f.desc}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-
-        {/* ── STATS ── */}
-        <View style={{ backgroundColor: C.surface, paddingHorizontal: 32, paddingVertical: 72, alignItems: 'center' }}>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 48, maxWidth: 700 }}>
-            {[
-              { val: '1,200+', label: 'Journeys' },
-              { val: '85%', label: 'Found Clarity' },
-              { val: '40+', label: 'Industries' },
-            ].map((s, i) => (
-              <View key={i} style={{ alignItems: 'center', minWidth: 140 }}>
-                <Text style={{ fontSize: 44, fontWeight: '700', color: C.white, letterSpacing: -2, marginBottom: 4 }}>
-                  {s.val}
-                </Text>
-                <Text style={{ fontSize: 13, fontWeight: '500', color: C.dimGray, letterSpacing: 1, textTransform: 'uppercase' }}>
-                  {s.label}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-
-        {/* ── FINAL CTA ── */}
-        <View style={{ paddingHorizontal: 32, paddingVertical: 100, alignItems: 'center', backgroundColor: C.bg, overflow: 'hidden' }}>
-          <GlowBackground />
-
-          <Text style={{ color: C.white, fontSize: 36, fontWeight: '700', textAlign: 'center', lineHeight: 46, letterSpacing: -1, marginBottom: 20, zIndex: 1 }}>
-            Ready?
-          </Text>
-
-          <Text style={{ color: C.gray, fontSize: 17, textAlign: 'center', lineHeight: 28, maxWidth: 400, marginBottom: 48, zIndex: 1 }}>
-            Join thousands mapping their careers with clarity.
-          </Text>
-
-          <View style={{ width: '100%', maxWidth: 340, gap: 14, zIndex: 1 }}>
-            <TouchableOpacity
-              onPress={onPressGoogle}
-              style={{ backgroundColor: C.white, paddingVertical: 16, borderRadius: 12, alignItems: 'center' }}
-            >
-              <Text style={{ color: C.bg, fontSize: 15, fontWeight: '600' }}>Get Started — Free</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={onPressEmail}
-              style={{ paddingVertical: 16, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: C.accent }}
-            >
-              <Text style={{ color: C.dimGray, fontSize: 15, fontWeight: '500' }}>Sign in with Email</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-
-        {/* ── FOOTER ── */}
-        <View style={{ paddingVertical: 40, alignItems: 'center', borderTopWidth: 1, borderTopColor: C.border, backgroundColor: C.bg }}>
-          <Text style={{ color: C.accent, fontSize: 12, fontWeight: '500' }}>© 2025 PathFinder</Text>
-        </View>
-
+        <HeroSection onPressGoogle={onPressGoogle} onPressEmail={onPressEmail} />
+        <ProblemSection />
+        <ComparisonSection />
+        <JourneySequenceSection />
+        <SampleQuestionsSection />
+        <HowItWorksSection />
+        <TrustSection />
+        <CommunitySection />
+        <AccessibilitySection />
+        <ClosingVisionSection />
+        <FooterSection />
       </ScrollView>
     </SafeAreaView>
   );
