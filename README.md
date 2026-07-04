@@ -6,7 +6,7 @@ PathFinder is an AI-powered life and career trajectory mapping application. It a
 
 This is a full-stack monorepo containing:
 - **`frontend/`**: React Native application built with Expo SDK 56, Expo Router, and Clerk Auth.
-- **`backend/`**: Python Flask backend providing API endpoints for LLM insights, text-to-speech, and translation.
+- **`backend/`**: Express.js backend using TypeScript, Clerk Auth, Neo4j, and Upstash Redis.
 
 ## Recent Updates & Enhancements
 - **UI/UX Overhaul**: Transitioned from a basic dark theme to a stunning Premium Light Theme (`#FBFBF9` Cream, `#1A202C` Navy, `#D06757` Rust/Terracotta, `#36585E` Teal). All screens, including the timeline, dashboard, and public profile, were upgraded to match the new brand identity.
@@ -19,10 +19,10 @@ This is a full-stack monorepo containing:
 
 ### Backend Setup
 1. Navigate to `backend/`
-2. Create a virtual environment: `python -m venv venv`
-3. Activate the virtual environment.
-4. Install dependencies: `pip install -r requirements.txt`
-5. Run the server: `python app.py`
+2. Install dependencies: `npm install`
+3. Configure environment variables (copy `.env.example` to `.env` and fill in Clerk, Upstash, Neo4j, Gemini, Groq keys).
+4. (Optional) Run database migrations: `npm run migrate`
+5. Run the dev server: `npm run dev`
 
 ### Frontend Setup
 1. Navigate to `frontend/`

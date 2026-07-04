@@ -2,6 +2,7 @@ import { geminiProvider } from "../../ai/gemini.provider.js";
 import { JOURNEY_EXTRACTION_SYSTEM_PROMPT, buildJourneyExtractionPrompt } from "../../prompts/journeyExtraction.prompt.js";
 import { journeyExtractionSchema } from "./journeyExtraction.jsonSchema.js";
 import type { JourneyJson, JourneyUser, JourneyGoal, JourneyExperience, JourneyTransition, JourneyProof } from "./types.js";
+import type { OnboardingMessage } from "./journeyValidator.schema.js";
 
 const ADJECTIVES = ["star", "indie", "audience", "clark", "bright", "stealth", "solo", "pixel", "code", "tech", "growth", "scale", "venture"];
 const NOUNS = ["builder", "operator", "founder", "engineer", "creator", "maker", "hacker", "designer", "pioneer", "architect"];
@@ -87,12 +88,21 @@ function normalizeDate(d: string | null | undefined): string | null {
 }
 
 export async function extractJourney(
-  journeyText: string,
+  conversation: OnboardingMessage[],
   userContext?: Partial<JourneyUser>
 ): Promise<JourneyJson> {
+  let conversationText = "";
+  if (Array.isArray(conversation)) {
+    conversationText = conversation
+      .map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`)
+      .join("\n\n");
+  } else {
+    conversationText = String(conversation);
+  }
+
   const rawResult = await geminiProvider.generateStructuredJson<any>({
     systemPrompt: JOURNEY_EXTRACTION_SYSTEM_PROMPT,
-    userPrompt: buildJourneyExtractionPrompt(journeyText),
+    userPrompt: buildJourneyExtractionPrompt(conversationText),
     schema: journeyExtractionSchema,
   });
 

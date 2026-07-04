@@ -16,7 +16,7 @@ async function runTest(testName: string, text: string) {
 
   try {
     const start = Date.now();
-    const result = await extractJourney(text);
+    const result = await extractJourney([{ role: "user", content: text }]);
     const duration = ((Date.now() - start) / 1000).toFixed(2);
 
     console.log(`✓ Gemini Extraction completed in ${duration}s.`);
