@@ -1,6 +1,7 @@
 import { EmotionLabel, NodeType } from '../types/schema';
 
 export const BRAND_COLORS = {
+  // Core palette
   navy: '#1A202C',
   teal: '#36585E',
   rust: '#D06757',
@@ -9,7 +10,30 @@ export const BRAND_COLORS = {
   cream: '#FBFBF9',
   white: '#FFFFFF',
   lightGray: '#F1F5F9',
-  border: '#E2E8F0'
+  border: '#E2E8F0',
+  // Dark theme
+  dark: '#0F172A',
+  darkCard: '#1E293B',
+  darkBorder: '#334155',
+  indigo: '#6366F1',
+  mutedText: '#94A3B8',
+  // Accent gradients (use in style props)
+  tealBright: '#14B8A6',
+  indigoLight: '#818CF8',
+};
+
+// Landing page design system (DESIGN.md)
+export const L = {
+  background:     '#FAF9F6',
+  surface:        '#FFFFFF',
+  navy:           '#152238',
+  navySoft:       '#152238CC',
+  teal:           '#3E6B66',
+  tealTint:       '#E7EFEE',
+  terracotta:     '#C1603F',
+  terracottaTint: '#F5E4DD',
+  sand:           '#D9C9A8',
+  border:         '#EAE7E0',
 };
 
 export const EMOTION_COLORS: Record<string, { bg: string; text: string }> = {
