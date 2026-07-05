@@ -4,31 +4,34 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { TimelineEvent } from '@/types/schema';
 import { BRAND_COLORS } from '../constants/colors';
 
-const FALLBACK_EVENT: TimelineEvent = {
-  id: 'fallback', title: 'Offered Custom Software Services',
-  startDate: '1998', endDate: '2001', organization: 'AdventNet',
-  isVerified: true, nodeType: 'Job', emotionLabel: 'Confident',
-  timelineSummary: 'Solved business problems for small companies',
-  expandedDetails: {
-    context: 'Worked with small businesses to build custom software solutions.',
-    challengeFaced: 'Projects were non-repeatable and hard to scale.',
-    outcome: 'Realized the need for a simple, affordable CRM for small businesses.',
-    achievements: ['Served 25+ small businesses', 'Built strong domain understanding'],
-    applicationStatus: null, emotionNote: null,
-    goals: [],
-    skills: ['Customer Understanding', 'Problem Solving', 'Sales', 'Product Thinking'],
-    transitions: [{ decisionLabel: 'Decided to build a product that solves their common problems at scale.', toExperienceId: 'sv-3' }],
-  },
-};
+
 
 export default function JourneyDetailsPage() {
   const router = useRouter();
   const params = useLocalSearchParams<{ eventData?: string }>();
 
-  let event: TimelineEvent = FALLBACK_EVENT;
+  let event: TimelineEvent | null = null;
   try {
     if (params.eventData) event = JSON.parse(params.eventData) as TimelineEvent;
-  } catch { /* use fallback */ }
+  } catch { /* use null */ }
+
+  if (!event) {
+    return (
+      <View className="flex-1 bg-brand-cream justify-center items-center p-8">
+        <Text className="text-[40px] mb-4">🏜️</Text>
+        <Text className="text-xl font-bold text-brand-navy mb-2 text-center">No Details Found</Text>
+        <Text className="text-sm text-brand-slate text-center mb-6">
+          We couldn't load the details for this journey event.
+        </Text>
+        <TouchableOpacity
+          className="px-6 py-3 rounded-full bg-brand-teal"
+          onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/'); }}
+        >
+          <Text className="text-sm font-semibold text-brand-white">Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   const { expandedDetails } = event;
   const duration = `${event.startDate} – ${event.endDate}`;

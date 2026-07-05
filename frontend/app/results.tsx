@@ -16,45 +16,6 @@ import { BRAND_COLORS } from '../constants/colors';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
-/* ── Mock Fallback ─────────────────────────────────── */
-const MOCK: DecisionAtlasBackendResponse = {
-  structuredQuery: {
-    queryType: 'exploration', topics: ['Startup'], subtopics: ['SaaS'],
-    skills: [], focus: 'career path',
-    semanticQuery: "What products did SaaS founders build before PMF?",
-  },
-  aggregatedContext: {
-    journeyStatistics: {
-      usersAnalyzed: 43, experiencesAnalyzed: 180,
-    },
-    commonPatterns: [
-      { title: 'Internal Tools', description: 'Built tools for internal use first', frequency: 18, percentage: 42 },
-      { title: 'Agency Services', description: 'Started with services/consulting', frequency: 13, percentage: 31 },
-      { title: 'Productivity Apps', description: 'Consumer productivity apps', frequency: 10, percentage: 24 },
-      { title: 'Marketplaces', description: 'B2B Marketplaces', frequency: 8, percentage: 18 },
-      { title: 'Customer Validation', description: 'Validated with real customers early', frequency: 23, percentage: 53 },
-    ],
-    aiInsights: {
-      directAnswer: 'Most successful SaaS founders didn\'t start with their final product. They first solved small, real problems and evolved.',
-      keyPoints: [
-        'Starting as an agency allows building deep domain expertise.',
-        'Internal tools naturally evolve into SaaS products.',
-      ],
-      actionableTakeaway: 'Focus on solving immediate problems before scaling a product.',
-    },
-    timelineFeed: [
-      {
-        username: 'Sridhar Vembu', reputationScore: 94,
-        timeline: [
-          { id: 'sv-1', title: 'Built Internal Network Tool', startDate: '1996', endDate: '1998', organization: '', isVerified: true, nodeType: 'Job', emotionLabel: 'Confident', timelineSummary: 'Automated workflows for internal teams and clients.', expandedDetails: { context: 'Started by building network management tools.', challengeFaced: 'Scaling network operations manually was inefficient.', outcome: 'Created automated tools that improved efficiency by 40%.', achievements: ['Deployed across 5 offices', 'Saved 20hrs/week'], applicationStatus: null, emotionNote: null, goals: [], skills: ['Automation', 'Networking'], transitions: [{ decisionLabel: 'Started offering as a service', toExperienceId: 'sv-2' }] } },
-          { id: 'sv-2', title: 'Offered Custom Software Services', startDate: '1998', endDate: '2001', organization: '', isVerified: true, nodeType: 'Startup', emotionLabel: 'Pivoting', timelineSummary: 'Solved business problems for small companies.', expandedDetails: { context: 'Worked with small businesses to build custom software solutions.', challengeFaced: 'Projects were non-repeatable and hard to scale.', outcome: 'Realized the need for a simple, affordable CRM for small businesses.', achievements: ['Served 25+ small businesses', 'Built strong domain understanding'], applicationStatus: null, emotionNote: null, goals: [], skills: ['Customer Understanding', 'Problem Solving', 'Sales', 'Product Thinking'], transitions: [{ decisionLabel: 'Decided to build a product that solves common problems at scale.', toExperienceId: 'sv-3' }] } },
-          { id: 'sv-3', title: 'Launched Zoho CRM (MVP)', startDate: '2001', endDate: '2003', organization: '', isVerified: true, nodeType: 'Achievement', emotionLabel: 'Confident', timelineSummary: 'Early CRM for small businesses.', expandedDetails: { context: 'Launched first version of CRM.', challengeFaced: 'Gaining initial traction.', outcome: 'Acquired first 100 paying customers.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Product Launch'], transitions: [{ decisionLabel: 'Found PMF', toExperienceId: 'sv-4' }] } },
-          { id: 'sv-4', title: 'Found Product Market Fit', startDate: '2003', endDate: null, organization: 'Zoho', isVerified: true, nodeType: 'Achievement', emotionLabel: 'Confident', timelineSummary: 'Strong retention & paying customers.', expandedDetails: { context: 'SaaS model started scaling.', challengeFaced: 'Scaling infrastructure.', outcome: 'Consistent growth and low churn.', achievements: ['Product Market Fit'], applicationStatus: null, emotionNote: null, goals: [], skills: ['Scaling'], transitions: [] } },
-        ],
-      },
-    ],
-  },
-};
 
 /* ── Skeleton ──────────────────────────────────────── */
 function Shimmer({ w, h, r = 8, mb = 0 }: { w: number | string; h: number; r?: number; mb?: number }) {
@@ -216,7 +177,7 @@ export default function ResultsPage() {
   const [isSubmittingFollowUp, setIsSubmittingFollowUp] = useState(false);
 
   // Parse live data
-  let data: DecisionAtlasBackendResponse;
+  let data: DecisionAtlasBackendResponse | null = null;
   try {
     if (params.payload) {
       const raw = JSON.parse(params.payload);
@@ -225,14 +186,10 @@ export default function ResultsPage() {
           structuredQuery: raw.structuredQuery || {},
           aggregatedContext: raw.aggregatedContext,
         };
-      } else {
-        data = MOCK;
       }
-    } else {
-      data = MOCK;
     }
   } catch {
-    data = MOCK;
+    // Ignore parsing errors, data stays null
   }
 
   useEffect(() => {
@@ -254,6 +211,24 @@ export default function ResultsPage() {
   }, [getToken]);
 
   if (loading) return <LoadingSkeleton />;
+
+  if (!data) {
+    return (
+      <View className="flex-1 bg-brand-cream justify-center items-center p-8">
+        <Text className="text-[40px] mb-4">🏜️</Text>
+        <Text className="text-xl font-bold text-brand-navy mb-2 text-center">No Results Found</Text>
+        <Text className="text-sm text-brand-slate text-center mb-6">
+          We couldn't process this query or the results were empty. Please try rephrasing your question.
+        </Text>
+        <TouchableOpacity
+          className="px-6 py-3 rounded-full bg-brand-teal"
+          onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/'); }}
+        >
+          <Text className="text-sm font-semibold text-brand-white">Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   const queryText = data.structuredQuery?.semanticQuery || data.structuredQuery?.queryType || 'Search Results';
   const queryType = data.structuredQuery?.queryType || 'exploration';

@@ -10,8 +10,6 @@ import { submitQuery } from '../../api/query.api';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
-const MOCK_TRANSCRIPT = "I'm a CS grad, want to build a fintech startup, should I work first or start directly?";
-
 export default function QueryPage() {
   const router = useRouter();
   const { getToken } = useAuth();
@@ -63,12 +61,8 @@ export default function QueryPage() {
       setIsRecording(true);
     } catch (err) {
       console.warn('Failed to start recording', err);
-      // Fallback: just do the mock pulse animation
-      setIsRecording(true);
-      setTimeout(() => {
-        setIsRecording(false);
-        setQuery(MOCK_TRANSCRIPT);
-      }, 3000);
+      Alert.alert('Recording Error', 'Failed to start recording. Please try again.');
+      setIsRecording(false);
     }
   }
 
@@ -76,7 +70,6 @@ export default function QueryPage() {
     setIsRecording(false);
 
     if (!recording) {
-      // Fallback mode — no real recording, use mock text
       return;
     }
 
@@ -119,14 +112,9 @@ export default function QueryPage() {
       });
     } catch (error) {
       console.warn('Query Pipeline Error:', error);
-      // Fallback: navigate with no payload (results screen will use mock data)
       Alert.alert(
         'Connection Error',
-        'Could not reach the backend. Showing demo results instead.',
-        [
-          { text: 'Show Demo', onPress: () => router.push('/results') },
-          { text: 'Cancel', style: 'cancel' },
-        ]
+        'Could not reach the backend. Please ensure the server is running and try again.'
       );
     } finally {
       setIsSearching(false);
