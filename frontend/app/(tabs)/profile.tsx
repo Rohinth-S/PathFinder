@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Share } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { updateProfile } from '../../api/auth.api';
+import { L } from '../../constants/colors';
 
 const MOCK_USER = {
   reputationScore: 72,
@@ -29,11 +30,7 @@ export default function ProfilePage() {
     try {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
-
-      const user = await updateProfile(token, {
-        username,
-        preferredLanguage: languageCode
-      });
+      const user = await updateProfile(token, { username, preferredLanguage: languageCode });
       setUsername(user.username ?? username);
       setLanguageCode(user.preferredLanguage ?? languageCode);
       setIsEditing(false);
@@ -44,126 +41,181 @@ export default function ProfilePage() {
     }
   };
 
-  const handleShare = async () => {
-    try {
-      await Share.share({
-        message: `Check out my professional journey on PathFinder! https://pathfinder.app/u/${username}`,
-      });
-    } catch (error: any) {
-      console.warn(error.message);
-    }
-  };
-
   const handleSignOut = async () => {
     await signOut();
     router.replace('/');
   };
 
   return (
-    <ScrollView className="flex-1 bg-brand-cream px-6 py-8">
-      <View className="items-center mb-8">
-        <View className="w-20 h-20 rounded-full bg-brand-navy items-center justify-center mb-3">
-          <Text className="text-3xl font-extrabold text-brand-white">{username[0].toUpperCase()}</Text>
-        </View>
-        <Text className="text-2xl font-bold text-brand-navy mb-1">@{username}</Text>
-        <View className="flex-row items-center space-x-1">
-          <Text className="text-sm">⭐</Text>
-          <Text className="text-sm text-brand-slate font-medium">Reputation Score: </Text>
-          <Text className="text-base font-extrabold text-brand-rust">{MOCK_USER.reputationScore}</Text>
-        </View>
-      </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
-      <View className="bg-brand-white rounded-xl p-5 mb-6 border border-brand-border shadow-sm">
-        <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-lg font-bold text-brand-navy">Profile Details</Text>
-          <TouchableOpacity onPress={() => setIsEditing(!isEditing)}>
-            <Text className="text-brand-rust font-bold">{isEditing ? 'Cancel' : 'Edit'}</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View className="mb-4">
-          <Text className="text-sm font-semibold text-brand-slate mb-1">Username</Text>
-          {isEditing ? (
-            <TextInput
-              className="bg-brand-lightGray rounded-lg p-3 text-brand-navy font-medium border border-brand-border"
-              value={username}
-              onChangeText={setUsername}
-            />
-          ) : (
-            <Text className="text-base font-medium text-brand-navy">{username}</Text>
-          )}
-        </View>
-
-        <View className="mb-2">
-          <Text className="text-sm font-semibold text-brand-slate mb-2">Preferred Language</Text>
-          {isEditing ? (
-            <View className="flex-row flex-wrap gap-2">
-              {languages.map((lang) => (
-                <TouchableOpacity
-                  key={lang.code}
-                  onPress={() => setLanguageCode(lang.code)}
-                  className={`px-3 py-1.5 rounded-full border ${
-                    languageCode === lang.code
-                      ? 'bg-brand-teal border-brand-teal'
-                      : 'bg-brand-white border-brand-border'
-                  }`}
-                >
-                  <Text
-                    className={`text-sm font-medium ${
-                      languageCode === lang.code ? 'text-brand-white' : 'text-brand-slate'
-                    }`}
-                  >
-                    {lang.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          ) : (
-            <Text className="text-base font-medium text-brand-navy">
-              {languages.find(l => l.code === languageCode)?.label || languageCode}
+        {/* ── Header ── */}
+        <View style={{ paddingTop: 56, paddingBottom: 40, alignItems: 'center', backgroundColor: L.background }}>
+          {/* Avatar */}
+          <View style={{
+            width: 96, height: 96, borderRadius: 48,
+            backgroundColor: L.tealTint,
+            borderWidth: 2, borderColor: L.teal,
+            alignItems: 'center', justifyContent: 'center',
+            marginBottom: 16,
+          }}>
+            <Text style={{ fontSize: 38, fontWeight: '700', color: L.teal }}>
+              {username[0].toUpperCase()}
             </Text>
-          )}
+          </View>
+
+          <Text style={{ fontSize: 24, fontWeight: '700', color: L.navy, letterSpacing: -0.5, marginBottom: 10 }}>
+            @{username}
+          </Text>
+
+          {/* Reputation pill */}
+          <View style={{
+            flexDirection: 'row', alignItems: 'center',
+            backgroundColor: L.surface, borderWidth: 1, borderColor: L.border,
+            paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20,
+          }}>
+            <Text style={{ fontSize: 12, color: L.navySoft, fontWeight: '500', marginRight: 6 }}>reputation</Text>
+            <Text style={{ fontSize: 15, color: L.navy, fontWeight: '700' }}>{MOCK_USER.reputationScore}</Text>
+          </View>
         </View>
-        
-        {isEditing && (
-          <TouchableOpacity 
-            className="bg-brand-teal py-3 rounded-lg items-center mt-4" 
-            onPress={handleSave}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text className="text-brand-white font-bold">Save Changes</Text>
+
+
+        {/* ── Divider ── */}
+        <View style={{ height: 1, backgroundColor: L.border, marginHorizontal: 24 }} />
+
+
+        {/* ── Details Card ── */}
+        <View style={{ paddingHorizontal: 24, paddingVertical: 32 }}>
+          <View style={{
+            backgroundColor: L.surface, borderWidth: 1, borderColor: L.border,
+            borderRadius: 16, padding: 24,
+            shadowColor: '#152238', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 20,
+          }}>
+            {/* Header */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: L.navy }}>Details</Text>
+              <TouchableOpacity
+                onPress={() => setIsEditing(!isEditing)}
+                style={{ backgroundColor: L.tealTint, paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20 }}
+              >
+                <Text style={{ color: L.teal, fontWeight: '600', fontSize: 13 }}>
+                  {isEditing ? 'Cancel' : 'Edit'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Username */}
+            <View style={{ marginBottom: 20 }}>
+              <Text style={{ fontSize: 11, fontWeight: '600', color: L.teal, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>
+                Username
+              </Text>
+              {isEditing ? (
+                <TextInput
+                  style={{
+                    borderWidth: 1, borderColor: L.border,
+                    borderRadius: 12, padding: 14,
+                    color: L.navy, fontWeight: '600', fontSize: 15,
+                    backgroundColor: L.background,
+                  }}
+                  value={username}
+                  onChangeText={setUsername}
+                  placeholderTextColor={L.navySoft}
+                />
+              ) : (
+                <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>{username}</Text>
+              )}
+            </View>
+
+            {/* Language */}
+            <View style={{ marginBottom: 4 }}>
+              <Text style={{ fontSize: 11, fontWeight: '600', color: L.teal, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>
+                Language
+              </Text>
+              {isEditing ? (
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+                  {languages.map((lang) => {
+                    const sel = languageCode === lang.code;
+                    return (
+                      <TouchableOpacity
+                        key={lang.code}
+                        onPress={() => setLanguageCode(lang.code)}
+                        style={{
+                          paddingHorizontal: 18, paddingVertical: 10,
+                          borderRadius: 20, borderWidth: 1,
+                          backgroundColor: sel ? L.teal : L.background,
+                          borderColor: sel ? L.teal : L.border,
+                        }}
+                      >
+                        <Text style={{ fontSize: 13, fontWeight: '600', color: sel ? '#FFFFFF' : L.navySoft }}>
+                          {lang.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              ) : (
+                <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>
+                  {languages.find(l => l.code === languageCode)?.label || languageCode}
+                </Text>
+              )}
+            </View>
+
+            {/* Save */}
+            {isEditing && (
+              <TouchableOpacity
+                onPress={handleSave}
+                disabled={isSubmitting}
+                style={{
+                  backgroundColor: L.terracotta, paddingVertical: 14,
+                  borderRadius: 28, alignItems: 'center', marginTop: 20,
+                }}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15 }}>Save Changes</Text>
+                )}
+              </TouchableOpacity>
             )}
+          </View>
+        </View>
+
+
+        {/* ── Action Buttons ── */}
+        <View style={{ paddingHorizontal: 24, gap: 12, marginBottom: 48 }}>
+          <TouchableOpacity
+            onPress={() => router.push('/share-journey')}
+            style={{
+              paddingVertical: 16, borderRadius: 28,
+              alignItems: 'center', justifyContent: 'center',
+              backgroundColor: L.teal,
+            }}
+          >
+            <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15 }}>Share / Update Journey</Text>
           </TouchableOpacity>
-        )}
-      </View>
 
-      <View className="space-y-3 mb-8">
-        <TouchableOpacity 
-          className="bg-brand-rust py-4 rounded-xl items-center flex-row justify-center space-x-2 shadow-sm"
-          onPress={() => router.push('/share-journey')}
-        >
-          <Text className="text-base">✍️</Text>
-          <Text className="text-brand-white font-bold text-base ml-2">Share / Update Journey</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push('/full-journey')}
+            style={{
+              paddingVertical: 16, borderRadius: 28,
+              alignItems: 'center', justifyContent: 'center',
+              borderWidth: 1, borderColor: L.border,
+              backgroundColor: L.surface,
+            }}
+          >
+            <Text style={{ color: L.navy, fontWeight: '500', fontSize: 15 }}>View Full Journey</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity 
-          className="bg-brand-white py-4 rounded-xl items-center flex-row justify-center space-x-2 border-2 border-brand-navy"
-          onPress={() => router.push('/full-journey')}
-        >
-          <Text className="text-base">🗺️</Text>
-          <Text className="text-brand-navy font-bold text-base ml-2">View Full Journey</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleSignOut}
+            style={{ paddingVertical: 16, alignItems: 'center', marginTop: 8 }}
+          >
+            <Text style={{ color: L.navySoft, fontWeight: '500', fontSize: 13 }}>Sign Out</Text>
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity 
-          className="bg-brand-tan py-3 rounded-xl items-center mt-4"
-          onPress={handleSignOut}
-        >
-          <Text className="text-brand-navy font-bold text-sm">Sign Out</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
