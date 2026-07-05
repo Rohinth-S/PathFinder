@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
-import { updateProfile } from '../../api/auth.api';
+import { syncUser, updateProfile, SyncedUser } from '../../api/auth.api';
 import { L } from '../../constants/colors';
-
-const MOCK_USER = {
-  reputationScore: 72,
-};
 
 export default function ProfilePage() {
   const router = useRouter();
   const { signOut, getToken } = useAuth();
-  
-  const [username, setUsername] = useState('rohinth-s');
+
+  const [user, setUser] = useState<SyncedUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [username, setUsername] = useState('');
   const [languageCode, setLanguageCode] = useState('en');
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,14 +25,38 @@ export default function ProfilePage() {
     { label: 'Hindi', code: 'hi' },
   ];
 
+  // Fetch real user data on mount
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+  const loadUserProfile = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      const syncedUser = await syncUser(token);
+      setUser(syncedUser);
+      setUsername(syncedUser.username ?? '');
+      setLanguageCode(syncedUser.preferredLanguage ?? 'en');
+    } catch (err: any) {
+      console.warn("Failed to load profile:", err);
+      setError(err?.message || "Failed to load profile");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSave = async () => {
     setIsSubmitting(true);
     try {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
-      const user = await updateProfile(token, { username, preferredLanguage: languageCode });
-      setUsername(user.username ?? username);
-      setLanguageCode(user.preferredLanguage ?? languageCode);
+      const updatedUser = await updateProfile(token, { username, preferredLanguage: languageCode });
+      setUser(updatedUser);
+      setUsername(updatedUser.username ?? username);
+      setLanguageCode(updatedUser.preferredLanguage ?? languageCode);
       setIsEditing(false);
     } catch (error) {
       console.warn("Failed to update profile", error);
@@ -45,6 +69,38 @@ export default function ProfilePage() {
     await signOut();
     router.replace('/');
   };
+
+  const displayUsername = username || 'Set Username';
+  const reputationScore = typeof user?.reputationScore === 'object'
+    ? (user.reputationScore as any)?.low ?? 0
+    : user?.reputationScore ?? 0;
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={L.teal} />
+          <Text style={{ marginTop: 12, color: L.navySoft, fontSize: 14 }}>Loading profile...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <Text style={{ fontSize: 15, color: L.navySoft, textAlign: 'center', marginBottom: 16 }}>{error}</Text>
+          <TouchableOpacity
+            onPress={loadUserProfile}
+            style={{ backgroundColor: L.teal, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20 }}
+          >
+            <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
@@ -61,12 +117,12 @@ export default function ProfilePage() {
             marginBottom: 16,
           }}>
             <Text style={{ fontSize: 38, fontWeight: '700', color: L.teal }}>
-              {username[0].toUpperCase()}
+              {displayUsername[0]?.toUpperCase() || '?'}
             </Text>
           </View>
 
           <Text style={{ fontSize: 24, fontWeight: '700', color: L.navy, letterSpacing: -0.5, marginBottom: 10 }}>
-            @{username}
+            @{displayUsername}
           </Text>
 
           {/* Reputation pill */}
@@ -76,7 +132,7 @@ export default function ProfilePage() {
             paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20,
           }}>
             <Text style={{ fontSize: 12, color: L.navySoft, fontWeight: '500', marginRight: 6 }}>reputation</Text>
-            <Text style={{ fontSize: 15, color: L.navy, fontWeight: '700' }}>{MOCK_USER.reputationScore}</Text>
+            <Text style={{ fontSize: 15, color: L.navy, fontWeight: '700' }}>{reputationScore}</Text>
           </View>
         </View>
 
@@ -121,9 +177,10 @@ export default function ProfilePage() {
                   value={username}
                   onChangeText={setUsername}
                   placeholderTextColor={L.navySoft}
+                  placeholder="Enter username"
                 />
               ) : (
-                <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>{username}</Text>
+                <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>{displayUsername}</Text>
               )}
             </View>
 

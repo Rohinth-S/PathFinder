@@ -73,6 +73,9 @@ export default function RootLayout() {
           >
             <Slot />
           </View>
+          {Platform.OS === 'web' && (
+            <View nativeID="clerk-captcha" />
+          )}
         </View>
       </ClerkLoaded>
     </ClerkProvider>

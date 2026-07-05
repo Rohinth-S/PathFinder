@@ -1,46 +1,166 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
   Switch, Modal, Pressable, Animated,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { UserTrajectory, TimelineEvent } from '@/types/schema';
+import { useAuth } from '@clerk/clerk-expo';
+import { getUserJourney, JourneyExperience, JourneyTransition } from '../api/journey.api';
+import { UserTrajectory, TimelineEvent, NodeType } from '@/types/schema';
 import { NODE_BORDER_COLORS, NODE_ICONS, getEmotionStyle } from '@/constants/colors';
 import { BRAND_COLORS } from '../constants/colors';
 
-/* ── Fallback data ─────────────────────────────────────── */
+/* ── Map backend data to UI format ─────────────────────── */
 
-const FALLBACK: UserTrajectory = {
-  username: 'fintech-founder-01', reputationScore: 94,
-  timeline: [
-    { id: 'f1', title: 'B.Tech in Computer Science', startDate: '2016', endDate: '2019', organization: 'University', isVerified: true, nodeType: 'Education', emotionLabel: 'Confident', timelineSummary: 'CS degree', expandedDetails: { context: 'Undergraduate CS education with focus on systems.', challengeFaced: 'Balancing academics and projects.', outcome: 'Strong fundamentals.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Algorithms', 'Java'], transitions: [{ decisionLabel: 'Joined a SaaS startup', toExperienceId: 'f2' }] } },
-    { id: 'f2', title: 'Software Engineer at SaaS Startup', startDate: '2019', endDate: '2021', organization: 'SaaS Corp', isVerified: true, nodeType: 'Job', emotionLabel: 'Confident', timelineSummary: 'Full-stack development', expandedDetails: { context: 'Joined as employee #12 at an early-stage B2B SaaS.', challengeFaced: 'Wearing many hats, resource constraints.', outcome: 'Built full-stack skills, understood sales cycles.', achievements: ['Shipped 3 major features', 'Promoted in 18 months'], applicationStatus: null, emotionNote: null, goals: [], skills: ['React', 'Node.js', 'PostgreSQL'], transitions: [{ decisionLabel: 'Decided to learn the industry deeply', toExperienceId: 'f3' }] } },
-    { id: 'f3', title: 'Worked for 2 years to learn industry', startDate: '2021', endDate: '2021', organization: '', isVerified: false, nodeType: 'Decision', emotionLabel: 'Uncertain', timelineSummary: 'Stayed to understand fintech deeply', expandedDetails: { context: 'Felt I lacked real-world experience in payments and lending. Wanted to understand how fintech products work, how teams operate, and build my network.', challengeFaced: 'Uncertainty about timing — was I wasting time?', outcome: 'Built deep domain knowledge and professional network.', achievements: null, applicationStatus: null, emotionNote: "'I was unsure if I was wasting time by not starting early, but deep down I knew this would make me stronger in the long run.'", goals: [], skills: ['Domain Knowledge', 'Networking'], transitions: [{ decisionLabel: 'Left to build own product', toExperienceId: 'f4' }] } },
-    { id: 'f4', title: 'Senior Software Engineer at Fintech Company', startDate: '2021', endDate: '2022', organization: 'Fintech Co', isVerified: true, nodeType: 'Job', emotionLabel: 'Confident', timelineSummary: 'Deepened fintech domain expertise', expandedDetails: { context: 'Moved to a fintech company to gain direct domain knowledge.', challengeFaced: 'Complex regulatory environment.', outcome: 'Understood payments infrastructure deeply.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Payments', 'Compliance'], transitions: [{ decisionLabel: 'Left job to build fintech product', toExperienceId: 'f5' }] } },
-    { id: 'f5', title: 'Left job to build fintech product', startDate: '2022', endDate: '2022', organization: '', isVerified: false, nodeType: 'Decision', emotionLabel: 'Pivoting', timelineSummary: 'Took the leap', expandedDetails: { context: 'Had enough domain knowledge and savings.', challengeFaced: 'Leaving stability.', outcome: 'Started building full-time.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Entrepreneurship'], transitions: [{ decisionLabel: 'Building startup', toExperienceId: 'f7' }] } },
-    { id: 'f6', title: 'First startup idea failed', startDate: '2022', endDate: '2022', organization: '', isVerified: false, nodeType: 'Failure', emotionLabel: 'Pushing through', timelineSummary: 'Initial idea did not gain traction', expandedDetails: { context: 'First attempt at a lending product failed due to regulatory issues.', challengeFaced: 'Compliance complexity and no legal team.', outcome: 'Learned what NOT to build. Pivoted approach.', achievements: null, applicationStatus: null, emotionNote: "'It felt like everything was crumbling, but I refused to give up.'", goals: [], skills: ['Resilience'], transitions: [] } },
-    { id: 'f7', title: 'Building fintech startup', startDate: '2023', endDate: 'Present', organization: 'FinServe', isVerified: true, nodeType: 'Startup', emotionLabel: 'Confident', timelineSummary: 'Building B2B payments infrastructure', expandedDetails: { context: 'Applied all learnings from the failed attempt.', challengeFaced: 'Scaling team and product.', outcome: 'Growing steadily with strong retention.', achievements: null, applicationStatus: null, emotionNote: null, goals: [], skills: ['Leadership', 'Fundraising'], transitions: [{ decisionLabel: 'Reached $150K ARR', toExperienceId: 'f8' }] } },
-    { id: 'f8', title: 'First revenue $150K ARR', startDate: '2024', endDate: '2024', organization: 'FinServe', isVerified: true, nodeType: 'Achievement', emotionLabel: 'Confident', timelineSummary: 'Hit product-market fit', expandedDetails: { context: 'Milestone achieved.', challengeFaced: 'Maintaining growth rate.', outcome: 'Strong ARR with enterprise customers.', achievements: ['$150K ARR', '10 enterprise clients'], applicationStatus: null, emotionNote: null, goals: [], skills: ['Scaling'], transitions: [] } },
-  ],
-};
+function mapToUserTrajectory(
+  journey: {
+    user: any;
+    experiences: JourneyExperience[];
+    transitions: JourneyTransition[];
+  }
+): UserTrajectory {
+  const timeline: TimelineEvent[] = journey.experiences.map(exp => {
+    const outgoing = journey.transitions
+      .filter(t => t.fromExperienceId === exp.id)
+      .map(t => ({ decisionLabel: t.decisionLabel, toExperienceId: t.toExperienceId }));
+
+    let nodeType: NodeType = 'Job';
+    const titleLower = (exp.title || '').toLowerCase();
+    const contextLower = (exp.context || '').toLowerCase();
+    if (titleLower.includes('university') || titleLower.includes('degree') || titleLower.includes('education') || contextLower.includes('education')) {
+      nodeType = 'Education';
+    } else if (titleLower.includes('startup') || titleLower.includes('founded') || titleLower.includes('co-founded')) {
+      nodeType = 'Startup';
+    } else if (titleLower.includes('failed') || titleLower.includes('failure') || contextLower.includes('failed')) {
+      nodeType = 'Failure';
+    } else if (titleLower.includes('decision') || titleLower.includes('left') || titleLower.includes('pivoted')) {
+      nodeType = 'Decision';
+    } else if (titleLower.includes('achievement') || titleLower.includes('milestone') || titleLower.includes('revenue') || titleLower.includes('pmf')) {
+      nodeType = 'Achievement';
+    }
+
+    return {
+      id: exp.id,
+      title: exp.title,
+      startDate: exp.startDate,
+      endDate: exp.endDate,
+      organization: exp.organization || '',
+      isVerified: exp.isVerified,
+      nodeType,
+      emotionLabel: 'Confident',
+      timelineSummary: exp.timelineSummary || exp.context || '',
+      expandedDetails: {
+        context: exp.context,
+        challengeFaced: exp.challengeFaced,
+        outcome: exp.outcome,
+        achievements: exp.achievements,
+        applicationStatus: exp.applicationStatus,
+        emotionNote: null,
+        goals: [],
+        skills: exp.skills?.map(s => s.name) || [],
+        transitions: outgoing,
+      },
+    };
+  });
+
+  return {
+    username: journey.user?.username || '',
+    reputationScore: typeof journey.user?.reputationScore === 'object'
+      ? (journey.user.reputationScore as any)?.low ?? 0
+      : journey.user?.reputationScore ?? 0,
+    timeline,
+  };
+}
 
 /* ── Component ─────────────────────────────────────────── */
 
 export default function FullJourneyPage() {
   const router = useRouter();
+  const { getToken } = useAuth();
   const params = useLocalSearchParams<{ userData?: string }>();
   const [showRelevant, setShowRelevant] = useState(false);
   const [selectedNode, setSelectedNode] = useState<TimelineEvent | null>(null);
   const [scale, setScale] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<UserTrajectory | null>(null);
 
-  let user: UserTrajectory = FALLBACK;
-  try { if (params.userData) user = JSON.parse(params.userData); } catch { /* fallback */ }
+  useEffect(() => {
+    if (params.userData) {
+      try {
+        const parsed = JSON.parse(params.userData);
+        setUser(parsed);
+        setIsLoading(false);
+        return;
+      } catch { /* fall through to API fetch */ }
+    }
+    loadJourney();
+  }, []);
+
+  const loadJourney = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      const result = await getUserJourney(token);
+      if (!result.journey || result.journey.experiences.length === 0) {
+        setUser(null);
+      } else {
+        setUser(mapToUserTrajectory(result.journey));
+      }
+    } catch (err: any) {
+      console.warn("Failed to load journey:", err);
+      setError(err?.message || "Failed to load journey");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-brand-cream justify-center items-center">
+        <ActivityIndicator size="large" color={BRAND_COLORS.teal} />
+        <Text className="text-sm text-brand-slate mt-3">Loading journey...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="flex-1 bg-brand-cream justify-center items-center p-8">
+        <Text className="text-[15px] text-brand-slate text-center mb-4">{error}</Text>
+        <TouchableOpacity className="px-6 py-3 rounded-full bg-brand-teal" onPress={loadJourney}>
+          <Text className="text-sm font-semibold text-brand-white">Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (!user || user.timeline.length === 0) {
+    return (
+      <View className="flex-1 bg-brand-cream justify-center items-center p-8">
+        <Text className="text-2xl mb-3">🗺️</Text>
+        <Text className="text-xl font-bold text-brand-navy mb-2">No journey data</Text>
+        <Text className="text-sm text-brand-slate text-center mb-6">
+          Share your journey first to see your full career flowchart here.
+        </Text>
+        <TouchableOpacity
+          className="px-6 py-3 rounded-full bg-brand-teal"
+          onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/(tabs)'); }}
+        >
+          <Text className="text-sm font-semibold text-brand-white">Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   // Separate failure nodes for branching
   const mainTimeline = user.timeline.filter(e => e.nodeType !== 'Failure');
   const failureNodes = user.timeline.filter(e => e.nodeType === 'Failure');
 
-  // Find the index after which the failure branches off (the Decision node before it)
+  // Find the index after which the failure branches off
   const failureBranchAfterIdx = mainTimeline.findIndex(e =>
     e.nodeType === 'Decision' && e.expandedDetails.transitions.length > 0
   );
@@ -52,7 +172,7 @@ export default function FullJourneyPage() {
         <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}><Text className="text-2xl text-brand-navy mt-0.5">←</Text></TouchableOpacity>
         <View className="flex-1">
           <Text className="text-xl font-extrabold text-brand-navy">Full Journey</Text>
-          <Text className="text-[13px] text-brand-slate mt-0.5">Journey 1 of 18</Text>
+          <Text className="text-[13px] text-brand-slate mt-0.5">{user.timeline.length} experiences</Text>
         </View>
         <View className="flex-row items-center gap-1">
           <Text className="text-[11px] text-brand-slate font-semibold">Show relevant only</Text>
@@ -195,5 +315,3 @@ export default function FullJourneyPage() {
     </View>
   );
 }
-
-
