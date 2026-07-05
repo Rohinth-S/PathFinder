@@ -3,6 +3,7 @@ import { extractJourney } from "../processors/journey/extractJourney.processor.j
 import { validateJourneySchema } from "../processors/journey/schemaValidation.processor.js";
 import { normalizeJourney } from "../processors/journey/normalizer/engine.js";
 import { analyzeStaticRules } from "../processors/journey/staticAnalysis/engine.js";
+import { insertUserGraph } from "../services/journeyInsertion.service.js";
 
 export async function extractJourneyController(
   req: Request,
@@ -13,6 +14,13 @@ export async function extractJourneyController(
 
     if (!journey || typeof journey !== "string") {
       res.status(400).json({ error: "Missing or invalid 'journey' parameter in request body." });
+      return;
+    }
+
+    // @ts-ignore - Assuming clerk attaches auth object to req when requireAuth() is used
+    const clerkId = req.auth?.userId;
+    if (!clerkId) {
+      res.status(401).json({ error: "Unauthorized: Missing Clerk ID." });
       return;
     }
 
@@ -29,6 +37,9 @@ export async function extractJourneyController(
 
     // 2. Run Static Analysis on the Normalized Journey
     const analysis = analyzeStaticRules(normalizationResult.journey);
+
+    // 3. Persist to Neo4j
+    await insertUserGraph(clerkId, normalizationResult.journey);
 
     res.json({
       success: true,
