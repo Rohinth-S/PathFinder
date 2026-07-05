@@ -51,6 +51,16 @@ OPTIONS {
   }
 };
 
+CREATE VECTOR INDEX goal_embedding_index IF NOT EXISTS
+FOR (g:Goal)
+ON (g.embedding)
+OPTIONS {
+  indexConfig: {
+    `vector.dimensions`: 384,
+    `vector.similarity_function`: 'cosine'
+  }
+};
+
 
 // Property Indexes — User
 

@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import { clerkClient } from "@clerk/express";
-
 import { syncUser } from "../services/auth.service.js";
 
 export async function syncUserController(

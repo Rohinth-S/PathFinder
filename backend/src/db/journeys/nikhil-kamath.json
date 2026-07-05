@@ -16,8 +16,8 @@
       "status": "achieved",
       "topics": ["College Students"],
       "subtopics": ["Dropping Out To Build"],
-      "startDate": "2000-01-01",
-      "endDate": "2003-06-01"
+      "startDate": "Jan 2000",
+      "endDate": "Jun 2003"
     },
     {
       "id": "sb-45-g-acmfi",
@@ -26,8 +26,8 @@
       "status": "achieved",
       "topics": ["Professionals", "College Students"],
       "subtopics": ["Sales / GTM", "Dropping Out To Build"],
-      "startDate": "2003-07-01",
-      "endDate": "2010-08-01"
+      "startDate": "Jul 2003",
+      "endDate": "Aug 2010"
     },
     {
       "id": "sb-45-g-ehlcb",
@@ -36,8 +36,8 @@
       "status": "achieved",
       "topics": ["Startup", "Professionals"],
       "subtopics": ["Fintech", "Sales / GTM"],
-      "startDate": "2010-08-15",
-      "endDate": "2018-12-31"
+      "startDate": "Aug 2010",
+      "endDate": "Dec 2018"
     },
     {
       "id": "sb-45-g-dicboru",
@@ -46,8 +46,8 @@
       "status": "achieved",
       "topics": ["Startup", "Professionals"],
       "subtopics": ["Fintech", "Product Management", "Sales / GTM"],
-      "startDate": "2011-01-01",
-      "endDate": "2015-12-31"
+      "startDate": "Jan 2011",
+      "endDate": "Dec 2015"
     },
     {
       "id": "sb-45-g-optidss",
@@ -56,8 +56,8 @@
       "status": "achieved",
       "topics": ["Startup", "Professionals"],
       "subtopics": ["Fintech", "Software Engineering", "Product Management", "Design", "SaaS / Tech", "Sales / GTM"],
-      "startDate": "2015-01-01",
-      "endDate": "2020-12-31"
+      "startDate": "Jan 2015",
+      "endDate": "Dec 2020"
     },
     {
       "id": "sb-45-g-decfca",
@@ -66,7 +66,7 @@
       "status": "ongoing",
       "topics": ["Startup"],
       "subtopics": ["Fintech", "SaaS / Tech", "D2C / Consumer", "Edtech", "Social Impact"],
-      "startDate": "2011-01-01",
+      "startDate": "Jan 2011",
       "endDate": null
     },
     {
@@ -76,7 +76,7 @@
       "status": "ongoing",
       "topics": ["Startup", "Professionals"],
       "subtopics": ["Fintech", "D2C / Consumer", "Social Impact", "Sales / GTM"],
-      "startDate": "2021-01-01",
+      "startDate": "Jan 2021",
       "endDate": null
     }
   ],
@@ -84,8 +84,8 @@
     {
       "id": "sb-45-e-rsh",
       "title": "Reselling Second-Hand Handsets",
-      "startDate": "2000-01-01",
-      "endDate": "2003-06-01",
+      "startDate": "Jan 2000",
+      "endDate": "Jun 2003",
       "context": "Operating within my high school environment, I engaged in buying and selling pre-owned mobile phones among classmates. I scouted for peers looking to upgrade their devices, negotiated low purchase prices, and sourced budget-conscious buyers willing to pay a slight premium for accessible consumer electronics.",
       "challengeFaced": "I frequently misjudged market demand, causing me to overpay for devices or get stuck with inventory that I could not offload at a profitable price point.",
       "outcome": "Successfully navigated peer-to-peer sales networks and learned to manually adjust pricing structures based on individual buyer willingness to pay.",
@@ -118,8 +118,8 @@
     {
       "id": "sb-45-e-lsmae",
       "title": "Local Sourcing and Micro-Arbitrage Experiments",
-      "startDate": "2001-06-01",
-      "endDate": "2003-03-01",
+      "startDate": "Jun 2001",
+      "endDate": "Mar 2003",
       "context": "To expand beyond my immediate classroom circle, I began visiting local grey markets and wholesale electronic hubs in Bengaluru to manually check prices for localized consumer accessories and hardware components, trying to flip them directly to neighborhood acquaintances.",
       "outcome": "Discovered the harsh reality of transactional friction, transportation overheads, and minimal micro-margins.",
       "isVerified": true,
@@ -151,8 +151,8 @@
     {
       "id": "sb-45-e-tcca",
       "title": "Technical Call Center Agent",
-      "startDate": "2003-07-01",
-      "endDate": "2005-12-01",
+      "startDate": "Jul 2003",
+      "endDate": "Dec 2005",
       "context": "At seventeen years old, I joined a high-volume telecom call center in Bengaluru to work repetitive night shifts. Wearing a headset for hours, I processed client inbound queries, handled scripted troubleshooting matrixes, and answered repetitive customer support calls under strict corporate timeline pressures.",
       "outcome": "Secured a steady, baseline monthly cash flow that cleared his personal living bills and created individual financial self-reliance.",
       "organization": "Stonebridge / Aegon Vendor Call Center",
@@ -185,8 +185,8 @@
     {
       "id": "sb-45-e-swfcr",
       "title": "Systematic Wage Funneling and Capital Rationing",
-      "startDate": "2003-07-01",
-      "endDate": "2005-12-01",
+      "startDate": "Jul 2003",
+      "endDate": "Dec 2005",
       "context": "While drawing a monthly salary ranging from 8,000 to 11,000 rupees, I restricted my personal expenditures to save money. I systematically funneled a portion of each paycheck directly into a dedicated liquid bank account with the intention of pooling enough clean capital to open a retail trading account.",
       "outcome": "Successfully pooled together thousands of rupees in unencumbered personal cash to deploy directly into live capital market instruments.",
       "isVerified": true,
@@ -214,8 +214,8 @@
     {
       "id": "sb-45-e-hnwpa",
       "title": "High-Net-Worth Portfolio Advisories",
-      "startDate": "2008-01-01",
-      "endDate": "2010-08-01",
+      "startDate": "Jan 2008",
+      "endDate": "Aug 2010",
       "context": "Having established a more consistent and disciplined personal trading track record, I transitioned completely away from call center employment to run a sub-broker portfolio advisory house alongside my older brother, managing money for retail clients and high-net-worth accounts.",
       "outcome": "Completely replaced my previous fixed call center salary with a variable, market-generated commission and proprietary advisory profit stream.",
       "organization": "Organization: Kamath & Associates (Reliance Money Franchise)",
@@ -244,8 +244,8 @@
     {
       "id": "sb-45-e-lisz",
       "title": "Legal Incorporation and Setup of Zerodha",
-      "startDate": "2010-08-15",
-      "endDate": "2012-12-31",
+      "startDate": "Aug 2010",
+      "endDate": "Dec 2012",
       "context": "Moving beyond basic sub-broking advisories, I co-founded and legally incorporated a dedicated financial services firm under the name Zerodha. I established the early operational layout and filed initial corporate documentation.",
       "outcome": "Successfully launched a fully operational, licensed brokerage enterprise capable of legally clearing financial asset transactions.",
       "organization": "Zerodha",
@@ -278,8 +278,8 @@
     {
       "id": "sb-45-e-plh",
       "title": "procurement and Layout of Early Headquarters",
-      "startDate": "2010-08-15",
-      "endDate": "2012-12-31",
+      "startDate": "Aug 2010",
+      "endDate": "Dec 2012",
       "context": "To house the growing internal operations of the newly founded brokerage firm, I managed the physical leasing, commercial layout design, and operational setup of a brick-and-mortar office space in Bengaluru to house customer support teams and technical operators.",
       "outcome": "Secured and finalized an efficient physical hub that grew the internal workforce from the core founders to an organized staff of 85 employees.",
       "organization": "Zerodha",
@@ -312,8 +312,8 @@
     {
       "id": "sb-45-e-sre",
       "title": "Scaling Commercial Real Estate Floorplates",
-      "startDate": "2016-01-01",
-      "endDate": "2018-12-31",
+      "startDate": "Jan 2016",
+      "endDate": "Dec 2018",
       "context": "As the company's employee headcount expanded into hundreds of customer support, operations, and compliance personnel, I oversaw the sourcing, multi-floor commercial leasing, and spatial rollout of expanded corporate offices in JP Nagar, Bengaluru.",
       "outcome": "Successfully expanded the physical corporate workspace footprint to smoothly accommodate a workforce of over 1,000 individuals.",
       "organization": "Zerodha",
@@ -342,8 +342,8 @@
     {
       "id": "sb-45-e-mcedm",
       "title": "Managing Core Exchange Depositories and Margins",
-      "startDate": "2011-01-01",
-      "endDate": "2013-12-31",
+      "startDate": "Jan 2011",
+      "endDate": "Dec 2013",
       "context": "I handled the complex physical and logistical deployment of corporate capital to satisfy National Stock Exchange (NSE) and BSE depository requirements, ensuring that the necessary multi-crore base minimum capital reserves were locked in place.",
       "outcome": "Obtained the functional clearings required to handle high-volume retail transactions on the major exchanges.",
       "organization": "Zerodha",
@@ -372,8 +372,8 @@
     {
       "id": "sb-45-e-occa",
       "title": "Orchestrating Continuous Compliance Audits",
-      "startDate": "2014-01-01",
-      "endDate": "2015-12-31",
+      "startDate": "Jan 2014",
+      "endDate": "Dec 2015",
       "context": "Operating under a rigid regulatory environment, I routinely structured the internal response frameworks for periodic audits, security compliance filings, and regulatory checks mandated by SEBI.",
       "challengeFaced": "Navigating sudden and strict regulatory changes regarding client onboarding workflows and formatting.",
       "outcome": "Obtained the functional clearings required to handle high-volume retail transactions on the major exchanges.",
@@ -407,8 +407,8 @@
     {
       "id": "sb-45-e-cdrco",
       "title": "Community-Driven Retail Client Onboarding",
-      "startDate": "2011-01-01",
-      "endDate": "2013-06-01",
+      "startDate": "Jan 2011",
+      "endDate": "Jun 2013",
       "context": "With zero marketing budget, I spent my days interacting directly with online financial blogging communities, day-trading forums, and user boards to pitch the platform's execution speed and discount model to highly skeptical early traders.",
       "challengeFaced": "Overcoming deep consumer skepticism about how an unbacked startup could drop costs so low without a hidden catch.",
       "outcome": "Built an initial base of roughly 10,000 active retail accounts purely through organic word-of-mouth channels.",
@@ -442,8 +442,8 @@
     {
       "id": "sb-45-e-fafm",
       "title": "Financial Architecture of the Flat ₹20 Model",
-      "startDate": "2011-01-01",
-      "endDate": "2012-12-31",
+      "startDate": "Jan 2011",
+      "endDate": "Dec 2012",
       "context": "I mapped out the unit economics for a flat transactional fee model, completely eliminating percentage-based brokerage charges. I ran stress-test projections to verify that charging a fixed ₹20 per trade would cover server costs and keep the entity self-sustaining.",
       "outcome": "Formally introduced the flat ₹20 model, completely shaking up legacy brokerage cost structures in the Indian market.",
       "organization": "Zerodha",
@@ -476,8 +476,8 @@
     {
       "id": "sb-45-e-lzbedp",
       "title": "Launching the Zero-Brokerage Equity Delivery Plan",
-      "startDate": "2015-01-01",
-      "endDate": "2015-12-31",
+      "startDate": "Jan 2015",
+      "endDate": "Dec 2015",
       "context": "To capture long-term retail investors alongside day-traders, I led the financial structuring and operational launch of a ₹0 (zero brokerage) tier specifically for equity delivery investments.",
       "outcome": "Dramatically reduced the transactional cost of long-term investing to zero for retail individuals across India.",
       "organization": "Zerodha",
@@ -509,8 +509,8 @@
     {
       "id": "sb-45-e-ieke",
       "title": "Iterating and Engineering the Kite UI/UX Engine",
-      "startDate": "2015-01-01",
-      "endDate": "2016-12-31",
+      "startDate": "Jan 2015",
+      "endDate": "Dec 2016",
       "context": "Serving as the bridge between software developers and professional day-traders, I directed the user experience layouts, minimal screen designs, and latency targets for Kite, a proprietary web and mobile trading platform.",
       "outcome": "Deployed a fast, clean interface that processed millions of operations without crashing, freeing the firm from third-party vendor white-labels.",
       "organization": "Zerodha",
@@ -543,8 +543,8 @@
     {
       "id": "sb-45-e-etepd",
       "title": "Expanding Transactional Engines Post-Demonetization",
-      "startDate": "2016-11-01",
-      "endDate": "2018-12-31",
+      "startDate": "Nov 2016",
+      "endDate": "Dec 2018",
       "context": "Following the 2016 macroeconomic shifts in India, I oversaw the scaling of operational and customer support teams to manage a massive wave of incoming retail investors moving toward digital financial products.",
       "outcome": "Following the 2016 macroeconomic shifts in India, he oversaw the scaling of operational and customer support teams to manage a massive wave of incoming retail investors moving toward digital financial products.",
       "organization": "Zerodha",
@@ -573,8 +573,8 @@
     {
       "id": "sb-45-e-isrw",
       "title": "Infrastructure Scaling for the 2020 Retail Wave",
-      "startDate": "2020-03-01",
-      "endDate": "2020-12-31",
+      "startDate": "Mar 2020",
+      "endDate": "Dec 2020",
       "context": "Faced with an unprecedented surge in day-trading volumes during global work-from-home periods, I coordinated closely with technical teams to optimize server structures and protect execution systems against major market-wide volatility spikes.",
       "outcome": "Secured the company's market position as the largest retail stockbroker in India by user count.",
       "organization": "Zerodha",
@@ -603,8 +603,8 @@
     {
       "id": "sb-45-e-lscmfp",
       "title": "Launch and Scale of the Coin Mutual Fund Platform",
-      "startDate": "2016-01-01",
-      "endDate": "2017-12-31",
+      "startDate": "Jan 2016",
+      "endDate": "Dec 2017",
       "context": "To expand the platform's scope, I guided the product definition and commercial launch of a direct mutual fund asset platform called Coin, giving users a way to invest cleanly in non-brokerage asset management funds.",
       "outcome": "Diversified the company's transaction streams and captured non-speculative, long-term investor demographics.",
       "organization": "Zerodha",
@@ -637,8 +637,8 @@
     {
       "id": "sb-45-e-srisf",
       "title": "Systematic Rejection of Institutional Series Funding",
-      "startDate": "2011-01-01",
-      "endDate": "2016-12-31",
+      "startDate": "Jan 2011",
+      "endDate": "Dec 2016",
       "context": "During the foundational expansion years of Indian fintech, I routinely reviewed and turned down investment term sheets from international venture funds, opting to pay for all server and office scale-up costs strictly out of internal cash flows.",
       "outcome": "Kept 100% of the company's equity inside the family, protecting total board control and decision-making power from investor pressures.",
       "organization": "Zerodha",
@@ -667,8 +667,8 @@
     {
       "id": "sb-45-e-dihge",
       "title": "Defending Independence in the Hyper-Growth Era",
-      "startDate": "2017-01-01",
-      "endDate": "2020-12-31",
+      "startDate": "Jan 2017",
+      "endDate": "Dec 2020",
       "context": "As competitors raised billions in venture dollars to burn on marketing campaigns, I managed the company's cash reserves defensively, prioritizing profit-per-user metrics over venture-subsidized growth.",
       "outcome": "Maintained an exceptionally high profit-to-employee ratio while keeping the cap table completely bootstrapped.",
       "organization": "Zerodha",
@@ -697,8 +697,8 @@
     {
       "id": "sb-45-e-srff",
       "title": "Structuring the Rainmatter Fintech Fund",
-      "startDate": "2017-01-01",
-      "endDate": "2020-12-31",
+      "startDate": "Jan 2017",
+      "endDate": "Dec 2020",
       "context": "Leveraging the company's financial reserves, I spearheaded the establishment of an early-stage investment fund (Rainmatter) to deploy seed and early capital into emerging fintech, personal finance, and tech tool startups.",
       "outcome": "Successfully backed dozens of early-stage software companies, integrating their tools into a broader tech ecosystem.",
       "organization": "RainMatter",
@@ -727,7 +727,7 @@
     {
       "id": "sb-45-e-dgsei",
       "title": "Direct Growth-Stage Equity Investing",
-      "startDate": "2017-01-01",
+      "startDate": "Jan 2017",
       "endDate": null,
       "context": "Operating as an active private investor, I began directly reviewing business pitches from founders across diverse fields like direct-to-consumer (D2C) brands, healthtech, and climate-focused technology setups.",
       "outcome": "Built an active personal startup portfolio, deploying millions into growing private companies.",
@@ -756,8 +756,8 @@
     {
       "id": "sb-45-e-csgpv",
       "title": "Co-Founding and Structuring the Gruhas Proptech Vehicle",
-      "startDate": "2021-01-01",
-      "endDate": "2023-12-31",
+      "startDate": "Jan 2021",
+      "endDate": "Dec 2023",
       "context": "Recognizing a massive gap in real estate technology and climate-conscious building methods, I co-founded Gruhas, pooling large-scale partner funding blocks to establish a focused alternative investment fund.",
       "outcome": "Formally built a prominent multi-sector fund backing green construction materials and prop-tech SaaS tools.",
       "organization": "Gruhas",
@@ -786,7 +786,7 @@
     {
       "id": "sb-45-e-scsa",
       "title": "Scaling Climate and Sustainability Alliances",
-      "startDate": "2024-01-01",
+      "startDate": "Jan 2024",
       "endDate": null,
       "context": "Through the Gruhas investment umbrella, I began orchestrating joint ventures, co-investing structures, and pilot testing programs for eco-materials and alternative consumer goods startups with major industrial real estate players.",
       "outcome": "Successfully directed significant private financing toward scaling alternative construction and environmental tech assets.",
@@ -816,8 +816,8 @@
     {
       "id": "sb-45-e-tssp",
       "title": "Technical and Studio Setup of the WTF is Property",
-      "startDate": "2023-01-01",
-      "endDate": "2024-12-31",
+      "startDate": "Jan 2023",
+      "endDate": "Dec 2024",
       "context": "I directed the building of custom physical recording studios, multi-camera audio-visual setups, and production teams to launch a digital broadcasting entity featuring long-form business panel podcasts.",
       "outcome": "Created a highly visible corporate media engine that pulled in millions of streams and direct platform impressions.",
       "organization": "WTF is / Media Wing",

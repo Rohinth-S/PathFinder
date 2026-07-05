@@ -11,6 +11,12 @@ export interface ExperienceEmbeddingInput {
   skills?: string[];
 }
 
+export interface GoalEmbeddingInput {
+  id: string;
+  title: string;
+  description: string;
+}
+
 function buildEmbeddingText(
   experience: ExperienceEmbeddingInput
 ): string {
@@ -38,12 +44,22 @@ function buildEmbeddingText(
     .join("\n\n");
 }
 
-async function storeEmbedding(
+function buildGoalEmbeddingText(
+  goal: GoalEmbeddingInput
+): string {
+  return [
+    `Title: ${goal.title}`,
+    `Description: ${goal.description}`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+async function storeExperienceEmbedding(
   experienceId: string,
-  embedding: number[],
+  embedding: number[]
 ): Promise<void> {
   const session = getSession();
-
   try {
     await session.run(
       `
@@ -59,6 +75,27 @@ async function storeEmbedding(
     await closeSession(session);
   }
 }
+async function storeGoalEmbedding(
+  goalId: string,
+  embedding: number[]
+): Promise<void> {
+  const session = getSession();
+
+  try {
+    await session.run(
+      `
+      MATCH (g:Goal {id: $goalId})
+      SET g.embedding = $embedding
+      `,
+      {
+        goalId,
+        embedding,
+      }
+    );
+  } finally {
+    await closeSession(session);
+  }
+}
 
 export async function generateExperienceEmbedding(
   experience: ExperienceEmbeddingInput
@@ -66,8 +103,19 @@ export async function generateExperienceEmbedding(
   const embeddingText =buildEmbeddingText(experience);
   const embedding =await generateEmbedding(embeddingText);
 
-await storeEmbedding(
+await storeExperienceEmbedding(
   experience.id,
   embedding
 );
+}
+
+export async function generateGoalEmbedding(
+  goal: GoalEmbeddingInput
+): Promise<void> {
+  const embeddingText = buildGoalEmbeddingText(goal);
+  const embedding = await generateEmbedding(embeddingText);
+  await storeGoalEmbedding(
+    goal.id,
+    embedding
+  );
 }

@@ -16,8 +16,8 @@
       "status": "achieved",
       "topics": ["College Students"],
       "subtopics": ["Getting Into IITs/NITs", "Cracking Placements"],
-      "startDate": "2015-07-01",
-      "endDate": "2019-05-31"
+      "startDate": "Jul 2015",
+      "endDate": "May 2019"
     },
     {
       "id": "ab-97-g-apsefl",
@@ -26,8 +26,8 @@
       "status": "achieved",
       "topics": ["Professionals"],
       "subtopics": ["Software Engineering"],
-      "startDate": "2019-08-01",
-      "endDate": "2021-12-31"
+      "startDate": "Aug 2019",
+      "endDate": "Dec 2021"
     },
     {
       "id": "ab-97-g-bhdca",
@@ -36,8 +36,8 @@
       "status": "achieved",
       "topics": ["Startup", "Professionals"],
       "subtopics": ["SaaS / Tech", "Sales / GTM"],
-      "startDate": "2020-06-01",
-      "endDate": "2022-06-30"
+      "startDate": "Jun 2020",
+      "endDate": "Jun 2022"
     },
     {
       "id": "ab-97-g-isabcc",
@@ -46,8 +46,8 @@
       "status": "achieved",
       "topics": ["Startup"],
       "subtopics": ["SaaS / Tech"],
-      "startDate": "2022-06-01",
-      "endDate": "2022-10-31"
+      "startDate": "Jun 2022",
+      "endDate": "Oct 2022"
     },
     {
       "id": "ab-97-g-vmpif",
@@ -56,8 +56,8 @@
       "status": "achieved",
       "topics": ["Startup", "Professionals"],
       "subtopics": ["SaaS / Tech", "Sales / GTM"],
-      "startDate": "2022-11-01",
-      "endDate": "2023-03-31"
+      "startDate": "Nov 2022",
+      "endDate": "Mar 2023"
     },
     {
       "id": "ab-97-g-dsihp",
@@ -66,8 +66,8 @@
       "status": "achieved",
       "topics": ["Startup", "Professionals"],
       "subtopics": ["SaaS / Tech", "Product Management", "Sales / GTM"],
-      "startDate": "2023-05-01",
-      "endDate": "2023-07-15"
+      "startDate": "May 2023",
+      "endDate": "Jul 2023"
     },
     {
       "id": "ab-97-g-scamse",
@@ -76,7 +76,7 @@
       "status": "ongoing",
       "topics": ["Startup"],
       "subtopics": ["SaaS / Tech", "Data / AI", "Product Management"],
-      "startDate": "2023-06-01",
+      "startDate": "Jun 2023",
       "endDate": null
     }
   ],
@@ -84,8 +84,8 @@
   {
     "id": "ab-97-e-lcsafs",
     "title": "Configuring Local Game Servers and Automated File Scripts",
-    "startDate": "2009-04-01",
-    "endDate": "2011-06-30",
+    "startDate": "Apr 2009",
+    "endDate": "Jun 2011",
     "context": "At age 12, I began setting up and configuring local custom Java servers for Minecraft. I wrote simple custom batch scripts to automate our data backup sequences and reverse-engineered early HTML/CSS blog templates.",
     "outcome": "Developed an intuitive practical grasp of software directory layouts, structural config testing, and baseline terminal inputs.",
     "isVerified": true,
@@ -109,8 +109,8 @@
   {
     "id": "ab-97-e-scse",
     "title": "State-Level Competitive Sprinting Execution",
-    "startDate": "2011-06-01",
-    "endDate": "2015-05-31",
+    "startDate": "Jun 2011",
+    "endDate": "May 2015",
     "context": "I trained as a competitive state-level track sprinter, specializing in high-intensity 100m and 200m events. This required extreme physical conditioning, precise video-analysis adjustments, and rigid block-start repetitions.",
     "outcome": "Cultivated a deep psychological endurance and high threshold for repetitive, unglamorous groundwork under immense physical strain.",
     "isVerified": true,
@@ -134,8 +134,8 @@
   {
     "id": "ab-97-e-pcem",
     "title": "Pursuing Computer Engineering at VJTI Mumbai",
-    "startDate": "2015-07-01",
-    "endDate": "2019-05-31",
+    "startDate": "Jul 2015",
+    "endDate": "May 2019",
     "context": "I completed my Bachelor of Technology at VJTI Mumbai, following an intensive curriculum centered around discrete mathematics, relational database schemas, compiler engineering, and object-oriented architectures.",
     "outcome": "Graduated with an 8.9 CGPA, locking in a strong theoretical foundation across classical computer science architectures.",
     "organization": "Veermata Jijabai Technological Institute (VJTI)",
@@ -160,8 +160,8 @@
   {
     "id": "ab-97-e-stpfjf",
     "title": "Self-Teaching Production Full-Stack JavaScript Frameworks",
-    "startDate": "2016-05-01",
-    "endDate": "2018-06-30",
+    "startDate": "May 2016",
+    "endDate": "Jun 2018",
     "context": "To counter the university's purely theoretical focus, I used my off-hours to master contemporary web stacks, including asynchronous Node.js rumbas, early React state configurations, and utility-first styling patterns via Tailwind CSS.",
     "outcome": "Bridged the practical production engineering gap, building functional web layouts far ahead of my college curriculum milestones.",
     "isVerified": true,
@@ -185,8 +185,8 @@
   {
     "id": "ab-97-e-ostc",
     "title": "Open-Source Telemetry Contributions and Student Infrastructure Runs",
-    "startDate": "2017-06-01",
-    "endDate": "2019-03-31",
+    "startDate": "Jun 2017",
+    "endDate": "Mar 2019",
     "context": "I began parsing public GitHub repositories to commit code changes to distributed developer tooling frameworks, while deploying personal student aggregation utilities onto Heroku and AWS EC2 instances.",
     "outcome": "Gained real-world exposure to SSH key pairs, secure public DNS routing setups, and open-source distributed coordination.",
     "isVerified": true,
@@ -210,8 +210,8 @@
   {
     "id": "ab-97-e-aseel",
     "title": "Associate Software Engineer at TCS Enterprise Lab",
-    "startDate": "2019-08-01",
-    "endDate": "2021-12-31",
+    "startDate": "Aug 2019",
+    "endDate": "Dec 2021",
     "context": "I joined the TCS Enterprise Innovation Lab, working on a major database modernization pipeline for a Tier-1 retail banking giant. My primary technical assignment was scripting Java Spring Boot API wrappers to safely expose data from legacy IBM DB2 mainframe setups.",
     "challengeFaced": "Navigating hyper-bureaucratic Jira workflows and slow architectural reviews that continually stalled feature shipment speeds.",
     "outcome": "Mastered complex enterprise data pipeline workflows while observing severe data access bottlenecks up close.",
@@ -237,8 +237,8 @@
   {
     "id": "ab-97-e-aoscpp",
     "title": "Algorithmic Options Scripting and Capital Preservation Planning",
-    "startDate": "2021-01-01",
-    "endDate": "2021-07-31",
+    "startDate": "Jan 2021",
+    "endDate": "Jul 2021",
     "context": "Seeking an analytical challenge away from my day job, I deep-dived into corporate finance frameworks and scripted custom Python algorithms to parse option pricing order books.",
     "outcome": "Reconstructed my approach to capital efficiency, optimizing my living parameters to save 65% of my corporate income to compile a 21-month cash safety runway.",
     "isVerified": true,
@@ -262,8 +262,8 @@
   {
     "id": "ab-97-e-lpaep",
     "title": "Launching 'The Pragmatic Architect' Engineering Publication",
-    "startDate": "2020-06-01",
-    "endDate": "2021-12-31",
+    "startDate": "Jun 2020",
+    "endDate": "Dec 2021",
     "context": "To release creative tension from my corporate silo, I built a markdown blog via Gatsby.js and began publishing highly practical production-grade blueprints explaining complex system architecture over Dev.to, Medium, and Twitter/X.",
     "outcome": "Established a distinct public writing channel, building high organic validation across mid-level developer networks.",
     "isVerified": true,
@@ -287,8 +287,8 @@
   {
     "id": "ab-97-e-dvsab",
     "title": "Designing Visual System Architecture Blueprints",
-    "startDate": "2021-01-01",
-    "endDate": "2022-06-30",
+    "startDate": "Jan 2021",
+    "endDate": "Jun 2022",
     "context": "To optimize social media transmission speeds, I integrated clean visual diagrams created on Figma and Excalidraw directly into my complex technical breakdowns.",
     "outcome": "Drove massive algorithmic traction, utilizing a viral thread on JWT security architectures to convert massive traffic onto an independent Substack tech newsletter.",
     "isVerified": true,
@@ -312,8 +312,8 @@
   {
     "id": "ab-97-e-etlhm",
     "title": "Endurance Training for Local Half-Marathons",
-    "startDate": "2022-01-01",
-    "endDate": "2022-08-31",
+    "startDate": "Jan 2022",
+    "endDate": "Aug 2022",
     "context": "To break up screen-induced physical isolation, I entered a rigorous long-distance endurance running track, scheduling solitary morning training sessions to prepare for local competitive half-marathons.",
     "outcome": "Utilized the low, therapeutic cadence of long-distance mechanics to balance the mental noise of scaling rapid internet channels.",
     "isVerified": true,
@@ -336,8 +336,8 @@
   {
     "id": "ab-97-e-safih",
     "title": "Structuring 'The Architect's Forge' Interactive Hub",
-    "startDate": "2022-06-01",
-    "endDate": "2022-09-30",
+    "startDate": "Jun 2022",
+    "endDate": "Sep 2022",
     "context": "I launched a highly curated interactive community over Circle.so and Discord, introducing a strict technical filtering mechanism requiring GitHub review profiles for application sign-off.",
     "outcome": "Successfully gathered over 1,200 verified software leads and engineers into an isolated peer network environment.",
     "organization": "The Architect's Forge",
@@ -362,8 +362,8 @@
   {
     "id": "ab-97-e-scdfp",
     "title": "Synthesizing Core Cloud Data-Layer Friction Points",
-    "startDate": "2022-08-01",
-    "endDate": "2022-10-31",
+    "startDate": "Aug 2022",
+    "endDate": "Oct 2022",
     "context": "I systematically audited real unvarnished technical logs across our community data channels, isolating matching complaints from developers deploying Next.js systems to Vercel cloud architecture.",
     "outcome": "Identified a massive, recurring 3-to-5 day data layer block revolving around manual PostgreSQL setups, Row-Level Security policy coding, and repetitive CRUD scripting.",
     "organization": "The Architect's Forge",
@@ -388,8 +388,8 @@
   {
     "id": "ab-97-e-plppe",
     "title": "Packaging and Launching 'The Production-Ready Postgres Engine'",
-    "startDate": "2022-11-01",
-    "endDate": "2023-01-31",
+    "startDate": "Nov 2022",
+    "endDate": "Jan 2023",
     "context": "To test absolute financial demand curves before writing automated product code, I spent 4 weeks packing my custom Postgres configurations and API wrapper scripts into a premium digital repository pack over Gumroad.",
     "outcome": "Generated $16,716 within 72 hours of launch, eventually accumulating $42,500 in non-dilutive capital and validating hard monetization potential.",
     "isVerified": true,
@@ -413,8 +413,8 @@
   {
     "id": "ab-97-e-odcsf",
     "title": "Optimizing Digital Conversion and SEO Funnels",
-    "startDate": "2022-12-01",
-    "endDate": "2023-03-31",
+    "startDate": "Dec 2022",
+    "endDate": "Mar 2023",
     "context": "I engineered advanced marketing optimization layers for our asset landing page, configuring automated abandoned cart logic and turning deep technical chapters into high-intent search blog strings.",
     "outcome": "Secured Page 1 Google rankings for high-intent queries while recovering 18% of dropped checkouts through automated sequences.",
     "isVerified": true,
@@ -438,8 +438,8 @@
   {
     "id": "ab-97-e-rothp",
     "title": "Remote Operations Transition in Himachal Pradesh",
-    "startDate": "2023-01-01",
-    "endDate": "2023-04-30",
+    "startDate": "Jan 2023",
+    "endDate": "Apr 2023",
     "context": "Following my formal corporate resignation from TCS, I relocated my technical base to a quiet mountain town in Himachal Pradesh to spend 4 months isolated from metropolitan density.",
     "outcome": "Completed a vital creative reset, reading deeply into behavioral science lines while charting out the system architecture maps for my SaaS expansion.",
     "isVerified": true,
@@ -462,8 +462,8 @@
   {
     "id": "ab-97-e-ehcapw",
     "title": "Executing the High-Commitment Annual Presale Waitlist",
-    "startDate": "2023-05-01",
-    "endDate": "2023-07-15",
+    "startDate": "May 2023",
+    "endDate": "Jul 2023",
     "context": "I designed high-fidelity interactive product walk-throughs using Figma and Loom. I paired these with an upfront financial presale framework offering heavily discounted annual licenses for our unbuilt SaaS, InstantBase.io.",
     "outcome": "Converted 135 developers to swipe corporate credit cards upfront, raising $39,150 in pure validation cash flow with zero code written.",
     "isVerified": true,
@@ -487,8 +487,8 @@
   {
     "id": "ab-97-e-otbipel",
     "title": "Orchestrating the 45-Day Transparent 'Build in Public' Engineering Loop",
-    "startDate": "2023-06-01",
-    "endDate": "2023-07-15",
+    "startDate": "Jun 2023",
+    "endDate": "Jul 2023",
     "context": "To maintain high trust during our strict 45-day build track, I published transparent daily development charts over Twitter/X, revealing open database schema bugs, server post-mortems, and our Golang routing layouts.",
     "outcome": "Maintained community momentum, transforming standard technical development cycles into an open, highly viral trust asset channel.",
     "isVerified": true,
@@ -512,8 +512,8 @@
   {
     "id": "ab-97-e-dmsccw",
     "title": "Developing Manual Specialty Coffee Chemistry Workflows",
-    "startDate": "2023-06-01",
-    "endDate": "2023-09-30",
+    "startDate": "Jun 2023",
+    "endDate": "Sep 2023",
     "context": "During peak coding timelines, I developed a precise non-technical manual brewing track using digital scale balancing and single-origin beans as an absolute morning focus ritual.",
     "outcome": "Established an essential psychological anchor, keeping my personal identity cleanly separated from product development pressure lines.",
     "isVerified": true,
@@ -536,8 +536,8 @@
   {
     "id": "ab-97-e-dimvp",
     "title": "Deploying the InstantBase.io MVP Core Engine",
-    "startDate": "2023-06-01",
-    "endDate": "2023-07-15",
+    "startDate": "Jun 2023",
+    "endDate": "Jul 2023",
     "context": "I engineered the core Minimal Viable Product framework for InstantBase.io, utilizing a Golang backend engine to talk directly to DigitalOcean APIs to spin up secure, auto-generated REST endpoints on day 45.",
     "outcome": "Delivered a bulletproof, highly streamlined data utility on timeline, aggressively pruning out non-essential streaming socket features.",
     "organization": "InstantBase.io",
@@ -562,8 +562,8 @@
   {
     "id": "ab-97-e-htmsms",
     "title": "High-Touch Manual Schema Migration Support",
-    "startDate": "2023-07-16",
-    "endDate": "2024-02-15",
+    "startDate": "Jul 2023",
+    "endDate": "Feb 2024",
     "context": "To preserve early infrastructure trust, I set up specialized discord migration pipelines, jumping onto manual video troubleshooting debugging runs with users to patch custom type-casting data array errors.",
     "outcome": "Eliminated early onboarding drops completely, turning early platform consumers into high-velocity brand evangelists.",
     "organization": "InstantBase.io",
@@ -588,8 +588,8 @@
   {
     "id": "ab-97-e-spmdt",
     "title": "Street Photography and 35mm Manual Development Tracks",
-    "startDate": "2023-09-01",
-    "endDate": "2024-04-30",
+    "startDate": "Sep 2023",
+    "endDate": "Apr 2024",
     "context": "I integrated a strict offline routine into my weekends, exploring local street markets with a manual 35mm film camera and processing the physical chemistry logs inside local darkroom labs.",
     "outcome": "Reintroduced a slow-motion creative balance into my schedule, keeping my brain protected from pure code saturation patterns.",
     "isVerified": true,
@@ -612,8 +612,8 @@
   {
     "id": "ab-97-e-tspst",
     "title": "Transitioning to Self-Serve Public SaaS Tiers",
-    "startDate": "2024-02-16",
-    "endDate": "2024-06-30",
+    "startDate": "Feb 2024",
+    "endDate": "Jun 2024",
     "context": "I managed the broad release framework of our cloud tier engines, setting up an unbundled $49 Pro tier and $149 Agency configuration engine to handle automated global client checkouts.",
     "outcome": "Successfully drove the business engine past the $9,500 monthly recurring revenue baseline with zero outbound team friction.",
     "organization": "InstantBase.io",
@@ -638,8 +638,8 @@
   {
     "id": "ab-97-e-estop",
     "title": "Executing the Systematic Time-Blocking Operational Pivot",
-    "startDate": "2024-08-01",
-    "endDate": "2024-11-30",
+    "startDate": "Aug 2024",
+    "endDate": "Nov 2024",
     "context": "After a brief server bottleneck triggered a 6% customer churn drop, I abandoned my hectic creator routine. I structured an isolated daily block schedule separating core engineering from support routines.",
     "outcome": "Recovered core feature shipment speeds while protecting system backup integrity arrays from manual attention slips.",
     "organization": "InstantBase.io",
@@ -664,7 +664,7 @@
   {
     "id": "ab-97-e-msmbc",
     "title": "Managing Scaled Multi-Cluster Bootstrapped Costs",
-    "startDate": "2024-12-01",
+    "startDate": "Dec 2024",
     "endDate": null,
     "context": "I currently balance our multi-cluster server infrastructure footprints across AWS and DigitalOcean setups, tracking storage redundancies to manage our structural costs beneath a tight $4,050 ceiling.",
     "outcome": "Optimized our financial metrics, driving a stable 89% pre-tax operational margin at a $38,200 monthly scale.",
@@ -689,7 +689,7 @@
   {
     "id": "ab-97-e-schws",
     "title": "Sourcing Core Hires and Woodworking Subcultures",
-    "startDate": "2025-03-01",
+    "startDate": "Mar 2025",
     "endDate": null,
     "context": "I onboarded my first full-time systems engineer directly out of our user community to track platform defects, decoupling my personal schedule to join a physical furniture woodworking collective.",
     "outcome": "Achieved true operational leverage and lifestyle autonomy, managing the business engine remotely as a vehicle for personal space.",

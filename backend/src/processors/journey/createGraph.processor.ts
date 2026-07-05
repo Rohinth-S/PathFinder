@@ -1,17 +1,54 @@
 import type { Transaction } from "neo4j-driver";
 import { closeSession, getSession } from "../../services/neo4j.service.js";
 import { journeyJsonSchema } from "./journeySchema.js";
-import type {
-  JourneyExperience,
-  JourneyGoal,
-  JourneyJson,
-  JourneyProof,
-  JourneyTransition,
-  JourneyUser,
-} from "./types.js";
+import type {JourneyExperience,JourneyGoal,JourneyJson,JourneyProof,JourneyTransition,JourneyUser} from "../../types/journey/Journey.types.js";
 
 function nullIfUndefined<T>(value: T | undefined): T | null {
   return value ?? null;
+}
+
+const monthLookup: Record<string, number> = {
+  jan: 1,
+  feb: 2,
+  mar: 3,
+  apr: 4,
+  may: 5,
+  jun: 6,
+  jul: 7,
+  aug: 8,
+  sep: 9,
+  oct: 10,
+  nov: 11,
+  dec: 12,
+};
+
+function toNeo4jDate(dateText: string): string {
+  const normalized = dateText.trim();
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    return normalized;
+  }
+
+  const match = normalized.match(/^([A-Za-z]{3})\s+(\d{4})$/);
+
+  if (!match) {
+    throw new Error(`Unsupported date format: ${dateText}`);
+  }
+
+  const monthText = match[1];
+
+  if (!monthText) {
+    throw new Error(`Unsupported date format: ${dateText}`);
+  }
+
+  const monthKey = monthText.toLowerCase() as keyof typeof monthLookup;
+  const month = monthLookup[monthKey];
+
+  if (!month) {
+    throw new Error(`Unsupported month in date: ${dateText}`);
+  }
+
+  return `${match[2]}-${String(month).padStart(2, "0")}-01`;
 }
 
 function userParams(user: JourneyUser) {
@@ -109,11 +146,16 @@ async function upsertGoal(
       END
     MERGE (u)-[:HAS_GOAL]->(g)
     `,
-    { username, ...goalParams(goal) }
+    {
+      username,
+      ...goalParams(goal),
+      startDate: toNeo4jDate(goal.startDate),
+      endDate: goal.endDate ? toNeo4jDate(goal.endDate) : null,
+    }
   );
 }
 
-async function upsertExperience(
+export async function upsertExperience(
   tx: Transaction,
   username: string,
   experience: JourneyExperience,
@@ -141,11 +183,16 @@ async function upsertExperience(
     MERGE (u)-[r:HAS_EXPERIENCE]->(e)
     SET r.order = $order
     `,
-    { username, ...experienceParams(experience, order) }
+    {
+      username,
+      ...experienceParams(experience, order),
+      startDate: toNeo4jDate(experience.startDate),
+      endDate: experience.endDate ? toNeo4jDate(experience.endDate) : null,
+    }
   );
 }
 
-async function connectExperienceGoals(
+export async function connectExperienceGoals(
   tx: Transaction,
   experience: JourneyExperience
 ): Promise<void> {
@@ -161,7 +208,7 @@ async function connectExperienceGoals(
   }
 }
 
-async function connectExperienceSkills(
+export async function connectExperienceSkills(
   tx: Transaction,
   experience: JourneyExperience
 ): Promise<void> {
@@ -182,7 +229,7 @@ async function connectExperienceSkills(
   }
 }
 
-async function upsertExperienceProofs(
+export async function upsertExperienceProofs(
   tx: Transaction,
   experience: JourneyExperience
 ): Promise<void> {
@@ -207,7 +254,7 @@ async function upsertExperienceProofs(
   }
 }
 
-async function upsertTransition(
+export async function upsertTransition(
   tx: Transaction,
   transition: JourneyTransition
 ): Promise<void> {

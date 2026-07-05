@@ -16,8 +16,8 @@
       "status": "achieved",
       "topics": ["College Students"],
       "subtopics": ["Getting Into IITs/NITs", "MS Abroad Applications"],
-      "startDate": "1985-07-01",
-      "endDate": "1994-06-01"
+      "startDate": "Jul 1985",
+      "endDate": "Jun 1994"
     },
     {
       "id": "cs-88-g-bilesv",
@@ -26,8 +26,8 @@
       "status": "achieved",
       "topics": ["Startup"],
       "subtopics": ["SaaS / Tech", "Fintech"],
-      "startDate": "1996-03-15",
-      "endDate": "2001-12-31"
+      "startDate": "Mar 1996",
+      "endDate": "Dec 2001"
     },
     {
       "id": "cs-88-g-sgcolv",
@@ -36,8 +36,8 @@
       "status": "achieved",
       "topics": ["Startup", "Professionals"],
       "subtopics": ["SaaS / Tech", "Sales / GTM"],
-      "startDate": "2000-01-01",
-      "endDate": "2008-12-31"
+      "startDate": "Jan 2000",
+      "endDate": "Dec 2008"
     },
     {
       "id": "cs-88-g-ospcesa",
@@ -46,8 +46,8 @@
       "status": "achieved",
       "topics": ["Startup", "Professionals"],
       "subtopics": ["SaaS / Tech", "Product Management", "Software Engineering"],
-      "startDate": "2005-01-01",
-      "endDate": "2012-12-31"
+      "startDate": "Jan 2005",
+      "endDate": "Dec 2012"
     },
     {
       "id": "cs-88-g-dcata",
@@ -56,7 +56,7 @@
       "status": "ongoing",
       "topics": ["Professionals", "College Students"],
       "subtopics": ["Software Engineering", "Dropping Out To Build", "Internship"],
-      "startDate": "2005-04-01",
+      "startDate": "Apr 2005",
       "endDate": null
     },
     {
@@ -66,7 +66,7 @@
       "status": "ongoing",
       "topics": ["Startup", "Professionals"],
       "subtopics": ["SaaS / Tech", "Design", "Sales / GTM"],
-      "startDate": "2010-10-01",
+      "startDate": "Oct 2010",
       "endDate": null
     },
     {
@@ -76,7 +76,7 @@
       "status": "ongoing",
       "topics": ["Startup"],
       "subtopics": ["SaaS / Tech", "Data / AI", "Social Impact"],
-      "startDate": "2021-01-01",
+      "startDate": "Jan 2021",
       "endDate": null
     }
   ],
@@ -84,8 +84,8 @@
   {
     "id": "cs-88-e-eusm",
     "title": "Enrolling as an Undergraduate Scholar at IIT Madras",
-    "startDate": "1985-07-01",
-    "endDate": "1989-05-31",
+    "startDate": "Jul 1985",
+    "endDate": "May 1989",
     "context": "Gaining admission into one of India's most competitive engineering institutes, I began intense mathematical training and foundational coursework in electronic systems engineering layout concepts.",
     "outcome": "Acquired a sharp technical foundation, transforming highly complex theoretical calculations into structured practical design logic.",
     "organization": "Indian Institute of Technology, Madras",
@@ -110,8 +110,8 @@
   {
     "id": "cs-88-e-iadrpu",
     "title": "Initiating Advanced Doctoral Research at Princeton University",
-    "startDate": "1989-09-01",
-    "endDate": "1994-06-01",
+    "startDate": "Sep 1989",
+    "endDate": "Jun 1994",
     "context": "Moving abroad to pursue postgraduate research, I tracked complex signal processing models at Princeton, navigating open-ended problem iterations that required months of rigorous independent experimentation.",
     "challengeFaced": "Sustaining focus through lengthy multi-month testing periods where initial data sets consistently failed to prove my research hypothesis.",
     "outcome": "Successfully completed my Ph.D., mastering advanced variable isolation and systematic data parsing rules under high analytical pressure.",
@@ -137,8 +137,8 @@
   {
     "id": "cs-88-e-cpmq",
     "title": "Commercial Product Mapping at Qualcomm",
-    "startDate": "1994-07-01",
-    "endDate": "1996-03-01",
+    "startDate": "Jul 1994",
+    "endDate": "Mar 1996",
     "context": "Transitioning out of academic research into full-time employment, I joined Qualcomm's product team to script and engineer functional software code for scalable digital communication platforms.",
     "outcome": "Gained key exposure to commercial release cycles, large-scale software engineering standards, and enterprise coordination rules.",
     "organization": "Qualcomm Inc.",
@@ -163,8 +163,8 @@
   {
     "id": "cs-88-e-lila",
     "title": "Legal Incorporation and Launch of AdventNet",
-    "startDate": "1996-03-15",
-    "endDate": "1998-12-31",
+    "startDate": "Mar 1996",
+    "endDate": "Dec 1998",
     "context": "Resigning from my stable corporate role, I co-founded AdventNet during an era of limited digital infrastructure. I oversaw legal filings, drafted corporate articles, and set up our first bare-bones engineering environment.",
     "outcome": "Formally launched a licensed B2B enterprise software company, keeping the baseline equity pool fully bootstrapped from inception.",
     "organization": "AdventNet Inc.",
@@ -189,8 +189,8 @@
   {
     "id": "cs-88-e-eenmf",
     "title": "Engineering Early Network Management Frameworks",
-    "startDate": "1996-06-01",
-    "endDate": "1999-12-31",
+    "startDate": "Jun 1996",
+    "endDate": "Dec 1999",
     "context": "To establish immediate revenue, I directly mapped out the structural framework for specialized SNMP (Simple Network Management Protocol) software toolkits, tailoring configurations to fit niche network hardware systems.",
     "challengeFaced": "Competing with massive, venture-subsidized enterprise software players without any marketing or advertising capital lines.",
     "outcome": "Successfully built and launched our first functional software toolkit asset, converting technical code layout directly into organic business sales.",
@@ -216,8 +216,8 @@
   {
     "id": "cs-88-e-scbplc",
     "title": "Structuring Cross-Border B2B Product Licensing Channels",
-    "startDate": "2000-01-01",
-    "endDate": "2003-12-31",
+    "startDate": "Jan 2000",
+    "endDate": "Dec 2003",
     "context": "To capture premium transactions, I led our core sales outreach to target international enterprise firms, managing high-value software licensing deals and cross-border billing protocols.",
     "outcome": "Secured a consistent, recurring international customer pool, proving India's capacity to remotely deploy high-end product code.",
     "organization": "AdventNet Inc.",
@@ -242,8 +242,8 @@
   {
     "id": "cs-88-e-dgsn",
     "title": "Deploying 24/7 Global Remote Support Networks",
-    "startDate": "2002-01-01",
-    "endDate": "2005-12-31",
+    "startDate": "Jan 2002",
+    "endDate": "Dec 2005",
     "context": "As overseas accounts scaled up, I designed and organized asynchronous remote technical support divisions in India to track bugs, maintain software patches, and answer urgent system queries across Western time zones.",
     "outcome": "Maintained an elite client retention rate by providing rapid, around-the-clock troubleshooting updates without external support costs.",
     "organization": "AdventNet Inc.",
@@ -268,8 +268,8 @@
   {
     "id": "cs-88-e-sossp",
     "title": "Scaling OEM Software Supply Partnerships",
-    "startDate": "2003-01-01",
-    "endDate": "2008-12-31",
+    "startDate": "Jan 2003",
+    "endDate": "Dec 2008",
     "context": "I initiated a focused sales alignment with global Original Equipment Manufacturers (OEMs), licensing our specialized network tracking modules to be hard-coded into third-party networking devices.",
     "challengeFaced": "Passing the incredibly rigid technical stress-tests and system security audits required by international hardware giants.",
     "outcome": "Integrated our software assets into thousands of foreign network products, driving highly profitable license volume gains.",
@@ -295,8 +295,8 @@
   {
     "id": "cs-88-e-azcsm",
     "title": "Architecting the Zoho Cloud Suite Migration",
-    "startDate": "2005-01-01",
-    "endDate": "2008-12-31",
+    "startDate": "Jan 2005",
+    "endDate": "Dec 2008",
     "context": "Foreseeing the terminal decline of local on-premise installations, I directed our internal engineering teams to rewrite historical codebases into multi-tenant, cloud-accessible browser frameworks.",
     "outcome": "Successfully launched early cloud tools like Zoho Writer and CRM, securing a primary position in modern SaaS markets.",
     "organization": "Zoho Corporation",
@@ -321,8 +321,8 @@
   {
     "id": "cs-88-e-fezcr",
     "title": "Formally Executing the Zoho Corporate Rebranding",
-    "startDate": "2009-01-01",
-    "endDate": "2012-12-31",
+    "startDate": "Jan 2009",
+    "endDate": "Dec 2012",
     "context": "To unify our expanding cloud applications under a singular identity, I managed the total corporate rebranding pivot from AdventNet to Zoho Corporation, consolidating product layouts and licensing systems.",
     "outcome": "Successfully established a modern cloud brand, converting legacy market segments cleanly into a holistic web ecosystem.",
     "organization": "Zoho Corporation",
@@ -347,8 +347,8 @@
   {
     "id": "cs-88-e-flzu",
     "title": "Forming and Launching Zoho University",
-    "startDate": "2005-04-01",
-    "endDate": "2009-12-31",
+    "startDate": "Apr 2005",
+    "endDate": "Dec 2009",
     "context": "To challenge standard university credential bottlenecks, I mapped out an alternative in-house tech program, hiring high-potential public school students to undergo immersive coding, database tracking, and web application tutorials.",
     "outcome": "Validated a functional talent deployment framework, where graduates lacking formal college diplomas successfully scaled up into core development roles.",
     "organization": "Zoho Schools of Learning",
@@ -373,8 +373,8 @@
   {
     "id": "cs-88-e-ectnt",
     "title": "Expanding Credential-Free Training to Non-Tech Tracks",
-    "startDate": "2010-01-01",
-    "endDate": "2015-12-31",
+    "startDate": "Jan 2010",
+    "endDate": "Dec 2015",
     "context": "Building on early tech program successes, I expanded our alternative onboarding academy by creating structured practical modules for product design, technical writing, and organic digital sales.",
     "outcome": "Diversified our internal workforce pipelines, supplying highly capable non-degree holders into cross-functional business operations.",
     "organization": "Zoho Schools of Learning",
@@ -399,7 +399,7 @@
   {
     "id": "cs-88-e-saars",
     "title": "Scaling Alternative Academies to Regional Satellites",
-    "startDate": "2016-01-01",
+    "startDate": "Jan 2016",
     "endDate": null,
     "context": "I directed the geographical expansion of our educational programs, setting up physical training branches in smaller regional towns to capture localized talent directly at the source.",
     "challengeFaced": "Adapting intensive technical coursework to suit students coming from varied local educational standards and language backgrounds.",
@@ -426,8 +426,8 @@
   {
     "id": "cs-88-e-rpeprt",
     "title": "Relocating Personal Executive Presence to Rural Tamil Nadu",
-    "startDate": "2019-10-01",
-    "endDate": "2021-12-31",
+    "startDate": "Oct 2019",
+    "endDate": "Dec 2021",
     "context": "To demonstrate distributed workforce principles firsthand, I moved my primary residence and executive workspace to a village in Tenkasi, building out early remote branch networks connecting to cloud servers.",
     "outcome": "Proved that top-tier software products could be pushed, verified, and managed from deep rural nodes without metropolitan infrastructure dependencies.",
     "organization": "Zoho Corporation",
@@ -452,8 +452,8 @@
   {
     "id": "cs-88-e-drsho",
     "title": "Deploying Rural Satellite Hub Offices",
-    "startDate": "2020-03-01",
-    "endDate": "2022-12-31",
+    "startDate": "Mar 2020",
+    "endDate": "Dec 2022",
     "context": "During global work decentralization trends, I directed the expansion of village hub locations, leasing localized properties, installing stable fiber uplinks, and adding regional youth directly into product tasks.",
     "outcome": "Established a resilient, multi-hub office network providing high-value tech employment directly within rural local economies.",
     "organization": "Zoho Corporation",
@@ -478,8 +478,8 @@
   {
     "id": "cs-88-e-opwd",
     "title": "Orchestrating Pandemic-Era Workplace Decentralization",
-    "startDate": "2020-04-01",
-    "endDate": "2022-06-30",
+    "startDate": "Apr 2020",
+    "endDate": "Jun 2022",
     "context": "Faced with metropolitan lockdowns, I led the swift migration of thousands of urban employees out to smaller hometown satellite spaces, adjusting database access controls to support secure distributed work.",
     "outcome": "Maintained continuous, uninterrupted operational availability for global clients throughout a massive public health crisis.",
     "organization": "Zoho Corporation",
@@ -504,8 +504,8 @@
   {
     "id": "cs-88-e-srttc",
     "title": "Setting Up Rural Tech Tool Clusters",
-    "startDate": "2022-01-01",
-    "endDate": "2024-12-31",
+    "startDate": "Jan 2022",
+    "endDate": "Dec 2024",
     "context": "I managed the physical rollout of specialized regional development nodes in rural tier-2 and tier-3 towns, anchoring custom software infrastructure inside repurposed local spaces to run software engineering operations.",
     "outcome": "Successfully reduced urban concentration pressures while dropping corporate infrastructure cost matrices by utilizing regional space plans.",
     "organization": "Zoho Corporation",
@@ -530,7 +530,7 @@
   {
     "id": "cs-88-irsog",
     "title": "Integrating Rural Satellite Offices globally",
-    "startDate": "2023-01-01",
+    "startDate": "Jan 2023",
     "endDate": null,
     "context": "Expanding our rural strategy internationally, I initiated the architectural mapping and setup of rural and small-town satellite offices in overseas markets, matching the exact distributed operational structures used in India.",
     "outcome": "Created a globally standardized network of localized hub settings, proving the international viability of the non-urban work model.",
@@ -556,8 +556,8 @@
   {
     "id": "cs-88-e-cadit",
     "title": "Capital Allocation into Domestic Industrial Tooling",
-    "startDate": "2021-01-01",
-    "endDate": "2023-12-31",
+    "startDate": "Jan 2021",
+    "endDate": "Dec 2023",
     "context": "I formulated a strategic investment framework to build sovereign industrial capacity, vetting and deploying corporate balance sheet cash directly into domestic ventures engineering high-precision CNC machines.",
     "challengeFaced": "Navigating the slow, capital-intensive research cycles of physical heavy hardware engineering relative to rapid software feedback loops.",
     "outcome": "Successfully funneled corporate profits into anchoring foundational domestic tooling assets independent of foreign supply blocks.",
@@ -583,8 +583,8 @@
   {
     "id": "cs-88-e-fdmet",
     "title": "Financing Domestic Medical Equipment Tooling",
-    "startDate": "2022-06-01",
-    "endDate": "2025-12-31",
+    "startDate": "Jun 2022",
+    "endDate": "Dec 2025",
     "context": "Recognizing severe national shortfalls in critical healthcare hardware, I directed equity investments into local engineering setups designing and assembling custom electronic medical instruments and scanning devices.",
     "outcome": "Helped launch functional manufacturing runs for critical medical hardware assets, lowering import reliance metrics.",
     "organization": "Zoho Deep-Tech Investments",
@@ -609,7 +609,7 @@
   {
     "id": "cs-88-e-cssda",
     "title": "Capitalizing Sovereign Semiconductor Design Alliances",
-    "startDate": "2024-01-01",
+    "startDate": "Jan 2024",
     "endDate": null,
     "context": "To establish long-term national technology autonomy, I organized joint investment structures and checked proposals to fund domestic microchip layout design projects and fundamental scientific semiconductor research pipelines.",
     "outcome": "Secured major equity positions in emerging domestic chip design properties, directly advancing national hard-tech capabilities.",
@@ -635,7 +635,7 @@
   {
     "id": "cs-88-e-arati",
     "title": "Anchoring Rural Agricultural Technology Lab Incubations",
-    "startDate": "2024-06-01",
+    "startDate": "Jun 2024",
     "endDate": null,
     "context": "Operating directly from my village base, I launched a specialized local engineering test track to build and iterate on hardware automation tools for local farming and crop-cycle data tracking.",
     "outcome": "Successfully built and field-tested early sensory telemetry hardware arrays designed to optimize local farm irrigation yields.",

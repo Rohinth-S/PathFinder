@@ -8,7 +8,7 @@ import { closeNeo4jConnection } from "../config/neo4j.config.js";
 import { createGraph } from "../processors/journey/createGraph.processor.js";
 import { journeyJsonSchema } from "../processors/journey/journeySchema.js";
 import { closeSession, getSession } from "../services/neo4j.service.js";
-import type { JourneyJson } from "../processors/journey/types.js";
+import type { JourneyJson } from "../types/journey/Journey.types.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
