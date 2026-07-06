@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
-import { ScrollView, SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { initializeUser } from '@/services/auth.service';
+import Animated, { useAnimatedScrollHandler } from 'react-native-reanimated';
 import { L } from '../constants/colors';
+import { LandingViewportProvider, useLandingViewport } from '../components/landing/landingMotion';
 import {
   HeroSection,
   ProblemSection,
@@ -12,23 +14,41 @@ import {
   JourneySequenceSection,
   SampleQuestionsSection,
   HowItWorksSection,
-  TrustSection,
-  CommunitySection,
   AccessibilitySection,
   ClosingVisionSection,
   FooterSection,
 } from '../components/landing/LandingSections';
 
 export default function LandingPage() {
+  return (
+    <LandingViewportProvider>
+      <LandingPageContent />
+    </LandingViewportProvider>
+  );
+}
+
+function LandingPageContent() {
   const router = useRouter();
   const { isSignedIn, getToken } = useAuth();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+  const { scrollY, viewportHeight, scrollDirection } = useLandingViewport();
+  const onScroll = useAnimatedScrollHandler((event) => {
+    const nextY = event.contentOffset.y;
+    if (nextY > scrollY.value) {
+      scrollDirection.value = 1;
+    } else if (nextY < scrollY.value) {
+      scrollDirection.value = -1;
+    }
+
+    scrollY.value = nextY;
+  });
 
   useEffect(() => {
     async function initialize() {
       if (!isSignedIn) return;
       const token = await getToken();
-      if (!token) return;
+      console.log(token);
+      if (!token) return;  
       const user = await initializeUser(token);
       if (user.username) {
         router.replace("/(tabs)");
@@ -50,26 +70,28 @@ export default function LandingPage() {
     }
   };
 
-  const onPressEmail = () => {
-    console.log("Email sign in clicked");
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
       <StatusBar style="dark" />
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        <HeroSection onPressGoogle={onPressGoogle} onPressEmail={onPressEmail} />
+      <Animated.ScrollView
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={onScroll}
+        onLayout={(event) => {
+          viewportHeight.value = event.nativeEvent.layout.height;
+        }}
+      >
+        <HeroSection onPressGoogle={onPressGoogle} onPressEmail={() => {}} />
         <ProblemSection />
         <ComparisonSection />
         <JourneySequenceSection />
         <SampleQuestionsSection />
         <HowItWorksSection />
-        <TrustSection />
-        <CommunitySection />
         <AccessibilitySection />
         <ClosingVisionSection />
         <FooterSection />
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }

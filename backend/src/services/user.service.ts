@@ -67,3 +67,26 @@ export async function updateProfile(
 
   }
 }
+
+export async function getUsernameByUserId(
+  clerkId: string
+): Promise<string> {
+  const session = getSession();
+  try {
+    const result = await session.run(
+      `
+      MATCH (u:User {clerkId: $clerkId})
+      RETURN u.username AS username
+      `,
+      { clerkId }
+    );
+    if (result.records.length === 0) {
+      throw new Error("User not found.");
+    }
+    const username = result.records[0]?.get( "username") as string;
+    if (!username) { throw new Error("Username not found.");}
+    return username;
+  } finally {
+    await closeSession(session);
+  }
+}

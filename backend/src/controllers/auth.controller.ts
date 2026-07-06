@@ -1,7 +1,5 @@
 import type { Request, Response } from "express";
 import { clerkClient } from "@clerk/express";
-import { getAuthenticatedUserId } from "../utils/auth.js";
-
 import { syncUser } from "../services/auth.service.js";
 
 export async function syncUserController(
@@ -10,7 +8,7 @@ export async function syncUserController(
 ): Promise<void> {
 
   try {
-   const userId = getAuthenticatedUserId(req);
+   const userId = req.userId;
 
     const user = await clerkClient.users.getUser(userId);
     const email = user.primaryEmailAddress?.emailAddress;

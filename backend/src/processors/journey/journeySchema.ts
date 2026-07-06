@@ -1,15 +1,15 @@
 import { z } from "zod";
 
-const isoDateSchema = z
+const monthYearDateSchema = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "Expected date in YYYY-MM-DD format");
+  .regex(/^[A-Za-z]{3} \d{4}$/, "Expected date in MMM YYYY format");
 
 const isoDateTimeSchema = z
   .string()
   .datetime({ offset: true })
   .or(z.string().datetime({ local: true }));
 
-const nullableDateSchema = isoDateSchema.nullable().optional();
+const nullableDateSchema = monthYearDateSchema.nullable().optional();
 const nullableDateTimeSchema = isoDateTimeSchema.nullable().optional();
 
 export const goalStatusSchema = z.enum([
@@ -85,7 +85,7 @@ export const journeyGoalSchema = z
     status: goalStatusSchema,
     topics: z.array(goalTopicSchema).min(1),
     subtopics: z.array(goalSubtopicSchema).min(1),
-    startDate: isoDateSchema,
+    startDate: monthYearDateSchema,
     endDate: nullableDateSchema,
   })
   .strict();
@@ -112,7 +112,7 @@ export const journeyExperienceSchema = z
   .object({
     id: z.string().trim().min(1),
     title: z.string().trim().min(1),
-    startDate: isoDateSchema,
+    startDate: monthYearDateSchema,
     endDate: nullableDateSchema,
     context: z.string().trim().min(1),
     challengeFaced: z.string().trim().min(1).nullable().optional(),
@@ -133,6 +133,42 @@ export const journeyTransitionSchema = z
     fromExperienceId: z.string().trim().min(1),
     toExperienceId: z.string().trim().min(1),
     decisionLabel: z.string().trim().min(1),
+  })
+  .strict();
+
+export const submitGoalSchema = z.object({
+  narrative: z.string().trim().min(1),
+  topics: z.array(goalTopicSchema).min(1),
+  subtopics: z.array(goalSubtopicSchema).min(1),
+  status: goalStatusSchema,
+  startDate: monthYearDateSchema,
+  endDate: nullableDateSchema,
+});
+
+export const submitExperienceSchema = z
+  .object({
+    id: z.string().uuid(),
+    title: z.string().trim().min(1),
+    context: z.string().trim().min(1),
+    timelineSummary: z.string().trim().min(1),
+    startDate: monthYearDateSchema,
+    endDate: nullableDateSchema,
+    organization: z.string().trim().min(1).nullable().optional(),
+    challengeFaced: z.string().trim().min(1).nullable().optional(),
+    outcome: z.string().trim().min(1).nullable().optional(),
+    applicationStatus: applicationStatusSchema.nullable().optional(),
+    achievements: z.array(z.string().trim().min(1)).nullable().optional(),
+    skills: z.array(journeySkillSchema).default([]),
+    decisionReason: z.string().trim().min(1).nullable().optional(),
+    goalIds: z.array(z.string().uuid()),
+    proofs: z.array(journeyProofSchema),
+    isVerified: z.boolean(),
+  })
+  .strict();
+
+export const submitJourneySchema = z
+  .object({
+    experiences: z.array(submitExperienceSchema).min(1),
   })
   .strict();
 
@@ -196,5 +232,9 @@ export const journeyJsonSchema = z
       }
     });
   });
-
+export type journeyGoalSchema=z.infer<typeof journeyGoalSchema>;
+export type JourneyExperience = z.infer<typeof journeyExperienceSchema>;
+export type SubmitGoal = z.infer<typeof submitGoalSchema>;
+export type JourneyTransition = z.infer<typeof journeyTransitionSchema>;
+export type SubmitJourney = z.infer<typeof submitJourneySchema>;
 export type JourneyJson = z.infer<typeof journeyJsonSchema>;

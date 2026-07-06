@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import { updateProfile } from "../services/user.service.js";
-import { getAuthenticatedUserId } from "../utils/auth.js";
 
 export async function updateProfileController(
   req: Request,
@@ -8,16 +7,20 @@ export async function updateProfileController(
 ): Promise<void> {
 
   try {
-    const userId = getAuthenticatedUserId(req);
-    const {username,preferredLanguage} = req.body;
-    const user = await updateProfile({ clerkId: userId, username,preferredLanguage});
+    const userId = req.userId;
+    const { username, preferredLanguage } = req.body;
+    const user = await updateProfile({
+      clerkId: userId,
+      username: username ?? null,
+      preferredLanguage: preferredLanguage ?? null,
+    });
     res.json(user);
 
   } catch (error) {
 
-    const message = error instanceof Error ? error.message: String(error);
+    const message = error instanceof Error ? error.message : String(error);
 
-    res.status(500).json({error: message});
+    res.status(500).json({ error: message });
 
   }
 }
