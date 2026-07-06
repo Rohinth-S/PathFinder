@@ -27,6 +27,11 @@ To run the Sarvam connection test script, use:
 ```bash
 npm run test:sarvam
 ```
+To run the journey extraction test script, use:
+
+```bash
+npm run test:journey-extract
+```
 To run the migrate script, use:
 
 ```bash
