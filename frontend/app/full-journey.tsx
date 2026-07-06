@@ -1,100 +1,154 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  Switch, Modal, Pressable, Animated,
-  ActivityIndicator,
+  Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
-import { getUserJourney, JourneyExperience, JourneyTransition } from '../api/journey.api';
-import { UserTrajectory, TimelineEvent, NodeType } from '@/types/schema';
-import { NODE_BORDER_COLORS, NODE_ICONS, getEmotionStyle } from '@/constants/colors';
-import { BRAND_COLORS } from '../constants/colors';
+import { getUserJourney, UserJourneyResponse } from '../api/journey.api';
+import { L, getEmotionStyle } from '@/constants/colors';
+import { Feather } from '@expo/vector-icons';
+import { WebView } from 'react-native-webview';
 
-/* ── Map backend data to UI format ─────────────────────── */
-
-function mapToUserTrajectory(
-  journey: {
-    user: any;
-    experiences: JourneyExperience[];
-    transitions: JourneyTransition[];
-  }
-): UserTrajectory {
-  const timeline: TimelineEvent[] = journey.experiences.map(exp => {
-    const outgoing = journey.transitions
-      .filter(t => t.fromExperienceId === exp.id)
-      .map(t => ({ decisionLabel: t.decisionLabel, toExperienceId: t.toExperienceId }));
-
-    let nodeType: NodeType = 'Job';
-    const titleLower = (exp.title || '').toLowerCase();
-    const contextLower = (exp.context || '').toLowerCase();
-    if (titleLower.includes('university') || titleLower.includes('degree') || titleLower.includes('education') || contextLower.includes('education')) {
-      nodeType = 'Education';
-    } else if (titleLower.includes('startup') || titleLower.includes('founded') || titleLower.includes('co-founded')) {
-      nodeType = 'Startup';
-    } else if (titleLower.includes('failed') || titleLower.includes('failure') || contextLower.includes('failed')) {
-      nodeType = 'Failure';
-    } else if (titleLower.includes('decision') || titleLower.includes('left') || titleLower.includes('pivoted')) {
-      nodeType = 'Decision';
-    } else if (titleLower.includes('achievement') || titleLower.includes('milestone') || titleLower.includes('revenue') || titleLower.includes('pmf')) {
-      nodeType = 'Achievement';
-    }
-
-    return {
-      id: exp.id,
-      title: exp.title,
-      startDate: exp.startDate,
-      endDate: exp.endDate,
-      organization: exp.organization || '',
-      isVerified: exp.isVerified,
-      nodeType,
-      emotionLabel: 'Confident',
-      timelineSummary: exp.timelineSummary || exp.context || '',
-      expandedDetails: {
-        context: exp.context,
-        challengeFaced: exp.challengeFaced,
-        outcome: exp.outcome,
-        achievements: exp.achievements,
-        applicationStatus: exp.applicationStatus,
-        emotionNote: null,
-        goals: [],
-        skills: exp.skills?.map(s => s.name) || [],
-        transitions: outgoing,
-      },
-    };
-  });
-
-  return {
-    username: journey.user?.username || '',
-    reputationScore: typeof journey.user?.reputationScore === 'object'
-      ? (journey.user.reputationScore as any)?.low ?? 0
-      : journey.user?.reputationScore ?? 0,
-    timeline,
-  };
+// Enable LayoutAnimation for Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-/* ── Component ─────────────────────────────────────────── */
+// ───────────────────────────────────────────────
+// Cytoscape HTML Template
+// ───────────────────────────────────────────────
+const createCytoscapeHtml = (elementsJson: string) => `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
+    <style>
+        body, html { width: 100%; height: 100%; margin: 0; padding: 0; background-color: ${L.background}; font-family: sans-serif; }
+        #cy { width: 100%; height: 100%; }
+        .close-btn {
+            position: absolute; top: 16px; right: 16px; z-index: 10;
+            background: white; border-radius: 20px; padding: 8px 16px;
+            font-weight: bold; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="cy"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: ${elementsJson},
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'label': 'data(label)',
+                            'text-valign': 'center',
+                            'color': '#fff',
+                            'font-size': '10px',
+                            'font-weight': 'bold',
+                            'background-color': 'data(color)',
+                            'shape': 'data(shape)',
+                            'width': 'label',
+                            'height': 'label',
+                            'padding': '10px',
+                            'text-wrap': 'wrap',
+                            'text-max-width': '80px'
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 2,
+                            'line-color': '#ccc',
+                            'target-arrow-color': '#ccc',
+                            'target-arrow-shape': 'triangle',
+                            'curve-style': 'bezier',
+                            'label': 'data(label)',
+                            'font-size': '8px',
+                            'text-rotation': 'autorotate',
+                            'text-background-opacity': 1,
+                            'text-background-color': '${L.background}',
+                            'text-background-padding': '2px',
+                            'color': '#666'
+                        }
+                    }
+                ],
+                layout: {
+                    name: 'breadthfirst',
+                    directed: true,
+                    padding: 30
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+`;
 
+// ───────────────────────────────────────────────
+// Expandable Card Component
+// ───────────────────────────────────────────────
+function ExpandableCard({ title, subtitle, badgeText, badgeColor, children, isVerified, nodeType }: any) {
+  const [expanded, setExpanded] = useState(false);
+  const toggle = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded(!expanded);
+  };
+  return (
+    <View style={{ backgroundColor: L.surface, borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: L.border, shadowColor: '#152238', shadowOpacity: 0.04, shadowRadius: 10, shadowOffset: { width: 0, height: 4 } }}>
+      <TouchableOpacity onPress={toggle} activeOpacity={0.7}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <View style={{ flex: 1, paddingRight: 16 }}>
+            {nodeType && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: L.teal, letterSpacing: 1, textTransform: 'uppercase' }}>{nodeType}</Text>
+                {isVerified && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 8, backgroundColor: L.tealTint, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 12 }}>
+                    <Feather name="shield" size={10} color={L.teal} style={{ marginRight: 4 }} />
+                    <Text style={{ fontSize: 10, fontWeight: '600', color: L.teal }}>Verified</Text>
+                  </View>
+                )}
+              </View>
+            )}
+            <Text style={{ fontSize: 17, fontWeight: '700', color: L.navy, marginBottom: 4 }}>{title}</Text>
+            {subtitle && <Text style={{ fontSize: 13, fontWeight: '500', color: L.navySoft }}>{subtitle}</Text>}
+          </View>
+          {badgeText && (
+            <View style={{ backgroundColor: badgeColor.bg, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginTop: 2 }}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: badgeColor.text }}>{badgeText}</Text>
+            </View>
+          )}
+        </View>
+        <View style={{ alignItems: 'center', marginTop: 12 }}>
+          <Feather name={expanded ? "chevron-up" : "chevron-down"} size={20} color={L.navySoft} />
+        </View>
+      </TouchableOpacity>
+      {expanded && (
+        <View style={{ marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: L.border }}>
+          {children}
+        </View>
+      )}
+    </View>
+  );
+}
+
+// ───────────────────────────────────────────────
+// Main Page
+// ───────────────────────────────────────────────
 export default function FullJourneyPage() {
   const router = useRouter();
   const { getToken } = useAuth();
-  const params = useLocalSearchParams<{ userData?: string }>();
-  const [showRelevant, setShowRelevant] = useState(false);
-  const [selectedNode, setSelectedNode] = useState<TimelineEvent | null>(null);
-  const [scale, setScale] = useState(1);
+  
+  const [journey, setJourney] = useState<UserJourneyResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<UserTrajectory | null>(null);
+  const [showGraph, setShowGraph] = useState(false);
 
   useEffect(() => {
-    if (params.userData) {
-      try {
-        const parsed = JSON.parse(params.userData);
-        setUser(parsed);
-        setIsLoading(false);
-        return;
-      } catch { /* fall through to API fetch */ }
-    }
     loadJourney();
   }, []);
 
@@ -105,213 +159,219 @@ export default function FullJourneyPage() {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
       const result = await getUserJourney(token);
-      if (!result.journey || result.journey.experiences.length === 0) {
-        setUser(null);
-      } else {
-        setUser(mapToUserTrajectory(result.journey));
-      }
+      setJourney(result);
     } catch (err: any) {
-      console.warn("Failed to load journey:", err);
       setError(err?.message || "Failed to load journey");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const prepareGraphElements = () => {
+    if (!journey) return "[]";
+    const elements: any[] = [];
+    // User Node
+    elements.push({ data: { id: 'user', label: '@' + journey.username, color: '#3182ce', shape: 'ellipse' } });
+    
+    // Goals
+    journey.goals.forEach(g => {
+      elements.push({ data: { id: 'g_' + g.id, label: g.title, color: '#dd6b20', shape: 'round-rectangle' } });
+      elements.push({ data: { id: 'e_ug_' + g.id, source: 'user', target: 'g_' + g.id, label: 'HAS_GOAL' } });
+    });
+
+    // Experiences
+    journey.experiences.forEach(exp => {
+      elements.push({ data: { id: 'x_' + exp.id, label: exp.title, color: '#319795', shape: 'round-rectangle' } });
+      elements.push({ data: { id: 'e_ux_' + exp.id, source: 'user', target: 'x_' + exp.id, label: 'HAS_EXPERIENCE' } });
+      
+      exp.goalIds?.forEach(gid => {
+        elements.push({ data: { id: `e_xg_${exp.id}_${gid}`, source: 'x_' + exp.id, target: 'g_' + gid, label: 'CONTRIBUTED_TO' } });
+      });
+
+      exp.skills?.forEach((s, idx) => {
+        const sId = 's_' + exp.id + '_' + idx;
+        elements.push({ data: { id: sId, label: s.name, color: '#38a169', shape: 'ellipse' } });
+        elements.push({ data: { id: 'e_xs_' + sId, source: 'x_' + exp.id, target: sId, label: 'BUILT_SKILL' } });
+      });
+    });
+
+    // Transitions
+    journey.transitions.forEach((t, idx) => {
+      elements.push({ data: { id: 't_' + idx, source: 'x_' + t.fromExperienceId, target: 'x_' + t.toExperienceId, label: t.decisionLabel } });
+    });
+
+    return JSON.stringify(elements);
+  };
+
   if (isLoading) {
     return (
-      <View className="flex-1 bg-brand-cream justify-center items-center">
-        <ActivityIndicator size="large" color={BRAND_COLORS.teal} />
-        <Text className="text-sm text-brand-slate mt-3">Loading journey...</Text>
+      <View style={{ flex: 1, backgroundColor: L.background, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={L.teal} />
+        <Text style={{ marginTop: 12, color: L.navySoft, fontSize: 14 }}>Loading journey...</Text>
       </View>
     );
   }
 
-  if (error) {
+  if (error || !journey) {
     return (
-      <View className="flex-1 bg-brand-cream justify-center items-center p-8">
-        <Text className="text-[15px] text-brand-slate text-center mb-4">{error}</Text>
-        <TouchableOpacity className="px-6 py-3 rounded-full bg-brand-teal" onPress={loadJourney}>
-          <Text className="text-sm font-semibold text-brand-white">Retry</Text>
+      <View style={{ flex: 1, backgroundColor: L.background, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+        <Text style={{ fontSize: 15, color: L.navySoft, textAlign: 'center', marginBottom: 16 }}>{error || 'No journey found'}</Text>
+        <TouchableOpacity onPress={loadJourney} style={{ backgroundColor: L.teal, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20 }}>
+          <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>Retry</Text>
         </TouchableOpacity>
       </View>
     );
   }
-
-  if (!user || user.timeline.length === 0) {
-    return (
-      <View className="flex-1 bg-brand-cream justify-center items-center p-8">
-        <Text className="text-2xl mb-3">🗺️</Text>
-        <Text className="text-xl font-bold text-brand-navy mb-2">No journey data</Text>
-        <Text className="text-sm text-brand-slate text-center mb-6">
-          Share your journey first to see your full career flowchart here.
-        </Text>
-        <TouchableOpacity
-          className="px-6 py-3 rounded-full bg-brand-teal"
-          onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/(tabs)'); }}
-        >
-          <Text className="text-sm font-semibold text-brand-white">Go Back</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  // Separate failure nodes for branching
-  const mainTimeline = user.timeline.filter(e => e.nodeType !== 'Failure');
-  const failureNodes = user.timeline.filter(e => e.nodeType === 'Failure');
-
-  // Find the index after which the failure branches off
-  const failureBranchAfterIdx = mainTimeline.findIndex(e =>
-    e.nodeType === 'Decision' && e.expandedDetails.transitions.length > 0
-  );
 
   return (
-    <View className="flex-1 bg-brand-cream">
+    <View style={{ flex: 1, backgroundColor: L.background }}>
       {/* Header */}
-      <View className="flex-row items-start p-4 pt-5 gap-3 border-b border-brand-border">
-        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}><Text className="text-2xl text-brand-navy mt-0.5">←</Text></TouchableOpacity>
-        <View className="flex-1">
-          <Text className="text-xl font-extrabold text-brand-navy">Full Journey</Text>
-          <Text className="text-[13px] text-brand-slate mt-0.5">{user.timeline.length} experiences</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 60, paddingBottom: 20, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.surface }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 16 }}>
+          <Feather name="chevron-left" size={28} color={L.navy} />
+        </TouchableOpacity>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 20, fontWeight: '800', color: L.navy }}>Full Journey</Text>
         </View>
-        <View className="flex-row items-center gap-1">
-          <Text className="text-[11px] text-brand-slate font-semibold">Show relevant only</Text>
-          <Switch value={showRelevant} onValueChange={setShowRelevant} trackColor={{ false: BRAND_COLORS.border, true: BRAND_COLORS.teal }} thumbColor={BRAND_COLORS.white} style={{ transform: [{ scale: 0.7 }] }} />
-        </View>
+        <TouchableOpacity onPress={() => setShowGraph(true)} style={{ backgroundColor: L.tealTint, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}>
+          <Feather name="git-merge" size={14} color={L.teal} style={{ marginRight: 6 }} />
+          <Text style={{ fontSize: 12, fontWeight: '700', color: L.teal }}>Graph</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Flowchart */}
-      <ScrollView className="flex-1" contentContainerClassName="p-5 pb-20 items-center">
-        <Animated.View style={{ transform: [{ scale }] }}>
-          {mainTimeline.map((event, idx) => {
-            const isLast = idx === mainTimeline.length - 1;
-            const borderColor = NODE_BORDER_COLORS[event.nodeType || 'Job'] || '#94A3B8';
-            const emotionStyle = getEmotionStyle(event.emotionLabel || 'Confident');
-            const faded = showRelevant && (event.nodeType === 'Education' || (event.nodeType === 'Job' && idx === 0));
-            const hasBranch = idx === failureBranchAfterIdx + 1 && failureNodes.length > 0;
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24 }} showsVerticalScrollIndicator={false}>
+        
+        {/* Summary Stat Block */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: L.tealTint, borderRadius: 16, padding: 20, marginBottom: 32 }}>
+          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: L.surface, alignItems: 'center', justifyContent: 'center', marginRight: 16, borderWidth: 2, borderColor: L.teal }}>
+             <Feather name="user" size={20} color={L.navy} />
+          </View>
+          <View>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: L.navy }}>@{journey.username}</Text>
+            <Text style={{ fontSize: 12, fontWeight: '600', color: L.teal, marginTop: 4 }}>
+              {journey.statistics.goals} Goals • {journey.statistics.experiences} Experiences
+            </Text>
+          </View>
+        </View>
 
-            return (
-              <View key={event.id} style={{ opacity: faded ? 0.35 : 1 }}>
-                {/* Edge label */}
-                {idx > 0 && (
-                  <View className="items-center my-1 gap-1">
-                    <View className="w-[2px] h-5 border-l-2 border-dashed border-brand-border" />
-                    <Text className="text-xs text-brand-slate bg-brand-cream px-2 font-medium">
-                      {event.nodeType === 'Failure' ? 'despite' : idx === mainTimeline.length - 1 ? 'led to' : event.expandedDetails.transitions.length > 0 ? 'led to' : 'caused'}
-                    </Text>
-                    <View className="w-[2px] h-5 border-l-2 border-dashed border-brand-border" />
-                  </View>
-                )}
+        {/* Goals Section */}
+        {journey.goals.length > 0 && (
+          <View style={{ marginBottom: 32 }}>
+            <Text style={{ fontSize: 18, fontWeight: '800', color: L.navy, marginBottom: 16 }}>Core Goals</Text>
+            {journey.goals.map(goal => {
+              let badgeColor = { bg: L.surface, text: L.navySoft };
+              if (goal.status === 'ACTIVE') badgeColor = { bg: L.tealTint, text: L.teal };
+              if (goal.status === 'ACHIEVED') badgeColor = { bg: 'rgba(196, 90, 68, 0.1)', text: L.terracotta }; // terracotta-tint
 
-                {/* Row: main node + optional branch */}
-                <View className="flex-row gap-3 items-start">
-                  {/* Main node */}
-                  <TouchableOpacity
-                    className="bg-brand-white rounded-xl p-4 border-2 w-[200px] items-center"
-                    style={{ borderColor }}
-                    onPress={() => setSelectedNode(event)}
-                    activeOpacity={0.8}
-                  >
-                    <Text className="text-xs font-semibold mb-0.5" style={{ color: borderColor }}>{event.nodeType}</Text>
-                    {event.nodeType === 'Decision' && <Text className="text-[20px] text-brand-tan my-0.5">◆</Text>}
-                    <Text className="text-[15px] font-extrabold text-brand-navy text-center mb-1">{event.title}</Text>
-                    <Text className="text-xs text-brand-slate mb-2 font-semibold">{event.startDate}{event.endDate && event.endDate !== event.startDate ? ` – ${event.endDate}` : ''}</Text>
-                    <View className="px-2.5 py-1 rounded-xl" style={{ backgroundColor: emotionStyle.bg }}>
-                      <Text className="text-[11px] font-bold" style={{ color: emotionStyle.text }}>{event.emotionLabel}</Text>
-                    </View>
-                  </TouchableOpacity>
-
-                  {/* Branch connector + failure node */}
-                  {hasBranch && failureNodes.map(fn => {
-                    const fEmotion = getEmotionStyle(fn.emotionLabel || 'Confident');
-                    return (
-                      <View key={fn.id} className="items-center mt-5">
-                        <View className="w-10 h-0.5 bg-brand-slate mb-2">
-                          <Text className="absolute -top-3.5 text-[10px] text-brand-slate bg-brand-cream px-1 font-semibold">despite</Text>
+              return (
+                <ExpandableCard
+                  key={goal.id}
+                  title={goal.title}
+                  badgeText={goal.status}
+                  badgeColor={badgeColor}
+                >
+                  <Text style={{ fontSize: 14, color: L.navySoft, lineHeight: 22 }}>{goal.description}</Text>
+                  {goal.topics.length > 0 && (
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 12, gap: 8 }}>
+                      {goal.topics.map((t, i) => (
+                        <View key={i} style={{ backgroundColor: L.background, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, borderWidth: 1, borderColor: L.border }}>
+                          <Text style={{ fontSize: 11, fontWeight: '600', color: L.navy }}>{t}</Text>
                         </View>
-                        <TouchableOpacity
-                          className="bg-brand-cream rounded-xl p-4 border-2 border-brand-rust w-[160px] items-center"
-                          onPress={() => setSelectedNode(fn)}
-                          activeOpacity={0.8}
-                        >
-                          <Text className="text-xs font-semibold mb-0.5 text-red-500">Failure</Text>
-                          <Text className="text-[15px] font-extrabold text-brand-navy text-center mb-1">{fn.title}</Text>
-                          <Text className="text-xs text-brand-slate mb-2 font-semibold">{fn.startDate}</Text>
-                          <View className="px-2.5 py-1 rounded-xl" style={{ backgroundColor: fEmotion.bg }}>
-                            <Text className="text-[11px] font-bold" style={{ color: fEmotion.text }}>{fn.emotionLabel}</Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                    );
-                  })}
-                </View>
-              </View>
-            );
-          })}
-        </Animated.View>
-      </ScrollView>
-
-      {/* Zoom controls */}
-      <View className="absolute bottom-5 right-4 flex-row bg-brand-white rounded-[20px] px-1 py-1 gap-0.5 border border-brand-border elevation-4 shadow-sm">
-        <TouchableOpacity className="w-9 h-9 rounded-[18px] justify-center items-center" onPress={() => setScale(Math.max(0.5, scale - 0.2))}>
-          <Text className="text-base">🔍−</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="w-9 h-9 rounded-[18px] justify-center items-center" onPress={() => setScale(1)}>
-          <Text className="text-base">⛶</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="w-9 h-9 rounded-[18px] justify-center items-center" onPress={() => setScale(Math.min(2, scale + 0.2))}>
-          <Text className="text-base">🔍+</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Bottom Sheet Modal */}
-      <Modal visible={selectedNode !== null} animationType="slide" transparent>
-        <Pressable className="flex-1" style={{ backgroundColor: 'rgba(26, 32, 44, 0.6)' }} onPress={() => setSelectedNode(null)} />
-        {selectedNode && (
-          <View className="absolute bottom-0 left-0 right-0 bg-brand-cream rounded-t-[20px] p-6 max-h-[55%]">
-            <View className="flex-row justify-between">
-              <View className="flex-1">
-                <Text className="text-sm font-bold mb-1" style={{ color: NODE_BORDER_COLORS[selectedNode.nodeType || 'Job'] }}>{selectedNode.nodeType}</Text>
-                <Text className="text-[24px] font-extrabold text-brand-navy leading-[30px]">{selectedNode.title}</Text>
-                <Text className="text-sm text-brand-slate mt-1 font-semibold">{selectedNode.startDate}</Text>
-                <View className="self-start mt-2 px-2.5 py-1 rounded-xl" style={{ backgroundColor: getEmotionStyle(selectedNode.emotionLabel || 'Confident').bg }}>
-                  <Text className="text-[11px] font-bold" style={{ color: getEmotionStyle(selectedNode.emotionLabel || 'Confident').text }}>{selectedNode.emotionLabel}</Text>
-                </View>
-              </View>
-              <TouchableOpacity onPress={() => setSelectedNode(null)} hitSlop={16}>
-                <Text className="text-[22px] text-brand-slate">✕</Text>
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView className="mt-4">
-              {selectedNode.expandedDetails.context ? (
-                <View className="mb-4">
-                  <Text className="text-base font-extrabold text-brand-navy mb-1.5">Context</Text>
-                  <Text className="text-[15px] text-brand-slate leading-[22px] font-medium">{selectedNode.expandedDetails.context}</Text>
-                </View>
-              ) : null}
-              {selectedNode.expandedDetails.challengeFaced ? (
-                <View className="mb-4">
-                  <Text className="text-base font-extrabold text-brand-navy mb-1.5">Challenge</Text>
-                  <Text className="text-[15px] text-brand-slate leading-[22px] font-medium">{selectedNode.expandedDetails.challengeFaced}</Text>
-                </View>
-              ) : null}
-              {selectedNode.expandedDetails.emotionNote ? (
-                <View className="mb-4">
-                  <Text className="text-base font-extrabold text-brand-navy mb-1.5">Emotion note</Text>
-                  <Text className="text-[15px] leading-[22px] font-medium italic text-slate-500">{selectedNode.expandedDetails.emotionNote}</Text>
-                </View>
-              ) : null}
-              {selectedNode.expandedDetails.outcome ? (
-                <View className="mb-4">
-                  <Text className="text-base font-extrabold text-brand-navy mb-1.5">Outcome</Text>
-                  <Text className="text-[15px] text-brand-slate leading-[22px] font-medium">{selectedNode.expandedDetails.outcome}</Text>
-                </View>
-              ) : null}
-            </ScrollView>
+                      ))}
+                    </View>
+                  )}
+                </ExpandableCard>
+              );
+            })}
           </View>
         )}
+
+        {/* Timeline Section */}
+        {journey.experiences.length > 0 && (
+          <View>
+            <Text style={{ fontSize: 18, fontWeight: '800', color: L.navy, marginBottom: 16 }}>Timeline</Text>
+            <View style={{ marginLeft: 8 }}>
+              {/* Timeline Rail */}
+              <View style={{ position: 'absolute', left: 15, top: 0, bottom: 0, width: 2, backgroundColor: 'rgba(62, 107, 102, 0.25)' }} />
+              
+              {journey.experiences.map((exp, index) => {
+                const isFailure = exp.title.toLowerCase().includes('fail') || (exp.outcome?.toLowerCase().includes('fail'));
+                const nodeType = isFailure ? 'Failure' : 'Experience';
+                
+                return (
+                  <View key={exp.id} style={{ flexDirection: 'row', marginBottom: 16 }}>
+                    {/* Node Dot */}
+                    <View style={{ width: 32, alignItems: 'center', marginTop: 24, zIndex: 10 }}>
+                      <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: L.teal, borderWidth: 2, borderColor: L.surface }} />
+                    </View>
+                    
+                    {/* Card */}
+                    <View style={{ flex: 1, marginLeft: 8 }}>
+                      {/* Transition Label if exists */}
+                      {index > 0 && journey.transitions.find(t => t.toExperienceId === exp.id) && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                          <Feather name="corner-up-left" size={12} color={L.teal} style={{ marginRight: 6 }} />
+                          <Text style={{ fontSize: 11, fontWeight: '700', color: L.teal }}>
+                            {journey.transitions.find(t => t.toExperienceId === exp.id)?.decisionLabel}
+                          </Text>
+                        </View>
+                      )}
+
+                      <ExpandableCard
+                        title={exp.title}
+                        subtitle={`${exp.startDate} ${exp.endDate ? '- ' + exp.endDate : ''}`}
+                        nodeType={nodeType}
+                        isVerified={exp.isVerified}
+                      >
+                        <Text style={{ fontSize: 14, color: L.navy, fontWeight: '600', marginBottom: 4 }}>Context</Text>
+                        <Text style={{ fontSize: 14, color: L.navySoft, lineHeight: 22, marginBottom: 16 }}>{exp.context}</Text>
+                        
+                        {exp.outcome && (
+                          <View style={{ marginBottom: 16 }}>
+                            <Text style={{ fontSize: 14, color: L.navy, fontWeight: '600', marginBottom: 4 }}>Outcome</Text>
+                            <Text style={{ fontSize: 14, color: L.navySoft, lineHeight: 22 }}>{exp.outcome}</Text>
+                          </View>
+                        )}
+
+                        {exp.skills?.length > 0 && (
+                          <View>
+                            <Text style={{ fontSize: 14, color: L.navy, fontWeight: '600', marginBottom: 8 }}>Skills Gained</Text>
+                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                              {exp.skills.map((s, i) => (
+                                <View key={i} style={{ backgroundColor: L.tealTint, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
+                                  <Text style={{ fontSize: 11, fontWeight: '600', color: L.teal }}>{s.name}</Text>
+                                </View>
+                              ))}
+                            </View>
+                          </View>
+                        )}
+                      </ExpandableCard>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
+      </ScrollView>
+
+      {/* Graph Modal */}
+      <Modal visible={showGraph} animationType="slide" presentationStyle="formSheet">
+        <View style={{ flex: 1, backgroundColor: L.background }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.surface }}>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: L.navy }}>Knowledge Graph Preview</Text>
+            <TouchableOpacity onPress={() => setShowGraph(false)} style={{ padding: 8, backgroundColor: L.surface, borderRadius: 20 }}>
+              <Feather name="x" size={20} color={L.navy} />
+            </TouchableOpacity>
+          </View>
+          <WebView
+            originWhitelist={['*']}
+            source={{ html: createCytoscapeHtml(prepareGraphElements()) }}
+            style={{ flex: 1 }}
+          />
+        </View>
       </Modal>
+
     </View>
   );
 }

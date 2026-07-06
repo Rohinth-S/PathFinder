@@ -78,11 +78,11 @@ export default function HistoryPage() {
 
       const result = await getUserJourney(token);
 
-      if (!result.journey || result.journey.experiences.length === 0) {
+      if (!result.experiences || result.experiences.length === 0) {
         setTimeline([]);
       } else {
-        const events = result.journey.experiences.map(exp =>
-          mapExperienceToTimelineEvent(exp, result.journey!.transitions)
+        const events = result.experiences.map(exp =>
+          mapExperienceToTimelineEvent(exp, result.transitions)
         );
         setTimeline(events);
       }

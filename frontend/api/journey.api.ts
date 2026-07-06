@@ -45,16 +45,18 @@ export interface JourneyUser {
   email: string | null;
 }
 
+export interface UserJourneyStatistics {
+  goals: number;
+  experiences: number;
+  transitions: number;
+}
+
 export interface UserJourneyResponse {
-  journey: {
-    user: JourneyUser;
-    goals: JourneyGoal[];
-    experiences: JourneyExperience[];
-    transitions: JourneyTransition[];
-  } | null;
-  metadata: {
-    lastUpdated?: string;
-  };
+  username: string;
+  statistics: UserJourneyStatistics;
+  goals: JourneyGoal[];
+  experiences: JourneyExperience[];
+  transitions: JourneyTransition[];
 }
 
 export interface ExtractJourneyResponse {

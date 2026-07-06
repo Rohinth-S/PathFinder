@@ -29,7 +29,21 @@ export async function apiFetch<T>(
     );
 
     if (!response.ok) {
-      const message = await response.text();
+      let message = await response.text();
+      // If the backend returns HTML (e.g. 404 Cannot GET), clean it up
+      if (message.includes('<!DOCTYPE html>') || message.includes('<html>')) {
+        if (response.status === 404) {
+          message = `Endpoint ${endpoint} not implemented on the backend yet.`;
+        } else {
+          message = `Server error ${response.status}: ${response.statusText}`;
+        }
+      } else {
+        // Try parsing JSON error
+        try {
+          const jsonError = JSON.parse(message);
+          if (jsonError.error) message = jsonError.error;
+        } catch {}
+      }
       throw new Error(message);
     }
 
