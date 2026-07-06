@@ -206,7 +206,7 @@ export default function ProfilePage() {
         index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose
-        backgroundStyle={{ backgroundColor: L.cream }}
+        backgroundStyle={{ backgroundColor: L.background }}
         handleIndicatorStyle={{ width: 40, height: 4, backgroundColor: 'rgba(62, 107, 102, 0.3)' }} // teal at 30%
       >
         <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 16 }}>
