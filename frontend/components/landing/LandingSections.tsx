@@ -23,7 +23,7 @@ const s = {
   body: { fontSize: 15, fontWeight: '400' as const, color: L.navySoft, lineHeight: 22 },
   caption: { fontSize: 12, fontWeight: '600' as const, letterSpacing: 1 },
   micro: { fontSize: 11, fontWeight: '400' as const, lineHeight: 14 },
-  section: (bg: string) => ({ paddingVertical: 40, paddingHorizontal: 24, backgroundColor: bg }),
+  section: (bg: string) => ({ paddingVertical: 40, paddingHorizontal: 24 }),
 };
 
 // ═══════════════════════════════════════════════════════
@@ -37,7 +37,7 @@ type HeroProps = {
 
 export function HeroSection({ onPressGoogle }: HeroProps) {
   return (
-    <SectionReveal style={{ minHeight: 680, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 60, backgroundColor: L.background }}>
+    <SectionReveal style={{ minHeight: 680, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 60 }}>
       <StaggerItem index={0}>
         <Image
           source={require('../../assets/logo-light.png')}
@@ -420,7 +420,7 @@ export function ClosingVisionSection() {
 
 export function FooterSection() {
   return (
-    <SectionReveal style={{ backgroundColor: L.navy, paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center' }}>
+    <SectionReveal style={{ paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center' }}>
       <StaggerItem index={0}>
         <Image
           source={require('../../assets/logo-dark.png')}

@@ -21,6 +21,7 @@ export default function CommunityPage() {
   const [users, setUsers] = useState<SearchCommunityUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTopics();
@@ -44,7 +45,7 @@ export default function CommunityPage() {
       const data = await getTopics();
       setTopics(data);
     } catch (e) {
-      console.warn(e);
+      console.warn('Failed to fetch topics:', e);
     }
   };
 
@@ -53,12 +54,13 @@ export default function CommunityPage() {
       const data = await getSubtopics(topic);
       setSubtopics(data);
     } catch (e) {
-      console.warn(e);
+      console.warn('Failed to fetch subtopics:', e);
     }
   };
 
   const fetchUsers = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const data = await searchCommunity({
         topic: selectedTopic || undefined,
@@ -66,8 +68,10 @@ export default function CommunityPage() {
         limit: 50,
       });
       setUsers(data);
-    } catch (e) {
-      console.warn(e);
+    } catch (e: any) {
+      console.warn('Failed to fetch users:', e);
+      setError(e?.message || 'Failed to load community. Please try again.');
+      setUsers([]);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -183,6 +187,16 @@ export default function CommunityPage() {
       {isLoading && !isRefreshing ? (
         <View className="flex-1 justify-center items-center p-8">
           <ActivityIndicator size="large" color={BRAND_COLORS.teal} />
+        </View>
+      ) : error ? (
+        <View className="flex-1 justify-center items-center p-8">
+          <Text className="text-[15px] text-brand-slate text-center mb-4">{error}</Text>
+          <TouchableOpacity
+            className="px-6 py-3 rounded-full bg-brand-teal"
+            onPress={() => fetchUsers()}
+          >
+            <Text className="text-sm font-semibold text-brand-white">Retry</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList

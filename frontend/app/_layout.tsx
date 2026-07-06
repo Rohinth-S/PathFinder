@@ -6,6 +6,7 @@ import { View, Platform, StyleSheet, ActivityIndicator } from "react-native";
 import { useFonts, Manrope_400Regular, Manrope_600SemiBold, Manrope_700Bold } from "@expo-google-fonts/manrope";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useCallback } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent splash from auto-hiding until fonts are ready
 SplashScreen.preventAutoHideAsync();
@@ -64,17 +65,22 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
-      <ClerkLoaded>
-        <View className="flex-1 bg-[#FAF9F6] items-center">
-          <View 
-            className="flex-1 w-full web:max-w-[480px] web:border-x web:border-[#EAE7E0]"
-            style={Platform.OS === 'web' ? { shadowColor: '#152238', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.06, shadowRadius: 20 } : {}}
-          >
-            <Slot />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+        <ClerkLoaded>
+          <View className="flex-1 bg-[#FAF9F6] items-center">
+            <View 
+              className="flex-1 w-full web:max-w-[480px] web:border-x web:border-[#EAE7E0]"
+              style={Platform.OS === 'web' ? { shadowColor: '#152238', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.06, shadowRadius: 20 } : {}}
+            >
+              <Slot />
+            </View>
+            {Platform.OS === 'web' && (
+              <View nativeID="clerk-captcha" />
+            )}
           </View>
-        </View>
-      </ClerkLoaded>
-    </ClerkProvider>
+        </ClerkLoaded>
+      </ClerkProvider>
+    </GestureHandlerRootView>
   );
 }

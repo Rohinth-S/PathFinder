@@ -1,43 +1,74 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
-import { updateProfile } from '../../api/auth.api';
+import { syncUser, updateProfile, SyncedUser } from '../../api/auth.api';
 import { L } from '../../constants/colors';
+import { Feather } from '@expo/vector-icons';
+import BottomSheet, { BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
-const MOCK_USER = {
-  reputationScore: 72,
-};
+const LANGUAGES = [
+  { label: 'English', code: 'en' },
+  { label: 'Spanish', code: 'es' },
+  { label: 'French', code: 'fr' },
+  { label: 'Hindi', code: 'hi' },
+  { label: 'German', code: 'de' },
+  { label: 'Mandarin', code: 'zh' },
+  { label: 'Japanese', code: 'ja' },
+  { label: 'Korean', code: 'ko' },
+  { label: 'Italian', code: 'it' },
+  { label: 'Portuguese', code: 'pt' },
+];
 
 export default function ProfilePage() {
   const router = useRouter();
   const { signOut, getToken } = useAuth();
-  
-  const [username, setUsername] = useState('rohinth-s');
+
+  const [user, setUser] = useState<SyncedUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [username, setUsername] = useState('');
   const [languageCode, setLanguageCode] = useState('en');
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Bottom Sheet
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['50%', '70%'], []);
 
-  const languages = [
-    { label: 'English', code: 'en' },
-    { label: 'Spanish', code: 'es' },
-    { label: 'French', code: 'fr' },
-    { label: 'Hindi', code: 'hi' },
-  ];
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
 
-  const handleSave = async () => {
-    setIsSubmitting(true);
+  const loadUserProfile = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
-      const user = await updateProfile(token, { username, preferredLanguage: languageCode });
-      setUsername(user.username ?? username);
-      setLanguageCode(user.preferredLanguage ?? languageCode);
-      setIsEditing(false);
+      const syncedUser = await syncUser(token);
+      setUser(syncedUser);
+      setUsername(syncedUser.username ?? '');
+      setLanguageCode(syncedUser.preferredLanguage ?? 'en');
+    } catch (err: any) {
+      console.warn("Failed to load profile:", err);
+      setError(err?.message || "Failed to load profile");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveLanguage = async (code: string) => {
+    setLanguageCode(code);
+    bottomSheetRef.current?.close();
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      const updatedUser = await updateProfile(token, { username, preferredLanguage: code });
+      setUser(updatedUser);
     } catch (error) {
       console.warn("Failed to update profile", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -46,165 +77,117 @@ export default function ProfilePage() {
     router.replace('/');
   };
 
+  const displayUsername = username || 'Set Username';
+  const reputationScore = typeof user?.reputationScore === 'object'
+    ? (user.reputationScore as any)?.low ?? 0
+    : user?.reputationScore ?? 0;
+
+  const filteredLanguages = LANGUAGES.filter(l => l.label.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={L.teal} />
+          <Text style={{ marginTop: 12, color: L.navySoft, fontSize: 14 }}>Loading profile...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <Text style={{ fontSize: 15, color: L.navySoft, textAlign: 'center', marginBottom: 16 }}>{error}</Text>
+          <TouchableOpacity
+            onPress={loadUserProfile}
+            style={{ backgroundColor: L.teal, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20 }}
+          >
+            <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-
-        {/* ── Header ── */}
-        <View style={{ paddingTop: 56, paddingBottom: 40, alignItems: 'center', backgroundColor: L.background }}>
-          {/* Avatar */}
+      <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} showsVerticalScrollIndicator={false}>
+        
+        {/* 2. Profile Header Block */}
+        <View style={{ alignItems: 'center', marginBottom: 32, marginTop: 40 }}>
           <View style={{
             width: 96, height: 96, borderRadius: 48,
             backgroundColor: L.tealTint,
             borderWidth: 2, borderColor: L.teal,
             alignItems: 'center', justifyContent: 'center',
-            marginBottom: 16,
+            marginBottom: 12,
           }}>
-            <Text style={{ fontSize: 38, fontWeight: '700', color: L.teal }}>
-              {username[0].toUpperCase()}
-            </Text>
+            <Feather name="user" size={40} color={L.navy} />
           </View>
-
-          <Text style={{ fontSize: 24, fontWeight: '700', color: L.navy, letterSpacing: -0.5, marginBottom: 10 }}>
-            @{username}
+          <Text style={{ fontSize: 17, fontWeight: '600', color: L.navy }}>
+            @{displayUsername}
           </Text>
+        </View>
 
-          {/* Reputation pill */}
-          <View style={{
-            flexDirection: 'row', alignItems: 'center',
-            backgroundColor: L.surface, borderWidth: 1, borderColor: L.border,
-            paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20,
-          }}>
-            <Text style={{ fontSize: 12, color: L.navySoft, fontWeight: '500', marginRight: 6 }}>reputation</Text>
-            <Text style={{ fontSize: 15, color: L.navy, fontWeight: '700' }}>{MOCK_USER.reputationScore}</Text>
+        {/* 3. Editable Fields */}
+        <View style={{
+          backgroundColor: L.surface, 
+          borderRadius: 16, 
+          borderWidth: 1, 
+          borderColor: 'rgba(62, 107, 102, 0.2)', // teal at 20%
+          padding: 24,
+          marginBottom: 32
+        }}>
+          {/* Username (Not fully editable in this simple view as per spec "No Edit/Save buttons" but implies interaction if needed. We'll leave as display only or future tap-to-edit) */}
+          <View style={{ marginBottom: 24 }}>
+            <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy, marginBottom: 8 }}>Username</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>{displayUsername}</Text>
+              {/* Idle pencil hint (teal at 40%) */}
+              <Feather name="edit-2" size={16} color="rgba(62, 107, 102, 0.4)" />
+            </View>
+          </View>
+
+          {/* Language Field */}
+          <View>
+            <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy, marginBottom: 8 }}>Language</Text>
+            <TouchableOpacity 
+              onPress={() => bottomSheetRef.current?.expand()}
+              style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>
+                {LANGUAGES.find(l => l.code === languageCode)?.label || languageCode}
+              </Text>
+              <Feather name="edit-2" size={16} color="rgba(62, 107, 102, 0.4)" />
+            </TouchableOpacity>
           </View>
         </View>
 
-
-        {/* ── Divider ── */}
-        <View style={{ height: 1, backgroundColor: L.border, marginHorizontal: 24 }} />
-
-
-        {/* ── Details Card ── */}
-        <View style={{ paddingHorizontal: 24, paddingVertical: 32 }}>
-          <View style={{
-            backgroundColor: L.surface, borderWidth: 1, borderColor: L.border,
-            borderRadius: 16, padding: 24,
-            shadowColor: '#152238', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 20,
-          }}>
-            {/* Header */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: L.navy }}>Details</Text>
-              <TouchableOpacity
-                onPress={() => setIsEditing(!isEditing)}
-                style={{ backgroundColor: L.tealTint, paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20 }}
-              >
-                <Text style={{ color: L.teal, fontWeight: '600', fontSize: 13 }}>
-                  {isEditing ? 'Cancel' : 'Edit'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Username */}
-            <View style={{ marginBottom: 20 }}>
-              <Text style={{ fontSize: 11, fontWeight: '600', color: L.teal, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>
-                Username
-              </Text>
-              {isEditing ? (
-                <TextInput
-                  style={{
-                    borderWidth: 1, borderColor: L.border,
-                    borderRadius: 12, padding: 14,
-                    color: L.navy, fontWeight: '600', fontSize: 15,
-                    backgroundColor: L.background,
-                  }}
-                  value={username}
-                  onChangeText={setUsername}
-                  placeholderTextColor={L.navySoft}
-                />
-              ) : (
-                <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>{username}</Text>
-              )}
-            </View>
-
-            {/* Language */}
-            <View style={{ marginBottom: 4 }}>
-              <Text style={{ fontSize: 11, fontWeight: '600', color: L.teal, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>
-                Language
-              </Text>
-              {isEditing ? (
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-                  {languages.map((lang) => {
-                    const sel = languageCode === lang.code;
-                    return (
-                      <TouchableOpacity
-                        key={lang.code}
-                        onPress={() => setLanguageCode(lang.code)}
-                        style={{
-                          paddingHorizontal: 18, paddingVertical: 10,
-                          borderRadius: 20, borderWidth: 1,
-                          backgroundColor: sel ? L.teal : L.background,
-                          borderColor: sel ? L.teal : L.border,
-                        }}
-                      >
-                        <Text style={{ fontSize: 13, fontWeight: '600', color: sel ? '#FFFFFF' : L.navySoft }}>
-                          {lang.label}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              ) : (
-                <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>
-                  {languages.find(l => l.code === languageCode)?.label || languageCode}
-                </Text>
-              )}
-            </View>
-
-            {/* Save */}
-            {isEditing && (
-              <TouchableOpacity
-                onPress={handleSave}
-                disabled={isSubmitting}
-                style={{
-                  backgroundColor: L.terracotta, paddingVertical: 14,
-                  borderRadius: 28, alignItems: 'center', marginTop: 20,
-                }}
-              >
-                {isSubmitting ? (
-                  <ActivityIndicator color="#FFFFFF" />
-                ) : (
-                  <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15 }}>Save Changes</Text>
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-
-
-        {/* ── Action Buttons ── */}
-        <View style={{ paddingHorizontal: 24, gap: 12, marginBottom: 48 }}>
+        {/* 5. Primary Actions Block */}
+        <View style={{ gap: 12, marginBottom: 48 }}>
           <TouchableOpacity
-            onPress={() => router.push('/share-journey')}
+            onPress={() => router.push('/full-journey')}
             style={{
               paddingVertical: 16, borderRadius: 28,
               alignItems: 'center', justifyContent: 'center',
               backgroundColor: L.teal,
             }}
           >
-            <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15 }}>Share / Update Journey</Text>
+            <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15 }}>View Full Journey</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => router.push('/full-journey')}
+            onPress={() => router.push('/share-journey')}
             style={{
               paddingVertical: 16, borderRadius: 28,
               alignItems: 'center', justifyContent: 'center',
-              borderWidth: 1, borderColor: L.border,
               backgroundColor: L.surface,
+              borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.3)'
             }}
           >
-            <Text style={{ color: L.navy, fontWeight: '500', fontSize: 15 }}>View Full Journey</Text>
+            <Text style={{ color: L.navy, fontWeight: '600', fontSize: 15 }}>Add Experience</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -216,6 +199,60 @@ export default function ProfilePage() {
         </View>
 
       </ScrollView>
+
+      {/* 4. Bottom Sheet Picker (Language) */}
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose
+        backgroundStyle={{ backgroundColor: L.background }}
+        handleIndicatorStyle={{ width: 40, height: 4, backgroundColor: 'rgba(62, 107, 102, 0.3)' }} // teal at 30%
+      >
+        <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 16 }}>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: L.navy, marginBottom: 16 }}>Select Language</Text>
+          
+          <View style={{
+            flexDirection: 'row', alignItems: 'center',
+            backgroundColor: L.surface, borderRadius: 12, paddingHorizontal: 12, marginBottom: 16
+          }}>
+            <Feather name="search" size={18} color={L.teal} />
+            <BottomSheetTextInput
+              style={{ flex: 1, paddingVertical: 12, paddingHorizontal: 8, fontSize: 15, color: L.navy }}
+              placeholder="Search languages..."
+              placeholderTextColor={L.navySoft}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+
+          <BottomSheetScrollView showsVerticalScrollIndicator={false}>
+            {filteredLanguages.map(lang => {
+              const isSelected = lang.code === languageCode;
+              return (
+                <TouchableOpacity
+                  key={lang.code}
+                  onPress={() => handleSaveLanguage(lang.code)}
+                  style={{
+                    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+                    paddingVertical: 16, paddingHorizontal: 16,
+                    borderRadius: 12,
+                    backgroundColor: isSelected ? L.tealTint : 'transparent',
+                    marginBottom: 4
+                  }}
+                >
+                  <Text style={{ fontSize: 16, fontWeight: isSelected ? '600' : '400', color: isSelected ? L.teal : L.navy }}>
+                    {lang.label}
+                  </Text>
+                  {isSelected && (
+                    <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: L.teal }} />
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </BottomSheetScrollView>
+        </View>
+      </BottomSheet>
     </SafeAreaView>
   );
 }
