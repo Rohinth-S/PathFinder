@@ -1,5 +1,5 @@
 import { journeyJsonSchema } from "./journeySchema.js";
-import type { JourneyJson } from "./types.js";
+import type { JourneyJson } from "../../types/journey/Journey.types.js";
 import { ZodError } from "zod";
 
 export interface ValidationErrorDetail {

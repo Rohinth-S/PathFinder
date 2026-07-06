@@ -1,7 +1,7 @@
 import "../config/env.js";
 
 import { closeNeo4jConnection } from "../config/neo4j.config.js";
-import { generateExperienceEmbedding } from "../processors/journey/generateEmbeddings.processor.js";
+import { generateExperienceEmbedding, generateGoalEmbedding } from "../processors/journey/generateEmbeddings.processor.js";
 import { initializeEmbeddingModel } from "../services/embeddings.service.js";
 import { closeSession, getSession } from "../services/neo4j.service.js";
 
@@ -13,6 +13,12 @@ interface ExperienceRecord {
   outcome?: string | null;
   achievements?: string[] | null;
   skills?: string[];
+}
+
+interface GoalRecord {
+  id: string;
+  title: string;
+  description: string;
 }
 
 async function fetchExperiences(): Promise<ExperienceRecord[]> {
@@ -47,34 +53,61 @@ async function fetchExperiences(): Promise<ExperienceRecord[]> {
   }
 }
 
+async function fetchGoals(): Promise<GoalRecord[]> {
+  const session = getSession();
+  try {
+    const result = await session.run(`
+      MATCH (g:Goal)
+      RETURN
+        g.id AS id,
+        g.title AS title,
+        g.description AS description
+      ORDER BY g.title
+    `);
+    return result.records.map((record) => ({
+      id: record.get("id") as string,
+      title: record.get("title") as string,
+      description: record.get("description") as string,
+    }));
+  } finally {
+    await closeSession(session);
+  }
+}
+
 async function main(): Promise<void> {
   console.log("Loading embedding model...");
-
   await initializeEmbeddingModel();
-
   console.log("✓ model loaded\n");
-
   const experiences = await fetchExperiences();
-
+  const goals = await fetchGoals();
   if (experiences.length === 0) {
     console.log("No Experience nodes found.");
     return;
   }
-
+  if(goals.length === 0) {
+    console.log("No Goal nodes found.");
+    return;
+  }
   console.log(
     `Found ${experiences.length} Experience nodes\n`
   );
-
+  console.log(
+    `Found ${goals.length} Goal nodes\n`
+  );
   for (const [index, experience] of experiences.entries()) {
     console.log(
       `[${index + 1}/${experiences.length}] Embedding "${experience.title}"`
     );
-
     await generateExperienceEmbedding(experience);
-
     console.log("✓ stored");
   }
-
+  for (const [index, goal] of goals.entries()) {
+    console.log(
+      `[Goal ${index + 1}/${goals.length}] Embedding "${goal.title}"`
+    );
+    await generateGoalEmbedding(goal);
+    console.log("✓ stored");
+  }
   console.log("\n✓ all embeddings generated successfully");
 }
 
