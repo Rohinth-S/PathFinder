@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { syncUser, updateProfile, SyncedUser } from '../../api/auth.api';
 import { L } from '../../constants/colors';
-import { Feather } from '@expo/vector-icons';
+import {Feather} from '@expo/vector-icons';
 import BottomSheet, { BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
 const LANGUAGES = [
@@ -124,7 +124,6 @@ export default function ProfilePage() {
             alignItems: 'center', justifyContent: 'center',
             marginBottom: 12,
           }}>
-            <Feather name="user" size={40} color={L.navy} />
           </View>
           <Text style={{ fontSize: 17, fontWeight: '600', color: L.navy }}>
             @{displayUsername}
@@ -132,27 +131,28 @@ export default function ProfilePage() {
         </View>
 
         {/* 3. Editable Fields */}
-        <View style={{
-          backgroundColor: L.surface, 
-          borderRadius: 16, 
-          borderWidth: 1, 
-          borderColor: 'rgba(62, 107, 102, 0.2)', // teal at 20%
-          padding: 24,
-          marginBottom: 32
-        }}>
+        <View style={{backgroundColor: L.surface, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.2)', padding: 24, marginBottom: 16,
+        // Lift effect for iOS
+        shadowColor: '#000',shadowOffset: {width: 0,height: 4},shadowOpacity: 0.08, shadowRadius: 12, 
+        // Lift effect for Android
+        elevation: 4,}}>
           {/* Username (Not fully editable in this simple view as per spec "No Edit/Save buttons" but implies interaction if needed. We'll leave as display only or future tap-to-edit) */}
-          <View style={{ marginBottom: 24 }}>
-            <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy, marginBottom: 8 }}>Username</Text>
+            <Text style={{ fontSize: 12, fontWeight: '400', color: L.teal, marginBottom: 8 }}>USERNAME</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>{displayUsername}</Text>
               {/* Idle pencil hint (teal at 40%) */}
-              <Feather name="edit-2" size={16} color="rgba(62, 107, 102, 0.4)" />
+              <Feather name="edit-2" size={16} color={L.teal} />
             </View>
-          </View>
+        </View>
 
+          <View style={{backgroundColor: L.surface, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.2)', padding: 24, marginBottom: 16,
+          // Lift effect for iOS
+          shadowColor: '#000',shadowOffset: {width: 0,height: 4},shadowOpacity: 0.08, shadowRadius: 12, 
+          // Lift effect for Android
+          elevation: 4,}}>
           {/* Language Field */}
           <View>
-            <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy, marginBottom: 8 }}>Language</Text>
+            <Text style={{ fontSize: 12, fontWeight: '400', color: L.teal, marginBottom: 8 }}>LANGUAGE</Text>
             <TouchableOpacity 
               onPress={() => bottomSheetRef.current?.expand()}
               style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
@@ -160,7 +160,7 @@ export default function ProfilePage() {
               <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>
                 {LANGUAGES.find(l => l.code === languageCode)?.label || languageCode}
               </Text>
-              <Feather name="edit-2" size={16} color="rgba(62, 107, 102, 0.4)" />
+              <Feather name="edit-2" size={16} color={L.teal} />
             </TouchableOpacity>
           </View>
         </View>
@@ -175,7 +175,7 @@ export default function ProfilePage() {
               backgroundColor: L.teal,
             }}
           >
-            <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15 }}>View Full Journey</Text>
+            <Text style={{ color: '#FFFFFF', fontWeight: '400', fontSize: 16, letterSpacing:0.5 }}>View Full Journey</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -184,17 +184,17 @@ export default function ProfilePage() {
               paddingVertical: 16, borderRadius: 28,
               alignItems: 'center', justifyContent: 'center',
               backgroundColor: L.surface,
-              borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.3)'
+              borderWidth: 1.5, borderColor: 'rgba(62, 107, 102, 0.3)'
             }}
           >
-            <Text style={{ color: L.navy, fontWeight: '600', fontSize: 15 }}>Add Experience</Text>
+            <Text style={{ color: L.navy, fontWeight: '500', fontSize: 16, letterSpacing:0.5 }}>Add Experience</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handleSignOut}
             style={{ paddingVertical: 16, alignItems: 'center', marginTop: 8 }}
           >
-            <Text style={{ color: L.navySoft, fontWeight: '500', fontSize: 13 }}>Sign Out</Text>
+            <Text style={{ color: L.terracotta, fontWeight: '500', fontSize: 12, letterSpacing: 0.5 }}>SIGN OUT</Text>
           </TouchableOpacity>
         </View>
 

@@ -316,7 +316,7 @@ const STEPS = [
 
 export function HowItWorksSection() {
   return (
-    <SectionReveal style={s.section(L.tealTint)}>
+    <SectionReveal style={s.section(L.background)}>
       <StaggerItem index={0}><Text style={[s.eyebrow, { marginBottom: 12 }]}>HOW IT WORKS</Text></StaggerItem>
       <StaggerItem index={1}><Text style={[s.h1, { marginBottom: 16 }]}>Powered by journeys, not assumptions.</Text></StaggerItem>
       <StaggerItem index={2}><Text style={[s.body, { marginBottom: 32 }]}>Unlike standard AI that scrapes static data, PathFinder understands the nuance of real-world paths. Every question you ask triggers a search through a massive knowledge graph built from authentic human experiences.</Text></StaggerItem>
@@ -358,7 +358,7 @@ const LANGUAGES = ['हिन्दी', 'தமிழ்', 'తెలుగు'
 
 export function AccessibilitySection() {
   return (
-    <SectionReveal style={s.section(L.tealTint)}>
+    <SectionReveal style={s.section(L.background)}>
       <StaggerItem index={0}>
         <View style={{ alignItems: 'flex-start', marginBottom: 18 }}>
           <RippleMicBadge label="NATURAL INTERACTION" />
@@ -406,10 +406,10 @@ export function AccessibilitySection() {
 
 export function ClosingVisionSection() {
   return (
-    <SectionReveal style={[s.section(L.navy), { paddingVertical: 40,alignItems: 'stretch' }]}>
-      <StaggerItem index={0}><Text style={{ color: L.surface, fontSize:18, fontWeight:"500", alignSelf: "flex-start",marginBottom: 56 }}>OUR VISION</Text></StaggerItem>
-      <StaggerItem index={1}><Text style={{ fontSize: 24, fontWeight: '400', color: '#FFFFFF', textAlign: 'center', lineHeight: 34, marginBottom: 20, maxWidth: '90%', alignSelf: 'center' }}>Imagine if every important decision someone made could help another person make theirs.</Text></StaggerItem>
-      <StaggerItem index={2}><Text style={{ fontSize: 14, color: '#FFFFFFB3', textAlign: 'center', lineHeight: 22, maxWidth: '90%', alignSelf: 'center' }}>PathFinder is building a living repository of verified human journeys — to help users understand what others did, why, and what they learned. The more journeys the community contributes, the more valuable it becomes for everyone.</Text></StaggerItem>
+    <SectionReveal style={[s.section(L.background), { paddingVertical: 40,alignItems: 'stretch' }]}>
+      <StaggerItem index={0}><Text style={{ color: L.navy, fontSize:18, fontWeight:"500", alignSelf: "flex-start",marginBottom: 56 }}>OUR VISION</Text></StaggerItem>
+      <StaggerItem index={1}><Text style={{ fontSize: 24, fontWeight: '400', color: L.navy, textAlign: 'center', lineHeight: 34, marginBottom: 20, maxWidth: '90%', alignSelf: 'center' }}>Imagine if every important decision someone made could help another person make theirs.</Text></StaggerItem>
+      <StaggerItem index={2}><Text style={{ fontSize: 14, color: L.navySoft, textAlign: 'center', lineHeight: 22, maxWidth: '90%', alignSelf: 'center' }}>PathFinder is building a living repository of verified human journeys — to help users understand what others did, why, and what they learned. The more journeys the community contributes, the more valuable it becomes for everyone.</Text></StaggerItem>
     </SectionReveal>
   );
 }
@@ -423,14 +423,14 @@ export function FooterSection() {
     <SectionReveal style={{ paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center' }}>
       <StaggerItem index={0}>
         <Image
-          source={require('../../assets/logo-dark.png')}
+          source={require('../../assets/logo-light.png')}
           style={{ width: 52, height: 52, borderRadius: 10, marginBottom: 8, opacity: 0.9 }}
           resizeMode="contain"
         />
       </StaggerItem>
       <StaggerItem index={1}>
         <Image
-          source={require("../../assets/title-dark.png")}
+          source={require("../../assets/title.png")}
           style={{
             width: 220,
             height: 36, 
@@ -438,19 +438,19 @@ export function FooterSection() {
           }}
     resizeMode="contain"
   /></StaggerItem>
-      <StaggerItem index={2}><Text style={{ fontSize: 12, color: '#FFFFFF99', textAlign: 'center', marginBottom: 20 }}>Building collective wisdom through verified journeys.</Text></StaggerItem>
+      <StaggerItem index={2}><Text style={{ fontSize: 12, color: L.navySoft, textAlign: 'center', marginBottom: 20 }}>Building collective wisdom through verified journeys.</Text></StaggerItem>
 
       <StaggerItem index={3}>
         <View style={{ flexDirection: 'row', gap: 16, marginBottom: 24 }}>
           {['Privacy', 'Terms', 'GitHub', 'Contact'].map((link, i) => (
-            <Text key={i} style={{ fontSize: 11, fontWeight: '600', color: '#FFFFFF80', textTransform: 'uppercase', letterSpacing: 1 }}>
+            <Text key={i} style={{ fontSize: 11, fontWeight: '600', color: L.navySoft, textTransform: 'uppercase', letterSpacing: 1 }}>
               {link}
             </Text>
           ))}
         </View>
       </StaggerItem>
 
-      <StaggerItem index={4}><Text style={{ fontSize: 10, color: '#FFFFFF59', textAlign: 'center', marginTop: 8 }}>Powered by Expo, Neo4j, GraphRAG, Gemini, Groq and Sarvam AI.</Text></StaggerItem>
+      <StaggerItem index={4}><Text style={{ fontSize: 10, color: L.navySoft, textAlign: 'center', marginTop: 8 }}>Powered by Expo, Neo4j, GraphRAG, Gemini, Groq and Sarvam AI.</Text></StaggerItem>
     </SectionReveal>
   );
 }
