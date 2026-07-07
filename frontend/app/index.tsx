@@ -49,7 +49,7 @@ function LandingPageContent() {
     const vh = viewportHeight.value || 800;
     const bg = interpolateColor(
       scrollY.value,
-      [0, vh * 4.5, vh * 5.5, vh * 6.5, vh * 7.5],
+      [0, vh * 4.5, vh * 5.5, vh * 6.2, vh * 7.0],
       [L.background, L.background, L.tealTint, L.tealTint, L.navy]
     );
     return { backgroundColor: bg, flex: 1 };
@@ -95,10 +95,9 @@ function LandingPageContent() {
             viewportHeight.value = event.nativeEvent.layout.height;
           }}
         >
-          <HeroSection onPressGoogle={onPressGoogle} />
+          <HeroSection onPressGoogle={onPressGoogle}/>
           <SectionDivider />
           <ProblemSection />
-          <SectionDivider />
           <ComparisonSection />
           <SectionDivider />
           <JourneySequenceSection />
