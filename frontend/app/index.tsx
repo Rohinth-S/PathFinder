@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, View } from 'react-native';
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -18,6 +18,8 @@ import {
   ClosingVisionSection,
   FooterSection,
 } from '../components/landing/LandingSections';
+
+const SectionDivider = () => <View style={{ height: 1, backgroundColor: 'rgba(62, 107, 102, 0.15)', marginHorizontal: 24 }} />;
 
 export default function LandingPage() {
   return (
@@ -93,13 +95,20 @@ function LandingPageContent() {
             viewportHeight.value = event.nativeEvent.layout.height;
           }}
         >
-          <HeroSection onPressGoogle={onPressGoogle}/>
+          <HeroSection onPressGoogle={onPressGoogle} />
+          <SectionDivider />
           <ProblemSection />
+          <SectionDivider />
           <ComparisonSection />
+          <SectionDivider />
           <JourneySequenceSection />
+          <SectionDivider />
           <SampleQuestionsSection />
+          <SectionDivider />
           <HowItWorksSection />
+          <SectionDivider />
           <AccessibilitySection />
+          <SectionDivider />
           <ClosingVisionSection />
           <FooterSection />
         </Animated.ScrollView>

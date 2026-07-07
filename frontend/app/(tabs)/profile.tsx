@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView, TextInput, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '@clerk/clerk-expo';
+import { useAuth, useUser } from '@clerk/clerk-expo';
 import { syncUser, updateProfile, SyncedUser } from '../../api/auth.api';
 import { L } from '../../constants/colors';
 import {Feather} from '@expo/vector-icons';
@@ -9,20 +9,23 @@ import BottomSheet, { BottomSheetTextInput, BottomSheetScrollView } from '@gorho
 
 const LANGUAGES = [
   { label: 'English', code: 'en' },
-  { label: 'Spanish', code: 'es' },
-  { label: 'French', code: 'fr' },
   { label: 'Hindi', code: 'hi' },
-  { label: 'German', code: 'de' },
-  { label: 'Mandarin', code: 'zh' },
-  { label: 'Japanese', code: 'ja' },
-  { label: 'Korean', code: 'ko' },
-  { label: 'Italian', code: 'it' },
-  { label: 'Portuguese', code: 'pt' },
+  { label: 'Bengali', code: 'bn' },
+  { label: 'Telugu', code: 'te' },
+  { label: 'Marathi', code: 'mr' },
+  { label: 'Tamil', code: 'ta' },
+  { label: 'Urdu', code: 'ur' },
+  { label: 'Gujarati', code: 'gu' },
+  { label: 'Kannada', code: 'kn' },
+  { label: 'Odia', code: 'or' },
+  { label: 'Malayalam', code: 'ml' },
+  { label: 'Punjabi', code: 'pa' },
 ];
 
 export default function ProfilePage() {
   const router = useRouter();
   const { signOut, getToken } = useAuth();
+  const { user: clerkUser } = useUser();
 
   const [user, setUser] = useState<SyncedUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,6 +33,7 @@ export default function ProfilePage() {
 
   const [username, setUsername] = useState('');
   const [languageCode, setLanguageCode] = useState('en');
+  const [showSuccessTick, setShowSuccessTick] = useState<'username' | 'language' | null>(null);
   
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -67,8 +71,24 @@ export default function ProfilePage() {
       if (!token) throw new Error("Not authenticated");
       const updatedUser = await updateProfile(token, { username, preferredLanguage: code });
       setUser(updatedUser);
+      setShowSuccessTick('language');
+      setTimeout(() => setShowSuccessTick(null), 2000);
     } catch (error) {
       console.warn("Failed to update profile", error);
+    }
+  };
+
+  const handleSaveUsername = async () => {
+    if (username === user?.username) return;
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      const updatedUser = await updateProfile(token, { username, preferredLanguage: languageCode });
+      setUser(updatedUser);
+      setShowSuccessTick('username');
+      setTimeout(() => setShowSuccessTick(null), 2000);
+    } catch (error) {
+      console.warn("Failed to update username", error);
     }
   };
 
@@ -119,11 +139,16 @@ export default function ProfilePage() {
         <View style={{ alignItems: 'center', marginBottom: 32, marginTop: 40 }}>
           <View style={{
             width: 96, height: 96, borderRadius: 48,
-            backgroundColor: L.tealTint,
+            backgroundColor: clerkUser?.hasImage ? L.surface : '#9CA3AF',
             borderWidth: 2, borderColor: L.teal,
             alignItems: 'center', justifyContent: 'center',
-            marginBottom: 12,
+            marginBottom: 12, overflow: 'hidden'
           }}>
+            {clerkUser?.hasImage ? (
+              <Image source={{ uri: clerkUser.imageUrl }} style={{ width: 96, height: 96 }} />
+            ) : (
+              <Feather name="user" size={60} color="#475569" style={{ marginTop: 24 }} />
+            )}
           </View>
           <Text style={{ fontSize: 17, fontWeight: '600', color: L.navy }}>
             @{displayUsername}
@@ -136,13 +161,23 @@ export default function ProfilePage() {
         shadowColor: '#000',shadowOffset: {width: 0,height: 4},shadowOpacity: 0.08, shadowRadius: 12, 
         // Lift effect for Android
         elevation: 4,}}>
-          {/* Username (Not fully editable in this simple view as per spec "No Edit/Save buttons" but implies interaction if needed. We'll leave as display only or future tap-to-edit) */}
-            <Text style={{ fontSize: 12, fontWeight: '400', color: L.teal, marginBottom: 8 }}>USERNAME</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>{displayUsername}</Text>
-              {/* Idle pencil hint (teal at 40%) */}
+          {/* Username Field */}
+          <Text style={{ fontSize: 12, fontWeight: '400', color: L.teal, marginBottom: 8 }}>USERNAME</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: L.border, paddingBottom: 4 }}>
+            <TextInput
+              style={{ fontSize: 16, fontWeight: '500', color: L.navy, flex: 1, padding: 0 }}
+              value={username}
+              onChangeText={setUsername}
+              onBlur={handleSaveUsername}
+              placeholder="Set Username"
+              placeholderTextColor={L.navySoft}
+            />
+            {showSuccessTick === 'username' ? (
+              <Feather name="check" size={18} color={L.teal} />
+            ) : (
               <Feather name="edit-2" size={16} color={L.teal} />
-            </View>
+            )}
+          </View>
         </View>
 
           <View style={{backgroundColor: L.surface, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.2)', padding: 24, marginBottom: 16,
@@ -155,12 +190,16 @@ export default function ProfilePage() {
             <Text style={{ fontSize: 12, fontWeight: '400', color: L.teal, marginBottom: 8 }}>LANGUAGE</Text>
             <TouchableOpacity 
               onPress={() => bottomSheetRef.current?.expand()}
-              style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+              style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: L.border, paddingBottom: 4 }}
             >
-              <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>
+              <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy, flex: 1 }}>
                 {LANGUAGES.find(l => l.code === languageCode)?.label || languageCode}
               </Text>
-              <Feather name="edit-2" size={16} color={L.teal} />
+              {showSuccessTick === 'language' ? (
+                <Feather name="check" size={18} color={L.teal} />
+              ) : (
+                <Feather name="edit-2" size={16} color={L.teal} />
+              )}
             </TouchableOpacity>
           </View>
         </View>
