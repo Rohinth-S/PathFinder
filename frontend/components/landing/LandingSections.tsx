@@ -73,7 +73,7 @@ export function HeroSection({ onPressGoogle }: HeroProps) {
           style={{
             backgroundColor: L.surface, borderWidth: 1, borderColor: L.border,
             height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center',
-            shadowColor: '#152238', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 20,
+            boxShadow: '0px 6px 20px rgba(21, 34, 56, 0.06)'
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
@@ -248,7 +248,7 @@ export function JourneySequenceSection() {
               <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: i < TIMELINE.length - 1 ? 28 : 0, gap: 22 }}>
                 <View style={{ marginLeft: -24, alignItems: 'center', width: 12 }}>
                   {node.isFlag ? (
-                    <View style={{width: 30, height: 30, borderRadius: 15,backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginLeft: -10, marginTop: -7, shadowColor: '#152238',shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4}}>
+                    <View style={{width: 30, height: 30, borderRadius: 15,backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginLeft: -10, marginTop: -7, boxShadow: '0px 4px 10px rgba(21, 34, 56, 0.12)'}}>
                       <MaterialCommunityIcons name="flag-variant" size={16} color={L.terracotta} />
                     </View>
                   ) : (
@@ -407,9 +407,9 @@ export function AccessibilitySection() {
 export function ClosingVisionSection() {
   return (
     <SectionReveal style={[s.section(L.background), { paddingVertical: 40,alignItems: 'stretch' }]}>
-      <StaggerItem index={0}><Text style={{ color: L.navy, fontSize:18, fontWeight:"500", alignSelf: "flex-start",marginBottom: 56 }}>OUR VISION</Text></StaggerItem>
-      <StaggerItem index={1}><Text style={{ fontSize: 24, fontWeight: '400', color: L.navy, textAlign: 'center', lineHeight: 34, marginBottom: 20, maxWidth: '90%', alignSelf: 'center' }}>Imagine if every important decision someone made could help another person make theirs.</Text></StaggerItem>
-      <StaggerItem index={2}><Text style={{ fontSize: 14, color: L.navySoft, textAlign: 'center', lineHeight: 22, maxWidth: '90%', alignSelf: 'center' }}>PathFinder is building a living repository of verified human journeys — to help users understand what others did, why, and what they learned. The more journeys the community contributes, the more valuable it becomes for everyone.</Text></StaggerItem>
+      <StaggerItem index={0}><Text style={{ color: L.surface, fontSize:18, fontWeight:"500", alignSelf: "flex-start",marginBottom: 56 }}>OUR VISION</Text></StaggerItem>
+      <StaggerItem index={1}><Text style={{ fontSize: 24, fontWeight: '400', color: L.surface, textAlign: 'center', lineHeight: 34, marginBottom: 20, maxWidth: '90%', alignSelf: 'center' }}>Imagine if every important decision someone made could help another person make theirs.</Text></StaggerItem>
+      <StaggerItem index={2}><Text style={{ fontSize: 14, color: L.surface, textAlign: 'center', lineHeight: 22, maxWidth: '90%', alignSelf: 'center' }}>PathFinder is building a living repository of verified human journeys — to help users understand what others did, why, and what they learned. The more journeys the community contributes, the more valuable it becomes for everyone.</Text></StaggerItem>
     </SectionReveal>
   );
 }
@@ -423,14 +423,14 @@ export function FooterSection() {
     <SectionReveal style={{ paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center' }}>
       <StaggerItem index={0}>
         <Image
-          source={require('../../assets/logo-light.png')}
+          source={require('../../assets/logo-dark.png')}
           style={{ width: 52, height: 52, borderRadius: 10, marginBottom: 8, opacity: 0.9 }}
           resizeMode="contain"
         />
       </StaggerItem>
       <StaggerItem index={1}>
         <Image
-          source={require("../../assets/title.png")}
+          source={require("../../assets/title-dark.png")}
           style={{
             width: 220,
             height: 36, 
@@ -438,19 +438,19 @@ export function FooterSection() {
           }}
     resizeMode="contain"
   /></StaggerItem>
-      <StaggerItem index={2}><Text style={{ fontSize: 12, color: L.navySoft, textAlign: 'center', marginBottom: 20 }}>Building collective wisdom through verified journeys.</Text></StaggerItem>
+      <StaggerItem index={2}><Text style={{ fontSize: 12, color: L.surface, textAlign: 'center', marginBottom: 20 }}>Building collective wisdom through verified journeys.</Text></StaggerItem>
 
       <StaggerItem index={3}>
         <View style={{ flexDirection: 'row', gap: 16, marginBottom: 24 }}>
           {['Privacy', 'Terms', 'GitHub', 'Contact'].map((link, i) => (
-            <Text key={i} style={{ fontSize: 11, fontWeight: '600', color: L.navySoft, textTransform: 'uppercase', letterSpacing: 1 }}>
+            <Text key={i} style={{ fontSize: 11, fontWeight: '600', color: L.surface, textTransform: 'uppercase', letterSpacing: 1 }}>
               {link}
             </Text>
           ))}
         </View>
       </StaggerItem>
 
-      <StaggerItem index={4}><Text style={{ fontSize: 10, color: L.navySoft, textAlign: 'center', marginTop: 8 }}>Powered by Expo, Neo4j, GraphRAG, Gemini, Groq and Sarvam AI.</Text></StaggerItem>
+      <StaggerItem index={4}><Text style={{ fontSize: 10, color: L.surface, textAlign: 'center', marginTop: 8 }}>Powered by Expo, Neo4j, GraphRAG, Gemini, Groq and Sarvam AI.</Text></StaggerItem>
     </SectionReveal>
   );
 }
