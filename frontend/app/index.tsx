@@ -95,7 +95,7 @@ function LandingPageContent() {
             viewportHeight.value = event.nativeEvent.layout.height;
           }}
         >
-          <HeroSection onPressGoogle={onPressGoogle} onPressEmail={() => {}} />
+          <HeroSection onPressGoogle={onPressGoogle} />
           <SectionDivider />
           <ProblemSection />
           <SectionDivider />

@@ -10,6 +10,7 @@ export const BRAND_COLORS = {
   cream: '#FBFBF9',
   white: '#FFFFFF',
   lightGray: '#F1F5F9',
+  slateMuted: '#94A3B8',
   border: '#E2E8F0',
   // Dark theme
   dark: '#0F172A',

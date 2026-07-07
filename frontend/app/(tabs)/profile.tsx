@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { syncUser, updateProfile, SyncedUser } from '../../api/auth.api';
 import { L } from '../../constants/colors';
-import { Feather } from '@expo/vector-icons';
+import {Feather} from '@expo/vector-icons';
 import BottomSheet, { BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
 const LANGUAGES = [
@@ -156,37 +156,38 @@ export default function ProfilePage() {
         </View>
 
         {/* 3. Editable Fields */}
-        <View style={{
-          backgroundColor: L.surface, 
-          borderRadius: 16, 
-          borderWidth: 1, 
-          borderColor: 'rgba(62, 107, 102, 0.2)', // teal at 20%
-          padding: 24,
-          marginBottom: 32
-        }}>
+        <View style={{backgroundColor: L.surface, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.2)', padding: 24, marginBottom: 16,
+        // Lift effect for iOS
+        shadowColor: '#000',shadowOffset: {width: 0,height: 4},shadowOpacity: 0.08, shadowRadius: 12, 
+        // Lift effect for Android
+        elevation: 4,}}>
           {/* Username Field */}
-          <View style={{ marginBottom: 24 }}>
-            <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy, marginBottom: 8 }}>Username</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: L.border, paddingBottom: 4 }}>
-              <TextInput
-                style={{ fontSize: 16, fontWeight: '500', color: L.navy, flex: 1, padding: 0 }}
-                value={username}
-                onChangeText={setUsername}
-                onBlur={handleSaveUsername}
-                placeholder="Set Username"
-                placeholderTextColor={L.navySoft}
-              />
-              {showSuccessTick === 'username' ? (
-                <Feather name="check" size={18} color={L.teal} />
-              ) : (
-                <Feather name="edit-2" size={16} color="rgba(62, 107, 102, 0.4)" />
-              )}
-            </View>
+          <Text style={{ fontSize: 12, fontWeight: '400', color: L.teal, marginBottom: 8 }}>USERNAME</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: L.border, paddingBottom: 4 }}>
+            <TextInput
+              style={{ fontSize: 16, fontWeight: '500', color: L.navy, flex: 1, padding: 0 }}
+              value={username}
+              onChangeText={setUsername}
+              onBlur={handleSaveUsername}
+              placeholder="Set Username"
+              placeholderTextColor={L.navySoft}
+            />
+            {showSuccessTick === 'username' ? (
+              <Feather name="check" size={18} color={L.teal} />
+            ) : (
+              <Feather name="edit-2" size={16} color={L.teal} />
+            )}
           </View>
+        </View>
 
+          <View style={{backgroundColor: L.surface, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.2)', padding: 24, marginBottom: 16,
+          // Lift effect for iOS
+          shadowColor: '#000',shadowOffset: {width: 0,height: 4},shadowOpacity: 0.08, shadowRadius: 12, 
+          // Lift effect for Android
+          elevation: 4,}}>
           {/* Language Field */}
           <View>
-            <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy, marginBottom: 8 }}>Language</Text>
+            <Text style={{ fontSize: 12, fontWeight: '400', color: L.teal, marginBottom: 8 }}>LANGUAGE</Text>
             <TouchableOpacity 
               onPress={() => bottomSheetRef.current?.expand()}
               style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: L.border, paddingBottom: 4 }}
@@ -197,7 +198,7 @@ export default function ProfilePage() {
               {showSuccessTick === 'language' ? (
                 <Feather name="check" size={18} color={L.teal} />
               ) : (
-                <Feather name="edit-2" size={16} color="rgba(62, 107, 102, 0.4)" />
+                <Feather name="edit-2" size={16} color={L.teal} />
               )}
             </TouchableOpacity>
           </View>
@@ -213,7 +214,7 @@ export default function ProfilePage() {
               backgroundColor: L.teal,
             }}
           >
-            <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15 }}>View Full Journey</Text>
+            <Text style={{ color: '#FFFFFF', fontWeight: '400', fontSize: 16, letterSpacing:0.5 }}>View Full Journey</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -222,17 +223,17 @@ export default function ProfilePage() {
               paddingVertical: 16, borderRadius: 28,
               alignItems: 'center', justifyContent: 'center',
               backgroundColor: L.surface,
-              borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.3)'
+              borderWidth: 1.5, borderColor: 'rgba(62, 107, 102, 0.3)'
             }}
           >
-            <Text style={{ color: L.navy, fontWeight: '600', fontSize: 15 }}>Add Experience</Text>
+            <Text style={{ color: L.navy, fontWeight: '500', fontSize: 16, letterSpacing:0.5 }}>Add Experience</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handleSignOut}
             style={{ paddingVertical: 16, alignItems: 'center', marginTop: 8 }}
           >
-            <Text style={{ color: L.navySoft, fontWeight: '500', fontSize: 13 }}>Sign Out</Text>
+            <Text style={{ color: L.terracotta, fontWeight: '500', fontSize: 12, letterSpacing: 0.5 }}>SIGN OUT</Text>
           </TouchableOpacity>
         </View>
 
