@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView, TextInput, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '@clerk/clerk-expo';
+import { useAuth, useUser } from '@clerk/clerk-expo';
 import { syncUser, updateProfile, SyncedUser } from '../../api/auth.api';
 import { L } from '../../constants/colors';
 import { Feather } from '@expo/vector-icons';
@@ -25,6 +25,7 @@ const LANGUAGES = [
 export default function ProfilePage() {
   const router = useRouter();
   const { signOut, getToken } = useAuth();
+  const { user: clerkUser } = useUser();
 
   const [user, setUser] = useState<SyncedUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -138,12 +139,16 @@ export default function ProfilePage() {
         <View style={{ alignItems: 'center', marginBottom: 32, marginTop: 40 }}>
           <View style={{
             width: 96, height: 96, borderRadius: 48,
-            backgroundColor: L.tealTint,
+            backgroundColor: clerkUser?.hasImage ? L.surface : '#9CA3AF',
             borderWidth: 2, borderColor: L.teal,
             alignItems: 'center', justifyContent: 'center',
-            marginBottom: 12,
+            marginBottom: 12, overflow: 'hidden'
           }}>
-            <Feather name="user" size={40} color={L.navy} />
+            {clerkUser?.hasImage ? (
+              <Image source={{ uri: clerkUser.imageUrl }} style={{ width: 96, height: 96 }} />
+            ) : (
+              <Feather name="user" size={60} color="#475569" style={{ marginTop: 24 }} />
+            )}
           </View>
           <Text style={{ fontSize: 17, fontWeight: '600', color: L.navy }}>
             @{displayUsername}

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform
+  Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform, Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '@clerk/clerk-expo';
+import { useAuth, useUser } from '@clerk/clerk-expo';
 import { getUserJourney, UserJourneyResponse } from '../api/journey.api';
 import { L, getEmotionStyle } from '@/constants/colors';
 import { Feather } from '@expo/vector-icons';
@@ -142,6 +142,7 @@ function ExpandableCard({ title, subtitle, badgeText, badgeColor, children, isVe
 export default function FullJourneyPage() {
   const router = useRouter();
   const { getToken } = useAuth();
+  const { user: clerkUser } = useUser();
   
   const [journey, setJourney] = useState<UserJourneyResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -243,8 +244,12 @@ export default function FullJourneyPage() {
         
         {/* Summary Stat Block */}
         <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: L.tealTint, borderRadius: 16, padding: 20, marginBottom: 32 }}>
-          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: L.surface, alignItems: 'center', justifyContent: 'center', marginRight: 16, borderWidth: 2, borderColor: L.teal }}>
-             <Feather name="user" size={20} color={L.navy} />
+          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: clerkUser?.hasImage ? L.surface : '#9CA3AF', alignItems: 'center', justifyContent: 'center', marginRight: 16, borderWidth: 2, borderColor: L.teal, overflow: 'hidden' }}>
+             {clerkUser?.hasImage ? (
+               <Image source={{ uri: clerkUser.imageUrl }} style={{ width: 48, height: 48 }} />
+             ) : (
+               <Feather name="user" size={30} color="#475569" style={{ marginTop: 12 }} />
+             )}
           </View>
           <View>
             <Text style={{ fontSize: 16, fontWeight: '700', color: L.navy }}>@{journey.username}</Text>
