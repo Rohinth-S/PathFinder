@@ -56,6 +56,8 @@ function userParams(user: JourneyUser) {
     username: user.username,
     clerkId: nullIfUndefined(user.clerkId),
     preferredLanguage: nullIfUndefined(user.preferredLanguage),
+    summary: nullIfUndefined(user.summary),
+    expertiseAreas: user.expertiseAreas ?? [],
     reputationScore: user.reputationScore ?? 0,
     flagCount: user.flagCount ?? 0,
     isFlagged: user.isFlagged ?? false,
@@ -116,6 +118,8 @@ async function upsertUser(tx: Transaction, user: JourneyUser): Promise<void> {
       u.clerkId = $clerkId,
       u.email = $email,
       u.preferredLanguage = $preferredLanguage,
+      u.summary = $summary,
+      u.expertiseAreas = $expertiseAreas,
       u.reputationScore = $reputationScore,
       u.flagCount = $flagCount,
       u.isFlagged = $isFlagged

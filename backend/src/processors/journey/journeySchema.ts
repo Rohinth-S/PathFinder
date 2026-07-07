@@ -1,3 +1,4 @@
+import e from "express";
 import { z } from "zod";
 
 const monthYearDateSchema = z
@@ -70,6 +71,8 @@ export const journeyUserSchema = z
     username: z.string().trim().min(1),
     clerkId: z.string().trim().min(1).nullable().optional(),
     preferredLanguage: z.string().trim().min(1).nullable().optional(),
+    summary: z.string().trim().nullable().optional(),
+    expertiseAreas: z.array(z.string().trim().min(1)).optional(),
     reputationScore: z.number().int().min(0).optional(),
     flagCount: z.number().int().min(0).optional(),
     isFlagged: z.boolean().optional(),

@@ -4,6 +4,8 @@ export interface SyncedUser {
     clerkId: string;
     email: string;
     username: string | null;
+    summary: string;
+    expertiseAreas: string[];
     preferredLanguage: string | null;
     reputationScore: number;
     flagCount: number;
@@ -28,6 +30,8 @@ export async function syncUser(
         ON CREATE SET
           u.createdAt = datetime(),
           u.username = null,
+          u.summary = "",
+          u.expertiseAreas = [],
           u.preferredLanguage = null,
           u.reputationScore = 0,
           u.flagCount = 0,
@@ -41,6 +45,8 @@ export async function syncUser(
           u.clerkId AS clerkId,
           u.email AS email,
           u.username AS username,
+          u.summary AS summary,
+          u.expertiseAreas AS expertiseAreas,
           u.preferredLanguage AS preferredLanguage,
           u.reputationScore AS reputationScore,
           u.flagCount AS flagCount,
@@ -63,6 +69,8 @@ export async function syncUser(
             clerkId: record.get("clerkId"),
             email: record.get("email"),
             username: record.get("username"),
+            summary: record.get("summary"),
+            expertiseAreas: record.get("expertiseAreas"),
             preferredLanguage: record.get("preferredLanguage"),
             reputationScore: record.get("reputationScore"),
             flagCount: record.get("flagCount"),

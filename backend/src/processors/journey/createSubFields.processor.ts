@@ -2,6 +2,7 @@ import { closeSession, getSession } from "../../services/neo4j.service.js";
 import type { JourneyExperience,JourneyTransition, } from "../../types/journey/Journey.types.js";
 import {upsertExperience,connectExperienceGoals,connectExperienceSkills, upsertExperienceProofs, upsertTransition,} from "./createGraph.processor.js";
 
+
 export async function createExperiences(
   username: string,
   experiences: JourneyExperience[]

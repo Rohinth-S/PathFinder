@@ -225,3 +225,31 @@ export async function getUserJourney(
     await closeSession(session);
   }
 }
+
+export async function updateUserSummary(
+  clerkId: string,
+  summary: string,
+  expertiseAreas: string[]
+): Promise<void> {
+  const session = getSession();
+
+  try {
+    await session.run(
+      `
+      MATCH (u:User {clerkId: $clerkId})
+
+      SET
+        u.summary = $summary,
+        u.expertiseAreas = $expertiseAreas,
+        u.updatedAt = datetime()
+      `,
+      {
+        clerkId,
+        summary,
+        expertiseAreas,
+      }
+    );
+  } finally {
+    await closeSession(session);
+  }
+}

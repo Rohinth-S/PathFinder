@@ -6,7 +6,9 @@
     "preferredLanguage": "en",
     "reputationScore": 45,
     "flagCount": 0,
-    "isFlagged": false
+    "isFlagged": false,
+    "summary": "An elite software engineer who validated a B2B pain point, scaled a bootstrapped SaaS to $22k/month, and achieved absolute founder independence.",
+    "expertiseAreas": ["B2B SaaS Strategy & Optimization", "Enterprise System Architecture & Engineering", "Infrastructure Telemetry & Cost Management", "Product Discovery & Client Management", "Operational Risk & Scale Strategy"]
   },
   "goals": [
     {
