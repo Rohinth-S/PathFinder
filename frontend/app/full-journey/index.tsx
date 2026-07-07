@@ -29,11 +29,6 @@ const createCytoscapeHtml = (elementsJson: string) => `
     <style>
         body, html { width: 100%; height: 100%; margin: 0; padding: 0; background-color: ${L.background}; font-family: sans-serif; }
         #cy { width: 100%; height: 100%; }
-        .close-btn {
-            position: absolute; top: 16px; right: 16px; z-index: 10;
-            background: white; border-radius: 20px; padding: 8px 16px;
-            font-weight: bold; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
     </style>
 </head>
 <body>
@@ -49,33 +44,36 @@ const createCytoscapeHtml = (elementsJson: string) => `
                         style: {
                             'label': 'data(label)',
                             'text-valign': 'center',
-                            'color': '#fff',
-                            'font-size': '10px',
-                            'font-weight': 'bold',
+                            'color': 'data(textColor)',
+                            'font-size': '12px',
+                            'font-weight': '600',
                             'background-color': 'data(color)',
                             'shape': 'data(shape)',
+                            'border-width': 'data(borderWidth)',
+                            'border-color': 'data(borderColor)',
                             'width': 'label',
                             'height': 'label',
-                            'padding': '10px',
+                            'padding': '14px',
                             'text-wrap': 'wrap',
-                            'text-max-width': '80px'
+                            'text-max-width': '100px'
                         }
                     },
                     {
                         selector: 'edge',
                         style: {
-                            'width': 2,
-                            'line-color': '#ccc',
-                            'target-arrow-color': '#ccc',
+                            'width': 1.5,
+                            'line-color': '#A3B8B5',
+                            'target-arrow-color': '#A3B8B5',
                             'target-arrow-shape': 'triangle',
                             'curve-style': 'bezier',
                             'label': 'data(label)',
-                            'font-size': '8px',
+                            'font-size': '9px',
+                            'font-weight': '500',
                             'text-rotation': 'autorotate',
                             'text-background-opacity': 1,
                             'text-background-color': '${L.background}',
-                            'text-background-padding': '2px',
-                            'color': '#666'
+                            'text-background-padding': '3px',
+                            'color': '${L.navy}'
                         }
                     }
                 ],
@@ -83,9 +81,11 @@ const createCytoscapeHtml = (elementsJson: string) => `
                   name: 'cose',
                   animate: false,      
                   fit: true,           
-                  padding: 15,         
-                  componentSpacing: 35,
-                  nodeRepulsion: 4500  
+                  padding: 40,         
+                  componentSpacing: 80,
+                  nodeRepulsion: 12000,
+                  idealEdgeLength: 100,
+                  edgeElasticity: 80
                 }
             });
         });
@@ -130,17 +130,17 @@ export default function FullJourneyPage() {
     if (!journey) return "[]";
     const elements: any[] = [];
     // User Node
-    elements.push({ data: { id: 'user', label: '@' + journey.username, color: '#3182ce', shape: 'ellipse' } });
+    elements.push({ data: { id: 'user', label: '@' + journey.username, color: L.navy, shape: 'ellipse', textColor: '#fff', borderWidth: 0, borderColor: '#000' } });
 
     // Goals
     journey.goals.forEach(g => {
-      elements.push({ data: { id: 'g_' + g.id, label: g.title, color: '#dd6b20', shape: 'round-rectangle' } });
+      elements.push({ data: { id: 'g_' + g.id, label: g.title, color: L.terracotta, shape: 'round-rectangle', textColor: '#fff', borderWidth: 0, borderColor: '#000' } });
       elements.push({ data: { id: 'e_ug_' + g.id, source: 'user', target: 'g_' + g.id, label: 'HAS_GOAL' } });
     });
 
     // Experiences
     journey.experiences.forEach(exp => {
-      elements.push({ data: { id: 'x_' + exp.id, label: exp.title, color: '#319795', shape: 'round-rectangle' } });
+      elements.push({ data: { id: 'x_' + exp.id, label: exp.title, color: L.teal, shape: 'round-rectangle', textColor: '#fff', borderWidth: 0, borderColor: '#000' } });
       elements.push({ data: { id: 'e_ux_' + exp.id, source: 'user', target: 'x_' + exp.id, label: 'HAS_EXPERIENCE' } });
 
       exp.goalIds?.forEach(gid => {
@@ -149,7 +149,7 @@ export default function FullJourneyPage() {
 
       exp.skills?.forEach((s, idx) => {
         const sId = 's_' + exp.id + '_' + idx;
-        elements.push({ data: { id: sId, label: s.name, color: '#38a169', shape: 'ellipse' } });
+        elements.push({ data: { id: sId, label: s.name, color: L.surface, shape: 'round-rectangle', textColor: L.navy, borderWidth: 1, borderColor: L.teal } });
         elements.push({ data: { id: 'e_xs_' + sId, source: 'x_' + exp.id, target: sId, label: 'BUILT_SKILL' } });
       });
     });
