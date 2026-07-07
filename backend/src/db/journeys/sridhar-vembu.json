@@ -6,7 +6,9 @@
     "preferredLanguage": "en",
     "reputationScore": 95,
     "flagCount": 0,
-    "isFlagged": false
+    "isFlagged": false,
+    "summary":"A Princeton PhD who bootstrapped Zoho, launched a degree-free academy, decentralized tech to rural villages, and funded domestic semiconductor manufacturing.",
+    "expertiseAreas":["First-Principles Systems Engineering","Multi-Tenant SaaS & Distributed Architecture","Distributed Support & Vocational Education Logistics","Sovereign Deep-Tech & Hardware Asset Capitalization","IoT Infrastructure & Industrial Tooling Engineering"]
   },
   "goals": [
     {

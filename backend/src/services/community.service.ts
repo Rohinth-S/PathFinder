@@ -1,45 +1,46 @@
+import type { JourneyTransition } from "../processors/journey/journeySchema.js";
+import type { JourneyGoal } from "../types/journey/Journey.types.js";
 import { getSession, closeSession } from "./neo4j.service.js";
+import type { UserJourney } from "./user.service.js";
 
 const TOPIC_SCORE = 10;
 const SUBTOPIC_SCORE = 20;
 const VERIFIED_SCORE = 5;
-const REPUTATION_SCORE = 3;
-const HIGH_REPUTATION_THRESHOLD = 100;
 
 export interface SearchCommunityUsersInput {
-    topic: string | undefined;
-    subtopic: string | undefined;
-    page: number;
-    limit: number;
+  topic: string | undefined;
+  subtopic: string | undefined;
+  page: number;
+  limit: number;
 }
 
 export async function getCommunityTopics(): Promise<string[]> {
-    const session = getSession();
+  const session = getSession();
 
-    try {
-        const result = await session.run(
-            `
+  try {
+    const result = await session.run(
+      `
       MATCH (g:Goal)
       UNWIND g.topics AS topic
       RETURN DISTINCT topic
       ORDER BY topic
       `
-        );
+    );
 
-        return result.records.map((record) => record.get("topic"));
-    } finally {
-        await closeSession(session);
-    }
+    return result.records.map((record) => record.get("topic"));
+  } finally {
+    await closeSession(session);
+  }
 }
 
 export async function getCommunitySubtopics(
-    topic: string
+  topic: string
 ): Promise<string[]> {
-    const session = getSession();
+  const session = getSession();
 
-    try {
-        const result = await session.run(
-            `
+  try {
+    const result = await session.run(
+      `
       MATCH (g:Goal)
       WHERE $topic IN g.topics
 
@@ -48,15 +49,15 @@ export async function getCommunitySubtopics(
       RETURN DISTINCT subtopic
       ORDER BY subtopic
       `,
-            {
-                topic,
-            }
-        );
+      {
+        topic,
+      }
+    );
 
-        return result.records.map((record) => record.get("subtopic"));
-    } finally {
-        await closeSession(session);
-    }
+    return result.records.map((record) => record.get("subtopic"));
+  } finally {
+    await closeSession(session);
+  }
 }
 
 export async function searchCommunityUsers(
@@ -71,70 +72,93 @@ export async function searchCommunityUsers(
       `
       MATCH (u:User)
 
-      // Fetch all goals for the user
+      // Fetch goals and matching goals
       CALL {
         WITH u
+
         OPTIONAL MATCH (u)-[:HAS_GOAL]->(g:Goal)
-        RETURN collect(g) AS goals
+
+        WITH collect(g) AS goals
+
+        RETURN
+          [
+            goal IN goals
+            WHERE
+              ($topic IS NULL OR $topic IN goal.topics)
+              AND
+              ($subtopic IS NULL OR $subtopic IN goal.subtopics)
+          ] AS matchingGoals
       }
 
-      // Count experiences and check verification
+      // Check if user has any verified experience
       CALL {
         WITH u
+
         OPTIONAL MATCH (u)-[:HAS_EXPERIENCE]->(e:Experience)
 
         RETURN
-          count(e) AS experienceCount,
           any(exp IN collect(e) WHERE exp.isVerified) AS hasVerifiedExperience
       }
 
-      // Latest experience
+      // Compute top 3 journey highlights
       CALL {
         WITH u
-        OPTIONAL MATCH (u)-[r:HAS_EXPERIENCE]->(latest:Experience)
 
-        WITH latest, r
-        ORDER BY r.order DESC
-        LIMIT 1
+        OPTIONAL MATCH (u)-[:HAS_EXPERIENCE]->(e:Experience)
+        OPTIONAL MATCH (e)-[:CONTRIBUTED_TO]->(g:Goal)
 
-        RETURN latest
+        WITH
+          e,
+          count(g) AS goalCount
+
+        WITH
+          e,
+          (
+            CASE WHEN e.isVerified THEN 5 ELSE 0 END +
+            CASE
+              WHEN e.achievements IS NOT NULL
+                AND size(e.achievements) > 0
+              THEN 4
+              ELSE 0
+            END +
+            CASE WHEN e.outcome IS NOT NULL THEN 3 ELSE 0 END +
+            CASE WHEN e.organization IS NOT NULL THEN 2 ELSE 0 END +
+            CASE WHEN goalCount > 1 THEN 2 ELSE 0 END +
+            CASE WHEN e.challengeFaced IS NOT NULL THEN 1 ELSE 0 END
+          ) AS highlightScore
+
+        ORDER BY
+          highlightScore DESC,
+          e.startDate DESC
+        
+        WITH
+          collect({
+          title: e.title,
+          score: highlightScore
+        }) AS highlights
+
+        RETURN
+          [h IN highlights[..3] | h.title] AS journeyHighlights,
+          reduce(total = 0, h IN highlights | total + h.score) AS journeyScore
       }
 
+      WHERE size(matchingGoals) > 0
+
       WITH
         u,
-        goals,
-        experienceCount,
+        matchingGoals,
         hasVerifiedExperience,
-        latest
-
-      WHERE
-        (
-          $topic IS NULL OR
-          ANY(goal IN goals WHERE $topic IN goal.topics)
-        )
-      AND
-        (
-          $subtopic IS NULL OR
-          ANY(goal IN goals WHERE $subtopic IN goal.subtopics)
-        )
-
-      WITH
-        u,
-        goals,
-        experienceCount,
-        latest,
-
+        journeyHighlights,
+        journeyScore
         (
           CASE
             WHEN $topic IS NOT NULL
-              AND ANY(goal IN goals WHERE $topic IN goal.topics)
             THEN $topicScore
             ELSE 0
           END +
 
           CASE
             WHEN $subtopic IS NOT NULL
-              AND ANY(goal IN goals WHERE $subtopic IN goal.subtopics)
             THEN $subtopicScore
             ELSE 0
           END +
@@ -145,28 +169,17 @@ export async function searchCommunityUsers(
             ELSE 0
           END +
 
-          CASE
-            WHEN u.reputationScore >= $highReputationThreshold
-            THEN $reputationScore
-            ELSE 0
-          END
+          (journeyScore * 0.3)
         ) AS score
 
       RETURN
         u.username AS username,
+        u.summary AS summary,
+        u.expertiseAreas AS expertiseAreas,
         u.reputationScore AS reputationScore,
-
-        [goal IN goals | goal.topics] AS topics,
-        [goal IN goals | goal.subtopics] AS subtopics,
-
-        experienceCount,
-
-        latest {
-          .title,
-          .timelineSummary,
-          .organization,
-          .isVerified
-        } AS latestExperience
+        size(matchingGoals) AS matchingGoalCount,
+        [goal IN matchingGoals[..3] | goal.title] AS matchingGoalTitles,
+        journeyHighlights
 
       ORDER BY
         score DESC,
@@ -179,32 +192,22 @@ export async function searchCommunityUsers(
       {
         topic: input.topic ?? null,
         subtopic: input.subtopic ?? null,
-
         skip,
         limit: input.limit,
-
         topicScore: TOPIC_SCORE,
         subtopicScore: SUBTOPIC_SCORE,
-        verifiedScore: VERIFIED_SCORE,
-        reputationScore: REPUTATION_SCORE,
-        highReputationThreshold: HIGH_REPUTATION_THRESHOLD,
+        verifiedScore: VERIFIED_SCORE
       }
     );
 
     return result.records.map((record) => ({
       username: record.get("username"),
-
+      summary: record.get("summary"),
+      expertiseAreas: record.get("expertiseAreas"),
       reputationScore: record.get("reputationScore"),
-
-      topics: [...new Set(record.get("topics").flat())],
-
-      subtopics: [...new Set(record.get("subtopics").flat())],
-
-      experienceCount: Number(
-        record.get("experienceCount")
-      ),
-
-      latestExperience: record.get("latestExperience"),
+      matchingGoalCount: Number(record.get("matchingGoalCount")),
+      matchingGoalTitles: record.get("matchingGoalTitles"),
+      journeyHighlights: record.get("journeyHighlights"),
     }));
   } finally {
     await closeSession(session);
@@ -217,125 +220,145 @@ function neo4jDateToString(date: any): string | null {
 
 export async function getCommunityJourney(
   username: string
-) {
+): Promise<UserJourney> {
   const session = getSession();
 
   try {
-    const result = await session.run(
+    // User
+    const userResult = await session.run(
       `
       MATCH (u:User {username: $username})
-
-      OPTIONAL MATCH (u)-[:HAS_GOAL]->(g:Goal)
-
-      OPTIONAL MATCH (u)-[:HAS_EXPERIENCE]->(e:Experience)
-
-      OPTIONAL MATCH (e)-[:BUILT_SKILL]->(s:Skill)
-
-      OPTIONAL MATCH (e)-[:CONTRIBUTED_TO]->(goal:Goal)
-
-      OPTIONAL MATCH (e)-[t:TRANSITION]->(next:Experience)
-
-      WITH
-        u,
-        collect(DISTINCT g) AS goals,
-        e,
-        collect(DISTINCT s) AS skills,
-        collect(DISTINCT {
-          id: goal.id,
-          title: goal.title
-        }) AS experienceGoals,
-        t,
-        next
-
-      WITH
-        u,
-        goals,
-        collect({
-          experience: e,
-          skills: skills,
-          goals: experienceGoals,
-          transition:
-            CASE
-              WHEN t IS NULL THEN null
-              ELSE {
-                toExperienceId: next.id,
-                decisionLabel: t.decisionLabel
-              }
-            END
-        }) AS experiences
-
-      RETURN
-        u,
-        goals,
-        experiences
+      RETURN u.username AS username
       `,
-      {
-        username,
-      }
+      { username }
     );
 
-    if (result.records.length === 0) {
-      throw new Error("Journey not found");
+    if (userResult.records.length === 0) {
+      throw new Error("User not found.");
     }
 
-    const record = result.records[0];
+    const goalsResult = await session.run(
+      `
+      MATCH (u:User {username: $username})-[:HAS_GOAL]->(g:Goal)
+      RETURN g
+      `,
+      { username }
+    );
 
-    if (!record) {
-      throw new Error("Journey not found");
-    }
+    const goals = goalsResult.records.map((record) => {
+      const goal = record.get("g");
 
-    return {
-      user: {
-        username: record.get("u").properties.username,
-        reputationScore:
-          record.get("u").properties.reputationScore,
-      },
-
-      goals: record.get("goals").map((goal: any) => ({
+      return {
         id: goal.properties.id,
         title: goal.properties.title,
         description: goal.properties.description,
         status: goal.properties.status,
         topics: goal.properties.topics,
         subtopics: goal.properties.subtopics,
-        startDate: neo4jDateToString(goal.properties.startDate),
-        endDate: neo4jDateToString(goal.properties.endDate),
-      })),
+        startDate: goal.properties.startDate.toString(),
+        endDate: goal.properties.endDate
+          ? goal.properties.endDate.toString()
+          : null,
+      };
+    }) satisfies JourneyGoal[];
 
-      experiences: record
-        .get("experiences")
-        .filter((item: any) => item.experience)
-        .map((item: any) => {
-          const e = item.experience.properties;
+    const experiencesResult = await session.run(
+      `
+      MATCH (u:User {username: $username})-[:HAS_EXPERIENCE]->(e:Experience)
+      OPTIONAL MATCH (e)-[:BUILT_SKILL]->(s:Skill)
+      RETURN e, collect(DISTINCT s) AS skills
+      `,
+      { username }
+    );
 
-          return {
-            id: e.id,
-            title: e.title,
-            timelineSummary: e.timelineSummary,
+    const experiences = experiencesResult.records.map((record) => {
+      const experience = record.get("e").properties;
+      const skillNodes = record.get("skills") as any[];
 
-            startDate: neo4jDateToString(e.startDate),
-            endDate: neo4jDateToString(e.endDate),
+      return {
+        id: experience.id,
+        title: experience.title,
+        startDate: experience.startDate.toString(),
+        endDate: experience.endDate
+          ? experience.endDate.toString()
+          : null,
+        context: experience.context,
+        challengeFaced: experience.challengeFaced ?? null,
+        outcome: experience.outcome ?? null,
+        organization: experience.organization ?? null,
+        applicationStatus: experience.applicationStatus ?? null,
+        achievements: experience.achievements ?? null,
+        isVerified: experience.isVerified ?? false,
+        timelineSummary: experience.timelineSummary,
+        goalIds: [] as string[],
+        skills: skillNodes
+          .filter(Boolean)
+          .map((skill) => ({
+            name: skill.properties.name,
+            type: skill.properties.type,
+          })),
+      };
+    });
 
-            context: e.context,
-            challengeFaced: e.challengeFaced,
-            outcome: e.outcome,
+    const goalRelationshipResult = await session.run(
+      `
+      MATCH (u:User {username: $username})-[:HAS_EXPERIENCE]->(e:Experience)-[:CONTRIBUTED_TO]->(g:Goal)
+      RETURN e.id AS experienceId, collect(g.id) AS goalIds
+      `,
+      { username }
+    );
 
-            organization: e.organization,
-            applicationStatus: e.applicationStatus,
+    const goalMap = new Map<string, string[]>();
 
-            achievements: e.achievements,
-            isVerified: e.isVerified,
+    for (const record of goalRelationshipResult.records) {
+      goalMap.set(
+        record.get("experienceId"),
+        record.get("goalIds")
+      );
+    }
 
-            skills: item.skills.map((skill: any) => ({
-              name: skill.properties.name,
-              type: skill.properties.type,
-            })),
+    experiences.forEach((experience) => {
+      experience.goalIds =
+        goalMap.get(experience.id) ?? [];
+    });
 
-            goals: item.goals,
+    const transitionsResult = await session.run(
+      `
+      MATCH (u:User {username: $username})-[:HAS_EXPERIENCE]->(from:Experience)-[t:TRANSITION]->(to:Experience)
 
-            transition: item.transition,
-          };
-        }),
+      RETURN
+        from.id AS fromExperienceId,
+        to.id AS toExperienceId,
+        t.decisionLabel AS decisionLabel
+      `,
+      { username }
+    );
+
+    const transitions = transitionsResult.records.map(
+      (record) => ({
+        fromExperienceId:
+          record.get("fromExperienceId"),
+        toExperienceId:
+          record.get("toExperienceId"),
+        decisionLabel:
+          record.get("decisionLabel"),
+      })
+    ) satisfies JourneyTransition[];
+
+    return {
+      username,
+
+      statistics: {
+        goals: goals.length,
+        experiences: experiences.length,
+        transitions: transitions.length,
+      },
+
+      goals,
+
+      experiences,
+
+      transitions,
     };
   } finally {
     await closeSession(session);

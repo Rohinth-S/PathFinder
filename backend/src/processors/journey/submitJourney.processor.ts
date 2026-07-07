@@ -5,10 +5,13 @@ import { generateExperienceEmbedding } from "./generateEmbeddings.processor.js";
 import { getUsernameByUserId } from "../../services/user.service.js";
 import { inferTransitionCandidates } from "./inferTransitionCandidates.processor.js";
 import { geminiProvider } from "../../ai/gemini.provider.js";
-import {TRANSITION_INFERENCE_SYSTEM_PROMPT, buildTransitionInferencePrompt,
+import {
+    TRANSITION_INFERENCE_SYSTEM_PROMPT, buildTransitionInferencePrompt,
 } from "../../prompts/onboarding/transitionInference.prompt.js";
 import { transitionInferenceSchema } from "./transitionInference.schema.js";
-import {getGoalsByIds} from "../../services/goal.service.js";
+import { getGoalsByIds } from "../../services/goal.service.js";
+import { generateUserSummary } from "./generateUserSummary.processor.js";
+import { updateUserSummary } from "../../services/user.service.js";
 
 export interface SubmitJourneyResponse {
     goals: JourneyGoal[];
@@ -43,7 +46,7 @@ async function inferTransition(
 export async function submitJourney(
     userId: string,
     input: SubmitJourney
-) : Promise<SubmitJourneyResponse> {
+): Promise<SubmitJourneyResponse> {
     const validation = submitJourneySchema.safeParse(input);
     if (!validation.success) {
         throw new Error(
@@ -135,6 +138,8 @@ export async function submitJourney(
         }
     );
     await createTransitions(validatedTransitions);
+    const { summary, expertiseAreas } = await generateUserSummary(userId);
+    await updateUserSummary(userId, summary, expertiseAreas);
     const goalIds = [...new Set(experiences.flatMap((experience) => experience.goalIds))];
     const goals = await getGoalsByIds(goalIds);
     return {

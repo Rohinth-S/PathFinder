@@ -45,6 +45,8 @@ export interface JourneyUser {
   flagCount?: number;
   isFlagged?: boolean;
   email?: string | null;
+  summary:string,
+  expertiseAreas: string[];
 }
 
 export interface JourneyGoal {
