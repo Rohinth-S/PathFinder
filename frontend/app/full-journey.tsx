@@ -364,11 +364,19 @@ export default function FullJourneyPage() {
               <Feather name="x" size={20} color={L.navy} />
             </TouchableOpacity>
           </View>
-          <WebView
-            originWhitelist={['*']}
-            source={{ html: createCytoscapeHtml(prepareGraphElements()) }}
-            style={{ flex: 1 }}
-          />
+          {Platform.OS === 'web' ? (
+            <iframe 
+              // @ts-ignore
+              srcDoc={createCytoscapeHtml(prepareGraphElements())} 
+              style={{ flex: 1, width: '100%', height: '100%', border: 'none' }} 
+            />
+          ) : (
+            <WebView
+              originWhitelist={['*']}
+              source={{ html: createCytoscapeHtml(prepareGraphElements()) }}
+              style={{ flex: 1 }}
+            />
+          )}
         </View>
       </Modal>
 
