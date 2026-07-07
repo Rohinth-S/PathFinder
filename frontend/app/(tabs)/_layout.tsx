@@ -9,25 +9,25 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: BRAND_COLORS.teal,
-        tabBarInactiveTintColor: BRAND_COLORS.slate,
+        tabBarInactiveTintColor: BRAND_COLORS.slateMuted,
         tabBarLabelStyle: {
-          fontWeight: '600',
+          fontWeight: '300',
           fontSize: 10,
         },
         tabBarStyle: {
           backgroundColor: BRAND_COLORS.cream,
           borderTopWidth: 1,
           borderTopColor: BRAND_COLORS.border,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: 76,
+          paddingBottom: 10,
+          paddingTop: 12,
         },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'HOME',
           tabBarIcon: ({ color, focused }) => (
             <View className="items-center">
               {focused && <View className="w-1 h-1 bg-brand-teal rounded-full absolute -top-2" />}
@@ -39,7 +39,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="history"
         options={{
-          title: 'History',
+          title: 'HISTORY',
           tabBarIcon: ({ color, focused }) => (
             <View className="items-center">
               {focused && <View className="w-1 h-1 bg-brand-teal rounded-full absolute -top-2" />}
@@ -51,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="community"
         options={{
-          title: 'Community',
+          title: 'COMMUNITY',
           tabBarIcon: ({ color, focused }) => (
             <View className="items-center">
               {focused && <View className="w-1 h-1 bg-brand-teal rounded-full absolute -top-2" />}
@@ -63,7 +63,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: 'PROFILE',
           tabBarIcon: ({ color, focused }) => (
             <View className="items-center">
               {focused && <View className="w-1 h-1 bg-brand-teal rounded-full absolute -top-2" />}

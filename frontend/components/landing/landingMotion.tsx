@@ -335,7 +335,3 @@ export function RippleMicBadge({ label }: RippleMicBadgeProps) {
   );
 }
 
-type CometAnimationProps = {
-  color?: string;
-  trailColor?: string;
-};
