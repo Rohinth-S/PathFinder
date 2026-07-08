@@ -13,7 +13,7 @@ import { MotionButton, ProblemDividerDot, RippleMicBadge, SectionReveal, Stagger
 import { L } from '../../constants/colors';
 
 // ═══════════════════════════════════════════════════════
-//  Shared style helpers (DESIGN.md typography scale)
+//  Shared style helpers 
 // ═══════════════════════════════════════════════════════
 
 const s = {
@@ -516,7 +516,7 @@ export function AccessibilitySection() {
 
 export function ClosingVisionSection() {
   return (
-    <SectionReveal style={{ paddingVertical: 80, paddingHorizontal: 24, alignItems: 'stretch' }}>
+    <SectionReveal style={{ backgroundColor: L.navy, paddingVertical: 80, paddingHorizontal: 24, alignItems: 'stretch' }}>
       <StaggerItem index={0}>
         <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, fontWeight: '600', letterSpacing: 2, textTransform: 'uppercase', alignSelf: 'flex-start', marginBottom: 56, fontFamily: 'Manrope_600SemiBold' }}>OUR VISION</Text>
       </StaggerItem>
@@ -557,7 +557,7 @@ export function ClosingVisionSection() {
 
 export function FooterSection() {
   return (
-    <SectionReveal style={{ paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center' }}>
+    <SectionReveal style={{ backgroundColor: L.navy, paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center' }}>
       {/* Small logo mark */}
       <StaggerItem index={0}>
         <Image

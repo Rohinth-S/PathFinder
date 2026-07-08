@@ -127,14 +127,11 @@ function LandingPageContent() {
           {/* 9. Accessibility / Voice & Language */}
           <AccessibilitySection />
 
-          {/* 10 & 11 wrapped in Navy background */}
-          <View style={{ backgroundColor: L.navy }}>
-            {/* 10. Closing Vision — navy bg */}
-            <ClosingVisionSection />
+          {/* 10. Closing Vision — navy bg */}
+          <ClosingVisionSection />
 
-            {/* 11. Footer — navy bg continuous */}
-            <FooterSection />
-          </View>
+          {/* 11. Footer — navy bg continuous */}
+          <FooterSection />
         </Animated.ScrollView>
       </SafeAreaView>
     </Animated.View>
