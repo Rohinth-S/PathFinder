@@ -14,12 +14,12 @@ import {
   JourneySequenceSection,
   SampleQuestionsSection,
   HowItWorksSection,
+  VerificationSection,
+  CommunitySection,
   AccessibilitySection,
   ClosingVisionSection,
   FooterSection,
 } from '../components/landing/LandingSections';
-
-const SectionDivider = () => <View style={{ height: 1, backgroundColor: 'rgba(62, 107, 102, 0.15)', marginHorizontal: 24 }} />;
 
 export default function LandingPage() {
   return (
@@ -45,12 +45,17 @@ function LandingPageContent() {
     scrollY.value = nextY;
   });
 
+  // Background color transitions per DESIGN.md:
+  // Sections 1-5: background (#FAF9F6)
+  // Section 6 (How It Works): tealTint (#E7EFEE)
+  // Sections 7-9: background → tealTint
+  // Sections 10-11: navy (#152238) — dark invert
   const animatedBgStyle = useAnimatedStyle(() => {
     const vh = viewportHeight.value || 800;
     const bg = interpolateColor(
       scrollY.value,
-      [0, vh * 4.5, vh * 5.5, vh * 6.2, vh * 7.0],
-      [L.background, L.background, L.tealTint, L.tealTint, L.navy]
+      [0, vh * 3.8, vh * 4.2, vh * 5.5, vh * 6.2, vh * 7.2, vh * 7.8],
+      [L.background, L.background, L.tealTint, L.tealTint, L.background, L.background, L.navy]
     );
     return { backgroundColor: bg, flex: 1 };
   });
@@ -95,20 +100,37 @@ function LandingPageContent() {
             viewportHeight.value = event.nativeEvent.layout.height;
           }}
         >
-          <HeroSection onPressGoogle={onPressGoogle}/>
-          <SectionDivider />
+          {/* 1. Hero — centered, auth */}
+          <HeroSection onPressGoogle={onPressGoogle} />
+
+          {/* 2. Problem Statement — left-aligned editorial */}
           <ProblemSection />
+
+          {/* 3. Comparison — fragmented → unified */}
           <ComparisonSection />
-          <SectionDivider />
+
+          {/* 4. Journey Sequence — timeline in white card */}
           <JourneySequenceSection />
-          <SectionDivider />
+
+          {/* 5. Sample Questions — question cards */}
           <SampleQuestionsSection />
-          <SectionDivider />
+
+          {/* 6. How It Works — tealTint bg zone */}
           <HowItWorksSection />
-          <SectionDivider />
+
+          {/* 7. Verification & Trust */}
+          <VerificationSection />
+
+          {/* 8. Community / Collective Knowledge */}
+          <CommunitySection />
+
+          {/* 9. Accessibility / Voice & Language */}
           <AccessibilitySection />
-          <SectionDivider />
+
+          {/* 10. Closing Vision — navy bg */}
           <ClosingVisionSection />
+
+          {/* 11. Footer — navy bg continuous */}
           <FooterSection />
         </Animated.ScrollView>
       </SafeAreaView>
