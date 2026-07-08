@@ -54,8 +54,8 @@ function LandingPageContent() {
     const vh = viewportHeight.value || 800;
     const bg = interpolateColor(
       scrollY.value,
-      [0, vh * 3.8, vh * 4.2, vh * 5.5, vh * 6.2, vh * 7.2, vh * 7.8],
-      [L.background, L.background, L.tealTint, L.tealTint, L.background, L.background, L.navy]
+      [0, vh * 3.8, vh * 4.2, vh * 5.5, vh * 6.2],
+      [L.background, L.background, L.tealTint, L.tealTint, L.background]
     );
     return { backgroundColor: bg, flex: 1 };
   });
@@ -127,11 +127,14 @@ function LandingPageContent() {
           {/* 9. Accessibility / Voice & Language */}
           <AccessibilitySection />
 
-          {/* 10. Closing Vision — navy bg */}
-          <ClosingVisionSection />
+          {/* 10 & 11 wrapped in Navy background */}
+          <View style={{ backgroundColor: L.navy }}>
+            {/* 10. Closing Vision — navy bg */}
+            <ClosingVisionSection />
 
-          {/* 11. Footer — navy bg continuous */}
-          <FooterSection />
+            {/* 11. Footer — navy bg continuous */}
+            <FooterSection />
+          </View>
         </Animated.ScrollView>
       </SafeAreaView>
     </Animated.View>
