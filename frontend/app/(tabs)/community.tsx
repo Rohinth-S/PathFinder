@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity, ScrollView,
-  ActivityIndicator, RefreshControl, Modal, Pressable, Platform,
+  ActivityIndicator, RefreshControl, Modal, Pressable, Platform, Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -188,9 +188,13 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
           {/* Avatar circle */}
           <View style={{
             width: 40, height: 40, borderRadius: 20, backgroundColor: L.tealTint,
-            alignItems: 'center', justifyContent: 'center',
+            alignItems: 'center', justifyContent: 'center', overflow: 'hidden'
           }}>
-            <Text style={{ fontSize: 17, fontWeight: '700', color: L.teal, fontFamily: 'Manrope_700Bold' }}>{initial}</Text>
+            {user.avatarUrl ? (
+              <Image source={{ uri: user.avatarUrl }} style={{ width: 40, height: 40 }} />
+            ) : (
+              <Text style={{ fontSize: 17, fontWeight: '700', color: L.teal, fontFamily: 'Manrope_700Bold' }}>{initial}</Text>
+            )}
           </View>
           <Text style={{ fontSize: 15, fontWeight: '700', color: L.navy, fontFamily: 'Manrope_700Bold' }}>@{user.username || 'unknown'}</Text>
         </View>

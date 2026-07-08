@@ -2,6 +2,7 @@ import { apiFetch } from "./api";
 
 export interface SearchCommunityUser {
   username: string;
+  avatarUrl?: string | null;
   reputationScore: number;
   topics: string[];
   subtopics: string[];
@@ -17,6 +18,7 @@ export interface SearchCommunityUser {
 export interface CommunityJourney {
   user: {
     username: string;
+    avatarUrl?: string | null;
     reputationScore: number;
   };
   goals: {

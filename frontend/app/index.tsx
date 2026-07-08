@@ -102,27 +102,35 @@ function LandingPageContent() {
         >
           {/* 1. Hero — centered, auth */}
           <HeroSection onPressGoogle={onPressGoogle} />
+          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 2. Problem Statement — left-aligned editorial */}
           <ProblemSection />
+          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 3. Comparison — fragmented → unified */}
           <ComparisonSection />
+          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 4. Journey Sequence — timeline in white card */}
           <JourneySequenceSection />
+          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 5. Sample Questions — question cards */}
           <SampleQuestionsSection />
+          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 6. How It Works — tealTint bg zone */}
           <HowItWorksSection />
+          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 7. Verification & Trust */}
           <VerificationSection />
+          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 8. Community / Collective Knowledge */}
           <CommunitySection />
+          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 9. Accessibility / Voice & Language */}
           <AccessibilitySection />
