@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Share, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Share, ActivityIndicator, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { BRAND_COLORS } from '../../constants/colors';
 import { getCommunityJourney, CommunityJourney } from '../../api/community.api';
@@ -80,8 +80,12 @@ export default function PublicProfilePage() {
 
       {/* Profile */}
       <View className="items-center mb-5">
-        <View className="w-[72px] h-[72px] rounded-full bg-brand-navy justify-center items-center mb-3">
-          <Text className="text-[28px] font-extrabold text-brand-white">{(user.username || 'U')[0].toUpperCase()}</Text>
+        <View className="w-[72px] h-[72px] rounded-full bg-brand-navy justify-center items-center mb-3 overflow-hidden">
+          {user.avatarUrl ? (
+            <Image source={{ uri: user.avatarUrl }} style={{ width: 72, height: 72 }} />
+          ) : (
+            <Text className="text-[28px] font-extrabold text-brand-white">{(user.username || 'U')[0].toUpperCase()}</Text>
+          )}
         </View>
         <Text className="text-xl font-bold text-brand-navy mb-1.5">@{user.username || 'unknown'}</Text>
         <View className="flex-row items-center gap-1.5">

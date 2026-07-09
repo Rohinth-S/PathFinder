@@ -167,14 +167,21 @@ export default function ProfilePage() {
               value={username}
               onChangeText={setUsername}
               onBlur={handleSaveUsername}
+              onSubmitEditing={handleSaveUsername}
+              returnKeyType="done"
               placeholder="Set Username"
               placeholderTextColor={L.navySoft}
             />
-            {showSuccessTick === 'username' ? (
-              <Feather name="check" size={18} color={L.teal} />
-            ) : (
-              <Feather name="edit-2" size={16} color={L.teal} />
-            )}
+            <TouchableOpacity onPress={() => {
+              import('react-native').then(({ Keyboard }) => Keyboard.dismiss());
+              handleSaveUsername();
+            }}>
+              {showSuccessTick === 'username' ? (
+                <Feather name="check" size={18} color={L.teal} />
+              ) : (
+                <Feather name="edit-2" size={16} color={L.teal} />
+              )}
+            </TouchableOpacity>
           </View>
         </View>
 
