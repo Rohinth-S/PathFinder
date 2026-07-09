@@ -21,8 +21,8 @@ import { SectionLabel, PillBadge } from '../ui/SectionLabel';
 const s = {
   h1: { fontSize: 36, color: UI.foreground, letterSpacing: -0.5, lineHeight: 42, fontFamily: 'InstrumentSerif_400Regular' },
   h2: { fontSize: 24, color: UI.foreground, letterSpacing: -0.3, lineHeight: 28, fontFamily: 'InstrumentSerif_400Regular' },
-  body: { fontSize: 15, fontWeight: '400' as const, color: UI.fg50, lineHeight: 24, fontFamily: 'Manrope_400Regular' },
-  micro: { fontSize: 13, fontWeight: '400' as const, lineHeight: 18, color: UI.fg40, fontFamily: 'Manrope_400Regular' },
+  body: { fontSize: 15, fontWeight: '400' as const, color: UI.fg50, lineHeight: 24, fontFamily: 'Inter_400Regular' },
+  micro: { fontSize: 13, fontWeight: '400' as const, lineHeight: 18, color: UI.fg40, fontFamily: 'Inter_400Regular' },
   sectionPy16: { paddingVertical: 64, paddingHorizontal: 24 },
 };
 
@@ -37,35 +37,35 @@ type HeroProps = {
 
 export function HeroSection({ onPressGoogle }: HeroProps) {
   return (
-    <SectionReveal style={{ minHeight: 680, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 60 }}>
-      {/* Logo mark 88×88 */}
+    <SectionReveal style={{ minHeight: 700, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 80, backgroundColor: UI.surfaceInverse }}>
+      {/* Small top label */}
       <StaggerItem index={0}>
-        <Image
-          source={require('../../assets/logo-light.png')}
-          style={{ width: 88, height: 88, borderRadius: 20, marginBottom: 16 }}
-          resizeMode="contain"
-        />
+        <SectionLabel color="rgba(255,255,255,0.4)" style={{ marginBottom: 40 }}>PATHFINDER · BETA</SectionLabel>
       </StaggerItem>
 
-      {/* Tagline */}
+      {/* Tagline matching the "Read the research." style */}
       <StaggerItem index={1}>
-        <Text style={{ fontSize: 44, color: UI.foreground, textAlign: 'center', marginBottom: 16, fontFamily: 'InstrumentSerif_400Regular', lineHeight: 48 }}>
-          Every Journey{'\n'}
-          <Text style={{ color: UI.accent }}>Can Guide Another.</Text>
+        <Text style={{ fontSize: 56, color: '#FFFFFF', textAlign: 'center', fontFamily: 'InstrumentSerif_400Regular', lineHeight: 64, letterSpacing: -1 }}>
+          Trust the journey.
+        </Text>
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <Text style={{ fontSize: 56, color: UI.accent, textAlign: 'center', fontFamily: 'InstrumentSerif_400Regular', lineHeight: 64, letterSpacing: -1, marginBottom: 24 }}>
+          Find your path.
         </Text>
       </StaggerItem>
 
       {/* Supporting sentence */}
-      <StaggerItem index={2}>
-        <Text style={{ fontSize: 16, color: UI.fg50, textAlign: 'center', lineHeight: 24, maxWidth: '90%', marginBottom: 40, fontFamily: 'Manrope_400Regular' }}>
+      <StaggerItem index={3}>
+        <Text style={{ fontSize: 18, color: 'rgba(255,255,255,0.6)', textAlign: 'center', lineHeight: 28, maxWidth: '85%', marginBottom: 48, fontFamily: 'Inter_400Regular' }}>
           Learn from real, verified journeys of founders, professionals, and students who have already walked the path you're considering.
         </Text>
       </StaggerItem>
 
       {/* Auth buttons */}
-      <StaggerItem index={3} style={{ width: '100%', maxWidth: 360, alignItems: 'center' }}>
+      <StaggerItem index={4} style={{ width: '100%', maxWidth: 300, alignItems: 'center' }}>
         <GradientButton 
-          label="Continue with Google"
+          label="Explore our work ->"
           onPress={onPressGoogle}
           size="lg"
           style={{ width: '100%', paddingHorizontal: 0 }}
@@ -74,7 +74,7 @@ export function HeroSection({ onPressGoogle }: HeroProps) {
 
       {/* Micro-copy */}
       <StaggerItem index={4}>
-        <Text style={{ fontSize: 12, color: UI.fg40, textAlign: 'center', marginTop: 16, fontFamily: 'Manrope_400Regular' }}>
+        <Text style={{ fontSize: 12, color: UI.fg40, textAlign: 'center', marginTop: 16, fontFamily: 'Inter_400Regular' }}>
           By continuing you agree to our Terms & Privacy.
         </Text>
       </StaggerItem>
@@ -172,7 +172,7 @@ export function ComparisonSection() {
               <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: UI.fg06, alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
                 <MaterialCommunityIcons name={p.icon} size={22} color={UI.foreground} />
               </View>
-              <Text style={{ fontSize: 14, color: UI.foreground, marginBottom: 6, fontFamily: 'Manrope_600SemiBold' }}>{p.name}</Text>
+              <Text style={{ fontSize: 14, color: UI.foreground, marginBottom: 6, fontFamily: 'Inter_600SemiBold' }}>{p.name}</Text>
               <PillBadge label={p.tag} />
             </View>
           ))}
@@ -256,8 +256,8 @@ export function JourneySequenceSection() {
                   )}
                 </View>
                 <View style={{ flex: 1, marginTop: -2 }}>
-                  <Text style={{ fontSize: 16, color: UI.foreground, fontFamily: 'Manrope_600SemiBold' }}>{node.label}</Text>
-                  <Text style={{ fontSize: 14, fontStyle: 'italic', color: UI.fg50, marginTop: 4, fontFamily: 'Manrope_400Regular' }}>{node.caption}</Text>
+                  <Text style={{ fontSize: 16, color: UI.foreground, fontFamily: 'Inter_600SemiBold' }}>{node.label}</Text>
+                  <Text style={{ fontSize: 14, fontStyle: 'italic', color: UI.fg50, marginTop: 4, fontFamily: 'Inter_400Regular' }}>{node.caption}</Text>
                 </View>
               </View>
             ))}
@@ -293,7 +293,7 @@ export function SampleQuestionsSection() {
               backgroundColor: UI.surface, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16,
               borderWidth: 1, borderColor: UI.fg08,
             }}>
-              <Text style={{ fontSize: 15, color: UI.foreground, flex: 1, paddingRight: 12, fontFamily: 'Manrope_400Regular' }}>{q}</Text>
+              <Text style={{ fontSize: 15, color: UI.foreground, flex: 1, paddingRight: 12, fontFamily: 'Inter_400Regular' }}>{q}</Text>
               <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: UI.fg06, alignItems: 'center', justifyContent: 'center' }}>
                 <Feather name="chevron-right" size={16} color={UI.fg50} />
               </View>
@@ -345,7 +345,7 @@ export function HowItWorksSection() {
                 }}>
                   <Feather name={step.icon as any} size={22} color="#FFFFFF" />
                 </View>
-                <Text style={{ fontSize: 13, color: UI.foreground, textAlign: 'center', fontFamily: 'Manrope_600SemiBold' }}>{step.label}</Text>
+                <Text style={{ fontSize: 13, color: UI.foreground, textAlign: 'center', fontFamily: 'Inter_600SemiBold' }}>{step.label}</Text>
               </View>
               {i < STEPS.length - 1 && (
                 <View style={{ flex: 1, alignItems: 'center', paddingTop: 26 }}>
@@ -454,7 +454,7 @@ export function AccessibilitySection() {
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
           {LANG_CHIPS.map((lang, i) => (
             <View key={i} style={{ backgroundColor: UI.surface, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1, borderColor: UI.fg08 }}>
-              <Text style={{ fontSize: 13, color: UI.accent, fontFamily: 'Manrope_700Bold' }}>{lang}</Text>
+              <Text style={{ fontSize: 13, color: UI.accent, fontFamily: 'Inter_700Bold' }}>{lang}</Text>
             </View>
           ))}
         </View>
@@ -509,7 +509,7 @@ export function ClosingVisionSection() {
         </Text>
       </StaggerItem>
       <StaggerItem index={3}>
-        <Text style={{ fontSize: 16, color: 'rgba(255,255,255,0.60)', textAlign: 'center', lineHeight: 26, maxWidth: '90%', alignSelf: 'center', fontFamily: 'Manrope_400Regular' }}>
+        <Text style={{ fontSize: 16, color: 'rgba(255,255,255,0.60)', textAlign: 'center', lineHeight: 26, maxWidth: '90%', alignSelf: 'center', fontFamily: 'Inter_400Regular' }}>
           PathFinder is building a living repository of verified human journeys — not to tell people what they should do, but to help them understand what others did, why, and what they learned. The more journeys the community contributes, the more valuable it becomes for everyone.
         </Text>
       </StaggerItem>
@@ -549,7 +549,7 @@ export function FooterSection() {
 
       {/* Mission line */}
       <StaggerItem index={2}>
-        <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.60)', textAlign: 'center', marginBottom: 32, fontFamily: 'Manrope_400Regular' }}>
+        <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.60)', textAlign: 'center', marginBottom: 32, fontFamily: 'Inter_400Regular' }}>
           Building collective wisdom through verified journeys.
         </Text>
       </StaggerItem>
@@ -558,7 +558,7 @@ export function FooterSection() {
       <StaggerItem index={3}>
         <View style={{ flexDirection: 'row', gap: 20, marginBottom: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
           {['PRIVACY', 'TERMS', 'GITHUB', 'CONTACT'].map((link, i) => (
-            <Text key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)', letterSpacing: 1, fontFamily: 'Manrope_600SemiBold' }}>
+            <Text key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)', letterSpacing: 1, fontFamily: 'Inter_600SemiBold' }}>
               {link}
             </Text>
           ))}
@@ -567,7 +567,7 @@ export function FooterSection() {
 
       {/* Tech line */}
       <StaggerItem index={4}>
-        <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: 16, fontFamily: 'Manrope_400Regular' }}>
+        <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: 16, fontFamily: 'Inter_400Regular' }}>
           Powered by Expo, Neo4j, GraphRAG, Gemini, Groq and Sarvam AI.
         </Text>
       </StaggerItem>

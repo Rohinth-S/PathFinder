@@ -31,10 +31,10 @@ export function GradientButton({
   }));
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.96, { damping: 20, stiffness: 400 });
+    scale.value = withSpring(0.94, { damping: 15, stiffness: 400 });
   };
   const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+    scale.value = withSpring(1, { damping: 12, stiffness: 300 });
   };
 
   const heights = { sm: 40, md: 48, lg: 56 };
@@ -58,15 +58,15 @@ export function GradientButton({
         animStyle,
         {
           height: h,
-          borderRadius: h / 2,
+          borderRadius: 9999, // Perfect pill
           paddingHorizontal: px,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
           gap: 8,
           backgroundColor: isFilled ? UI.accent : 'transparent',
-          borderWidth: isOutlined ? 1.5 : 0,
-          borderColor: isOutlined ? UI.fg20 : 'transparent',
+          borderWidth: isOutlined ? 1 : 0,
+          borderColor: isOutlined ? UI.border : 'transparent',
           opacity: disabled ? 0.5 : 1,
         },
         style,
@@ -80,10 +80,10 @@ export function GradientButton({
             <Feather name={icon} size={fs} color={isFilled ? '#FFF' : UI.foreground} />
           )}
           <Text style={{
-            fontFamily: 'Manrope_600SemiBold',
+            fontFamily: 'Inter_600SemiBold',
             fontSize: fs,
             color: isFilled ? '#FFF' : (isOutlined ? UI.foreground : UI.accent),
-            letterSpacing: -0.2,
+            letterSpacing: 0,
           }}>
             {label}
           </Text>

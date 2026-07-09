@@ -6,40 +6,40 @@ import { EmotionLabel, NodeType } from '../types/schema';
 // ═══════════════════════════════════════════════════════
 
 export const UI = {
-  // ── Backgrounds ──
-  background:   '#FAF9F6',   // warm off-white canvas
-  surface:      '#FFFFFF',   // card surfaces
-  surfaceDim:   '#F4F3F1',   // slightly dimmed surface
-  surfaceInverse: '#0F172A', // dark cards (navy-black)
+  //  Backgrounds 
+  background:   '#FFFFFF',   // Pure white for that stark clean look
+  surface:      '#FAFAFA',   // Extremely subtle off-white for cards
+  surfaceDim:   '#F4F4F5',   // Slightly dimmer
+  surfaceInverse: '#0A0A0A', // Near true black for dark components/heroes
 
-  // ── Foreground (opacity-based system) ──
-  foreground:   '#0F172A',   // primary text (near-black)
-  fg80:         'rgba(15, 23, 42, 0.80)',  // strong secondary
-  fg50:         'rgba(15, 23, 42, 0.50)',  // descriptions, placeholders
-  fg40:         'rgba(15, 23, 42, 0.40)',  // labels, muted text
-  fg20:         'rgba(15, 23, 42, 0.20)',  // dividers, subtle borders
-  fg08:         'rgba(15, 23, 42, 0.08)',  // hairline dividers
-  fg06:         'rgba(15, 23, 42, 0.06)',  // pill backgrounds
+  //  Foreground 
+  foreground:   '#030712',   // Near black text for max contrast
+  fg80:         'rgba(3, 7, 18, 0.80)',
+  fg50:         'rgba(3, 7, 18, 0.50)',
+  fg40:         'rgba(3, 7, 18, 0.40)',
+  fg20:         'rgba(3, 7, 18, 0.20)',
+  fg08:         'rgba(3, 7, 18, 0.08)',
+  fg06:         'rgba(3, 7, 18, 0.04)',
 
-  // ── Accent (orange gradient) ──
-  accent:       '#FF6900',   // primary CTA, gradient start
-  accentEnd:    '#FB2C36',   // gradient end (red-orange)
-  accentTint:   'rgba(255, 105, 0, 0.10)', // tinted backgrounds
-  accentSoft:   'rgba(255, 105, 0, 0.06)', // very subtle tint
+  //  Accent (Legendary Orange Gradient) 
+  accent:       '#FF6900',   // Vivid primary orange
+  accentEnd:    '#FF4500',   // For gradients
+  accentTint:   'rgba(255, 105, 0, 0.10)',
+  accentSoft:   'rgba(255, 105, 0, 0.06)',
 
-  // ── Success / Live ──
-  success:      '#1B9E77',
-  successTint:  'rgba(27, 158, 119, 0.10)',
+  //  Success 
+  success:      '#10B981',
+  successTint:  'rgba(16, 185, 129, 0.10)',
 
-  // ── Structural colors (evolved teal) ──
-  teal:         '#3E6B66',
-  tealTint:     '#E7EFEE',
+  //  Legacy Fallbacks (mapped to new scheme so we don't break existing views entirely) 
+  teal:         '#030712',
+  tealTint:     '#F4F4F5',
 
-  // ── Borders ──
-  border:       '#EAE7E0',
-  borderSubtle: 'rgba(15, 23, 42, 0.06)',
+  //  Borders 
+  border:       '#E5E7EB',
+  borderSubtle: 'rgba(3, 7, 18, 0.06)',
 
-  // ── Dark card text ──
+  //  Dark text 
   onDark:       '#FFFFFF',
   onDark80:     'rgba(255, 255, 255, 0.85)',
   onDark50:     'rgba(255, 255, 255, 0.50)',

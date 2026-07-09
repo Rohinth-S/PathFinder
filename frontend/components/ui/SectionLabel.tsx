@@ -17,9 +17,8 @@ export function SectionLabel({ children, color, style }: SectionLabelProps) {
     <Text
       style={[
         {
-          fontFamily: 'Manrope_600SemiBold',
+          fontFamily: 'JetBrainsMono_700Bold',
           fontSize: 10,
-          fontWeight: '600',
           letterSpacing: 2,
           textTransform: 'uppercase',
           color: color || UI.fg40,
@@ -40,28 +39,27 @@ type PillBadgeProps = {
 };
 
 /**
- * Small pill badge with monospace text — used for tags, statuses, tech labels.
+ * Small pill badge with monospace text  used for tags, statuses, tech labels.
  */
 export function PillBadge({ label, color, bgColor, style }: PillBadgeProps) {
   return (
     <View
       style={[
         {
-          borderRadius: 4,
+          borderRadius: 9999, // fully rounded pill
           borderWidth: 1,
-          borderColor: color ? `${color}33` : UI.fg20,
+          borderColor: color ? `${color}33` : UI.borderSubtle,
           backgroundColor: bgColor || UI.fg06,
-          paddingHorizontal: 6,
-          paddingVertical: 3,
+          paddingHorizontal: 8,
+          paddingVertical: 4,
         },
         style,
       ]}
     >
       <Text
         style={{
-          fontFamily: 'Manrope_600SemiBold',
+          fontFamily: 'JetBrainsMono_700Bold',
           fontSize: 9,
-          fontWeight: '600',
           letterSpacing: 1,
           textTransform: 'uppercase',
           color: color || UI.fg50,

@@ -46,13 +46,7 @@ function LandingPageContent() {
   });
 
   const animatedBgStyle = useAnimatedStyle(() => {
-    const vh = viewportHeight.value || 800;
-    const bg = interpolateColor(
-      scrollY.value,
-      [0, vh * 3.8, vh * 4.2, vh * 5.5, vh * 6.2],
-      [UI.background, UI.background, UI.accentSoft, UI.accentSoft, UI.background]
-    );
-    return { backgroundColor: bg, flex: 1 };
+    return { backgroundColor: UI.background, flex: 1 };
   });
 
   useEffect(() => {
