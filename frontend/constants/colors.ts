@@ -10,7 +10,7 @@ export const UI = {
   background:   '#FFFFFF',   // Pure white for that stark clean look
   surface:      '#FAFAFA',   // Extremely subtle off-white for cards
   surfaceDim:   '#F4F4F5',   // Slightly dimmer
-  surfaceInverse: '#0A0A0A', // Near true black for dark components/heroes
+  surfaceInverse: '#0A0F1D', // Very dark blue/slate for dark components/heroes
 
   //  Foreground 
   foreground:   '#030712',   // Near black text for max contrast

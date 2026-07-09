@@ -38,32 +38,41 @@ type HeroProps = {
 export function HeroSection({ onPressGoogle }: HeroProps) {
   return (
     <SectionReveal style={{ minHeight: 700, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 80, backgroundColor: UI.surfaceInverse }}>
-      {/* Small top label */}
+      {/* Logo mark */}
       <StaggerItem index={0}>
+        <Image
+          source={require('../../assets/logo-dark.png')}
+          style={{ width: 64, height: 64, borderRadius: 16, marginBottom: 24 }}
+          resizeMode="contain"
+        />
+      </StaggerItem>
+
+      {/* Small top label */}
+      <StaggerItem index={1}>
         <SectionLabel color="rgba(255,255,255,0.4)" style={{ marginBottom: 40 }}>PATHFINDER · BETA</SectionLabel>
       </StaggerItem>
 
       {/* Tagline matching the "Read the research." style */}
-      <StaggerItem index={1}>
+      <StaggerItem index={2}>
         <Text style={{ fontSize: 56, color: '#FFFFFF', textAlign: 'center', fontFamily: 'InstrumentSerif_400Regular', lineHeight: 64, letterSpacing: -1 }}>
           Trust the journey.
         </Text>
       </StaggerItem>
-      <StaggerItem index={2}>
+      <StaggerItem index={3}>
         <Text style={{ fontSize: 56, color: UI.accent, textAlign: 'center', fontFamily: 'InstrumentSerif_400Regular', lineHeight: 64, letterSpacing: -1, marginBottom: 24 }}>
           Find your path.
         </Text>
       </StaggerItem>
 
       {/* Supporting sentence */}
-      <StaggerItem index={3}>
+      <StaggerItem index={4}>
         <Text style={{ fontSize: 18, color: 'rgba(255,255,255,0.6)', textAlign: 'center', lineHeight: 28, maxWidth: '85%', marginBottom: 48, fontFamily: 'Inter_400Regular' }}>
           Learn from real, verified journeys of founders, professionals, and students who have already walked the path you're considering.
         </Text>
       </StaggerItem>
 
       {/* Auth buttons */}
-      <StaggerItem index={4} style={{ width: '100%', maxWidth: 300, alignItems: 'center' }}>
+      <StaggerItem index={5} style={{ width: '100%', maxWidth: 300, alignItems: 'center' }}>
         <GradientButton 
           label="Explore our work ->"
           onPress={onPressGoogle}
