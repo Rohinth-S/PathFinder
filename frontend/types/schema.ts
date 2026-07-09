@@ -57,6 +57,8 @@ export interface UserTrajectory {
   username: string;
   reputationScore: number;
   timeline: TimelineEvent[];
+  ai_summary?: string;
+  skills?: any[];
 }
 
 export interface CommonPattern {
