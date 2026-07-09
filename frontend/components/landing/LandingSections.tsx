@@ -13,6 +13,7 @@ import { ProblemDividerDot, RippleMicBadge, SectionReveal, StaggerItem } from '.
 import { UI } from '../../constants/colors';
 import { GradientButton } from '../ui/GradientButton';
 import { SectionLabel, PillBadge } from '../ui/SectionLabel';
+import { FloatingParticles } from './FloatingParticles';
 
 // ═══════════════════════════════════════════════════════
 //  Shared style helpers 
@@ -38,6 +39,8 @@ type HeroProps = {
 export function HeroSection({ onPressGoogle }: HeroProps) {
   return (
     <SectionReveal style={{ minHeight: 700, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 80, backgroundColor: UI.surfaceInverse }}>
+      <FloatingParticles />
+      
       {/* Logo mark */}
       <StaggerItem index={0}>
         <Image
