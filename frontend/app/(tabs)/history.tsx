@@ -4,7 +4,12 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { getUserJourney, JourneyExperience, JourneyTransition } from '../../api/journey.api';
 import { TimelineEvent, NodeType } from '../../types/schema';
-import { BRAND_COLORS } from '../../constants/colors';
+import { UI } from '../../constants/colors';
+import { SectionLabel, PillBadge } from '../../components/ui/SectionLabel';
+import { GradientButton } from '../../components/ui/GradientButton';
+import { DotDivider } from '../../components/ui/DotDivider';
+import { Feather } from '@expo/vector-icons';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, FadeInDown } from 'react-native-reanimated';
 
 /**
  * Maps backend experience data to the TimelineEvent shape used by the UI.
@@ -57,6 +62,15 @@ function mapExperienceToTimelineEvent(
   };
 }
 
+const NODE_EMOJIS: Record<NodeType, string> = {
+  Education: '🎓',
+  Job: '💼',
+  Decision: '◆',
+  Failure: '⚡',
+  Startup: '🚀',
+  Achievement: '⭐',
+};
+
 export default function HistoryPage() {
   const router = useRouter();
   const { getToken } = useAuth();
@@ -96,68 +110,145 @@ export default function HistoryPage() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-brand-cream justify-center items-center">
-        <ActivityIndicator size="large" color={BRAND_COLORS.teal} />
-        <Text className="text-sm text-brand-slate mt-3">Loading your journey...</Text>
+      <View style={{ flex: 1, backgroundColor: UI.background, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={UI.accent} />
+        <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 13, color: UI.fg40, marginTop: 12 }}>Loading your journey...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View className="flex-1 bg-brand-cream justify-center items-center p-8">
-        <Text className="text-[15px] text-brand-slate text-center mb-4">{error}</Text>
-        <TouchableOpacity
-          className="px-6 py-3 rounded-full bg-brand-teal"
-          onPress={loadJourney}
-        >
-          <Text className="text-sm font-semibold text-brand-white">Retry</Text>
-        </TouchableOpacity>
+      <View style={{ flex: 1, backgroundColor: UI.background, justifyContent: 'center', alignItems: 'center', padding: 32 }}>
+        <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 15, color: UI.fg50, textAlign: 'center', marginBottom: 16 }}>{error}</Text>
+        <GradientButton label="Retry" onPress={loadJourney} size="sm" />
       </View>
     );
   }
 
   if (timeline.length === 0) {
     return (
-      <View className="flex-1 bg-brand-cream justify-center items-center p-8">
-        <Text className="text-2xl mb-3">📝</Text>
-        <Text className="text-xl font-bold text-brand-navy mb-2">No journey yet</Text>
-        <Text className="text-sm text-brand-slate text-center mb-6">
+      <View style={{ flex: 1, backgroundColor: UI.background, justifyContent: 'center', alignItems: 'center', padding: 32 }}>
+        <Text style={{ fontSize: 48, marginBottom: 16 }}>🗺️</Text>
+        <Text style={{
+          fontFamily: 'InstrumentSerif_400Regular',
+          fontSize: 28, color: UI.foreground, marginBottom: 8,
+        }}>
+          No journey yet
+        </Text>
+        <Text style={{
+          fontFamily: 'Manrope_400Regular', fontSize: 14, color: UI.fg50,
+          textAlign: 'center', lineHeight: 22, marginBottom: 24,
+        }}>
           Share your career journey to build your Life Graph and help others learn from your path.
         </Text>
-        <TouchableOpacity
-          className="px-6 py-3 rounded-full bg-brand-teal"
+        <GradientButton
+          label="Share Your Journey"
           onPress={() => router.push('/share-journey')}
-        >
-          <Text className="text-sm font-semibold text-brand-white">Share Your Journey</Text>
-        </TouchableOpacity>
+          icon="edit-3"
+        />
       </View>
     );
   }
 
   return (
-    <ScrollView className="flex-1 bg-brand-cream p-5">
-      <Text className="text-xl font-bold text-brand-navy mb-4">My Life Graph</Text>
-      {timeline.map((event, idx) => {
-        const isLast = idx === timeline.length - 1;
-        return (
-          <TouchableOpacity
-            key={event.id}
-            className="flex-row mb-0 active:opacity-70"
-            onPress={() => router.push({ pathname: '/journey-details', params: { eventData: JSON.stringify(event) } })}
-          >
-            <View className="w-6 items-center">
-              <View className={`w-3.5 h-3.5 rounded-full mt-4 z-10 ${event.isVerified ? 'bg-brand-teal' : 'bg-brand-tan'}`} />
-              {!isLast && <View className="w-1 flex-1 bg-brand-teal -mt-0.5" />}
-            </View>
-            <View className="flex-1 bg-brand-white rounded-xl p-3.5 ml-2.5 mb-3 border border-brand-border">
-              <Text className="text-base font-bold text-brand-navy mb-0.5">{event.title}</Text>
-              <Text className="text-xs text-brand-slate font-medium mb-1.5">{event.startDate} – {event.endDate || 'Present'}  •  {event.organization}</Text>
-              <Text className="text-sm text-brand-slate leading-5" numberOfLines={2}>{event.timelineSummary}</Text>
-            </View>
-          </TouchableOpacity>
-        );
-      })}
-    </ScrollView>
+    <View style={{ flex: 1, backgroundColor: UI.background }}>
+      {/* Header */}
+      <View style={{ paddingHorizontal: 24, paddingTop: 56, paddingBottom: 8 }}>
+        <SectionLabel>Your Story</SectionLabel>
+        <Text style={{
+          fontFamily: 'InstrumentSerif_400Regular',
+          fontSize: 32, color: UI.foreground, marginTop: 4,
+        }}>
+          Life Graph
+        </Text>
+      </View>
+
+      <DotDivider style={{ marginHorizontal: 24, marginBottom: 8 }} />
+
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24, paddingTop: 16 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {timeline.map((event, idx) => {
+          const isLast = idx === timeline.length - 1;
+          const emoji = NODE_EMOJIS[event.nodeType || 'Job'] || '💼';
+
+          return (
+            <Animated.View
+              key={event.id}
+              entering={FadeInDown.delay(idx * 80).springify().damping(20)}
+            >
+              <TouchableOpacity
+                style={{ flexDirection: 'row', marginBottom: 0 }}
+                activeOpacity={0.7}
+                onPress={() => router.push({ pathname: '/journey-details', params: { eventData: JSON.stringify(event) } })}
+              >
+                {/* Timeline rail */}
+                <View style={{ width: 28, alignItems: 'center' }}>
+                  {/* Node dot */}
+                  <View style={{
+                    width: 28, height: 28, borderRadius: 14, marginTop: 16,
+                    alignItems: 'center', justifyContent: 'center',
+                    backgroundColor: UI.accentSoft,
+                    borderWidth: 1.5,
+                    borderColor: event.isVerified ? UI.success : UI.fg20,
+                    zIndex: 2,
+                  }}>
+                    <Text style={{ fontSize: 12 }}>{emoji}</Text>
+                  </View>
+                  {/* Vertical line */}
+                  {!isLast && (
+                    <View style={{
+                      width: 2, flex: 1, marginTop: -2,
+                      backgroundColor: UI.fg08,
+                    }} />
+                  )}
+                </View>
+
+                {/* Card */}
+                <View style={{
+                  flex: 1, marginLeft: 12, marginBottom: 12,
+                  backgroundColor: UI.surface, borderRadius: 12,
+                  padding: 14, borderWidth: 1, borderColor: UI.fg08,
+                  borderLeftWidth: 3, borderLeftColor: UI.accent,
+                }}>
+                  <Text style={{
+                    fontFamily: 'Manrope_700Bold', fontSize: 15,
+                    color: UI.foreground, marginBottom: 2,
+                  }}>
+                    {event.title}
+                  </Text>
+                  <Text style={{
+                    fontFamily: 'Manrope_600SemiBold', fontSize: 11,
+                    color: UI.fg40, letterSpacing: 0.5, marginBottom: 6,
+                  }}>
+                    {event.startDate} – {event.endDate || 'Present'}  •  {event.organization}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: 'Manrope_400Regular', fontSize: 13,
+                      color: UI.fg50, lineHeight: 19,
+                    }}
+                    numberOfLines={2}
+                  >
+                    {event.timelineSummary}
+                  </Text>
+                  {event.isVerified && (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 6 }}>
+                      <View style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: UI.success }} />
+                      <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 9, color: UI.success, letterSpacing: 1, textTransform: 'uppercase' }}>
+                        Verified
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </TouchableOpacity>
+            </Animated.View>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }

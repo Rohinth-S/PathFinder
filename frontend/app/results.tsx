@@ -1,41 +1,63 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  Animated, Switch, Alert, ActivityIndicator, KeyboardAvoidingView, TextInput, Platform
+  Alert, ActivityIndicator, KeyboardAvoidingView, TextInput, Platform,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Audio } from 'expo-av';
-import * as FileSystem from 'expo-file-system';
 import { useAuth } from '@clerk/clerk-expo';
 import { syncUser } from '../api/auth.api';
 import { translateInsights, generateSpeechUri } from '../api/output.api';
 import { submitQuery } from '../api/query.api';
-import { DecisionAtlasBackendResponse, BackendQueryResponse, UserTrajectory, TimelineEvent, AiInsights, CommonPattern } from '@/types/schema';
-import { NODE_COLORS, NODE_ICONS, CATEGORY_COLORS } from '@/constants/colors';
-import { BRAND_COLORS } from '../constants/colors';
+import { DecisionAtlasBackendResponse, TimelineEvent, NodeType } from '../types/schema';
+import { UI } from '../constants/colors';
+import { SectionLabel, PillBadge } from '../components/ui/SectionLabel';
+import { DarkCard } from '../components/ui/DarkCard';
+import { DotDivider } from '../components/ui/DotDivider';
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
+import { Feather } from '@expo/vector-icons';
 
-const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
-
+const NODE_EMOJIS: Record<NodeType, string> = {
+  Education: '🎓',
+  Job: '💼',
+  Decision: '◆',
+  Failure: '⚡',
+  Startup: '🚀',
+  Achievement: '⭐',
+};
 
 /* ── Skeleton ──────────────────────────────────────── */
+
 function Shimmer({ w, h, r = 8, mb = 0 }: { w: number | string; h: number; r?: number; mb?: number }) {
-  const anim = useRef(new Animated.Value(0)).current;
+  const opacity = useSharedValue(0.4);
+  
   useEffect(() => {
-    Animated.loop(Animated.sequence([
-      Animated.timing(anim, { toValue: 1, duration: 900, useNativeDriver: true }),
-      Animated.timing(anim, { toValue: 0, duration: 900, useNativeDriver: true }),
-    ])).start();
-  }, [anim]);
-  return <Animated.View style={{ width: w as any, height: h, borderRadius: r, marginBottom: mb, backgroundColor: '#E2E8F0', opacity: anim.interpolate({ inputRange: [0, 1], outputRange: [0.4, 0.8] }) }} />;
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.8, { duration: 900 }),
+        withTiming(0.4, { duration: 900 })
+      ),
+      -1,
+      true
+    );
+  }, []);
+
+  const animStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Animated.View style={[{ width: w as any, height: h, borderRadius: r, marginBottom: mb, backgroundColor: UI.fg08 }, animStyle]} />
+  );
 }
 
 function LoadingSkeleton() {
   return (
-    <View className="flex-1 bg-brand-cream">
-      <View className="p-5">
-        <Shimmer w="60%" h={24} mb={8} />
-        <Shimmer w="40%" h={14} mb={24} />
-        <Shimmer w="100%" h={120} r={16} mb={24} />
+    <View style={{ flex: 1, backgroundColor: UI.background }}>
+      <View style={{ padding: 24, paddingTop: 40 }}>
+        <Shimmer w="60%" h={32} mb={8} />
+        <Shimmer w="40%" h={16} mb={24} />
+        <Shimmer w="100%" h={140} r={16} mb={24} />
         <Shimmer w="100%" h={300} r={16} mb={24} />
       </View>
     </View>
@@ -43,11 +65,11 @@ function LoadingSkeleton() {
 }
 
 /* ── Timeline Node Component ───────────────────────── */
+
 function TimelineNodeItem({ event, isLast }: { event: TimelineEvent, isLast: boolean }) {
   const [expanded, setExpanded] = useState(false);
   const nodeType = event.nodeType || 'Job';
-  const colors = NODE_COLORS[nodeType] || NODE_COLORS.Job;
-  const icon = NODE_ICONS[nodeType] || NODE_ICONS.Job;
+  const emoji = NODE_EMOJIS[nodeType] || '💼';
 
   const getDuration = (start: string, end: string | null) => {
     if (!start) return '';
@@ -67,89 +89,105 @@ function TimelineNodeItem({ event, isLast }: { event: TimelineEvent, isLast: boo
   };
 
   return (
-    <View className="flex-row">
+    <Animated.View layout={Layout.springify().damping(20)} style={{ flexDirection: 'row', marginBottom: 0 }}>
       {/* Left side: Vertical line and Icon */}
-      <View className="w-11 items-center">
-        <View className="w-8 h-8 rounded-full justify-center items-center z-10" style={{ backgroundColor: colors.iconBg }}>
-          <Text className="text-sm" style={{ color: colors.iconText }}>{icon}</Text>
+      <View style={{ width: 28, alignItems: 'center' }}>
+        <View style={{
+          width: 28, height: 28, borderRadius: 14, marginTop: 16,
+          alignItems: 'center', justifyContent: 'center',
+          backgroundColor: UI.accentSoft,
+          borderWidth: 1.5, borderColor: UI.fg20, zIndex: 2,
+        }}>
+          <Text style={{ fontSize: 12 }}>{emoji}</Text>
         </View>
-        {!isLast && <View className="w-[3px] flex-1 bg-brand-teal -mt-1 -mb-1" />}
+        {!isLast && (
+          <View style={{ width: 2, flex: 1, marginTop: -2, backgroundColor: UI.fg08 }} />
+        )}
       </View>
 
       {/* Right side: Content Card */}
-      <View className="flex-1 pb-4">
+      <View style={{ flex: 1, marginLeft: 12, paddingBottom: 16 }}>
         <TouchableOpacity 
-          className={`rounded-xl p-3.5 border ${expanded ? 'bg-brand-white border-brand-teal shadow-brand-teal shadow-sm elevation-2' : 'bg-brand-cream border-brand-border'}`}
+          style={{
+            backgroundColor: UI.surface, borderRadius: 12, padding: 14,
+            borderWidth: 1, borderColor: expanded ? UI.accent : UI.fg08,
+            borderLeftWidth: 3, borderLeftColor: UI.accent,
+          }}
           onPress={() => setExpanded(!expanded)} 
           activeOpacity={0.7}
         >
-          <View className="flex-row items-start justify-between">
-            <View className="flex-1">
-              <Text className="text-[15px] font-extrabold text-brand-navy mb-1">{event.title}</Text>
-              <Text className="text-xs text-brand-slate mb-1.5 font-semibold">
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 15, color: UI.foreground, marginBottom: 2 }}>{event.title}</Text>
+              <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 11, color: UI.fg40, letterSpacing: 0.5, marginBottom: 6 }}>
                 {event.startDate}{event.endDate ? ` - ${event.endDate}` : ''}{getDuration(event.startDate, event.endDate)}
               </Text>
-              <Text className="text-[13px] text-brand-slate leading-[18px] font-medium" numberOfLines={expanded ? undefined : 2}>{event.timelineSummary}</Text>
+              <Text 
+                style={{ fontFamily: 'Manrope_400Regular', fontSize: 13, color: UI.fg50, lineHeight: 19 }}
+                numberOfLines={expanded ? undefined : 2}
+              >
+                {event.timelineSummary}
+              </Text>
             </View>
-            <Text className="text-base text-brand-slate mt-0.5 pl-2">{expanded ? '︿' : '﹀'}</Text>
+            <Feather name={expanded ? "chevron-up" : "chevron-down"} size={16} color={UI.fg40} style={{ marginTop: 2, marginLeft: 8 }} />
           </View>
 
-          {expanded && (
-            <View className="mt-3">
-              <View className="h-px bg-brand-border my-3" />
+          {expanded && event.expandedDetails && (
+            <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 12 }}>
+              <DotDivider style={{ marginVertical: 12 }} />
               
               {event.expandedDetails.context && (
-                <View className="mb-4">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">💼</Text><Text className="text-[13px] font-extrabold text-brand-navy">Context</Text></View>
-                  <Text className="text-sm text-brand-slate leading-5 font-medium">{event.expandedDetails.context}</Text>
+                <View style={{ marginBottom: 16 }}>
+                  <SectionLabel style={{ marginBottom: 4 }}>CONTEXT</SectionLabel>
+                  <Text style={{ fontFamily: 'Manrope_500Medium', fontSize: 13, color: UI.foreground, lineHeight: 20 }}>{event.expandedDetails.context}</Text>
                 </View>
               )}
               
               {event.expandedDetails.challengeFaced && (
-                <View className="mb-4">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">⚠️</Text><Text className="text-[13px] font-extrabold text-brand-navy">Challenge</Text></View>
-                  <Text className="text-sm text-brand-slate leading-5 font-medium">{event.expandedDetails.challengeFaced}</Text>
+                <View style={{ marginBottom: 16 }}>
+                  <SectionLabel style={{ marginBottom: 4 }} color={UI.accent}>CHALLENGE</SectionLabel>
+                  <Text style={{ fontFamily: 'Manrope_500Medium', fontSize: 13, color: UI.foreground, lineHeight: 20 }}>{event.expandedDetails.challengeFaced}</Text>
                 </View>
               )}
 
               {event.expandedDetails.outcome && (
-                <View className="mb-4">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">🎯</Text><Text className="text-[13px] font-extrabold text-brand-navy">Outcome / Learning</Text></View>
-                  <Text className="text-sm text-brand-slate leading-5 font-medium">{event.expandedDetails.outcome}</Text>
+                <View style={{ marginBottom: 16 }}>
+                  <SectionLabel style={{ marginBottom: 4 }} color={UI.success}>OUTCOME</SectionLabel>
+                  <Text style={{ fontFamily: 'Manrope_500Medium', fontSize: 13, color: UI.foreground, lineHeight: 20 }}>{event.expandedDetails.outcome}</Text>
                 </View>
               )}
 
               {event.expandedDetails.achievements && event.expandedDetails.achievements.length > 0 && (
-                <View className="mb-4">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">🏆</Text><Text className="text-[13px] font-extrabold text-brand-navy">Key Achievements</Text></View>
+                <View style={{ marginBottom: 16 }}>
+                  <SectionLabel style={{ marginBottom: 4 }}>ACHIEVEMENTS</SectionLabel>
                   {event.expandedDetails.achievements.map((ach, i) => (
-                    <Text key={i} className="text-sm text-brand-slate leading-5 mb-1 font-medium">• {ach}</Text>
+                    <Text key={i} style={{ fontFamily: 'Manrope_500Medium', fontSize: 13, color: UI.foreground, lineHeight: 20, marginBottom: 2 }}>• {ach}</Text>
                   ))}
                 </View>
               )}
 
               {event.expandedDetails.skills && event.expandedDetails.skills.length > 0 && (
-                <View className="mb-4">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">{'</>'}</Text><Text className="text-[13px] font-extrabold text-brand-navy">Skills Built</Text></View>
-                  <View className="flex-row flex-wrap gap-2 mt-1">
+                <View style={{ marginBottom: 16 }}>
+                  <SectionLabel style={{ marginBottom: 6 }}>SKILLS BUILT</SectionLabel>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                     {event.expandedDetails.skills.map((skill, i) => (
-                      <View key={i} className="bg-brand-cream px-2.5 py-1.5 rounded-lg border border-brand-border"><Text className="text-brand-teal text-xs font-bold">{skill}</Text></View>
+                      <PillBadge key={i} label={skill} />
                     ))}
                   </View>
                 </View>
               )}
 
               {event.expandedDetails.transitions && event.expandedDetails.transitions.length > 0 && (
-                <View className="mb-0">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">↪</Text><Text className="text-[13px] font-extrabold text-brand-navy">Decision That Led Next</Text></View>
-                  <Text className="text-sm text-brand-slate leading-5 font-medium">{event.expandedDetails.transitions[0].decisionLabel}</Text>
+                <View style={{ marginBottom: 4 }}>
+                  <SectionLabel style={{ marginBottom: 4 }}>DECISION THAT LED NEXT</SectionLabel>
+                  <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: UI.foreground }}>{event.expandedDetails.transitions[0].decisionLabel}</Text>
                 </View>
               )}
-            </View>
+            </Animated.View>
           )}
         </TouchableOpacity>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -162,6 +200,7 @@ const getPseudoPct = (str: string, min: number, max: number) => {
 };
 
 /* ── Main ──────────────────────────────────────────── */
+
 export default function ResultsPage() {
   const router = useRouter();
   const params = useLocalSearchParams<{ payload?: string }>();
@@ -214,17 +253,19 @@ export default function ResultsPage() {
 
   if (!data) {
     return (
-      <View className="flex-1 bg-brand-cream justify-center items-center p-8">
-        <Text className="text-[40px] mb-4">🏜️</Text>
-        <Text className="text-xl font-bold text-brand-navy mb-2 text-center">No Results Found</Text>
-        <Text className="text-sm text-brand-slate text-center mb-6">
+      <View style={{ flex: 1, backgroundColor: UI.background, justifyContent: 'center', alignItems: 'center', padding: 32 }}>
+        <Text style={{ fontSize: 48, marginBottom: 16 }}>🏜️</Text>
+        <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 28, color: UI.foreground, marginBottom: 8 }}>
+          No Results Found
+        </Text>
+        <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: UI.fg50, textAlign: 'center', marginBottom: 24, lineHeight: 22 }}>
           We couldn't process this query or the results were empty. Please try rephrasing your question.
         </Text>
         <TouchableOpacity
-          className="px-6 py-3 rounded-full bg-brand-teal"
+          style={{ paddingHorizontal: 24, paddingVertical: 12, borderRadius: 24, backgroundColor: UI.accent }}
           onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/'); }}
         >
-          <Text className="text-sm font-semibold text-brand-white">Go Back</Text>
+          <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 14, color: '#FFF' }}>Go Back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -261,37 +302,33 @@ export default function ResultsPage() {
   }
 
   const renderProducts = () => topProducts.length > 0 && (
-    <View key="products" className="bg-brand-white rounded-2xl p-4 mb-4 border border-brand-border">
-      <View className="flex-row items-center gap-1.5 mb-4">
-        <Text className="text-base">✨</Text>
-        <Text className="text-[15px] font-bold text-brand-navy">{isSimilarJourney ? "Common Patterns" : "Top Pre-PMF Products"}</Text>
-        <View className="flex-1" />
-        <Text className="text-lg text-brand-teal">📊</Text>
+    <Animated.View entering={FadeInDown.delay(100).springify().damping(20)} key="products" style={{ backgroundColor: UI.surface, borderRadius: 16, padding: 20, marginBottom: 16, borderWidth: 1, borderColor: UI.fg08 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <SectionLabel>{isSimilarJourney ? "COMMON PATTERNS" : "TOP PRE-PMF PRODUCTS"}</SectionLabel>
+        <Feather name="bar-chart-2" size={16} color={UI.accent} />
       </View>
-      <View className="flex-row gap-3">
+      <View style={{ flexDirection: 'row', gap: 12 }}>
         {topProducts.map((p, i) => {
-          const colorKeys = Object.keys(CATEGORY_COLORS);
-          const colorTheme = CATEGORY_COLORS[colorKeys[i % colorKeys.length] as keyof typeof CATEGORY_COLORS];
           return (
-            <View key={i} className="flex-1">
-              <View className="flex-row items-center gap-1.5 mb-2">
-                <View className="w-8 h-8 rounded-lg justify-center items-center" style={{ backgroundColor: colorTheme.iconBg }}>
-                  <Text className="text-base" style={{ color: colorTheme.iconText }}>{colorTheme.icon}</Text>
-                </View>
-                <Text className="text-sm font-extrabold text-brand-navy">{p.percentage || getPseudoPct(p.title, 10, 50)}%</Text>
+            <View key={i} style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: UI.accent }} />
+                <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 15, color: UI.foreground }}>{p.percentage || getPseudoPct(p.title, 10, 50)}%</Text>
               </View>
-              <Text className="text-xs text-brand-slate leading-4 font-semibold" numberOfLines={2}>{p.title}</Text>
+              <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, color: UI.fg50, lineHeight: 16 }} numberOfLines={2}>{p.title}</Text>
             </View>
           );
         })}
       </View>
-    </View>
+    </Animated.View>
   );
 
   const renderTimelines = () => timelineFeed?.map((userJourney, index) => (
-    <View key={`timeline-${index}`} className="bg-brand-white rounded-2xl p-4 mb-4 border border-brand-border">
-      <Text className="text-base font-extrabold text-brand-navy mb-4">{isSimilarJourney ? "Similar Founder" : "Journey Timeline"} <Text className="font-normal text-brand-slate">({userJourney.username})</Text></Text>
-      <View className="pl-1 pb-2">
+    <Animated.View entering={FadeInDown.delay(200 + index * 100).springify().damping(20)} key={`timeline-${index}`} style={{ backgroundColor: UI.surface, borderRadius: 16, padding: 20, marginBottom: 16, borderWidth: 1, borderColor: UI.fg08 }}>
+      <SectionLabel style={{ marginBottom: 16 }}>
+        {`${isSimilarJourney ? "SIMILAR FOUNDER " : "JOURNEY TIMELINE "}(@${userJourney.username})`}
+      </SectionLabel>
+      <View>
         {userJourney.timeline.map((event, i) => (
           <TimelineNodeItem 
             key={event.id} 
@@ -300,108 +337,119 @@ export default function ResultsPage() {
           />
         ))}
       </View>
-    </View>
+    </Animated.View>
   ));
 
   const renderDecisions = () => topDecisions.length > 0 && (
-    <View key="decisions" className="bg-brand-white rounded-2xl p-4 mb-4 border border-brand-border">
-      <View className="flex-row justify-between items-center mb-1">
-        <Text className="text-base font-extrabold text-brand-navy mb-4">Common Decisions</Text>
-        <Text className="text-[13px] text-brand-rust font-bold">Top 3</Text>
+    <Animated.View entering={FadeInDown.delay(300).springify().damping(20)} key="decisions" style={{ backgroundColor: UI.surface, borderRadius: 16, padding: 20, marginBottom: 16, borderWidth: 1, borderColor: UI.fg08 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <SectionLabel>COMMON DECISIONS</SectionLabel>
+        <PillBadge label="TOP 3" color={UI.accent} bgColor={UI.accentSoft} />
       </View>
-      <View className="gap-3">
+      <View style={{ gap: 12 }}>
         {topDecisions.map((d, i) => (
-          <View key={i} className="flex-row items-center gap-2.5">
-            <View className="w-6 h-6 rounded-full bg-brand-cream justify-center items-center"><Text className="text-brand-teal text-xs">◆</Text></View>
-            <Text className="flex-1 text-sm text-brand-slate font-medium">{d.description}</Text>
-            <Text className="text-sm font-extrabold text-brand-navy">{d.percentage || getPseudoPct(d.description, 20, 70)}%</Text>
+          <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
+            <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontSize: 10, color: UI.accent }}>◆</Text>
+            </View>
+            <Text style={{ flex: 1, fontFamily: 'Manrope_500Medium', fontSize: 14, color: UI.foreground, lineHeight: 20 }}>{d.description}</Text>
+            <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 14, color: UI.accent }}>{d.percentage || getPseudoPct(d.description, 20, 70)}%</Text>
           </View>
         ))}
       </View>
-    </View>
+    </Animated.View>
   );
 
   const renderAIInsight = () => aiInsights && (
-    <View key="aiInsight" className="bg-brand-cream rounded-2xl p-5 border border-brand-tan overflow-hidden mb-4 relative">
-      <View className="flex-row items-center justify-between mb-3">
-        <View className="flex-row items-center gap-1.5">
-          <Text className="text-lg">✨</Text>
-          <Text className="text-base font-extrabold text-brand-navy">AI Insight</Text>
-        </View>
-        <View className="flex-row gap-3">
-          <TouchableOpacity 
-            onPress={async () => {
-              if (isPlaying) {
-                sound?.stopAsync();
-                setIsPlaying(false);
-                return;
-              }
-              setIsPlaying(true);
-              try {
-                const token = await getToken();
-                if (!token) return;
-                const uri = await generateSpeechUri(token, aiInsights, preferredLang);
-                const { sound: newSound } = await Audio.Sound.createAsync({ uri });
-                setSound(newSound);
-                await newSound.playAsync();
-                newSound.setOnPlaybackStatusUpdate((status) => {
-                  if (status.isLoaded && status.didJustFinish) {
-                    setIsPlaying(false);
-                  }
-                });
-              } catch (err) {
-                console.warn(err);
-                setIsPlaying(false);
-              }
-            }}
-            disabled={isTranslating}
-          >
-            {isPlaying ? <Text className="text-[20px]">⏹️</Text> : <Text className="text-[20px]">🔊</Text>}
-          </TouchableOpacity>
+    <Animated.View entering={FadeInDown.delay(50).springify().damping(20)} key="aiInsight" style={{ marginBottom: 16 }}>
+      <DarkCard>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text style={{ fontSize: 16 }}>✨</Text>
+            <SectionLabel color="#FFF">AI INSIGHT</SectionLabel>
+          </View>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <TouchableOpacity 
+              onPress={async () => {
+                if (isPlaying) {
+                  sound?.stopAsync();
+                  setIsPlaying(false);
+                  return;
+                }
+                setIsPlaying(true);
+                try {
+                  const token = await getToken();
+                  if (!token) return;
+                  const uri = await generateSpeechUri(token, aiInsights, preferredLang);
+                  const { sound: newSound } = await Audio.Sound.createAsync({ uri });
+                  setSound(newSound);
+                  await newSound.playAsync();
+                  newSound.setOnPlaybackStatusUpdate((status) => {
+                    if (status.isLoaded && status.didJustFinish) {
+                      setIsPlaying(false);
+                    }
+                  });
+                } catch (err) {
+                  console.warn(err);
+                  setIsPlaying(false);
+                }
+              }}
+              disabled={isTranslating}
+              style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' }}
+            >
+              {isPlaying ? <Feather name="square" size={14} color="#FFF" /> : <Feather name="volume-2" size={16} color="#FFF" />}
+            </TouchableOpacity>
 
-          <TouchableOpacity 
-            onPress={async () => {
-              setIsTranslating(true);
-              try {
-                const token = await getToken();
-                if (!token) return;
-                const res = await translateInsights(token, aiInsights, preferredLang);
-                setTranslatedInsight(res.translatedAiInsights.directAnswer || res.translatedAiInsights.actionableTakeaway);
-              } catch (err) {
-                console.warn(err);
-              } finally {
-                setIsTranslating(false);
-              }
-            }}
-            disabled={isTranslating || isPlaying}
-          >
-            {isTranslating ? <ActivityIndicator color={BRAND_COLORS.navy} size="small" /> : <Text className="text-[20px]">🌐</Text>}
-          </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={async () => {
+                setIsTranslating(true);
+                try {
+                  const token = await getToken();
+                  if (!token) return;
+                  const res = await translateInsights(token, aiInsights, preferredLang);
+                  setTranslatedInsight(res.translatedAiInsights.directAnswer || res.translatedAiInsights.actionableTakeaway);
+                } catch (err) {
+                  console.warn(err);
+                } finally {
+                  setIsTranslating(false);
+                }
+              }}
+              disabled={isTranslating || isPlaying}
+              style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' }}
+            >
+              {isTranslating ? <ActivityIndicator color="#FFF" size="small" /> : <Feather name="globe" size={16} color="#FFF" />}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      <Text className="text-[15px] text-brand-navy leading-[22px] font-semibold pr-10">{translatedInsight || aiInsights.directAnswer || aiInsights.actionableTakeaway}</Text>
-      <Text className="absolute -bottom-2.5 -right-2.5 text-[60px] opacity-10">🧠</Text>
-    </View>
+        <Text style={{ fontFamily: 'Manrope_500Medium', fontSize: 16, color: '#FFF', lineHeight: 24 }}>
+          {translatedInsight || aiInsights.directAnswer || aiInsights.actionableTakeaway}
+        </Text>
+      </DarkCard>
+    </Animated.View>
   );
 
   return (
     <KeyboardAvoidingView 
-      className="flex-1 bg-brand-cream"
+      style={{ flex: 1, backgroundColor: UI.background }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={60}
     >
       {/* Header */}
-      <View className="flex-row items-center bg-brand-white px-4 pt-12 pb-4 border-b border-brand-border">
-        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} className="p-2 -ml-2">
-          <Text className="text-2xl text-brand-navy">←</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 56, paddingBottom: 16, backgroundColor: UI.surface, borderBottomWidth: 1, borderBottomColor: UI.fg08 }}>
+        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={{ padding: 8, marginLeft: -8 }}>
+          <Feather name="arrow-left" size={24} color={UI.foreground} />
         </TouchableOpacity>
-        <View className="flex-1 px-3">
-          <Text className="text-lg font-bold text-brand-navy leading-[22px]" numberOfLines={2}>{queryText}</Text>
-          <Text className="text-[13px] text-brand-rust font-bold mt-1">{isSimilarJourney ? `Found ${stats?.usersAnalyzed || 0} Similar Founders` : `Analyzed ${stats?.usersAnalyzed || 0} Founders`}</Text>
+        <View style={{ flex: 1, paddingHorizontal: 12 }}>
+          <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, lineHeight: 28 }} numberOfLines={2}>
+            {queryText}
+          </Text>
+          <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, color: UI.accent, marginTop: 4 }}>
+            {isSimilarJourney ? `Found ${stats?.usersAnalyzed || 0} Similar Founders` : `Analyzed ${stats?.usersAnalyzed || 0} Founders`}
+          </Text>
         </View>
       </View>
 
-      <ScrollView contentContainerClassName="p-4 pb-10">
+      <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
         {isRecommendation ? (
           <>
             {renderAIInsight()}
@@ -427,11 +475,15 @@ export default function ResultsPage() {
       </ScrollView>
 
       {/* Follow-up Question Interface */}
-      <View className="flex-row items-center p-3 bg-brand-white border-t border-brand-border">
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 12, paddingBottom: Platform.OS === 'ios' ? 24 : 12, backgroundColor: UI.surface, borderTopWidth: 1, borderTopColor: UI.fg08 }}>
         <TextInput
-          className="flex-1 bg-brand-cream rounded-full px-4 py-2.5 text-[15px] text-brand-navy"
+          style={{
+            flex: 1, backgroundColor: UI.background, borderRadius: 24, paddingHorizontal: 20, paddingVertical: 14,
+            fontSize: 15, fontFamily: 'Manrope_400Regular', color: UI.foreground,
+            borderWidth: 1, borderColor: UI.fg08
+          }}
           placeholder="Ask a follow-up question..."
-          placeholderTextColor={BRAND_COLORS.slate}
+          placeholderTextColor={UI.fg40}
           value={followUpQuery}
           onChangeText={setFollowUpQuery}
           onSubmitEditing={handleFollowUp}
@@ -439,14 +491,17 @@ export default function ResultsPage() {
           editable={!isSubmittingFollowUp}
         />
         <TouchableOpacity 
-          className="w-10 h-10 rounded-full bg-brand-teal justify-center items-center ml-2" 
+          style={{
+            width: 48, height: 48, borderRadius: 24, backgroundColor: isSubmittingFollowUp || !followUpQuery.trim() ? UI.fg08 : UI.accent,
+            alignItems: 'center', justifyContent: 'center', marginLeft: 12
+          }}
           onPress={handleFollowUp}
           disabled={isSubmittingFollowUp || !followUpQuery.trim()}
         >
           {isSubmittingFollowUp ? (
-            <ActivityIndicator color={BRAND_COLORS.white} size="small" />
+            <ActivityIndicator color={UI.accent} size="small" />
           ) : (
-            <Text className="text-brand-white text-lg pl-0.5">➤</Text>
+            <Feather name="send" size={18} color={!followUpQuery.trim() ? UI.fg40 : '#FFF'} style={{ marginLeft: -2, marginTop: 2 }} />
           )}
         </TouchableOpacity>
       </View>

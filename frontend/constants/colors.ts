@@ -1,5 +1,52 @@
 import { EmotionLabel, NodeType } from '../types/schema';
 
+// ═══════════════════════════════════════════════════════
+//  New UI Design System (runanywhere.ai-inspired)
+//  Use `UI` for all new screens and revamped components.
+// ═══════════════════════════════════════════════════════
+
+export const UI = {
+  // ── Backgrounds ──
+  background:   '#FAF9F6',   // warm off-white canvas
+  surface:      '#FFFFFF',   // card surfaces
+  surfaceDim:   '#F4F3F1',   // slightly dimmed surface
+  surfaceInverse: '#0F172A', // dark cards (navy-black)
+
+  // ── Foreground (opacity-based system) ──
+  foreground:   '#0F172A',   // primary text (near-black)
+  fg80:         'rgba(15, 23, 42, 0.80)',  // strong secondary
+  fg50:         'rgba(15, 23, 42, 0.50)',  // descriptions, placeholders
+  fg40:         'rgba(15, 23, 42, 0.40)',  // labels, muted text
+  fg20:         'rgba(15, 23, 42, 0.20)',  // dividers, subtle borders
+  fg08:         'rgba(15, 23, 42, 0.08)',  // hairline dividers
+  fg06:         'rgba(15, 23, 42, 0.06)',  // pill backgrounds
+
+  // ── Accent (orange gradient) ──
+  accent:       '#FF6900',   // primary CTA, gradient start
+  accentEnd:    '#FB2C36',   // gradient end (red-orange)
+  accentTint:   'rgba(255, 105, 0, 0.10)', // tinted backgrounds
+  accentSoft:   'rgba(255, 105, 0, 0.06)', // very subtle tint
+
+  // ── Success / Live ──
+  success:      '#1B9E77',
+  successTint:  'rgba(27, 158, 119, 0.10)',
+
+  // ── Structural colors (evolved teal) ──
+  teal:         '#3E6B66',
+  tealTint:     '#E7EFEE',
+
+  // ── Borders ──
+  border:       '#EAE7E0',
+  borderSubtle: 'rgba(15, 23, 42, 0.06)',
+
+  // ── Dark card text ──
+  onDark:       '#FFFFFF',
+  onDark80:     'rgba(255, 255, 255, 0.85)',
+  onDark50:     'rgba(255, 255, 255, 0.50)',
+  onDark30:     'rgba(255, 255, 255, 0.30)',
+  onDark10:     'rgba(255, 255, 255, 0.10)',
+};
+
 export const BRAND_COLORS = {
   // Core palette
   navy: '#1A202C',
@@ -23,7 +70,7 @@ export const BRAND_COLORS = {
   indigoLight: '#818CF8',
 };
 
-// Landing page design system (DESIGN.md)
+// Landing page design system (DESIGN.md) — kept for backward compat
 export const L = {
   background:     '#FAF9F6',
   surface:        '#FFFFFF',

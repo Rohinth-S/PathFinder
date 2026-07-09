@@ -7,12 +7,15 @@ import { useRouter } from 'expo-router';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, {
   useSharedValue, useAnimatedStyle, withTiming, withSequence,
-  Easing, interpolateColor, runOnJS,
+  Easing, interpolateColor, FadeInDown,
 } from 'react-native-reanimated';
-import { L } from '../../constants/colors';
+import { UI } from '../../constants/colors';
 import {
   getTopics, getSubtopics, searchCommunity, SearchCommunityUser,
 } from '../../api/community.api';
+import { SectionLabel, PillBadge } from '../../components/ui/SectionLabel';
+import { DotDivider } from '../../components/ui/DotDivider';
+import { GradientButton } from '../../components/ui/GradientButton';
 
 // ═══════════════════════════════════════════════════════
 //  Bottom-sheet picker (shared with Profile language selector pattern)
@@ -30,21 +33,21 @@ type PickerProps = {
 function BottomSheetPicker({ visible, title, options, selected, onSelect, onClose }: PickerProps) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={{ flex: 1, backgroundColor: 'rgba(21,34,56,0.35)' }} onPress={onClose}>
+      <Pressable style={{ flex: 1, backgroundColor: 'rgba(15,23,42,0.4)' }} onPress={onClose}>
         <View style={{ flex: 1 }} />
         <Pressable
           onPress={(e) => e.stopPropagation()}
           style={{
-            backgroundColor: L.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+            backgroundColor: UI.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24,
             paddingTop: 20, paddingBottom: Platform.OS === 'ios' ? 40 : 24,
             maxHeight: '60%',
           }}
         >
           {/* Handle bar */}
-          <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: L.border, alignSelf: 'center', marginBottom: 16 }} />
+          <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: UI.fg20, alignSelf: 'center', marginBottom: 16 }} />
 
           {/* Title */}
-          <Text style={{ fontSize: 17, fontWeight: '700', color: L.navy, paddingHorizontal: 24, marginBottom: 16, fontFamily: 'Manrope_700Bold' }}>
+          <Text style={{ fontSize: 17, fontWeight: '700', color: UI.foreground, paddingHorizontal: 24, marginBottom: 16, fontFamily: 'Manrope_700Bold' }}>
             {title}
           </Text>
 
@@ -58,18 +61,18 @@ function BottomSheetPicker({ visible, title, options, selected, onSelect, onClos
                   onPress={() => onSelect(opt)}
                   style={{
                     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-                    paddingVertical: 14, paddingHorizontal: 12, borderRadius: 12, marginBottom: 4,
-                    backgroundColor: isSelected ? L.tealTint : 'transparent',
+                    paddingVertical: 14, paddingHorizontal: 16, borderRadius: 12, marginBottom: 4,
+                    backgroundColor: isSelected ? UI.accentSoft : 'transparent',
                   }}
                 >
                   <Text style={{
-                    fontSize: 15, color: L.navy, fontWeight: isSelected ? '600' : '400',
+                    fontSize: 15, color: isSelected ? UI.accent : UI.foreground,
                     fontFamily: isSelected ? 'Manrope_600SemiBold' : 'Manrope_400Regular',
                   }}>
                     {opt}
                   </Text>
                   {isSelected && (
-                    <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: L.teal, alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.accent, alignItems: 'center', justifyContent: 'center' }}>
                       <Feather name="check" size={14} color="#FFFFFF" />
                     </View>
                   )}
@@ -110,13 +113,13 @@ function FilterTrigger({ label, value, disabled, onPress }: FilterTriggerProps) 
   }, [disabled, flashProgress]);
 
   const flashStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(flashProgress.value, [0, 1], ['transparent', L.tealTint]),
+    backgroundColor: interpolateColor(flashProgress.value, [0, 1], ['transparent', UI.accentSoft]),
   }));
 
-  const borderColor = disabled ? L.border : (value ? L.teal : `${L.teal}4D`); // 4D = 30% opacity
-  const bgColor = disabled ? L.background : (value ? L.tealTint : L.surface);
-  const textColor = disabled ? `${L.navySoft}66` : (value ? L.navy : L.navySoft); // 66 = 40%
-  const chevronColor = disabled ? `${L.navySoft}4D` : L.teal; // 4D = 30%
+  const borderColor = disabled ? UI.fg08 : (value ? UI.accentTint : UI.fg20);
+  const bgColor = disabled ? UI.background : (value ? UI.accentSoft : UI.surface);
+  const textColor = disabled ? UI.fg40 : (value ? UI.foreground : UI.fg50);
+  const chevronColor = disabled ? UI.fg40 : UI.fg80;
 
   return (
     <TouchableOpacity
@@ -137,7 +140,7 @@ function FilterTrigger({ label, value, disabled, onPress }: FilterTriggerProps) 
         <Text
           numberOfLines={1}
           style={{
-            flex: 1, fontSize: 14, fontWeight: value ? '500' : '400', color: textColor,
+            flex: 1, fontSize: 13, color: textColor,
             fontFamily: value ? 'Manrope_600SemiBold' : 'Manrope_400Regular',
           }}
         >
@@ -145,7 +148,7 @@ function FilterTrigger({ label, value, disabled, onPress }: FilterTriggerProps) 
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           {disabled && (
-            <Feather name="lock" size={10} color={`${L.navySoft}4D`} />
+            <Feather name="lock" size={10} color={UI.fg40} />
           )}
           <Feather name="chevron-down" size={14} color={chevronColor} />
         </View>
@@ -167,11 +170,6 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
     : user.reputationScore;
   const hasReputation = repScore != null && repScore > 0;
 
-  // Parse experience count
-  const expCount = typeof user.experienceCount === 'object' && user.experienceCount !== null
-    ? (user.experienceCount as any).low
-    : user.experienceCount;
-
   // Build a one-line AI summary from available data
   const summary = user.latestExperience
     ? `${user.latestExperience.timelineSummary}`
@@ -179,7 +177,8 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
 
   return (
     <View style={{
-      backgroundColor: L.surface, borderRadius: 20, borderWidth: 1, borderColor: `${L.teal}33`,
+      backgroundColor: UI.surface, borderRadius: 16, borderWidth: 1, borderColor: UI.fg08,
+      borderLeftWidth: 3, borderLeftColor: UI.accent,
       paddingHorizontal: 16, paddingVertical: 16, marginBottom: 16,
     }}>
       {/* Header: avatar + username + reputation */}
@@ -187,26 +186,27 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           {/* Avatar circle */}
           <View style={{
-            width: 40, height: 40, borderRadius: 20, backgroundColor: L.tealTint,
+            width: 40, height: 40, borderRadius: 20, backgroundColor: UI.accentSoft,
             alignItems: 'center', justifyContent: 'center', overflow: 'hidden'
           }}>
             {user.avatarUrl ? (
               <Image source={{ uri: user.avatarUrl }} style={{ width: 40, height: 40 }} />
             ) : (
-              <Text style={{ fontSize: 17, fontWeight: '700', color: L.teal, fontFamily: 'Manrope_700Bold' }}>{initial}</Text>
+              <Text style={{ fontSize: 17, color: UI.accent, fontFamily: 'Manrope_700Bold' }}>{initial}</Text>
             )}
           </View>
-          <Text style={{ fontSize: 15, fontWeight: '700', color: L.navy, fontFamily: 'Manrope_700Bold' }}>@{user.username || 'unknown'}</Text>
+          <Text style={{ fontSize: 15, color: UI.foreground, fontFamily: 'Manrope_700Bold' }}>@{user.username || 'unknown'}</Text>
         </View>
 
         {/* Reputation badge */}
         {hasReputation && (
           <View style={{
             flexDirection: 'row', alignItems: 'center', gap: 4,
-            backgroundColor: L.terracottaTint, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
+            backgroundColor: UI.accentSoft, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
+            borderWidth: 1, borderColor: UI.accentTint,
           }}>
-            <Text style={{ fontSize: 11, color: L.terracotta }}>★</Text>
-            <Text style={{ fontSize: 12, fontWeight: '700', color: L.terracotta, fontFamily: 'Manrope_700Bold' }}>{repScore}</Text>
+            <Text style={{ fontSize: 11, color: UI.accent }}>★</Text>
+            <Text style={{ fontSize: 12, color: UI.accent, fontFamily: 'Manrope_700Bold' }}>{repScore}</Text>
           </View>
         )}
       </View>
@@ -214,7 +214,7 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
       {/* AI Summary */}
       <Text
         numberOfLines={2}
-        style={{ fontSize: 14, color: L.navy, lineHeight: 20, marginBottom: 12, fontFamily: 'Manrope_400Regular' }}
+        style={{ fontSize: 14, color: UI.foreground, lineHeight: 22, marginBottom: 16, fontFamily: 'Manrope_400Regular' }}
       >
         {summary}
       </Text>
@@ -222,14 +222,10 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
       {/* Expertise Areas */}
       {user.topics && user.topics.length > 0 && (
         <View style={{ marginBottom: 16 }}>
-          <Text style={{ fontSize: 11, fontWeight: '600', color: L.teal, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 8, fontFamily: 'Manrope_600SemiBold' }}>
-            EXPERTISE AREAS
-          </Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <SectionLabel style={{ marginBottom: 8 }}>EXPERTISE AREAS</SectionLabel>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
             {user.topics.map((topic) => (
-              <View key={topic} style={{ backgroundColor: L.tealTint, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6 }}>
-                <Text style={{ fontSize: 12, fontWeight: '500', color: L.teal, fontFamily: 'Manrope_600SemiBold' }}>{topic}</Text>
-              </View>
+              <PillBadge key={topic} label={topic} />
             ))}
           </View>
         </View>
@@ -238,63 +234,28 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
       {/* Goals Matching Your Search */}
       {user.subtopics && user.subtopics.length > 0 && (
         <View style={{ marginBottom: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <Feather name="target" size={14} color={L.teal} />
-            <Text style={{ fontSize: 11, fontWeight: '600', color: L.teal, letterSpacing: 1.5, textTransform: 'uppercase', fontFamily: 'Manrope_600SemiBold' }}>
-              GOALS MATCHING YOUR SEARCH
-            </Text>
-            {/* Terracotta count pill */}
-            <View style={{ backgroundColor: L.terracottaTint, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 2, marginLeft: 'auto' }}>
-              <Text style={{ fontSize: 11, fontWeight: '600', color: L.terracotta, fontFamily: 'Manrope_600SemiBold' }}>
-                {user.subtopics.length} Goals Matched
-              </Text>
-            </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <SectionLabel>MATCHING GOALS</SectionLabel>
+            <PillBadge label={`${user.subtopics.length} MATCHES`} color={UI.accent} bgColor={UI.accentSoft} />
           </View>
           {user.subtopics.slice(0, 3).map((goal, i) => (
-            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 6, paddingLeft: 4 }}>
-              <View style={{ width: 7, height: 7, borderRadius: 3.5, borderWidth: 1.5, borderColor: L.teal, marginTop: 5 }} />
-              <Text style={{ fontSize: 13, fontWeight: '500', color: L.navy, flex: 1, fontFamily: 'Manrope_600SemiBold' }}>{goal}</Text>
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
+              <Feather name="target" size={12} color={UI.fg40} style={{ marginTop: 2 }} />
+              <Text style={{ fontSize: 13, color: UI.foreground, flex: 1, fontFamily: 'Manrope_600SemiBold' }}>{goal}</Text>
             </View>
           ))}
-          {user.subtopics.length > 3 && (
-            <Text style={{ fontSize: 12, color: L.navySoft, paddingLeft: 21, fontFamily: 'Manrope_400Regular' }}>
-              +{user.subtopics.length - 3} more
-            </Text>
-          )}
         </View>
       )}
 
-      {/* Journey Highlights */}
-      {user.latestExperience && (
-        <View style={{ marginBottom: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <MaterialCommunityIcons name="star-four-points" size={14} color={L.teal} />
-            <Text style={{ fontSize: 11, fontWeight: '600', color: L.teal, letterSpacing: 1.5, textTransform: 'uppercase', fontFamily: 'Manrope_600SemiBold' }}>
-              JOURNEY HIGHLIGHTS
-            </Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 4, paddingLeft: 4 }}>
-            <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: L.teal, marginTop: 5 }} />
-            <Text style={{ fontSize: 13, fontWeight: '500', color: L.navy, flex: 1, fontFamily: 'Manrope_600SemiBold' }}>
-              {user.latestExperience.title}
-              {user.latestExperience.organization ? ` at ${user.latestExperience.organization}` : ''}
-            </Text>
-          </View>
-        </View>
-      )}
+      <DotDivider style={{ marginVertical: 12 }} />
 
-      {/* View Full Journey button */}
-      <TouchableOpacity
+      <GradientButton
+        label="View Full Journey"
         onPress={onViewJourney}
-        style={{
-          flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-          borderWidth: 1, borderColor: L.teal, borderRadius: 28, paddingVertical: 14,
-          backgroundColor: L.surface,
-        }}
-      >
-        <MaterialCommunityIcons name="map-marker-path" size={18} color={L.teal} />
-        <Text style={{ fontSize: 14, fontWeight: '600', color: L.teal, fontFamily: 'Manrope_600SemiBold' }}>View Full Journey</Text>
-      </TouchableOpacity>
+        variant="ghost"
+        size="sm"
+        style={{ alignSelf: 'flex-start', paddingHorizontal: 0 }}
+      />
     </View>
   );
 }
@@ -306,7 +267,7 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
 function SkeletonCard() {
   return (
     <View style={{
-      backgroundColor: `${L.tealTint}66`, borderRadius: 20, height: 200, marginBottom: 16,
+      backgroundColor: UI.fg06, borderRadius: 16, height: 200, marginBottom: 16,
     }} />
   );
 }
@@ -413,27 +374,34 @@ export default function CommunityPage() {
     fetchUsers();
   };
 
-  const renderUserCard = useCallback(({ item }: { item: SearchCommunityUser }) => (
-    <UserCard
-      user={item}
-      onViewJourney={() => router.push(`/u/${item.username || 'unknown'}`)}
-    />
+  const renderUserCard = useCallback(({ item, index }: { item: SearchCommunityUser; index: number }) => (
+    <Animated.View entering={FadeInDown.delay(index * 60).springify().damping(20)}>
+      <UserCard
+        user={item}
+        onViewJourney={() => router.push(`/u/${item.username || 'unknown'}`)}
+      />
+    </Animated.View>
   ), [router]);
 
   const isSearchEnabled = selectedTopic != null;
 
   return (
-    <View style={{ flex: 1, backgroundColor: L.background }}>
+    <View style={{ flex: 1, backgroundColor: UI.background }}>
       {/* Header */}
-      <View style={{ paddingHorizontal: 24, paddingTop: 56, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: `${L.teal}26` }}>
-        <Text style={{ fontSize: 22, fontWeight: '700', color: L.navy, fontFamily: 'Manrope_700Bold' }}>Community</Text>
-        <Text style={{ fontSize: 14, color: L.navySoft, marginTop: 4, fontFamily: 'Manrope_400Regular' }}>
-          Discover journeys from people pursuing similar goals.
+      <View style={{ paddingHorizontal: 24, paddingTop: 56, paddingBottom: 16 }}>
+        <SectionLabel>The Ecosystem</SectionLabel>
+        <Text style={{
+          fontFamily: 'InstrumentSerif_400Regular',
+          fontSize: 32, color: UI.foreground, marginTop: 4,
+        }}>
+          Explore Community
         </Text>
       </View>
 
+      <DotDivider style={{ marginHorizontal: 24, marginBottom: 8 }} />
+
       {/* Filters */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, marginTop: 20, marginBottom: 24 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, marginTop: 16, marginBottom: 24 }}>
         <FilterTrigger
           label="Topic"
           value={selectedTopic}
@@ -445,25 +413,26 @@ export default function CommunityPage() {
           disabled={!selectedTopic}
           onPress={() => setSubtopicPickerVisible(true)}
         />
-        {/* Search button — terracotta */}
+        {/* Search button — orange gradient style */}
         <TouchableOpacity
           onPress={handleSearch}
+          disabled={!isSearchEnabled}
           style={{
             width: 44, height: 44, borderRadius: 22,
-            backgroundColor: isSearchEnabled ? L.terracotta : `${L.terracotta}59`,
+            backgroundColor: isSearchEnabled ? UI.accent : UI.fg08,
             alignItems: 'center', justifyContent: 'center',
           }}
         >
-          <Feather name="search" size={18} color="#FFFFFF" />
+          <Feather name="search" size={18} color={isSearchEnabled ? '#FFFFFF' : UI.fg40} />
         </TouchableOpacity>
       </View>
 
       {/* Results header */}
       {!isLoading && users.length > 0 && (
         <View style={{ paddingHorizontal: 24, marginBottom: 16 }}>
-          <Text style={{ fontSize: 13, fontWeight: '500', color: L.navySoft, fontFamily: 'Manrope_600SemiBold' }}>
-            {users.length} {users.length === 1 ? 'journey' : 'journeys'} found
-          </Text>
+          <SectionLabel>
+            {`${users.length} ${users.length === 1 ? 'JOURNEY' : 'JOURNEYS'} FOUND`}
+          </SectionLabel>
         </View>
       )}
 
@@ -476,14 +445,12 @@ export default function CommunityPage() {
         </View>
       ) : users.length === 0 ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingBottom: 80 }}>
-          <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: L.tealTint, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-            <Feather name="compass" size={28} color={L.teal} />
-          </View>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: L.navy, textAlign: 'center', marginBottom: 8, fontFamily: 'Manrope_600SemiBold' }}>
+          <Text style={{ fontSize: 48, marginBottom: 16 }}>🌱</Text>
+          <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
             No journeys match yet
           </Text>
-          <Text style={{ fontSize: 14, color: L.navySoft, textAlign: 'center', fontFamily: 'Manrope_400Regular' }}>
-            Try a different topic or subtopic.
+          <Text style={{ fontSize: 14, color: UI.fg50, textAlign: 'center', fontFamily: 'Manrope_400Regular' }}>
+            Try exploring a different topic or subtopic.
           </Text>
         </View>
       ) : (
@@ -494,7 +461,7 @@ export default function CommunityPage() {
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
           refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={L.teal} />
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={UI.accent} />
           }
         />
       )}
