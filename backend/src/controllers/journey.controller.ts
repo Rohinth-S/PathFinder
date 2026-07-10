@@ -92,7 +92,15 @@ export async function submitJourneyController(
       });
       return;
     }
-    const result = await submitJourney(userId,req.body);
+
+    const { conversationId, ...journeyPayload } = req.body;
+    if (!conversationId) {
+      res.status(400).json({
+        error: "Missing required parameter: conversationId",
+      });
+      return;
+    }
+    const result = await submitJourney(userId, conversationId, journeyPayload);
     res.json({success: true,...result,});
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

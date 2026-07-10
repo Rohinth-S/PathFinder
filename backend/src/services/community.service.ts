@@ -142,6 +142,13 @@ export async function searchCommunityUsers(
           reduce(total = 0, h IN highlights | total + h.score) AS journeyScore
       }
 
+      // FIX 1: Use a WITH clause to explicitly carry all variables from subqueries forward
+      WITH 
+        u, 
+        matchingGoals, 
+        hasVerifiedExperience, 
+        journeyHighlights, 
+        journeyScore
       WHERE size(matchingGoals) > 0
 
       WITH
@@ -149,7 +156,8 @@ export async function searchCommunityUsers(
         matchingGoals,
         hasVerifiedExperience,
         journeyHighlights,
-        journeyScore
+        // FIX 2: Added a missing comma after journeyScore
+        journeyScore,
         (
           CASE
             WHEN $topic IS NOT NULL

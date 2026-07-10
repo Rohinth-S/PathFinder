@@ -18,7 +18,8 @@ export async function retrieveContext(
   query: QueryUnderstanding
 ): Promise<RetrievedContext> {
 
-  const usernames =await retrieveUsersByGoals(query.topics,query.subtopics);const journeys =await retrieveJourneys(usernames);
+  const usernames =await retrieveUsersByGoals(query.topics,query.subtopics);
+  const journeys =await retrieveJourneys(usernames);
   const journeyExperienceIds =new Set<string>();
 
   for (const journey of journeys) {
