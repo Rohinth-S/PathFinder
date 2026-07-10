@@ -9,22 +9,22 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { MotionButton, ProblemDividerDot, RippleMicBadge, SectionReveal, StaggerItem } from './landingMotion';
-import { L } from '../../constants/colors';
+import { ProblemDividerDot, RippleMicBadge, SectionReveal, StaggerItem } from './landingMotion';
+import { UI } from '../../constants/colors';
+import { GradientButton } from '../ui/GradientButton';
+import { SectionLabel, PillBadge } from '../ui/SectionLabel';
+import { FloatingParticles } from './FloatingParticles';
 
 // ═══════════════════════════════════════════════════════
 //  Shared style helpers 
 // ═══════════════════════════════════════════════════════
 
 const s = {
-  eyebrow: { fontSize: 12, fontWeight: '600' as const, color: L.teal, letterSpacing: 2, textTransform: 'uppercase' as const },
-  h1: { fontSize: 26, fontWeight: '700' as const, color: L.navy, letterSpacing: -0.5, lineHeight: 32, fontFamily: 'Manrope_700Bold' },
-  h2: { fontSize: 19, fontWeight: '600' as const, color: L.navy, letterSpacing: -0.3, lineHeight: 24, fontFamily: 'Manrope_600SemiBold' },
-  body: { fontSize: 15, fontWeight: '400' as const, color: L.navySoft, lineHeight: 22, fontFamily: 'Manrope_400Regular' },
-  caption: { fontSize: 12, fontWeight: '600' as const, letterSpacing: 1, fontFamily: 'Manrope_600SemiBold' },
-  micro: { fontSize: 11, fontWeight: '400' as const, lineHeight: 14, fontFamily: 'Manrope_400Regular' },
+  h1: { fontSize: 36, color: UI.foreground, letterSpacing: -0.5, lineHeight: 42, fontFamily: 'InstrumentSerif_400Regular' },
+  h2: { fontSize: 24, color: UI.foreground, letterSpacing: -0.3, lineHeight: 28, fontFamily: 'InstrumentSerif_400Regular' },
+  body: { fontSize: 15, fontWeight: '400' as const, color: UI.fg50, lineHeight: 24, fontFamily: 'Inter_400Regular' },
+  micro: { fontSize: 13, fontWeight: '400' as const, lineHeight: 18, color: UI.fg40, fontFamily: 'Inter_400Regular' },
   sectionPy16: { paddingVertical: 64, paddingHorizontal: 24 },
-  sectionPy10: { paddingVertical: 40, paddingHorizontal: 24 },
 };
 
 // ═══════════════════════════════════════════════════════
@@ -34,70 +34,59 @@ const s = {
 
 type HeroProps = {
   onPressGoogle: () => void;
-  onPressEmail?: () => void;
 };
 
 export function HeroSection({ onPressGoogle }: HeroProps) {
   return (
-    <SectionReveal style={{ minHeight: 680, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 60 }}>
-      {/* Logo mark 88×88 */}
+    <SectionReveal style={{ minHeight: 700, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 80, backgroundColor: UI.surfaceInverse }}>
+      <FloatingParticles />
+      
+      {/* Logo mark */}
       <StaggerItem index={0}>
         <Image
-          source={require('../../assets/logo-light.png')}
-          style={{ width: 88, height: 88, borderRadius: 20, marginBottom: 16 }}
+          source={require('../../assets/logo-dark.png')}
+          style={{ width: 64, height: 64, borderRadius: 16, marginBottom: 24 }}
           resizeMode="contain"
         />
       </StaggerItem>
 
-      {/* Wordmark "PATHFINDER" */}
+      {/* Small top label */}
       <StaggerItem index={1}>
-        <Image
-          source={require('../../assets/title.png')}
-          style={{ width: 220, height: 44, marginBottom: 8 }}
-          resizeMode="contain"
-        />
+        <SectionLabel color="rgba(255,255,255,0.4)" style={{ marginBottom: 40 }}>PATHFINDER · BETA</SectionLabel>
       </StaggerItem>
 
-      {/* Tagline — almost H2 size, teal, medium weight */}
+      {/* Tagline matching the "Read the research." style */}
       <StaggerItem index={2}>
-        <Text style={{ fontSize: 17, fontWeight: '500', color: L.teal, textAlign: 'center', marginBottom: 24, fontFamily: 'Manrope_600SemiBold' }}>
-          Every Journey{' '}
-          <Text style={{ color: L.terracotta }}>Can Guide Another.</Text>
+        <Text style={{ fontSize: 56, color: '#FFFFFF', textAlign: 'center', fontFamily: 'InstrumentSerif_400Regular', lineHeight: 64, letterSpacing: -1 }}>
+          Trust the journey.
+        </Text>
+      </StaggerItem>
+      <StaggerItem index={3}>
+        <Text style={{ fontSize: 56, color: UI.accent, textAlign: 'center', fontFamily: 'InstrumentSerif_400Regular', lineHeight: 64, letterSpacing: -1, marginBottom: 24 }}>
+          Find your path.
         </Text>
       </StaggerItem>
 
       {/* Supporting sentence */}
-      <StaggerItem index={3}>
-        <Text style={{ fontSize: 14, fontWeight: '400', color: L.navySoft, textAlign: 'center', lineHeight: 22, maxWidth: '85%', marginBottom: 40, fontFamily: 'Manrope_400Regular' }}>
+      <StaggerItem index={4}>
+        <Text style={{ fontSize: 18, color: 'rgba(255,255,255,0.6)', textAlign: 'center', lineHeight: 28, maxWidth: '85%', marginBottom: 48, fontFamily: 'Inter_400Regular' }}>
           Learn from real, verified journeys of founders, professionals, and students who have already walked the path you're considering.
         </Text>
       </StaggerItem>
 
       {/* Auth buttons */}
-      <StaggerItem index={4} style={{ width: '100%', maxWidth: 360, gap: 12 }}>
-        {/* Primary: Continue with Google */}
-        <MotionButton
+      <StaggerItem index={5} style={{ width: '100%', maxWidth: 300, alignItems: 'center' }}>
+        <GradientButton 
+          label="Explore our work ->"
           onPress={onPressGoogle}
-          style={{
-            backgroundColor: L.surface, borderWidth: 1, borderColor: L.border,
-            height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center',
-            shadowColor: '#152238', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 20, elevation: 3,
-          }}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-            <Image
-              source={require('../../assets/google.png')}
-              style={{ width: 20, height: 20, marginRight: 16 }}
-              resizeMode="contain"
-            />
-            <Text style={{ color: L.navy, fontSize: 15, fontWeight: '400', fontFamily: 'Manrope_400Regular' }}>Continue with Google</Text>
-          </View>
-        </MotionButton>
+          size="lg"
+          style={{ width: '100%', paddingHorizontal: 0 }}
+        />
       </StaggerItem>
 
       {/* Micro-copy */}
-      <StaggerItem index={5}>
-        <Text style={{ fontSize: 11, color: 'rgba(21, 34, 56, 0.38)', textAlign: 'center', marginTop: 16, fontFamily: 'Manrope_400Regular' }}>
+      <StaggerItem index={4}>
+        <Text style={{ fontSize: 12, color: UI.fg40, textAlign: 'center', marginTop: 16, fontFamily: 'Inter_400Regular' }}>
           By continuing you agree to our Terms & Privacy.
         </Text>
       </StaggerItem>
@@ -113,11 +102,11 @@ export function HeroSection({ onPressGoogle }: HeroProps) {
 export function ProblemSection() {
   return (
     <SectionReveal style={s.sectionPy16}>
-      <StaggerItem index={0}><Text style={[s.eyebrow, { marginBottom: 12 }]}>THE PROBLEM</Text></StaggerItem>
+      <StaggerItem index={0}><SectionLabel style={{ marginBottom: 12 }}>THE PROBLEM</SectionLabel></StaggerItem>
       <StaggerItem index={1}><Text style={[s.h1, { marginBottom: 16 }]}>The biggest decisions are often made with the least reliable information.</Text></StaggerItem>
       <StaggerItem index={2}><Text style={s.body}>People jump between LinkedIn, Reddit, YouTube, blogs, and AI assistants for important decisions. Every platform shows a different fragment — achievements, opinions, stories — but never the whole journey.</Text></StaggerItem>
       <StaggerItem index={3}>
-        <ProblemDividerDot dotColor={L.teal} lineColor={L.border} style={{ marginTop: 64 }} />
+        <ProblemDividerDot dotColor={UI.accent} lineColor={UI.fg08} style={{ marginTop: 64 }} />
       </StaggerItem>
     </SectionReveal>
   );
@@ -160,17 +149,17 @@ function SwingingPlusBadge() {
     <Animated.View
       style={[
         {
-          width: 40,
-          height: 40,
-          borderRadius: 20,
-          backgroundColor: L.terracottaTint,
+          width: 48,
+          height: 48,
+          borderRadius: 24,
+          backgroundColor: UI.accentSoft,
           alignItems: 'center',
           justifyContent: 'center',
         },
         animatedStyle,
       ]}
     >
-      <Text style={{ fontSize: 22, lineHeight: 28, color: L.terracotta, fontWeight: '500' }}>+</Text>
+      <Text style={{ fontSize: 28, lineHeight: 32, color: UI.accent, fontWeight: '500' }}>+</Text>
     </Animated.View>
   );
 }
@@ -189,17 +178,14 @@ export function ComparisonSection() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 6 }} contentContainerStyle={{ gap: 12, paddingHorizontal: 4 }}>
           {PLATFORMS.map((p, i) => (
             <View key={i} style={{
-              width: 128, height: 128, backgroundColor: L.surface, borderRadius: 16,
-              borderWidth: 1, borderColor: L.border, alignItems: 'center', justifyContent: 'center', padding: 12,
-              shadowColor: '#152238', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 12, elevation: 2,
+              width: 128, height: 128, backgroundColor: UI.surface, borderRadius: 16,
+              borderWidth: 1, borderColor: UI.fg08, alignItems: 'center', justifyContent: 'center', padding: 12,
             }}>
-              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: L.tealTint, alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
-                <MaterialCommunityIcons name={p.icon} size={22} color={L.teal} />
+              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: UI.fg06, alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
+                <MaterialCommunityIcons name={p.icon} size={22} color={UI.foreground} />
               </View>
-              <Text style={{ fontSize: 14, fontWeight: '600', color: L.navy, marginBottom: 4, fontFamily: 'Manrope_600SemiBold' }}>{p.name}</Text>
-              <View style={{ backgroundColor: L.tealTint, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 2 }}>
-                <Text style={{ fontSize: 10, color: L.teal, fontWeight: '500' }}>{p.tag}</Text>
-              </View>
+              <Text style={{ fontSize: 14, color: UI.foreground, marginBottom: 6, fontFamily: 'Inter_600SemiBold' }}>{p.name}</Text>
+              <PillBadge label={p.tag} />
             </View>
           ))}
         </ScrollView>
@@ -214,15 +200,15 @@ export function ComparisonSection() {
 
       {/* Unified "Verified Journeys" card */}
       <StaggerItem index={3}>
-        <View style={{ backgroundColor: L.teal, borderRadius: 24, padding: 24 }}>
+        <View style={{ backgroundColor: UI.accent, borderRadius: 24, padding: 24 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <MaterialCommunityIcons name="shield-check" size={24} color="#FFFFFF" />
-            <Text style={{ fontSize: 18, fontWeight: '700', color: '#FFFFFF', marginLeft: 10, fontFamily: 'Manrope_700Bold' }}>Verified Journeys</Text>
+            <Text style={{ fontSize: 20, color: '#FFFFFF', marginLeft: 10, fontFamily: 'InstrumentSerif_400Regular', marginTop: 2 }}>Verified Journeys</Text>
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {JOURNEY_TAGS.map((tag, i) => (
               <View key={i} style={{ backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6 }}>
-                <Text style={{ fontSize: 12, color: '#FFFFFF', fontWeight: '400', fontFamily: 'Manrope_400Regular' }}>{tag}</Text>
+                <Text style={{ fontSize: 13, color: '#FFFFFF', fontFamily: 'Manrope_500Medium' }}>{tag}</Text>
               </View>
             ))}
           </View>
@@ -230,10 +216,10 @@ export function ComparisonSection() {
           <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.18)', marginTop: 22, marginBottom: 18 }} />
 
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', letterSpacing: 1.5, textTransform: 'uppercase', fontFamily: 'Manrope_600SemiBold' }}>
+            <SectionLabel color="rgba(255,255,255,0.7)">
               THE FULL NARRATIVE
-            </Text>
-            <MaterialIcons name="arrow-forward" size={20} color="rgba(255,255,255,0.58)" />
+            </SectionLabel>
+            <MaterialIcons name="arrow-forward" size={20} color="rgba(255,255,255,0.7)" />
           </View>
         </View>
       </StaggerItem>
@@ -247,43 +233,43 @@ export function ComparisonSection() {
 // ═══════════════════════════════════════════════════════
 
 const TIMELINE = [
-  { label: 'College', caption: '"Chose projects over grades."', color: L.teal },
-  { label: 'Internship', caption: '"Rejected campus placement."', color: L.terracotta },
-  { label: 'First Job', caption: '"Interviewed customers before writing code."', color: L.sand },
-  { label: 'Startup', caption: '"Prioritized learning over salary."', color: L.teal },
-  { label: 'Pivot', caption: '"Followed the data, not the ego."', color: L.terracotta },
-  { label: 'Product-Market Fit', caption: '"Built what people actually needed."', color: L.terracotta, isFlag: true },
+  { label: 'College', caption: '"Chose projects over grades."', color: UI.accentSoft, dot: UI.accent },
+  { label: 'Internship', caption: '"Rejected campus placement."', color: UI.surface, dot: UI.fg40 },
+  { label: 'First Job', caption: '"Interviewed customers before writing code."', color: UI.surface, dot: UI.fg40 },
+  { label: 'Startup', caption: '"Prioritized learning over salary."', color: UI.surface, dot: UI.fg40 },
+  { label: 'Pivot', caption: '"Followed the data, not the ego."', color: UI.surface, dot: UI.fg40 },
+  { label: 'Product-Market Fit', caption: '"Built what people actually needed."', color: UI.surface, dot: UI.success, isFlag: true },
 ];
 
 export function JourneySequenceSection() {
   return (
     <SectionReveal style={s.sectionPy16}>
-      <View style={{ backgroundColor: L.surface, borderRadius: 24, paddingHorizontal: 24, paddingVertical: 40, shadowColor: '#152238', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.06, shadowRadius: 20, elevation: 3 }}>
+      <View style={{ backgroundColor: UI.surface, borderRadius: 24, paddingHorizontal: 24, paddingVertical: 40, borderWidth: 1, borderColor: UI.fg08 }}>
         <StaggerItem index={0}>
           <Text style={[s.h1, { marginBottom: 40 }]}>
-            Success isn't a moment.{"\n"}It's a sequence of decisions.
+            Success isn't a moment.{'\n'}It's a sequence of decisions.
           </Text>
         </StaggerItem>
 
         <StaggerItem index={1}>
           <View style={{ position: 'relative', paddingLeft: 28 }}>
             {/* Timeline rail */}
-            <View style={{ position: 'absolute', left: 5, top: 8, bottom: 8, width: 2, backgroundColor: L.teal, opacity: 0.2 }} />
+            <View style={{ position: 'absolute', left: 5, top: 8, bottom: 8, width: 2, backgroundColor: UI.fg08 }} />
 
             {TIMELINE.map((node, i) => (
-              <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: i < TIMELINE.length - 1 ? 28 : 0, gap: 20 }}>
+              <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: i < TIMELINE.length - 1 ? 32 : 0, gap: 20 }}>
                 <View style={{ marginLeft: -28, alignItems: 'center', width: 12, position: 'relative', zIndex: 10 }}>
                   {node.isFlag ? (
-                    <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginLeft: -9, marginTop: -6, shadowColor: '#152238', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 }}>
-                      <MaterialCommunityIcons name="flag-variant" size={16} color={L.terracotta} />
+                    <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: UI.success, alignItems: 'center', justifyContent: 'center', marginLeft: -10, marginTop: -8 }}>
+                      <MaterialCommunityIcons name="flag-variant" size={16} color="#FFF" />
                     </View>
                   ) : (
-                    <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: node.color, borderWidth: 4, borderColor: L.surface }} />
+                    <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: node.dot, borderWidth: 3, borderColor: UI.surface }} />
                   )}
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 15, fontWeight: '600', color: L.navy, fontFamily: 'Manrope_600SemiBold' }}>{node.label}</Text>
-                  <Text style={{ fontSize: 13, fontStyle: 'italic', color: L.navySoft, marginTop: 4, marginLeft: 4, fontFamily: 'Manrope_400Regular' }}>{node.caption}</Text>
+                <View style={{ flex: 1, marginTop: -2 }}>
+                  <Text style={{ fontSize: 16, color: UI.foreground, fontFamily: 'Inter_600SemiBold' }}>{node.label}</Text>
+                  <Text style={{ fontSize: 14, fontStyle: 'italic', color: UI.fg50, marginTop: 4, fontFamily: 'Inter_400Regular' }}>{node.caption}</Text>
                 </View>
               </View>
             ))}
@@ -316,12 +302,12 @@ export function SampleQuestionsSection() {
           {QUESTIONS.map((q, i) => (
             <View key={i} style={{
               flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-              backgroundColor: L.surface, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16,
-              borderWidth: 1, borderColor: L.border,
+              backgroundColor: UI.surface, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16,
+              borderWidth: 1, borderColor: UI.fg08,
             }}>
-              <Text style={{ fontSize: 14, color: L.navy, flex: 1, paddingRight: 12, fontFamily: 'Manrope_400Regular' }}>{q}</Text>
-              <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: L.tealTint, alignItems: 'center', justifyContent: 'center' }}>
-                <Feather name="chevron-right" size={16} color={L.teal} />
+              <Text style={{ fontSize: 15, color: UI.foreground, flex: 1, paddingRight: 12, fontFamily: 'Inter_400Regular' }}>{q}</Text>
+              <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: UI.fg06, alignItems: 'center', justifyContent: 'center' }}>
+                <Feather name="chevron-right" size={16} color={UI.fg50} />
               </View>
             </View>
           ))}
@@ -333,7 +319,7 @@ export function SampleQuestionsSection() {
 
 // ═══════════════════════════════════════════════════════
 //  6. HOW IT WORKS (AI)
-//  bg tealTint, 3-step horizontal mini-diagram
+//  bg accentSoft zone, 3-step horizontal mini-diagram
 // ═══════════════════════════════════════════════════════
 
 const STEPS = [
@@ -345,7 +331,7 @@ const STEPS = [
 export function HowItWorksSection() {
   return (
     <SectionReveal style={s.sectionPy16}>
-      <StaggerItem index={0}><Text style={[s.eyebrow, { marginBottom: 12 }]}>HOW IT WORKS</Text></StaggerItem>
+      <StaggerItem index={0}><SectionLabel style={{ marginBottom: 12 }}>HOW IT WORKS</SectionLabel></StaggerItem>
       <StaggerItem index={1}><Text style={[s.h1, { marginBottom: 16 }]}>Powered by journeys, not assumptions.</Text></StaggerItem>
       <StaggerItem index={2}>
         <Text style={[s.body, { marginBottom: 20 }]}>
@@ -366,16 +352,16 @@ export function HowItWorksSection() {
               <View style={{ alignItems: 'center', width: 92 }}>
                 <View style={{
                   width: 52, height: 52, borderRadius: 26,
-                  backgroundColor: L.teal,
-                  alignItems: 'center', justifyContent: 'center', marginBottom: 8,
+                  backgroundColor: UI.accent,
+                  alignItems: 'center', justifyContent: 'center', marginBottom: 12,
                 }}>
                   <Feather name={step.icon as any} size={22} color="#FFFFFF" />
                 </View>
-                <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy, textAlign: 'center', fontFamily: 'Manrope_600SemiBold' }}>{step.label}</Text>
+                <Text style={{ fontSize: 13, color: UI.foreground, textAlign: 'center', fontFamily: 'Inter_600SemiBold' }}>{step.label}</Text>
               </View>
               {i < STEPS.length - 1 && (
                 <View style={{ flex: 1, alignItems: 'center', paddingTop: 26 }}>
-                  <View style={{ width: '100%', borderTopWidth: 2, borderTopColor: '#A3B8B5', borderStyle: 'dashed', opacity: 0.9 }} />
+                  <View style={{ width: '100%', borderTopWidth: 2, borderTopColor: UI.fg20, borderStyle: 'dashed' }} />
                 </View>
               )}
             </React.Fragment>
@@ -404,8 +390,8 @@ export function VerificationSection() {
       </StaggerItem>
       <StaggerItem index={2}>
         <View style={{ alignItems: 'center', marginTop: 8 }}>
-          <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: L.tealTint, alignItems: 'center', justifyContent: 'center' }}>
-            <Feather name="shield" size={28} color={L.teal} />
+          <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: UI.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
+            <Feather name="shield" size={32} color={UI.accent} />
           </View>
         </View>
       </StaggerItem>
@@ -433,17 +419,17 @@ export function CommunitySection() {
       <StaggerItem index={2}>
         <View style={{ alignItems: 'center' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: L.teal, marginRight: -10, borderWidth: 2, borderColor: L.surface, zIndex: 4 }} />
-            <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: L.terracotta, marginRight: -10, borderWidth: 2, borderColor: L.surface, zIndex: 3 }} />
-            <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: L.sand, marginRight: -10, borderWidth: 2, borderColor: L.surface, zIndex: 2 }} />
-            <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: L.navy, borderWidth: 2, borderColor: L.surface, zIndex: 1 }} />
+            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: UI.accent, marginRight: -12, borderWidth: 2, borderColor: UI.surface, zIndex: 4 }} />
+            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: UI.fg40, marginRight: -12, borderWidth: 2, borderColor: UI.surface, zIndex: 3 }} />
+            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: UI.fg20, marginRight: -12, borderWidth: 2, borderColor: UI.surface, zIndex: 2 }} />
+            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: UI.foreground, borderWidth: 2, borderColor: UI.surface, zIndex: 1 }} />
             {/* Arrow */}
-            <View style={{ marginLeft: 12 }}>
-              <Feather name="arrow-right" size={20} color={L.teal} />
+            <View style={{ marginLeft: 16 }}>
+              <Feather name="arrow-right" size={24} color={UI.accent} />
             </View>
             {/* Larger target circle */}
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: L.tealTint, borderWidth: 2, borderColor: L.teal, alignItems: 'center', justifyContent: 'center', marginLeft: 12 }}>
-              <Feather name="git-merge" size={20} color={L.teal} />
+            <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: UI.accentSoft, borderWidth: 2, borderColor: UI.accent, alignItems: 'center', justifyContent: 'center', marginLeft: 16 }}>
+              <Feather name="git-merge" size={24} color={UI.accent} />
             </View>
           </View>
         </View>
@@ -479,8 +465,8 @@ export function AccessibilitySection() {
       <StaggerItem index={3}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
           {LANG_CHIPS.map((lang, i) => (
-            <View key={i} style={{ backgroundColor: L.surface, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1, borderColor: 'rgba(234, 231, 224, 0.5)', shadowColor: '#152238', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 1 }}>
-              <Text style={{ fontSize: 13, color: L.teal, fontWeight: '700', fontFamily: 'Manrope_700Bold' }}>{lang}</Text>
+            <View key={i} style={{ backgroundColor: UI.surface, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1, borderColor: UI.fg08 }}>
+              <Text style={{ fontSize: 13, color: UI.accent, fontFamily: 'Inter_700Bold' }}>{lang}</Text>
             </View>
           ))}
         </View>
@@ -489,19 +475,19 @@ export function AccessibilitySection() {
       {/* Feature cards */}
       <StaggerItem index={4}>
         <View style={{ gap: 12 }}>
-          <View style={{ backgroundColor: L.surface, padding: 20, borderRadius: 16, borderWidth: 1, borderColor: L.border, shadowColor: '#152238', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 20, elevation: 3 }}>
-            <View style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: L.tealTint, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-              <Feather name="globe" size={18} color={L.teal} />
+          <View style={{ backgroundColor: UI.surface, padding: 20, borderRadius: 16, borderWidth: 1, borderColor: UI.fg08 }}>
+            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: UI.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <Feather name="globe" size={20} color={UI.accent} />
             </View>
             <Text style={[s.h2, { marginBottom: 6 }]}>Native Support</Text>
-            <Text style={[s.micro, { color: L.navySoft }]}>Switch between languages instantly with perfect semantic translation.</Text>
+            <Text style={s.micro}>Switch between languages instantly with perfect semantic translation.</Text>
           </View>
-          <View style={{ backgroundColor: L.surface, padding: 20, borderRadius: 16, borderWidth: 1, borderColor: L.border, shadowColor: '#152238', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 20, elevation: 3 }}>
-            <View style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: L.terracottaTint, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-              <Feather name="volume-2" size={18} color={L.terracotta} />
+          <View style={{ backgroundColor: UI.surface, padding: 20, borderRadius: 16, borderWidth: 1, borderColor: UI.fg08 }}>
+            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: UI.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <Feather name="volume-2" size={20} color={UI.accent} />
             </View>
             <Text style={[s.h2, { marginBottom: 6 }]}>Read Aloud</Text>
-            <Text style={[s.micro, { color: L.navySoft }]}>Hear your milestones narrated with human-like, empathetic voice synthesis.</Text>
+            <Text style={s.micro}>Hear your milestones narrated with human-like, empathetic voice synthesis.</Text>
           </View>
         </View>
       </StaggerItem>
@@ -511,39 +497,39 @@ export function AccessibilitySection() {
 
 // ═══════════════════════════════════════════════════════
 //  10. CLOSING VISION
-//  bg-navy (dark invert), centered, emotional
+//  bg-surfaceInverse (dark invert), centered, emotional
 // ═══════════════════════════════════════════════════════
 
 export function ClosingVisionSection() {
   return (
-    <SectionReveal style={{ backgroundColor: L.navy, paddingVertical: 80, paddingHorizontal: 24, alignItems: 'stretch' }}>
+    <SectionReveal style={{ backgroundColor: UI.surfaceInverse, paddingVertical: 80, paddingHorizontal: 24, alignItems: 'stretch' }}>
       <StaggerItem index={0}>
-        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, fontWeight: '600', letterSpacing: 2, textTransform: 'uppercase', alignSelf: 'flex-start', marginBottom: 56, fontFamily: 'Manrope_600SemiBold' }}>OUR VISION</Text>
+        <SectionLabel color="rgba(255,255,255,0.6)" style={{ alignSelf: 'flex-start', marginBottom: 56 }}>OUR VISION</SectionLabel>
       </StaggerItem>
 
       {/* Decorative line + dot */}
       <StaggerItem index={1}>
         <View style={{ alignItems: 'center', marginBottom: 32 }}>
           <View style={{ width: 1, height: 40, backgroundColor: 'rgba(255,255,255,0.2)' }} />
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: L.terracotta, marginTop: 6 }} />
+          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: UI.accent, marginTop: 6 }} />
         </View>
       </StaggerItem>
 
       <StaggerItem index={2}>
-        <Text style={{ fontSize: 24, fontWeight: '400', color: '#FFFFFF', textAlign: 'center', lineHeight: 34, marginBottom: 24, maxWidth: '90%', alignSelf: 'center', fontFamily: 'Manrope_400Regular' }}>
+        <Text style={{ fontSize: 32, color: '#FFFFFF', textAlign: 'center', lineHeight: 38, marginBottom: 24, maxWidth: '95%', alignSelf: 'center', fontFamily: 'InstrumentSerif_400Regular' }}>
           Imagine if every important decision someone made could help another person make theirs.
         </Text>
       </StaggerItem>
       <StaggerItem index={3}>
-        <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.60)', textAlign: 'center', lineHeight: 22, maxWidth: '90%', alignSelf: 'center', fontFamily: 'Manrope_400Regular' }}>
+        <Text style={{ fontSize: 16, color: 'rgba(255,255,255,0.60)', textAlign: 'center', lineHeight: 26, maxWidth: '90%', alignSelf: 'center', fontFamily: 'Inter_400Regular' }}>
           PathFinder is building a living repository of verified human journeys — not to tell people what they should do, but to help them understand what others did, why, and what they learned. The more journeys the community contributes, the more valuable it becomes for everyone.
         </Text>
       </StaggerItem>
 
       {/* Decorative flag */}
       <StaggerItem index={4}>
-        <View style={{ alignItems: 'center', marginTop: 40 }}>
-          <MaterialCommunityIcons name="flag-variant" size={24} color={L.terracotta} />
+        <View style={{ alignItems: 'center', marginTop: 48 }}>
+          <MaterialCommunityIcons name="flag-variant" size={28} color={UI.accent} />
         </View>
       </StaggerItem>
     </SectionReveal>
@@ -552,42 +538,39 @@ export function ClosingVisionSection() {
 
 // ═══════════════════════════════════════════════════════
 //  11. FOOTER
-//  bg-navy (continuous with closing), small logo + links
+//  continuous with closing
 // ═══════════════════════════════════════════════════════
 
 export function FooterSection() {
   return (
-    <SectionReveal style={{ backgroundColor: L.navy, paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center' }}>
+    <SectionReveal style={{ backgroundColor: UI.surfaceInverse, paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center' }}>
       {/* Small logo mark */}
       <StaggerItem index={0}>
         <Image
           source={require('../../assets/logo-dark.png')}
-          style={{ width: 48, height: 48, borderRadius: 10, marginBottom: 8, opacity: 0.9 }}
+          style={{ width: 48, height: 48, borderRadius: 10, marginBottom: 12 }}
           resizeMode="contain"
         />
       </StaggerItem>
 
-      {/* Wordmark */}
       <StaggerItem index={1}>
-        <Image
-          source={require("../../assets/title-dark.png")}
-          style={{ width: 200, height: 32, marginBottom: 8 }}
-          resizeMode="contain"
-        />
+        <Text style={{ fontSize: 24, color: '#FFF', fontFamily: 'InstrumentSerif_400Regular', marginBottom: 8 }}>
+          PathFinder
+        </Text>
       </StaggerItem>
 
       {/* Mission line */}
       <StaggerItem index={2}>
-        <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.60)', textAlign: 'center', marginBottom: 24, fontFamily: 'Manrope_400Regular' }}>
+        <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.60)', textAlign: 'center', marginBottom: 32, fontFamily: 'Inter_400Regular' }}>
           Building collective wisdom through verified journeys.
         </Text>
       </StaggerItem>
 
       {/* Nav links */}
       <StaggerItem index={3}>
-        <View style={{ flexDirection: 'row', gap: 16, marginBottom: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <View style={{ flexDirection: 'row', gap: 20, marginBottom: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
           {['PRIVACY', 'TERMS', 'GITHUB', 'CONTACT'].map((link, i) => (
-            <Text key={i} style={{ fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.50)', letterSpacing: 1, fontFamily: 'Manrope_600SemiBold' }}>
+            <Text key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)', letterSpacing: 1, fontFamily: 'Inter_600SemiBold' }}>
               {link}
             </Text>
           ))}
@@ -596,7 +579,7 @@ export function FooterSection() {
 
       {/* Tech line */}
       <StaggerItem index={4}>
-        <Text style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: 8, fontFamily: 'Manrope_400Regular' }}>
+        <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: 16, fontFamily: 'Inter_400Regular' }}>
           Powered by Expo, Neo4j, GraphRAG, Gemini, Groq and Sarvam AI.
         </Text>
       </StaggerItem>

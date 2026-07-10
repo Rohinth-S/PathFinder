@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import { SafeAreaView, View, Platform } from 'react-native';
 import { useOAuth, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { initializeUser } from '@/services/auth.service';
 import Animated, { useAnimatedScrollHandler, useAnimatedStyle, interpolateColor } from 'react-native-reanimated';
-import { L } from '../constants/colors';
+import { UI } from '../constants/colors';
 import { LandingViewportProvider, useLandingViewport } from '../components/landing/landingMotion';
 import {
   HeroSection,
@@ -34,6 +34,7 @@ function LandingPageContent() {
   const { isSignedIn, getToken } = useAuth();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const { scrollY, viewportHeight, scrollDirection } = useLandingViewport();
+  
   const onScroll = useAnimatedScrollHandler((event) => {
     const nextY = event.contentOffset.y;
     if (nextY > scrollY.value) {
@@ -41,30 +42,17 @@ function LandingPageContent() {
     } else if (nextY < scrollY.value) {
       scrollDirection.value = -1;
     }
-
     scrollY.value = nextY;
   });
 
-  // Background color transitions per DESIGN.md:
-  // Sections 1-5: background (#FAF9F6)
-  // Section 6 (How It Works): tealTint (#E7EFEE)
-  // Sections 7-9: background → tealTint
-  // Sections 10-11: navy (#152238) — dark invert
   const animatedBgStyle = useAnimatedStyle(() => {
-    const vh = viewportHeight.value || 800;
-    const bg = interpolateColor(
-      scrollY.value,
-      [0, vh * 3.8, vh * 4.2, vh * 5.5, vh * 6.2],
-      [L.background, L.background, L.tealTint, L.tealTint, L.background]
-    );
-    return { backgroundColor: bg, flex: 1 };
+    return { backgroundColor: UI.background, flex: 1 };
   });
 
   useEffect(() => {
     async function initialize() {
       if (!isSignedIn) return;
       const token = await getToken();
-      console.log(token);
       if (!token) return;  
       const user = await initializeUser(token);
       if (user.username) {
@@ -102,35 +90,35 @@ function LandingPageContent() {
         >
           {/* 1. Hero — centered, auth */}
           <HeroSection onPressGoogle={onPressGoogle} />
-          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 2. Problem Statement — left-aligned editorial */}
           <ProblemSection />
-          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 3. Comparison — fragmented → unified */}
           <ComparisonSection />
-          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 4. Journey Sequence — timeline in white card */}
           <JourneySequenceSection />
-          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 5. Sample Questions — question cards */}
           <SampleQuestionsSection />
-          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 6. How It Works — tealTint bg zone */}
           <HowItWorksSection />
-          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 7. Verification & Trust */}
           <VerificationSection />
-          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 8. Community / Collective Knowledge */}
           <CommunitySection />
-          <View style={{ height: 1, backgroundColor: 'rgba(21, 34, 56, 0.1)', marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 9. Accessibility / Voice & Language */}
           <AccessibilitySection />

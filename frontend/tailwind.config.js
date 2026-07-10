@@ -9,6 +9,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // ── New UI Design System (runanywhere.ai-inspired) ──
+        ui: {
+          bg: '#FAF9F6',
+          surface: '#FFFFFF',
+          'surface-dim': '#F4F3F1',
+          'surface-inverse': '#0F172A',
+          foreground: '#0F172A',
+          accent: '#FF6900',
+          'accent-end': '#FB2C36',
+          success: '#1B9E77',
+          teal: '#3E6B66',
+          'teal-tint': '#E7EFEE',
+          border: '#EAE7E0',
+        },
         // ── Landing page design system (DESIGN.md) ──
         background: '#FAF9F6',
         surface: '#FFFFFF',
@@ -42,6 +56,8 @@ module.exports = {
       },
       fontFamily: {
         manrope: ['Manrope'],
+        serif: ['InstrumentSerif_400Regular', 'serif'],
+        mono: ['monospace'],
       },
     },
   },

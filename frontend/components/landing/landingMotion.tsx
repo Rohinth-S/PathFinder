@@ -15,7 +15,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
-import { L } from '../../constants/colors';
+import { UI } from '../../constants/colors';
 
 export const sectionEasing = Easing.out(Easing.cubic);
 export const sectionRevealDuration = 400;
@@ -326,11 +326,11 @@ export function RippleMicBadge({ label }: RippleMicBadgeProps) {
             rippleStyleA,
           ]}
         />
-        <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: L.teal, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: UI.accent, alignItems: 'center', justifyContent: 'center' }}>
           <MaterialCommunityIcons name="microphone" size={16} color="#FFFFFF" />
         </View>
       </View>
-        <Text style={{ color: L.teal, fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', marginLeft: -2 }}>{label}</Text>
+        <Text style={{ color: UI.accent, fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', marginLeft: -2 }}>{label}</Text>
     </View>
   );
 }

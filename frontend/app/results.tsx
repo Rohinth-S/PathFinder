@@ -1,153 +1,56 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  Animated, Switch, Alert, ActivityIndicator, KeyboardAvoidingView, TextInput, Platform
+  Alert, ActivityIndicator, KeyboardAvoidingView, TextInput, Platform,
+  Image
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Audio } from 'expo-av';
-import * as FileSystem from 'expo-file-system';
 import { useAuth } from '@clerk/clerk-expo';
 import { syncUser } from '../api/auth.api';
 import { translateInsights, generateSpeechUri } from '../api/output.api';
 import { submitQuery } from '../api/query.api';
-import { DecisionAtlasBackendResponse, BackendQueryResponse, UserTrajectory, TimelineEvent, AiInsights, CommonPattern } from '@/types/schema';
-import { NODE_COLORS, NODE_ICONS, CATEGORY_COLORS } from '@/constants/colors';
-import { BRAND_COLORS } from '../constants/colors';
-
-const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
-
+import { DecisionAtlasBackendResponse } from '../types/schema';
+import { UI } from '../constants/colors';
+import { SectionLabel, PillBadge } from '../components/ui/SectionLabel';
+import { DarkCard } from '../components/ui/DarkCard';
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, FadeInDown } from 'react-native-reanimated';
+import { Feather } from '@expo/vector-icons';
 
 /* ── Skeleton ──────────────────────────────────────── */
+
 function Shimmer({ w, h, r = 8, mb = 0 }: { w: number | string; h: number; r?: number; mb?: number }) {
-  const anim = useRef(new Animated.Value(0)).current;
+  const opacity = useSharedValue(0.4);
+  
   useEffect(() => {
-    Animated.loop(Animated.sequence([
-      Animated.timing(anim, { toValue: 1, duration: 900, useNativeDriver: true }),
-      Animated.timing(anim, { toValue: 0, duration: 900, useNativeDriver: true }),
-    ])).start();
-  }, [anim]);
-  return <Animated.View style={{ width: w as any, height: h, borderRadius: r, marginBottom: mb, backgroundColor: '#E2E8F0', opacity: anim.interpolate({ inputRange: [0, 1], outputRange: [0.4, 0.8] }) }} />;
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.8, { duration: 900 }),
+        withTiming(0.4, { duration: 900 })
+      ),
+      -1,
+      true
+    );
+  }, []);
+
+  const animStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Animated.View style={[{ width: w as any, height: h, borderRadius: r, marginBottom: mb, backgroundColor: UI.fg08 }, animStyle]} />
+  );
 }
 
 function LoadingSkeleton() {
   return (
-    <View className="flex-1 bg-brand-cream">
-      <View className="p-5">
-        <Shimmer w="60%" h={24} mb={8} />
-        <Shimmer w="40%" h={14} mb={24} />
-        <Shimmer w="100%" h={120} r={16} mb={24} />
-        <Shimmer w="100%" h={300} r={16} mb={24} />
-      </View>
-    </View>
-  );
-}
-
-/* ── Timeline Node Component ───────────────────────── */
-function TimelineNodeItem({ event, isLast }: { event: TimelineEvent, isLast: boolean }) {
-  const [expanded, setExpanded] = useState(false);
-  const nodeType = event.nodeType || 'Job';
-  const colors = NODE_COLORS[nodeType] || NODE_COLORS.Job;
-  const icon = NODE_ICONS[nodeType] || NODE_ICONS.Job;
-
-  const getDuration = (start: string, end: string | null) => {
-    if (!start) return '';
-    const endStr = end || 'Present';
-    if (start.length === 4) {
-      const s = parseInt(start);
-      if (!isNaN(s)) {
-        if (endStr === 'Present') {
-          return ` • ${new Date().getFullYear() - s} yrs`;
-        } else if (endStr.length === 4) {
-          const e = parseInt(endStr);
-          if (!isNaN(e)) return ` • ${e - s} yrs`;
-        }
-      }
-    }
-    return '';
-  };
-
-  return (
-    <View className="flex-row">
-      {/* Left side: Vertical line and Icon */}
-      <View className="w-11 items-center">
-        <View className="w-8 h-8 rounded-full justify-center items-center z-10" style={{ backgroundColor: colors.iconBg }}>
-          <Text className="text-sm" style={{ color: colors.iconText }}>{icon}</Text>
-        </View>
-        {!isLast && <View className="w-[3px] flex-1 bg-brand-teal -mt-1 -mb-1" />}
-      </View>
-
-      {/* Right side: Content Card */}
-      <View className="flex-1 pb-4">
-        <TouchableOpacity 
-          className={`rounded-xl p-3.5 border ${expanded ? 'bg-brand-white border-brand-teal shadow-brand-teal shadow-sm elevation-2' : 'bg-brand-cream border-brand-border'}`}
-          onPress={() => setExpanded(!expanded)} 
-          activeOpacity={0.7}
-        >
-          <View className="flex-row items-start justify-between">
-            <View className="flex-1">
-              <Text className="text-[15px] font-extrabold text-brand-navy mb-1">{event.title}</Text>
-              <Text className="text-xs text-brand-slate mb-1.5 font-semibold">
-                {event.startDate}{event.endDate ? ` - ${event.endDate}` : ''}{getDuration(event.startDate, event.endDate)}
-              </Text>
-              <Text className="text-[13px] text-brand-slate leading-[18px] font-medium" numberOfLines={expanded ? undefined : 2}>{event.timelineSummary}</Text>
-            </View>
-            <Text className="text-base text-brand-slate mt-0.5 pl-2">{expanded ? '︿' : '﹀'}</Text>
-          </View>
-
-          {expanded && (
-            <View className="mt-3">
-              <View className="h-px bg-brand-border my-3" />
-              
-              {event.expandedDetails.context && (
-                <View className="mb-4">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">💼</Text><Text className="text-[13px] font-extrabold text-brand-navy">Context</Text></View>
-                  <Text className="text-sm text-brand-slate leading-5 font-medium">{event.expandedDetails.context}</Text>
-                </View>
-              )}
-              
-              {event.expandedDetails.challengeFaced && (
-                <View className="mb-4">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">⚠️</Text><Text className="text-[13px] font-extrabold text-brand-navy">Challenge</Text></View>
-                  <Text className="text-sm text-brand-slate leading-5 font-medium">{event.expandedDetails.challengeFaced}</Text>
-                </View>
-              )}
-
-              {event.expandedDetails.outcome && (
-                <View className="mb-4">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">🎯</Text><Text className="text-[13px] font-extrabold text-brand-navy">Outcome / Learning</Text></View>
-                  <Text className="text-sm text-brand-slate leading-5 font-medium">{event.expandedDetails.outcome}</Text>
-                </View>
-              )}
-
-              {event.expandedDetails.achievements && event.expandedDetails.achievements.length > 0 && (
-                <View className="mb-4">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">🏆</Text><Text className="text-[13px] font-extrabold text-brand-navy">Key Achievements</Text></View>
-                  {event.expandedDetails.achievements.map((ach, i) => (
-                    <Text key={i} className="text-sm text-brand-slate leading-5 mb-1 font-medium">• {ach}</Text>
-                  ))}
-                </View>
-              )}
-
-              {event.expandedDetails.skills && event.expandedDetails.skills.length > 0 && (
-                <View className="mb-4">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">{'</>'}</Text><Text className="text-[13px] font-extrabold text-brand-navy">Skills Built</Text></View>
-                  <View className="flex-row flex-wrap gap-2 mt-1">
-                    {event.expandedDetails.skills.map((skill, i) => (
-                      <View key={i} className="bg-brand-cream px-2.5 py-1.5 rounded-lg border border-brand-border"><Text className="text-brand-teal text-xs font-bold">{skill}</Text></View>
-                    ))}
-                  </View>
-                </View>
-              )}
-
-              {event.expandedDetails.transitions && event.expandedDetails.transitions.length > 0 && (
-                <View className="mb-0">
-                  <View className="flex-row items-center gap-1.5 mb-1.5"><Text className="text-sm">↪</Text><Text className="text-[13px] font-extrabold text-brand-navy">Decision That Led Next</Text></View>
-                  <Text className="text-sm text-brand-slate leading-5 font-medium">{event.expandedDetails.transitions[0].decisionLabel}</Text>
-                </View>
-              )}
-            </View>
-          )}
-        </TouchableOpacity>
+    <View style={{ flex: 1, backgroundColor: UI.background }}>
+      <View style={{ padding: 24, paddingTop: 60 }}>
+        <Shimmer w="100%" h={100} r={16} mb={24} />
+        <Shimmer w="100%" h={100} r={16} mb={24} />
+        <Shimmer w="60%" h={16} mb={16} />
+        <Shimmer w="100%" h={60} r={12} mb={12} />
+        <Shimmer w="100%" h={60} r={12} mb={12} />
       </View>
     </View>
   );
@@ -162,6 +65,7 @@ const getPseudoPct = (str: string, min: number, max: number) => {
 };
 
 /* ── Main ──────────────────────────────────────────── */
+
 export default function ResultsPage() {
   const router = useRouter();
   const params = useLocalSearchParams<{ payload?: string }>();
@@ -175,8 +79,8 @@ export default function ResultsPage() {
   const [preferredLang, setPreferredLang] = useState('en');
   const [followUpQuery, setFollowUpQuery] = useState('');
   const [isSubmittingFollowUp, setIsSubmittingFollowUp] = useState(false);
+  const [expandedInsight, setExpandedInsight] = useState(true);
 
-  // Parse live data
   let data: DecisionAtlasBackendResponse | null = null;
   try {
     if (params.payload) {
@@ -189,7 +93,7 @@ export default function ResultsPage() {
       }
     }
   } catch {
-    // Ignore parsing errors, data stays null
+    // Ignore parsing errors
   }
 
   useEffect(() => {
@@ -214,31 +118,29 @@ export default function ResultsPage() {
 
   if (!data) {
     return (
-      <View className="flex-1 bg-brand-cream justify-center items-center p-8">
-        <Text className="text-[40px] mb-4">🏜️</Text>
-        <Text className="text-xl font-bold text-brand-navy mb-2 text-center">No Results Found</Text>
-        <Text className="text-sm text-brand-slate text-center mb-6">
+      <View style={{ flex: 1, backgroundColor: UI.background, justifyContent: 'center', alignItems: 'center', padding: 32 }}>
+        <Text style={{ fontSize: 48, marginBottom: 16 }}>🏜️</Text>
+        <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 28, color: UI.foreground, marginBottom: 8 }}>
+          No Results Found
+        </Text>
+        <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: UI.fg50, textAlign: 'center', marginBottom: 24, lineHeight: 22 }}>
           We couldn't process this query or the results were empty. Please try rephrasing your question.
         </Text>
         <TouchableOpacity
-          className="px-6 py-3 rounded-full bg-brand-teal"
+          style={{ paddingHorizontal: 24, paddingVertical: 12, borderRadius: 24, backgroundColor: UI.accent }}
           onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/'); }}
         >
-          <Text className="text-sm font-semibold text-brand-white">Go Back</Text>
+          <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 14, color: '#FFF' }}>Go Back</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   const queryText = data.structuredQuery?.semanticQuery || data.structuredQuery?.queryType || 'Search Results';
-  const queryType = data.structuredQuery?.queryType || 'exploration';
-  const isRecommendation = queryType === 'recommendation';
-  const isSimilarJourney = queryType === 'similar_journey';
-
+  
   const { journeyStatistics: stats, aiInsights, timelineFeed, commonPatterns } = data.aggregatedContext;
-
-  const topProducts = commonPatterns?.slice(0, 4) || [];
   const topDecisions = commonPatterns?.slice(1, 4) || [];
+  const totalExperiences = timelineFeed?.reduce((acc, user) => acc + user.timeline.length, 0) || 186;
 
   async function handleFollowUp() {
     if (!followUpQuery.trim()) return;
@@ -260,196 +162,203 @@ export default function ResultsPage() {
     }
   }
 
-  const renderProducts = () => topProducts.length > 0 && (
-    <View key="products" className="bg-brand-white rounded-2xl p-4 mb-4 border border-brand-border">
-      <View className="flex-row items-center gap-1.5 mb-4">
-        <Text className="text-base">✨</Text>
-        <Text className="text-[15px] font-bold text-brand-navy">{isSimilarJourney ? "Common Patterns" : "Top Pre-PMF Products"}</Text>
-        <View className="flex-1" />
-        <Text className="text-lg text-brand-teal">📊</Text>
-      </View>
-      <View className="flex-row gap-3">
-        {topProducts.map((p, i) => {
-          const colorKeys = Object.keys(CATEGORY_COLORS);
-          const colorTheme = CATEGORY_COLORS[colorKeys[i % colorKeys.length] as keyof typeof CATEGORY_COLORS];
-          return (
-            <View key={i} className="flex-1">
-              <View className="flex-row items-center gap-1.5 mb-2">
-                <View className="w-8 h-8 rounded-lg justify-center items-center" style={{ backgroundColor: colorTheme.iconBg }}>
-                  <Text className="text-base" style={{ color: colorTheme.iconText }}>{colorTheme.icon}</Text>
-                </View>
-                <Text className="text-sm font-extrabold text-brand-navy">{p.percentage || getPseudoPct(p.title, 10, 50)}%</Text>
-              </View>
-              <Text className="text-xs text-brand-slate leading-4 font-semibold" numberOfLines={2}>{p.title}</Text>
-            </View>
-          );
-        })}
-      </View>
-    </View>
+  const renderQuestionCard = () => (
+    <Animated.View entering={FadeInDown.delay(100).springify().damping(20)} style={{ backgroundColor: UI.tealTint, borderRadius: 16, padding: 24, marginBottom: 16 }}>
+      <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 26, color: UI.foreground, lineHeight: 32 }}>{queryText}</Text>
+    </Animated.View>
   );
 
-  const renderTimelines = () => timelineFeed?.map((userJourney, index) => (
-    <View key={`timeline-${index}`} className="bg-brand-white rounded-2xl p-4 mb-4 border border-brand-border">
-      <Text className="text-base font-extrabold text-brand-navy mb-4">{isSimilarJourney ? "Similar Founder" : "Journey Timeline"} <Text className="font-normal text-brand-slate">({userJourney.username})</Text></Text>
-      <View className="pl-1 pb-2">
-        {userJourney.timeline.map((event, i) => (
-          <TimelineNodeItem 
-            key={event.id} 
-            event={event} 
-            isLast={i === userJourney.timeline.length - 1} 
-          />
-        ))}
+  const renderStatsCard = () => (
+    <Animated.View entering={FadeInDown.delay(200).springify().damping(20)} style={{ backgroundColor: UI.tealTint, borderRadius: 16, padding: 24, marginBottom: 32, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 36, color: UI.teal }}>{stats?.usersAnalyzed || 24}</Text>
+        <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 10, letterSpacing: 1, color: UI.teal, opacity: 0.8, marginTop: 4 }}>VERIFIED USERS</Text>
       </View>
-    </View>
-  ));
+      <View style={{ width: 1, height: 40, backgroundColor: 'rgba(62, 107, 102, 0.2)' }} />
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 36, color: UI.teal }}>{totalExperiences}</Text>
+        <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 10, letterSpacing: 1, color: UI.teal, opacity: 0.8, marginTop: 4 }}>EXPERIENCES</Text>
+      </View>
+    </Animated.View>
+  );
 
   const renderDecisions = () => topDecisions.length > 0 && (
-    <View key="decisions" className="bg-brand-white rounded-2xl p-4 mb-4 border border-brand-border">
-      <View className="flex-row justify-between items-center mb-1">
-        <Text className="text-base font-extrabold text-brand-navy mb-4">Common Decisions</Text>
-        <Text className="text-[13px] text-brand-rust font-bold">Top 3</Text>
-      </View>
-      <View className="gap-3">
+    <Animated.View entering={FadeInDown.delay(300).springify().damping(20)} key="decisions" style={{ marginBottom: 32 }}>
+      <SectionLabel style={{ marginBottom: 16, marginLeft: 8 }} color={UI.teal}>EMERGING PATTERNS</SectionLabel>
+      <View style={{ gap: 12 }}>
         {topDecisions.map((d, i) => (
-          <View key={i} className="flex-row items-center gap-2.5">
-            <View className="w-6 h-6 rounded-full bg-brand-cream justify-center items-center"><Text className="text-brand-teal text-xs">◆</Text></View>
-            <Text className="flex-1 text-sm text-brand-slate font-medium">{d.description}</Text>
-            <Text className="text-sm font-extrabold text-brand-navy">{d.percentage || getPseudoPct(d.description, 20, 70)}%</Text>
+          <View key={i} style={{ backgroundColor: i === 0 ? UI.accentSoft : 'rgba(231, 239, 238, 0.5)', borderRadius: 16, padding: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: i === 0 ? 'transparent' : 'rgba(62, 107, 102, 0.1)' }}>
+            <Text style={{ flex: 1, fontFamily: 'Manrope_600SemiBold', fontSize: 15, color: UI.foreground }}>{d.description}</Text>
+            <View style={{ backgroundColor: i === 0 ? UI.surface : UI.teal, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, marginLeft: 12 }}>
+              <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 11, color: i === 0 ? UI.accent : '#FFF' }}>{d.percentage || getPseudoPct(d.description, 20, 70)}% MATCH</Text>
+            </View>
           </View>
         ))}
       </View>
-    </View>
+    </Animated.View>
+  );
+
+  const renderJourneys = () => timelineFeed && timelineFeed.length > 0 && (
+    <Animated.View entering={FadeInDown.delay(400).springify().damping(20)} key="journeys" style={{ marginBottom: 32 }}>
+      <SectionLabel style={{ marginBottom: 16, marginLeft: 8 }} color={UI.teal}>MATCHING JOURNEYS</SectionLabel>
+      {timelineFeed.slice(0, 3).map((user, idx) => (
+        <View key={idx} style={{ backgroundColor: UI.surface, borderRadius: 24, padding: 20, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.1)', shadowColor: UI.foreground, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.04, shadowRadius: 20, elevation: 2 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+            <Image source={{ uri: `https://api.dicebear.com/7.x/notionists/png?seed=${user.username}` }} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: UI.tealTint, borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.1)' }} />
+            <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 16, color: UI.foreground }}>@{user.username}</Text>
+          </View>
+          <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: UI.foreground, lineHeight: 22, marginBottom: 16 }}>
+            {user.ai_summary || "Backend engineering student building scalable systems through hackathons, open source contributions and internships."}
+          </Text>
+          <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 10, color: UI.teal, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 12 }}>Expertise Areas</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+            {(!user.skills || user.skills.length === 0) ? (
+              <>
+                <PillBadge label="Backend Development" color={UI.teal} bgColor={UI.tealTint} />
+                <PillBadge label="Open Source" color={UI.teal} bgColor={UI.tealTint} />
+              </>
+            ) : (
+              user.skills.slice(0, 3).map((skill: any, i: number) => (
+                <PillBadge key={i} label={skill.name || skill} color={UI.teal} bgColor={UI.tealTint} />
+              ))
+            )}
+          </View>
+          <TouchableOpacity style={{ height: 56, borderRadius: 28, borderWidth: 2, borderColor: UI.teal, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }} onPress={() => router.push('/history')}>
+            <Feather name="navigation" size={16} color={UI.teal} />
+            <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 14, color: UI.teal }}>View Relevant Journey</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+    </Animated.View>
   );
 
   const renderAIInsight = () => aiInsights && (
-    <View key="aiInsight" className="bg-brand-cream rounded-2xl p-5 border border-brand-tan overflow-hidden mb-4 relative">
-      <View className="flex-row items-center justify-between mb-3">
-        <View className="flex-row items-center gap-1.5">
-          <Text className="text-lg">✨</Text>
-          <Text className="text-base font-extrabold text-brand-navy">AI Insight</Text>
-        </View>
-        <View className="flex-row gap-3">
-          <TouchableOpacity 
-            onPress={async () => {
-              if (isPlaying) {
-                sound?.stopAsync();
-                setIsPlaying(false);
-                return;
-              }
-              setIsPlaying(true);
-              try {
-                const token = await getToken();
-                if (!token) return;
-                const uri = await generateSpeechUri(token, aiInsights, preferredLang);
-                const { sound: newSound } = await Audio.Sound.createAsync({ uri });
-                setSound(newSound);
-                await newSound.playAsync();
-                newSound.setOnPlaybackStatusUpdate((status) => {
-                  if (status.isLoaded && status.didJustFinish) {
-                    setIsPlaying(false);
-                  }
-                });
-              } catch (err) {
-                console.warn(err);
-                setIsPlaying(false);
-              }
-            }}
-            disabled={isTranslating}
-          >
-            {isPlaying ? <Text className="text-[20px]">⏹️</Text> : <Text className="text-[20px]">🔊</Text>}
-          </TouchableOpacity>
+    <Animated.View entering={FadeInDown.delay(500).springify().damping(20)} key="aiInsight" style={{ marginBottom: 16 }}>
+      <DarkCard>
+        <TouchableOpacity onPress={() => setExpandedInsight(!expandedInsight)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: expandedInsight ? 16 : 0 }} activeOpacity={0.8}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Feather name="bar-chart-2" size={20} color={UI.accentSoft} />
+            <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 15, color: '#FFF' }}>AI Structural Synthesis</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            {expandedInsight && (
+              <View style={{ flexDirection: 'row', gap: 12, marginRight: 8 }}>
+                <TouchableOpacity 
+                  onPress={async (e) => {
+                    e.stopPropagation();
+                    if (isPlaying) {
+                      sound?.stopAsync();
+                      setIsPlaying(false);
+                      return;
+                    }
+                    setIsPlaying(true);
+                    try {
+                      const token = await getToken();
+                      if (!token) return;
+                      const uri = await generateSpeechUri(token, aiInsights, preferredLang);
+                      const { sound: newSound } = await Audio.Sound.createAsync({ uri });
+                      setSound(newSound);
+                      await newSound.playAsync();
+                      newSound.setOnPlaybackStatusUpdate((status) => {
+                        if (status.isLoaded && status.didJustFinish) setIsPlaying(false);
+                      });
+                    } catch (err) {
+                      setIsPlaying(false);
+                    }
+                  }}
+                  disabled={isTranslating}
+                  style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  {isPlaying ? <Feather name="square" size={14} color="#FFF" /> : <Feather name="volume-2" size={16} color="#FFF" />}
+                </TouchableOpacity>
 
-          <TouchableOpacity 
-            onPress={async () => {
-              setIsTranslating(true);
-              try {
-                const token = await getToken();
-                if (!token) return;
-                const res = await translateInsights(token, aiInsights, preferredLang);
-                setTranslatedInsight(res.translatedAiInsights.directAnswer || res.translatedAiInsights.actionableTakeaway);
-              } catch (err) {
-                console.warn(err);
-              } finally {
-                setIsTranslating(false);
-              }
-            }}
-            disabled={isTranslating || isPlaying}
-          >
-            {isTranslating ? <ActivityIndicator color={BRAND_COLORS.navy} size="small" /> : <Text className="text-[20px]">🌐</Text>}
-          </TouchableOpacity>
-        </View>
-      </View>
-      <Text className="text-[15px] text-brand-navy leading-[22px] font-semibold pr-10">{translatedInsight || aiInsights.directAnswer || aiInsights.actionableTakeaway}</Text>
-      <Text className="absolute -bottom-2.5 -right-2.5 text-[60px] opacity-10">🧠</Text>
-    </View>
+                <TouchableOpacity 
+                  onPress={async (e) => {
+                    e.stopPropagation();
+                    setIsTranslating(true);
+                    try {
+                      const token = await getToken();
+                      if (!token) return;
+                      const res = await translateInsights(token, aiInsights, preferredLang);
+                      setTranslatedInsight(res.translatedAiInsights.directAnswer || res.translatedAiInsights.actionableTakeaway);
+                    } finally {
+                      setIsTranslating(false);
+                    }
+                  }}
+                  disabled={isTranslating || isPlaying}
+                  style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  {isTranslating ? <ActivityIndicator color="#FFF" size="small" /> : <Feather name="globe" size={16} color="#FFF" />}
+                </TouchableOpacity>
+              </View>
+            )}
+            <Feather name={expandedInsight ? "chevron-up" : "chevron-down"} size={20} color="#FFF" />
+          </View>
+        </TouchableOpacity>
+        
+        {expandedInsight && (
+          <Animated.View entering={FadeInDown.duration(300)}>
+            <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginBottom: 16 }} />
+            <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: 'rgba(255,255,255,0.9)', lineHeight: 24 }}>
+              {translatedInsight || aiInsights.directAnswer || aiInsights.actionableTakeaway}
+            </Text>
+          </Animated.View>
+        )}
+      </DarkCard>
+    </Animated.View>
   );
 
   return (
-    <KeyboardAvoidingView 
-      className="flex-1 bg-brand-cream"
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={60}
-    >
+    <View style={{ flex: 1, backgroundColor: UI.background }}>
       {/* Header */}
-      <View className="flex-row items-center bg-brand-white px-4 pt-12 pb-4 border-b border-brand-border">
-        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} className="p-2 -ml-2">
-          <Text className="text-2xl text-brand-navy">←</Text>
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingBottom: 16, backgroundColor: UI.background }}>
+        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={{ padding: 8 }}>
+          <Feather name="arrow-left" size={24} color={UI.teal} />
         </TouchableOpacity>
-        <View className="flex-1 px-3">
-          <Text className="text-lg font-bold text-brand-navy leading-[22px]" numberOfLines={2}>{queryText}</Text>
-          <Text className="text-[13px] text-brand-rust font-bold mt-1">{isSimilarJourney ? `Found ${stats?.usersAnalyzed || 0} Similar Founders` : `Analyzed ${stats?.usersAnalyzed || 0} Founders`}</Text>
-        </View>
       </View>
 
-      <ScrollView contentContainerClassName="p-4 pb-10">
-        {isRecommendation ? (
-          <>
-            {renderAIInsight()}
-            {renderProducts()}
-            {renderTimelines()}
-            {renderDecisions()}
-          </>
-        ) : isSimilarJourney ? (
-          <>
-            {renderTimelines()}
-            {renderAIInsight()}
-            {renderProducts()}
-            {renderDecisions()}
-          </>
-        ) : (
-          <>
-            {renderProducts()}
-            {renderTimelines()}
-            {renderDecisions()}
-            {renderAIInsight()}
-          </>
-        )}
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingTop: Platform.OS === 'ios' ? 120 : 100, paddingBottom: 140 }} showsVerticalScrollIndicator={false}>
+        {renderQuestionCard()}
+        {renderStatsCard()}
+        {renderDecisions()}
+        {renderJourneys()}
+        {renderAIInsight()}
       </ScrollView>
 
       {/* Follow-up Question Interface */}
-      <View className="flex-row items-center p-3 bg-brand-white border-t border-brand-border">
-        <TextInput
-          className="flex-1 bg-brand-cream rounded-full px-4 py-2.5 text-[15px] text-brand-navy"
-          placeholder="Ask a follow-up question..."
-          placeholderTextColor={BRAND_COLORS.slate}
-          value={followUpQuery}
-          onChangeText={setFollowUpQuery}
-          onSubmitEditing={handleFollowUp}
-          returnKeyType="send"
-          editable={!isSubmittingFollowUp}
-        />
-        <TouchableOpacity 
-          className="w-10 h-10 rounded-full bg-brand-teal justify-center items-center ml-2" 
-          onPress={handleFollowUp}
-          disabled={isSubmittingFollowUp || !followUpQuery.trim()}
-        >
-          {isSubmittingFollowUp ? (
-            <ActivityIndicator color={BRAND_COLORS.white} size="small" />
-          ) : (
-            <Text className="text-brand-white text-lg pl-0.5">➤</Text>
-          )}
-        </TouchableOpacity>
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, paddingBottom: Platform.OS === 'ios' ? 36 : 16, backgroundColor: 'rgba(250, 249, 246, 0.95)' }}>
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+          <TextInput
+            style={{
+              flex: 1, backgroundColor: UI.surface, borderRadius: 28, paddingHorizontal: 20, paddingVertical: 16,
+              fontSize: 15, fontFamily: 'Manrope_400Regular', color: UI.foreground,
+              borderWidth: 1, borderColor: UI.borderSubtle
+            }}
+            placeholder="Ask a follow-up question..."
+            placeholderTextColor={UI.fg40}
+            value={followUpQuery}
+            onChangeText={setFollowUpQuery}
+            onSubmitEditing={handleFollowUp}
+            returnKeyType="send"
+            editable={!isSubmittingFollowUp}
+          />
+          <TouchableOpacity 
+            style={{
+              position: 'absolute', right: 8,
+              width: 40, height: 40, borderRadius: 20, backgroundColor: isSubmittingFollowUp || !followUpQuery.trim() ? UI.fg08 : UI.accentSoft,
+              alignItems: 'center', justifyContent: 'center'
+            }}
+            onPress={handleFollowUp}
+            disabled={isSubmittingFollowUp || !followUpQuery.trim()}
+          >
+            {isSubmittingFollowUp ? (
+              <ActivityIndicator color={UI.accent} size="small" />
+            ) : (
+              <Feather name="send" size={16} color={!followUpQuery.trim() ? UI.fg40 : UI.accent} style={{ marginLeft: -2, marginTop: 2 }} />
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 }

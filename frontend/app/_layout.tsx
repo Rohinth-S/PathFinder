@@ -4,6 +4,9 @@ import { Slot } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { View, Platform, StyleSheet, ActivityIndicator } from "react-native";
 import { useFonts, Manrope_400Regular, Manrope_600SemiBold, Manrope_700Bold } from "@expo-google-fonts/manrope";
+import { InstrumentSerif_400Regular, InstrumentSerif_400Regular_Italic } from "@expo-google-fonts/instrument-serif";
+import { JetBrainsMono_400Regular, JetBrainsMono_700Bold } from "@expo-google-fonts/jetbrains-mono";
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from "@expo-google-fonts/inter";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useCallback } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -48,6 +51,14 @@ export default function RootLayout() {
     Manrope_400Regular,
     Manrope_600SemiBold,
     Manrope_700Bold,
+    InstrumentSerif_400Regular,
+    InstrumentSerif_400Regular_Italic,
+    JetBrainsMono_400Regular,
+    JetBrainsMono_700Bold,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
   });
 
   useEffect(() => {
@@ -59,7 +70,7 @@ export default function RootLayout() {
   if (!fontsLoaded) {
     return (
       <View style={{ flex: 1, backgroundColor: '#FAF9F6', alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color="#3E6B66" />
+        <ActivityIndicator size="large" color="#FF6900" />
       </View>
     );
   }

@@ -1,14 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, TextInput, TouchableOpacity,
-  Animated, Alert, ActivityIndicator, Platform,
+  View, Text, TextInput, TouchableOpacity,
+  Alert, ActivityIndicator, Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Audio } from 'expo-av';
 import { useAuth } from '@clerk/clerk-expo';
 import { submitQuery } from '../../api/query.api';
-
-const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
+import { UI } from '../../constants/colors';
+import { SectionLabel } from '../../components/ui/SectionLabel';
+import { GradientButton } from '../../components/ui/GradientButton';
+import { DotDivider } from '../../components/ui/DotDivider';
+import Animated, {
+  useSharedValue, useAnimatedStyle, withSpring, withRepeat, withSequence, withTiming,
+} from 'react-native-reanimated';
+import { Feather } from '@expo/vector-icons';
 
 export default function QueryPage() {
   const router = useRouter();
@@ -19,25 +25,34 @@ export default function QueryPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
 
-  // Pulse animation
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const pulseLoop = useRef<Animated.CompositeAnimation | null>(null);
+  // Pulse animation for recording
+  const pulseScale = useSharedValue(1);
+  const pulseOpacity = useSharedValue(0.4);
 
   useEffect(() => {
     if (isRecording) {
-      pulseLoop.current = Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, { toValue: 1.4, duration: 600, useNativeDriver: true }),
-          Animated.timing(pulseAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-        ])
+      pulseScale.value = withRepeat(
+        withSequence(
+          withTiming(1.6, { duration: 800 }),
+          withTiming(1, { duration: 800 }),
+        ), -1, false
       );
-      pulseLoop.current.start();
-      return () => { pulseLoop.current?.stop(); };
+      pulseOpacity.value = withRepeat(
+        withSequence(
+          withTiming(0.1, { duration: 800 }),
+          withTiming(0.4, { duration: 800 }),
+        ), -1, false
+      );
     } else {
-      pulseAnim.setValue(1);
-      pulseLoop.current?.stop();
+      pulseScale.value = withTiming(1, { duration: 200 });
+      pulseOpacity.value = withTiming(0, { duration: 200 });
     }
-  }, [isRecording, pulseAnim]);
+  }, [isRecording]);
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseScale.value }],
+    opacity: pulseOpacity.value,
+  }));
 
   /* ── Audio Recording ──────────────────────────────── */
 
@@ -124,92 +139,138 @@ export default function QueryPage() {
   /* ── UI ────────────────────────────────────────────── */
 
   return (
-    <View className="flex-1 bg-brand-cream">
-      <View className="flex-row items-center justify-between p-4 pt-5">
-        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}>
-          <Text className="text-2xl text-brand-navy">←</Text>
+    <View style={{ flex: 1, backgroundColor: UI.background }}>
+      {/* Header */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 56, paddingBottom: 8 }}>
+        <TouchableOpacity
+          onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}
+          style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Feather name="arrow-left" size={20} color={UI.foreground} />
         </TouchableOpacity>
-        <Text className="text-lg font-bold text-brand-navy">Ask PathFinder</Text>
-        <View style={{ width: 22 }} />
+        <SectionLabel>Ask PathFinder</SectionLabel>
+        <View style={{ width: 40 }} />
       </View>
 
-      <View className="flex-1 p-6 justify-center">
-        <Text className="text-3xl font-extrabold text-brand-navy leading-10 mb-7">What do you want{'\n'}to learn from{'\n'}real journeys?</Text>
+      <View style={{ flex: 1, paddingHorizontal: 24, justifyContent: 'center' }}>
+        {/* Editorial Headline */}
+        <Text style={{
+          fontFamily: 'InstrumentSerif_400Regular',
+          fontSize: 36,
+          lineHeight: 42,
+          letterSpacing: -0.5,
+          color: UI.foreground,
+          marginBottom: 32,
+        }}>
+          What do you want{'\n'}to learn from{'\n'}real journeys?
+        </Text>
 
-        {/* Intent Toggle */}
-        <View className="flex-row bg-brand-white rounded-xl p-1 mb-6 gap-1 border border-brand-border">
-          <TouchableOpacity
-            className={`flex-1 py-3 items-center rounded-lg ${intent === 'exploring' ? 'bg-brand-teal' : ''}`}
-            onPress={() => setIntent('exploring')}
-          >
-            <Text className={`font-semibold text-sm ${intent === 'exploring' ? 'text-brand-white' : 'text-brand-slate'}`}>
-              🔍  Just Exploring
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className={`flex-1 py-3 items-center rounded-lg ${intent === 'myself' ? 'bg-brand-teal' : ''}`}
-            onPress={() => setIntent('myself')}
-          >
-            <Text className={`font-semibold text-sm ${intent === 'myself' ? 'text-brand-white' : 'text-brand-slate'}`}>
-              For Myself
-            </Text>
-          </TouchableOpacity>
+        {/* Intent Toggle — pill segments */}
+        <View style={{
+          flexDirection: 'row', backgroundColor: UI.surface, borderRadius: 12,
+          padding: 4, marginBottom: 20, borderWidth: 1, borderColor: UI.fg08,
+          gap: 4,
+        }}>
+          {(['exploring', 'myself'] as const).map((opt) => {
+            const active = intent === opt;
+            return (
+              <TouchableOpacity
+                key={opt}
+                onPress={() => setIntent(opt)}
+                style={{
+                  flex: 1, paddingVertical: 10, alignItems: 'center',
+                  borderRadius: 8,
+                  backgroundColor: active ? UI.accent : 'transparent',
+                }}
+              >
+                <Text style={{
+                  fontFamily: 'Manrope_600SemiBold',
+                  fontSize: 13,
+                  color: active ? '#FFFFFF' : UI.fg50,
+                  letterSpacing: 0.3,
+                }}>
+                  {opt === 'exploring' ? '🔍  Exploring' : '🎯  For Myself'}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
-        {/* Input */}
-        <View className="flex-row bg-brand-white rounded-2xl border-2 border-brand-border items-center pr-2 mb-3">
+        {/* Input Card */}
+        <View style={{
+          backgroundColor: UI.surface, borderRadius: 16,
+          borderWidth: 1, borderColor: UI.fg08,
+          flexDirection: 'row', alignItems: 'flex-end',
+          paddingRight: 8, paddingBottom: 8,
+          marginBottom: 12,
+        }}>
           <TextInput
-            className="flex-1 text-brand-navy text-base p-4 min-h-[100px]"
-            style={{ textAlignVertical: 'top' }}
+            style={{
+              flex: 1, fontSize: 15, color: UI.foreground,
+              padding: 16, minHeight: 100,
+              textAlignVertical: 'top',
+              fontFamily: 'Manrope_400Regular',
+            }}
             placeholder="e.g. Should I drop out to build a startup?"
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={UI.fg40}
             value={query}
             onChangeText={setQuery}
             multiline
             editable={!isSearching}
           />
-          <View className="justify-center items-center w-14 h-14 mr-1">
+          <View style={{ alignItems: 'center', justifyContent: 'center', width: 48, height: 48 }}>
+            {/* Pulse ring */}
             {isRecording && (
               <Animated.View
-                className="absolute w-12 h-12 rounded-full border-2"
-                style={{
-                  backgroundColor: 'rgba(208, 103, 87, 0.15)',
-                  borderColor: 'rgba(208, 103, 87, 0.3)',
-                  transform: [{ scale: pulseAnim }]
-                }}
+                style={[
+                  pulseStyle,
+                  {
+                    position: 'absolute',
+                    width: 44, height: 44, borderRadius: 22,
+                    backgroundColor: UI.accentTint,
+                    borderWidth: 1.5,
+                    borderColor: `${UI.accent}40`,
+                  },
+                ]}
               />
             )}
             <TouchableOpacity
-              className={`w-12 h-12 rounded-full justify-center items-center z-10 ${isRecording ? 'bg-brand-tan' : 'bg-brand-lightGray'}`}
               onPress={isRecording ? stopRecording : startRecording}
               disabled={isSearching}
+              style={{
+                width: 44, height: 44, borderRadius: 22,
+                alignItems: 'center', justifyContent: 'center',
+                backgroundColor: isRecording ? UI.accent : UI.surfaceDim,
+              }}
             >
-              <Text className="text-xl">{isRecording ? '⏹️' : '🎤'}</Text>
+              <Feather
+                name={isRecording ? 'square' : 'mic'}
+                size={18}
+                color={isRecording ? '#FFF' : UI.fg50}
+              />
             </TouchableOpacity>
           </View>
         </View>
 
         {isRecording && (
-          <Text className="text-brand-rust text-center mb-3 font-bold text-sm">🔴  Listening... tap to stop</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 12 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: UI.accent }} />
+            <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, color: UI.accent, letterSpacing: 0.5 }}>
+              Listening... tap to stop
+            </Text>
+          </View>
         )}
 
         {/* Submit */}
-        <TouchableOpacity
-          className={`bg-brand-rust py-4 rounded-2xl items-center mt-2 shadow-sm ${isSearching ? 'opacity-60' : ''}`}
+        <GradientButton
+          label={isSearching ? 'Searching pathways...' : 'Search Pathways'}
           onPress={() => handleSubmit()}
+          loading={isSearching}
           disabled={isSearching || (!query.trim() && !isRecording)}
-        >
-          {isSearching ? (
-            <View className="flex-row items-center">
-              <ActivityIndicator color="#FFF" size="small" />
-              <Text className="text-brand-white text-base font-extrabold ml-2">Searching pathways...</Text>
-            </View>
-          ) : (
-            <Text className="text-brand-white text-lg font-extrabold">Search Pathways  →</Text>
-          )}
-        </TouchableOpacity>
+          size="lg"
+          style={{ alignSelf: 'stretch' }}
+        />
       </View>
     </View>
   );
 }
-
