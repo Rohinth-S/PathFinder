@@ -72,6 +72,7 @@ export const journeyUserSchema = z
     clerkId: z.string().trim().min(1).nullable().optional(),
     preferredLanguage: z.string().trim().min(1).nullable().optional(),
     summary: z.string().trim().nullable().optional(),
+    imageUrl: z.string().url().nullable().optional(),
     expertiseAreas: z.array(z.string().trim().min(1)).optional(),
     reputationScore: z.number().int().min(0).optional(),
     flagCount: z.number().int().min(0).optional(),
