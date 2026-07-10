@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Share, ActivityIndicator, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Share, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { BRAND_COLORS } from '../../constants/colors';
+import { UI } from '../../constants/colors';
 import { getCommunityJourney, CommunityJourney } from '../../api/community.api';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { SectionLabel } from '../../components/ui/SectionLabel';
 
 export default function PublicProfilePage() {
   const router = useRouter();
@@ -43,18 +46,28 @@ export default function PublicProfilePage() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-brand-cream justify-center items-center p-5">
-        <ActivityIndicator size="large" color={BRAND_COLORS.navy} />
+      <View style={{ flex: 1, backgroundColor: UI.background, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={UI.accent} />
       </View>
     );
   }
 
   if (error || !journey) {
     return (
-      <View className="flex-1 bg-brand-cream justify-center items-center p-5">
-        <Text className="text-base text-brand-rust mb-4">{error || "User not found"}</Text>
-        <TouchableOpacity className="px-5 py-2.5 bg-brand-navy rounded-lg" onPress={fetchJourney}>
-          <Text className="text-brand-white font-bold">Retry</Text>
+      <View style={{ flex: 1, backgroundColor: UI.background, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+        <Text style={{ fontSize: 48, marginBottom: 16 }}>😔</Text>
+        <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 22, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
+          {error || "User not found"}
+        </Text>
+        <TouchableOpacity
+          onPress={fetchJourney}
+          activeOpacity={0.7}
+          style={{
+            paddingHorizontal: 24, paddingVertical: 12, borderRadius: 9999,
+            backgroundColor: UI.accent, marginTop: 16,
+          }}
+        >
+          <Text style={{ fontSize: 14, color: '#FFFFFF', fontFamily: 'Inter_600SemiBold' }}>Retry</Text>
         </TouchableOpacity>
       </View>
     );
@@ -68,75 +81,127 @@ export default function PublicProfilePage() {
   });
 
   return (
-    <ScrollView className="flex-1 bg-brand-cream" contentContainerClassName="p-5 pb-10">
+    <View style={{ flex: 1, backgroundColor: UI.background }}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mb-6">
-        <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}>
-          <Text className="text-[22px] text-brand-navy">←</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 56, paddingBottom: 16 }}>
+        <TouchableOpacity
+          onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}
+          activeOpacity={0.7}
+          style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Feather name="arrow-left" size={20} color={UI.foreground} />
         </TouchableOpacity>
-        <Text className="text-lg font-bold text-brand-navy">Public Profile</Text>
-        <View style={{ width: 22 }} />
+        <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 15, color: UI.foreground }}>Public Profile</Text>
+        <View style={{ width: 40 }} />
       </View>
 
-      {/* Profile */}
-      <View className="items-center mb-5">
-        <View className="w-[72px] h-[72px] rounded-full bg-brand-navy justify-center items-center mb-3 overflow-hidden">
-          {user.avatarUrl ? (
-            <Image source={{ uri: user.avatarUrl }} style={{ width: 72, height: 72 }} />
-          ) : (
-            <Text className="text-[28px] font-extrabold text-brand-white">{(user.username || 'U')[0].toUpperCase()}</Text>
-          )}
-        </View>
-        <Text className="text-xl font-bold text-brand-navy mb-1.5">@{user.username || 'unknown'}</Text>
-        <View className="flex-row items-center gap-1.5">
-          <Text className="text-sm">⭐</Text>
-          <Text className="text-base font-extrabold text-brand-teal">{user.reputationScore}</Text>
-        </View>
-      </View>
-
-      {/* Share Button */}
-      <TouchableOpacity 
-        className="flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-brand-rust mb-7 elevation-4 shadow-sm" 
-        onPress={handleShare}
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
       >
-        <Text className="text-base">🔗</Text>
-        <Text className="text-[15px] font-bold text-brand-white">Share this Journey</Text>
-      </TouchableOpacity>
-
-      {/* Timeline */}
-      <Text className="text-lg font-extrabold text-brand-navy mb-4">Life Graph</Text>
-      {sortedExperiences.length === 0 ? (
-        <Text className="text-sm text-brand-slate italic text-center mt-5">This user hasn't added any experiences yet.</Text>
-      ) : (
-        sortedExperiences.map((event, idx) => {
-          const isLast = idx === sortedExperiences.length - 1;
-          return (
-            <View key={event.id} className="flex-row mb-0">
-              <View className="w-6 items-center">
-                <View className={`w-3 h-3 rounded-full mt-4 z-10 ${event.isVerified ? 'bg-brand-teal' : 'bg-brand-border'}`} />
-                {!isLast && <View className="w-[2px] flex-1 bg-brand-border -mt-0.5" />}
-              </View>
-              <View className="flex-1 bg-brand-white rounded-xl p-3.5 ml-2.5 mb-3 border border-brand-border">
-                <View className="flex-row items-center justify-between mb-0.5">
-                  <Text className="text-base font-extrabold text-brand-navy flex-1">{event.title}</Text>
-                  {event.isVerified && (
-                    <View className="bg-brand-cream px-2 py-[3px] rounded-lg">
-                      <Text className="text-brand-teal text-[10px] font-bold">✓ Verified</Text>
-                    </View>
-                  )}
-                </View>
-                <Text className="text-xs text-brand-slate mb-1.5 font-semibold">
-                  {event.startDate ? new Date(event.startDate).getFullYear() : 'Unknown'} 
-                  {event.endDate ? ` – ${new Date(event.endDate).getFullYear()}` : ' – Present'}  •  {event.organization}
-                </Text>
-                <Text className="text-sm text-brand-slate leading-5 font-medium">{event.timelineSummary}</Text>
-              </View>
+        {/* Profile Card */}
+        <Animated.View entering={FadeInDown.delay(100).duration(500).springify()}>
+          <View style={{ alignItems: 'center', marginBottom: 24 }}>
+            <View style={{
+              width: 72, height: 72, borderRadius: 36, backgroundColor: UI.surfaceInverse,
+              alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+            }}>
+              <Text style={{ fontSize: 28, color: '#FFFFFF', fontFamily: 'Inter_700Bold' }}>
+                {(user.username || 'U')[0].toUpperCase()}
+              </Text>
             </View>
-          );
-        })
-      )}
-    </ScrollView>
+            <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, marginBottom: 6 }}>
+              @{user.username || 'unknown'}
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Text style={{ fontSize: 14 }}>★</Text>
+              <Text style={{ fontSize: 16, color: UI.accent, fontFamily: 'Inter_700Bold' }}>{user.reputationScore}</Text>
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Share Button */}
+        <Animated.View entering={FadeInDown.delay(200).duration(500).springify()}>
+          <TouchableOpacity
+            onPress={handleShare}
+            activeOpacity={0.7}
+            style={{
+              flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+              paddingVertical: 14, borderRadius: 9999,
+              backgroundColor: UI.accent, marginBottom: 32,
+            }}
+          >
+            <Feather name="share-2" size={16} color="#FFFFFF" />
+            <Text style={{ fontSize: 14, color: '#FFFFFF', fontFamily: 'Inter_600SemiBold' }}>Share this Journey</Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* Timeline */}
+        <Animated.View entering={FadeInDown.delay(300).duration(500).springify()}>
+          <SectionLabel style={{ marginBottom: 16 }}>LIFE GRAPH</SectionLabel>
+        </Animated.View>
+
+        {sortedExperiences.length === 0 ? (
+          <View style={{ alignItems: 'center', paddingVertical: 32 }}>
+            <Text style={{ fontSize: 14, color: UI.fg50, fontFamily: 'Inter_400Regular', fontStyle: 'italic', textAlign: 'center' }}>
+              This user hasn't added any experiences yet.
+            </Text>
+          </View>
+        ) : (
+          sortedExperiences.map((event, idx) => {
+            const isLast = idx === sortedExperiences.length - 1;
+            return (
+              <Animated.View
+                key={event.id}
+                entering={FadeInDown.delay(350 + idx * 60).duration(400).springify()}
+              >
+                <View style={{ flexDirection: 'row' }}>
+                  {/* Timeline dot + line */}
+                  <View style={{ width: 24, alignItems: 'center' }}>
+                    <View style={{
+                      width: 12, height: 12, borderRadius: 6, marginTop: 16,
+                      backgroundColor: event.isVerified ? UI.accent : UI.fg20,
+                      zIndex: 2,
+                    }} />
+                    {!isLast && (
+                      <View style={{ width: 2, flex: 1, backgroundColor: UI.fg08, marginTop: -2 }} />
+                    )}
+                  </View>
+
+                  {/* Experience card */}
+                  <View style={{
+                    flex: 1, marginLeft: 12, marginBottom: 12,
+                    backgroundColor: UI.surface, borderRadius: 16, padding: 16,
+                    borderWidth: 1, borderColor: UI.fg08,
+                  }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <Text style={{ fontSize: 15, color: UI.foreground, fontFamily: 'Inter_700Bold', flex: 1 }}>
+                        {event.title}
+                      </Text>
+                      {event.isVerified && (
+                        <View style={{
+                          paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8,
+                          backgroundColor: UI.accentSoft,
+                        }}>
+                          <Text style={{ fontSize: 10, color: UI.accent, fontFamily: 'Inter_700Bold' }}>✓ Verified</Text>
+                        </View>
+                      )}
+                    </View>
+                    <Text style={{ fontSize: 12, color: UI.fg50, marginBottom: 6, fontFamily: 'Inter_600SemiBold' }}>
+                      {event.startDate ? new Date(event.startDate).getFullYear() : 'Unknown'}
+                      {event.endDate ? ` – ${new Date(event.endDate).getFullYear()}` : ' – Present'}
+                      {event.organization ? `  •  ${event.organization}` : ''}
+                    </Text>
+                    <Text style={{ fontSize: 14, color: UI.fg80, lineHeight: 20, fontFamily: 'Inter_400Regular' }}>
+                      {event.timelineSummary}
+                    </Text>
+                  </View>
+                </View>
+              </Animated.View>
+            );
+          })
+        )}
+      </ScrollView>
+    </View>
   );
 }
-
-

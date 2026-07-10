@@ -4,7 +4,7 @@ import {
   ActivityIndicator, RefreshControl, Modal, Pressable, Platform, Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import Animated, {
   useSharedValue, useAnimatedStyle, withTiming, withSequence,
   Easing, interpolateColor, FadeInDown,
@@ -15,10 +15,9 @@ import {
 } from '../../api/community.api';
 import { SectionLabel, PillBadge } from '../../components/ui/SectionLabel';
 import { DotDivider } from '../../components/ui/DotDivider';
-import { GradientButton } from '../../components/ui/GradientButton';
 
 // ═══════════════════════════════════════════════════════
-//  Bottom-sheet picker (shared with Profile language selector pattern)
+//  Bottom-sheet picker
 // ═══════════════════════════════════════════════════════
 
 type PickerProps = {
@@ -33,12 +32,12 @@ type PickerProps = {
 function BottomSheetPicker({ visible, title, options, selected, onSelect, onClose }: PickerProps) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={{ flex: 1, backgroundColor: 'rgba(15,23,42,0.4)' }} onPress={onClose}>
+      <Pressable style={{ flex: 1, backgroundColor: 'rgba(10, 15, 29, 0.5)' }} onPress={onClose}>
         <View style={{ flex: 1 }} />
         <Pressable
           onPress={(e) => e.stopPropagation()}
           style={{
-            backgroundColor: UI.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+            backgroundColor: UI.background, borderTopLeftRadius: 24, borderTopRightRadius: 24,
             paddingTop: 20, paddingBottom: Platform.OS === 'ios' ? 40 : 24,
             maxHeight: '60%',
           }}
@@ -47,7 +46,7 @@ function BottomSheetPicker({ visible, title, options, selected, onSelect, onClos
           <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: UI.fg20, alignSelf: 'center', marginBottom: 16 }} />
 
           {/* Title */}
-          <Text style={{ fontSize: 17, fontWeight: '700', color: UI.foreground, paddingHorizontal: 24, marginBottom: 16, fontFamily: 'Manrope_700Bold' }}>
+          <Text style={{ fontSize: 18, color: UI.foreground, paddingHorizontal: 24, marginBottom: 16, fontFamily: 'InstrumentSerif_400Regular' }}>
             {title}
           </Text>
 
@@ -59,6 +58,7 @@ function BottomSheetPicker({ visible, title, options, selected, onSelect, onClos
                 <TouchableOpacity
                   key={opt}
                   onPress={() => onSelect(opt)}
+                  activeOpacity={0.7}
                   style={{
                     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
                     paddingVertical: 14, paddingHorizontal: 16, borderRadius: 12, marginBottom: 4,
@@ -67,7 +67,7 @@ function BottomSheetPicker({ visible, title, options, selected, onSelect, onClos
                 >
                   <Text style={{
                     fontSize: 15, color: isSelected ? UI.accent : UI.foreground,
-                    fontFamily: isSelected ? 'Manrope_600SemiBold' : 'Manrope_400Regular',
+                    fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
                   }}>
                     {opt}
                   </Text>
@@ -87,7 +87,7 @@ function BottomSheetPicker({ visible, title, options, selected, onSelect, onClos
 }
 
 // ═══════════════════════════════════════════════════════
-//  Animated filter trigger (with unlock flash)
+//  Animated filter trigger
 // ═══════════════════════════════════════════════════════
 
 type FilterTriggerProps = {
@@ -102,7 +102,6 @@ function FilterTrigger({ label, value, disabled, onPress }: FilterTriggerProps) 
   const prevDisabled = useRef(disabled);
 
   useEffect(() => {
-    // Flash animation when transitioning from disabled to enabled
     if (prevDisabled.current && !disabled) {
       flashProgress.value = withSequence(
         withTiming(1, { duration: 150 }),
@@ -141,7 +140,7 @@ function FilterTrigger({ label, value, disabled, onPress }: FilterTriggerProps) 
           numberOfLines={1}
           style={{
             flex: 1, fontSize: 13, color: textColor,
-            fontFamily: value ? 'Manrope_600SemiBold' : 'Manrope_400Regular',
+            fontFamily: value ? 'Inter_600SemiBold' : 'Inter_400Regular',
           }}
         >
           {value || label}
@@ -158,7 +157,7 @@ function FilterTrigger({ label, value, disabled, onPress }: FilterTriggerProps) 
 }
 
 // ═══════════════════════════════════════════════════════
-//  User Card
+//  User Card — fully redesigned with summary, expertise, highlights
 // ═══════════════════════════════════════════════════════
 
 function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJourney: () => void }) {
@@ -170,32 +169,30 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
     : user.reputationScore;
   const hasReputation = repScore != null && repScore > 0;
 
-  // Build a one-line AI summary from available data
-  const summary = user.latestExperience
-    ? `${user.latestExperience.timelineSummary}`
-    : (user.topics?.length > 0 ? `Focused on ${user.topics.join(', ')}.` : 'Exploring new paths.');
+  const summary = user.summary || 'Exploring new paths on PathFinder.';
+  const expertiseAreas = user.expertiseAreas || [];
+  const matchingGoals = user.matchingGoalTitles || [];
+  const matchingGoalCount = typeof user.matchingGoalCount === 'object'
+    ? (user.matchingGoalCount as any).low
+    : (user.matchingGoalCount || 0);
+  const journeyHighlights = user.journeyHighlights || [];
 
   return (
     <View style={{
-      backgroundColor: UI.surface, borderRadius: 16, borderWidth: 1, borderColor: UI.fg08,
-      borderLeftWidth: 3, borderLeftColor: UI.accent,
-      paddingHorizontal: 16, paddingVertical: 16, marginBottom: 16,
+      backgroundColor: UI.surface, borderRadius: 20, borderWidth: 1, borderColor: UI.fg08,
+      paddingHorizontal: 20, paddingVertical: 20, marginBottom: 16,
     }}>
       {/* Header: avatar + username + reputation */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           {/* Avatar circle */}
           <View style={{
-            width: 40, height: 40, borderRadius: 20, backgroundColor: UI.accentSoft,
-            alignItems: 'center', justifyContent: 'center', overflow: 'hidden'
+            width: 42, height: 42, borderRadius: 21, backgroundColor: UI.surfaceInverse,
+            alignItems: 'center', justifyContent: 'center',
           }}>
-            {user.avatarUrl ? (
-              <Image source={{ uri: user.avatarUrl }} style={{ width: 40, height: 40 }} />
-            ) : (
-              <Text style={{ fontSize: 17, color: UI.accent, fontFamily: 'Manrope_700Bold' }}>{initial}</Text>
-            )}
+            <Text style={{ fontSize: 17, color: '#FFFFFF', fontFamily: 'Inter_700Bold' }}>{initial}</Text>
           </View>
-          <Text style={{ fontSize: 15, color: UI.foreground, fontFamily: 'Manrope_700Bold' }}>@{user.username || 'unknown'}</Text>
+          <Text style={{ fontSize: 15, color: UI.foreground, fontFamily: 'Inter_700Bold' }}>@{user.username || 'unknown'}</Text>
         </View>
 
         {/* Reputation badge */}
@@ -203,59 +200,95 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
           <View style={{
             flexDirection: 'row', alignItems: 'center', gap: 4,
             backgroundColor: UI.accentSoft, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
-            borderWidth: 1, borderColor: UI.accentTint,
           }}>
             <Text style={{ fontSize: 11, color: UI.accent }}>★</Text>
-            <Text style={{ fontSize: 12, color: UI.accent, fontFamily: 'Manrope_700Bold' }}>{repScore}</Text>
+            <Text style={{ fontSize: 12, color: UI.accent, fontFamily: 'Inter_700Bold' }}>{repScore}</Text>
           </View>
         )}
       </View>
 
-      {/* AI Summary */}
+      {/* Summary */}
       <Text
-        numberOfLines={2}
-        style={{ fontSize: 14, color: UI.foreground, lineHeight: 22, marginBottom: 16, fontFamily: 'Manrope_400Regular' }}
+        numberOfLines={3}
+        style={{ fontSize: 14, color: UI.fg80, lineHeight: 22, marginBottom: 16, fontFamily: 'Inter_400Regular' }}
       >
         {summary}
       </Text>
 
       {/* Expertise Areas */}
-      {user.topics && user.topics.length > 0 && (
+      {expertiseAreas.length > 0 && (
         <View style={{ marginBottom: 16 }}>
           <SectionLabel style={{ marginBottom: 8 }}>EXPERTISE AREAS</SectionLabel>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-            {user.topics.map((topic) => (
-              <PillBadge key={topic} label={topic} />
+            {expertiseAreas.map((area) => (
+              <View key={area} style={{
+                paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20,
+                backgroundColor: UI.accentSoft,
+              }}>
+                <Text style={{ fontSize: 12, color: UI.accent, fontFamily: 'Inter_600SemiBold' }}>{area}</Text>
+              </View>
             ))}
           </View>
         </View>
       )}
 
       {/* Goals Matching Your Search */}
-      {user.subtopics && user.subtopics.length > 0 && (
+      {matchingGoals.length > 0 && (
         <View style={{ marginBottom: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <SectionLabel>MATCHING GOALS</SectionLabel>
-            <PillBadge label={`${user.subtopics.length} MATCHES`} color={UI.accent} bgColor={UI.accentSoft} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <SectionLabel>GOALS MATCHING YOUR SEARCH</SectionLabel>
+            <View style={{
+              paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
+              backgroundColor: UI.accentSoft,
+            }}>
+              <Text style={{ fontSize: 10, color: UI.accent, fontFamily: 'Inter_700Bold' }}>
+                {matchingGoalCount} {matchingGoalCount === 1 ? 'Goal' : 'Goals'} Matched
+              </Text>
+            </View>
           </View>
-          {user.subtopics.slice(0, 3).map((goal, i) => (
-            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
-              <Feather name="target" size={12} color={UI.fg40} style={{ marginTop: 2 }} />
-              <Text style={{ fontSize: 13, color: UI.foreground, flex: 1, fontFamily: 'Manrope_600SemiBold' }}>{goal}</Text>
+          {matchingGoals.slice(0, 3).map((goal, i) => (
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
+              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: UI.accent, marginTop: 7 }} />
+              <Text style={{ fontSize: 14, color: UI.fg80, flex: 1, lineHeight: 20, fontFamily: 'Inter_400Regular' }}>{goal}</Text>
+            </View>
+          ))}
+          {matchingGoalCount > 3 && (
+            <Text style={{ fontSize: 13, color: UI.fg50, fontFamily: 'Inter_600SemiBold', marginTop: 2 }}>
+              +{matchingGoalCount - 3} more
+            </Text>
+          )}
+        </View>
+      )}
+
+      {/* Journey Highlights */}
+      {journeyHighlights.length > 0 && (
+        <View style={{ marginBottom: 16 }}>
+          <SectionLabel color={UI.accent} style={{ marginBottom: 10 }}>JOURNEY HIGHLIGHTS</SectionLabel>
+          {journeyHighlights.map((highlight, i) => (
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
+              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: UI.fg40, marginTop: 7 }} />
+              <Text style={{ fontSize: 14, color: UI.fg80, flex: 1, lineHeight: 20, fontFamily: 'Inter_400Regular' }}>{highlight}</Text>
             </View>
           ))}
         </View>
       )}
 
-      <DotDivider style={{ marginVertical: 12 }} />
-
-      <GradientButton
-        label="View Full Journey"
+      {/* View Full Journey Button */}
+      <TouchableOpacity
         onPress={onViewJourney}
-        variant="ghost"
-        size="sm"
-        style={{ alignSelf: 'flex-start', paddingHorizontal: 0 }}
-      />
+        activeOpacity={0.7}
+        style={{
+          flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+          paddingVertical: 14, borderRadius: 9999,
+          borderWidth: 1.5, borderColor: UI.fg20,
+          marginTop: 4,
+        }}
+      >
+        <Feather name="map" size={16} color={UI.foreground} />
+        <Text style={{ fontSize: 14, color: UI.foreground, fontFamily: 'Inter_600SemiBold' }}>
+          View Full Journey
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -267,7 +300,8 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
 function SkeletonCard() {
   return (
     <View style={{
-      backgroundColor: UI.fg06, borderRadius: 16, height: 200, marginBottom: 16,
+      backgroundColor: UI.surfaceDim, borderRadius: 20, height: 240, marginBottom: 16,
+      opacity: 0.5,
     }} />
   );
 }
@@ -356,11 +390,10 @@ export default function CommunityPage() {
 
   const handleTopicSelect = (topic: string) => {
     if (selectedTopic === topic) {
-      // Deselect
       setSelectedTopic(null);
     } else {
       setSelectedTopic(topic);
-      setSelectedSubtopic(null); // Clear subtopic when topic changes
+      setSelectedSubtopic(null);
     }
     setTopicPickerVisible(false);
   };
@@ -388,17 +421,20 @@ export default function CommunityPage() {
   return (
     <View style={{ flex: 1, backgroundColor: UI.background }}>
       {/* Header */}
-      <View style={{ paddingHorizontal: 24, paddingTop: 56, paddingBottom: 16 }}>
-        <SectionLabel>The Ecosystem</SectionLabel>
+      <View style={{ paddingHorizontal: 24, paddingTop: 56, paddingBottom: 8 }}>
         <Text style={{
           fontFamily: 'InstrumentSerif_400Regular',
-          fontSize: 32, color: UI.foreground, marginTop: 4,
+          fontSize: 32, color: UI.foreground, marginBottom: 4,
         }}>
-          Explore Community
+          Community
+        </Text>
+        <Text style={{
+          fontFamily: 'Inter_400Regular',
+          fontSize: 14, color: UI.fg50, lineHeight: 20,
+        }}>
+          Discover journeys from people pursuing similar goals.
         </Text>
       </View>
-
-      <DotDivider style={{ marginHorizontal: 24, marginBottom: 8 }} />
 
       {/* Filters */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, marginTop: 16, marginBottom: 24 }}>
@@ -413,10 +449,11 @@ export default function CommunityPage() {
           disabled={!selectedTopic}
           onPress={() => setSubtopicPickerVisible(true)}
         />
-        {/* Search button — orange gradient style */}
+        {/* Search button */}
         <TouchableOpacity
           onPress={handleSearch}
           disabled={!isSearchEnabled}
+          activeOpacity={0.7}
           style={{
             width: 44, height: 44, borderRadius: 22,
             backgroundColor: isSearchEnabled ? UI.accent : UI.fg08,
@@ -449,7 +486,7 @@ export default function CommunityPage() {
           <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
             No journeys match yet
           </Text>
-          <Text style={{ fontSize: 14, color: UI.fg50, textAlign: 'center', fontFamily: 'Manrope_400Regular' }}>
+          <Text style={{ fontSize: 14, color: UI.fg50, textAlign: 'center', fontFamily: 'Inter_400Regular' }}>
             Try exploring a different topic or subtopic.
           </Text>
         </View>
