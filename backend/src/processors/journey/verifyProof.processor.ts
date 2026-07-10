@@ -1,14 +1,28 @@
 import { geminiClient } from "../../config/gemini.config.js";
 import type { JourneyExperience, JourneyProof } from "../../types/journey/Journey.types.js";
 import { PROOF_VERIFICATION_SYSTEM_PROMPT, buildProofVerificationPrompt } from "../../prompts/onboarding/proofVerification.prompt.js";
-import { geminiProofVerificationSchema, proofVerificationResultSchema, type ProofVerificationResult } from "./proofVerification.schema.js";
-import { createRequire } from "module";
+import { journeyProofSchema } from "./journeySchema.js";
+import { SchemaType, type Schema } from "@google/generative-ai";
+import { cloudinary } from "../../config/cloudinary.config.js";
+import { PDFParse } from "pdf-parse";
 import * as fs from "fs/promises";
 
-const require = createRequire(import.meta.url);
-const _pdf = require("pdf-parse");
-
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
+
+const temporaryLlmResponseSchema: Schema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    status: {
+      type: SchemaType.STRING,
+      description: "Whether the proof supports the claimed experience: must be 'verified' or 'rejected'",
+    },
+    reason: {
+      type: SchemaType.STRING,
+      description: "Detailed explanation of why the status was chosen and how the proof supports or fails to support the experience",
+    },
+  },
+  required: ["status", "reason"],
+};
 
 interface GitHubParseResult {
   type: "repository" | "pull" | "commit" | "user";
@@ -132,19 +146,54 @@ function getMimeTypeFromUrl(urlOrPath: string): string {
 export async function verifyProof(
   experience: JourneyExperience,
   proof: JourneyProof
-): Promise<ProofVerificationResult> {
+): Promise<JourneyProof> {
   const { sourceType, url } = proof;
 
   try {
-    let proofDetails = "";
+    let cloudinaryUrl = url;
+
+    // Upload images and PDFs to Cloudinary first
+    if (sourceType === "image" || sourceType === "pdf") {
+      if (!process.env.CLOUDINARY_URL) {
+        return {
+          id: proof.id,
+          sourceType: proof.sourceType,
+          url: proof.url,
+          status: "rejected",
+          verifiedAt: null,
+          reason: "Cloudinary configuration is missing. Proof storage is required for verification.",
+        };
+      }
+
+      try {
+        const uploadResult = await cloudinary.uploader.upload(url, {
+          resource_type: "auto",
+          folder: "pathfinder/proofs",
+        });
+        cloudinaryUrl = uploadResult.secure_url;
+      } catch (uploadErr: any) {
+        return {
+          id: proof.id,
+          sourceType: proof.sourceType,
+          url: proof.url,
+          status: "rejected",
+          verifiedAt: null,
+          reason: `Failed to upload proof to Cloudinary: ${uploadErr.message}`,
+        };
+      }
+    }
+
+    let verificationContext = "";
     let imagePart: any = null;
 
     if (sourceType === "github") {
       const parsed = parseGitHubUrl(url);
       if (!parsed) {
         return {
+          id: proof.id,
+          sourceType: proof.sourceType,
+          url: proof.url,
           status: "rejected",
-          score: 0,
           verifiedAt: null,
           reason: `Invalid GitHub URL: ${url}`,
         };
@@ -214,16 +263,18 @@ export async function verifyProof(
         };
       }
 
-      proofDetails = JSON.stringify(payload, null, 2);
+      verificationContext = JSON.stringify(payload, null, 2);
 
     } else if (sourceType === "pdf") {
       let fileData;
       try {
-        fileData = await fetchProofFile(url);
+        fileData = await fetchProofFile(cloudinaryUrl);
       } catch (err: any) {
         return {
+          id: proof.id,
+          sourceType: proof.sourceType,
+          url: cloudinaryUrl,
           status: "rejected",
-          score: 0,
           verifiedAt: null,
           reason: `Failed to retrieve PDF file: ${err.message}`,
         };
@@ -232,19 +283,28 @@ export async function verifyProof(
       let extractedText = "";
       let pdfMetadata: any = {};
       try {
-        const parsed = await _pdf(fileData.buffer);
-        extractedText = parsed.text;
-        pdfMetadata = parsed.metadata || {};
+        const parser = new PDFParse({ data: fileData.buffer });
+        const parsedText = await parser.getText();
+        extractedText = parsedText.text;
+        
+        try {
+          const parsedInfo = await parser.getInfo();
+          pdfMetadata = parsedInfo.info || {};
+        } catch {
+          // Info parsing is optional
+        }
       } catch (err: any) {
         return {
+          id: proof.id,
+          sourceType: proof.sourceType,
+          url: cloudinaryUrl,
           status: "rejected",
-          score: 0,
           verifiedAt: null,
           reason: `Failed to parse PDF content: ${err.message}`,
         };
       }
 
-      proofDetails = JSON.stringify({
+      verificationContext = JSON.stringify({
         text: extractedText || "No text extracted from PDF.",
         metadata: pdfMetadata,
       }, null, 2);
@@ -252,11 +312,13 @@ export async function verifyProof(
     } else if (sourceType === "image") {
       let fileData;
       try {
-        fileData = await fetchProofFile(url);
+        fileData = await fetchProofFile(cloudinaryUrl);
       } catch (err: any) {
         return {
+          id: proof.id,
+          sourceType: proof.sourceType,
+          url: cloudinaryUrl,
           status: "rejected",
-          score: 0,
           verifiedAt: null,
           reason: `Failed to retrieve image file: ${err.message}`,
         };
@@ -269,14 +331,16 @@ export async function verifyProof(
         },
       };
 
-      proofDetails = JSON.stringify({
+      verificationContext = JSON.stringify({
         description: "Analyzing uploaded visual proof",
         hasImageAttached: true,
       }, null, 2);
     } else {
       return {
+        id: proof.id,
+        sourceType: proof.sourceType,
+        url: proof.url,
         status: "rejected",
-        score: 0,
         verifiedAt: null,
         reason: `Unsupported proof source type: ${sourceType}`,
       };
@@ -287,12 +351,12 @@ export async function verifyProof(
       systemInstruction: PROOF_VERIFICATION_SYSTEM_PROMPT,
       generationConfig: {
         responseMimeType: "application/json",
-        responseSchema: geminiProofVerificationSchema,
+        responseSchema: temporaryLlmResponseSchema,
         temperature: 0.1,
       },
     });
 
-    const userPrompt = buildProofVerificationPrompt(experience, sourceType, proofDetails);
+    const userPrompt = buildProofVerificationPrompt(experience, sourceType, verificationContext);
 
     const contents: any[] = [userPrompt];
     if (imagePart) {
@@ -305,29 +369,35 @@ export async function verifyProof(
       throw new Error("Gemini returned empty verification response");
     }
 
-    const verificationObj = JSON.parse(text) as { status: "verified" | "rejected"; score: number; reason: string };
+    const verificationObj = JSON.parse(text) as { status: "verified" | "rejected"; reason: string };
 
-    // Validate against the Zod schema
+    // Validate against the single source of truth Zod schema: journeyProofSchema
     const candidateResult = {
+      id: proof.id,
+      sourceType: proof.sourceType,
+      url: cloudinaryUrl,
       status: verificationObj.status === "verified" ? "verified" : "rejected",
-      score: typeof verificationObj.score === "number" ? verificationObj.score : 0,
       verifiedAt: verificationObj.status === "verified" ? new Date().toISOString() : null,
       reason: verificationObj.reason || "No reason provided",
     };
 
-    const validated = proofVerificationResultSchema.safeParse(candidateResult);
+    const validated = journeyProofSchema.safeParse(candidateResult);
     if (!validated.success) {
       throw new Error(`Gemini response failed schema validation: ${validated.error.message}`);
     }
 
-    return validated.data;
+    return validated.data as JourneyProof;
 
   } catch (err: any) {
     return {
+      id: proof.id,
+      sourceType: proof.sourceType,
+      url: proof.url,
       status: "rejected",
-      score: 0,
       verifiedAt: null,
       reason: `Verification failed during analysis: ${err.message}`,
     };
   }
 }
+
+

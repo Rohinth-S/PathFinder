@@ -12,6 +12,7 @@ export async function syncUserController(
 
     const user = await clerkClient.users.getUser(userId);
     const email = user.primaryEmailAddress?.emailAddress;
+    const imageUrl = user.imageUrl;
 
     if (!email) {
       res.status(400).json({
@@ -20,7 +21,7 @@ export async function syncUserController(
       return;
     }
 
-    const syncedUser = await syncUser(user.id,email);
+    const syncedUser = await syncUser(user.id,email,imageUrl);
     res.json(syncedUser);
 
   } catch (error) {
