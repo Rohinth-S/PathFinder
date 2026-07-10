@@ -7,7 +7,7 @@ import { resolveQueryInput } from "../processors/speech/resolveQueryInput.proces
 export async function queryController(req: Request, res: Response): Promise<void> {
   try {
     console.log("BODY:", req.body);
-console.log("FILE:", req.file);
+    console.log("FILE:", req.file);
     const query = req.body?.query;
     const { query: resolvedQuery, transcribed} = await resolveQueryInput({query, audioFile:req.file});
 

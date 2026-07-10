@@ -5,6 +5,7 @@ export interface SyncedUser {
     email: string;
     username: string | null;
     summary: string;
+    imageUrl: string;
     expertiseAreas: string[];
     preferredLanguage: string | null;
     reputationScore: number;
@@ -14,7 +15,8 @@ export interface SyncedUser {
 
 export async function syncUser(
     clerkId: string,
-    email: string
+    email: string,
+    imageUrl: string
 ): Promise<SyncedUser> {
 
     const session = getSession();
@@ -31,6 +33,7 @@ export async function syncUser(
           u.createdAt = datetime(),
           u.username = null,
           u.summary = "",
+          u.imageUrl = $imageUrl,
           u.expertiseAreas = [],
           u.preferredLanguage = null,
           u.reputationScore = 0,
@@ -39,13 +42,15 @@ export async function syncUser(
 
         SET
           u.updatedAt = datetime(),
-          u.email = $email
+          u.email = $email,
+          u.imageUrl = $imageUrl
 
         RETURN
           u.clerkId AS clerkId,
           u.email AS email,
           u.username AS username,
           u.summary AS summary,
+          u.imageUrl AS imageUrl,
           u.expertiseAreas AS expertiseAreas,
           u.preferredLanguage AS preferredLanguage,
           u.reputationScore AS reputationScore,
@@ -55,6 +60,7 @@ export async function syncUser(
             {
                 clerkId,
                 email,
+                imageUrl
             }
         );
 
@@ -70,6 +76,7 @@ export async function syncUser(
             email: record.get("email"),
             username: record.get("username"),
             summary: record.get("summary"),
+            imageUrl: record.get("imageUrl"),
             expertiseAreas: record.get("expertiseAreas"),
             preferredLanguage: record.get("preferredLanguage"),
             reputationScore: record.get("reputationScore"),

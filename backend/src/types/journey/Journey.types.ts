@@ -45,6 +45,7 @@ export interface JourneyUser {
   flagCount?: number;
   isFlagged?: boolean;
   email?: string | null;
+  imageUrl?: string | null;
   summary:string,
   expertiseAreas: string[];
 }

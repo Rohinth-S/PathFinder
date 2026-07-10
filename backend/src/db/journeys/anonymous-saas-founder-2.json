@@ -8,7 +8,8 @@
     "flagCount": 0,
     "isFlagged": false,
     "summary": "An engineer who built a developer audience, validated data-layer pain points, and bootstrapped InstantBase.io to $38k/month for ultimate lifestyle autonomy.",
-    "expertiseAreas":["Database Engineering & Integration","Full-Stack Infrastructure & API Orchestration","Audience Distribution & Growth Funnels","Product Validation & Monetization Engineering","Community Management & Support Systems"]
+    "expertiseAreas":["Database Engineering & Integration","Full-Stack Infrastructure & API Orchestration","Audience Distribution & Growth Funnels","Product Validation & Monetization Engineering","Community Management & Support Systems"],
+    "imageUrl": "https://ui-avatars.com/api/?name=audience-builder&background=random&rounded=true"
   },
   "goals": [
     {
