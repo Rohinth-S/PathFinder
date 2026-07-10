@@ -16,3 +16,5 @@ To avoid recurring Git conflicts, **you MUST ALWAYS pull from the `upstream` rem
 - The `frontend` folder is an Expo React Native application.
 - The `backend` folder is an Express.js application using Clerk for authentication.
 - Any new features involving API requests must pass the user's Clerk token for authentication using `useAuth().getToken()`.
+
+Be careful while implementing things, your code will be reviewed by CODEX.
