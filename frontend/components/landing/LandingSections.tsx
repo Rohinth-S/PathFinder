@@ -379,22 +379,26 @@ export function HowItWorksSection() {
 
 export function VerificationSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
-      <StaggerItem index={0}>
-        <Text style={[s.h1, { marginBottom: 16 }]}>Trust begins with authenticity.</Text>
-      </StaggerItem>
-      <StaggerItem index={1}>
-        <Text style={[s.body, { marginBottom: 24 }]}>
-          People hesitate to share failures or unconventional decisions for fear of judgment, especially on traditional professional networks. PathFinder encourages honest storytelling; verification confirms experiences are genuine — not that someone is "successful."
-        </Text>
-      </StaggerItem>
-      <StaggerItem index={2}>
-        <View style={{ alignItems: 'center', marginTop: 8 }}>
-          <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: UI.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
-            <Feather name="shield" size={32} color={UI.accent} />
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: UI.surfaceInverse }]}>
+      <FloatingParticles />
+      <View style={{ alignItems: 'center', zIndex: 1 }}>
+        <StaggerItem index={0}>
+          <SectionLabel color="rgba(255,255,255,0.4)" style={{ marginBottom: 16 }}>VERIFICATION</SectionLabel>
+        </StaggerItem>
+        <StaggerItem index={1}>
+          <Text style={[s.h1, { marginBottom: 16, color: '#FFFFFF', textAlign: 'center' }]}>Trust begins with authenticity.</Text>
+        </StaggerItem>
+        <StaggerItem index={2}>
+          <Text style={[s.body, { marginBottom: 32, color: 'rgba(255,255,255,0.7)', textAlign: 'center', maxWidth: '90%' }]}>
+            People hesitate to share failures or unconventional decisions for fear of judgment, especially on traditional professional networks. PathFinder encourages honest storytelling; verification confirms experiences are genuine — not that someone is "successful."
+          </Text>
+        </StaggerItem>
+        <StaggerItem index={3}>
+          <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(255, 255, 255, 0.05)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+            <Feather name="shield" size={40} color={UI.accent} />
           </View>
-        </View>
-      </StaggerItem>
+        </StaggerItem>
+      </View>
     </SectionReveal>
   );
 }
@@ -406,34 +410,38 @@ export function VerificationSection() {
 
 export function CommunitySection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
-      <StaggerItem index={0}>
-        <Text style={[s.h1, { marginBottom: 16 }]}>Collective knowledge, not social networking.</Text>
-      </StaggerItem>
-      <StaggerItem index={1}>
-        <Text style={[s.body, { marginBottom: 32 }]}>
-          Every contributed journey helps someone else facing similar uncertainty — one founder's pivot helps another avoid the same mistake, one student's internship prep guides hundreds. As more verified journeys are added, the graph gets richer and recommendations get stronger for everyone.
-        </Text>
-      </StaggerItem>
-      {/* Avatar dots motif — overlapping circles converging */}
-      <StaggerItem index={2}>
-        <View style={{ alignItems: 'center' }}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: UI.surfaceInverse }]}>
+      <FloatingParticles />
+      <View style={{ alignItems: 'center', zIndex: 1 }}>
+        <StaggerItem index={0}>
+          <SectionLabel color="rgba(255,255,255,0.4)" style={{ marginBottom: 16 }}>COMMUNITY</SectionLabel>
+        </StaggerItem>
+        <StaggerItem index={1}>
+          <Text style={[s.h1, { marginBottom: 16, color: '#FFFFFF', textAlign: 'center' }]}>Collective knowledge, not social networking.</Text>
+        </StaggerItem>
+        <StaggerItem index={2}>
+          <Text style={[s.body, { marginBottom: 40, color: 'rgba(255,255,255,0.7)', textAlign: 'center', maxWidth: '90%' }]}>
+            Every contributed journey helps someone else facing similar uncertainty — one founder's pivot helps another avoid the same mistake, one student's internship prep guides hundreds. As more verified journeys are added, the graph gets richer and recommendations get stronger for everyone.
+          </Text>
+        </StaggerItem>
+        {/* Avatar dots motif — overlapping circles converging */}
+        <StaggerItem index={3}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: UI.accent, marginRight: -12, borderWidth: 2, borderColor: UI.surface, zIndex: 4 }} />
-            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: UI.fg40, marginRight: -12, borderWidth: 2, borderColor: UI.surface, zIndex: 3 }} />
-            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: UI.fg20, marginRight: -12, borderWidth: 2, borderColor: UI.surface, zIndex: 2 }} />
-            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: UI.foreground, borderWidth: 2, borderColor: UI.surface, zIndex: 1 }} />
+            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: UI.accent, marginRight: -12, borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 4 }} />
+            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.4)', marginRight: -12, borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 3 }} />
+            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.2)', marginRight: -12, borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 2 }} />
+            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.1)', borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 1 }} />
             {/* Arrow */}
-            <View style={{ marginLeft: 16 }}>
+            <View style={{ marginLeft: 20 }}>
               <Feather name="arrow-right" size={24} color={UI.accent} />
             </View>
             {/* Larger target circle */}
-            <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: UI.accentSoft, borderWidth: 2, borderColor: UI.accent, alignItems: 'center', justifyContent: 'center', marginLeft: 16 }}>
-              <Feather name="git-merge" size={24} color={UI.accent} />
+            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(255, 105, 0, 0.1)', borderWidth: 2, borderColor: UI.accent, alignItems: 'center', justifyContent: 'center', marginLeft: 20 }}>
+              <Feather name="git-merge" size={28} color={UI.accent} />
             </View>
           </View>
-        </View>
-      </StaggerItem>
+        </StaggerItem>
+      </View>
     </SectionReveal>
   );
 }
