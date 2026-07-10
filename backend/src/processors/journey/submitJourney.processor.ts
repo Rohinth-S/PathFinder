@@ -12,6 +12,8 @@ import { transitionInferenceSchema } from "./transitionInference.schema.js";
 import { getGoalsByIds } from "../../services/goal.service.js";
 import { generateUserSummary } from "./generateUserSummary.processor.js";
 import { updateUserSummary } from "../../services/user.service.js";
+import { validateExperienceDuplicate } from "./staticAnalysis/experienceDuplicate.validator.js";
+import {deleteJourneySession} from "../../services/journeySession.service.js";
 
 export interface SubmitJourneyResponse {
     goals: JourneyGoal[];
@@ -45,6 +47,7 @@ async function inferTransition(
 }
 export async function submitJourney(
     userId: string,
+    conversationId: string,
     input: SubmitJourney
 ): Promise<SubmitJourneyResponse> {
     const validation = submitJourneySchema.safeParse(input);
@@ -74,6 +77,23 @@ export async function submitJourney(
             return parsed.data as JourneyExperience;
         }
     );
+
+    for (const exp of experiences) {
+        const isDuplicate = await validateExperienceDuplicate(userId, {
+            title: exp.title,
+            organization: exp.organization ?? undefined,
+            description: exp.context,
+            achievements: exp.achievements ?? undefined,
+            outcome: exp.outcome ?? undefined,
+        });
+
+        if (isDuplicate) {
+            throw new Error(
+                `Submission rejected: An experience matching "${exp.title}" already exists in your journey footprint.`
+            );
+        }
+    }
+
     const transitions = validJourney.experiences.flatMap((experience) => {
         const decisionReason = experience.decisionReason?.trim();
         if (!decisionReason) {
@@ -142,6 +162,11 @@ export async function submitJourney(
     await updateUserSummary(userId, summary, expertiseAreas);
     const goalIds = [...new Set(experiences.flatMap((experience) => experience.goalIds))];
     const goals = await getGoalsByIds(goalIds);
+    try {
+        await deleteJourneySession(conversationId);
+    } catch (redisError) {
+        console.error(`Failed to wipe Redis onboarding cache session ${conversationId}:`, redisError);
+    }
     return {
         goals,
         experiences: experiences.map(

@@ -49,3 +49,8 @@ export async function updateJourneySession(
         }
     );
 }
+
+
+export async function deleteJourneySession(conversationId: string): Promise<void> {
+    await redis.del(`journey_session:${conversationId}`); 
+}

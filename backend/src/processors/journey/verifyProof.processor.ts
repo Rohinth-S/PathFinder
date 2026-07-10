@@ -232,18 +232,9 @@ export async function verifyProof(
       let extractedText = "";
       let pdfMetadata: any = {};
       try {
-        const { PDFParse } = _pdf;
-        const pdfInstance = new PDFParse(new Uint8Array(fileData.buffer));
-        const parsed = await pdfInstance.getText();
-        const infoRes = await pdfInstance.getInfo();
+        const parsed = await _pdf(fileData.buffer);
         extractedText = parsed.text;
-        pdfMetadata = {
-          title: infoRes.info?.Title || null,
-          author: infoRes.info?.Author || null,
-          creationDate: infoRes.info?.CreationDate || null,
-          creator: infoRes.info?.Creator || null,
-          producer: infoRes.info?.Producer || null,
-        };
+        pdfMetadata = parsed.metadata || {};
       } catch (err: any) {
         return {
           status: "rejected",
@@ -302,7 +293,7 @@ export async function verifyProof(
     });
 
     const userPrompt = buildProofVerificationPrompt(experience, sourceType, proofDetails);
-    
+
     const contents: any[] = [userPrompt];
     if (imagePart) {
       contents.push(imagePart);
@@ -315,7 +306,7 @@ export async function verifyProof(
     }
 
     const verificationObj = JSON.parse(text) as { status: "verified" | "rejected"; score: number; reason: string };
-    
+
     // Validate against the Zod schema
     const candidateResult = {
       status: verificationObj.status === "verified" ? "verified" : "rejected",

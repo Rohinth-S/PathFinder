@@ -1,14 +1,14 @@
 import type { QueryUnderstanding } from "./querySchema.js";
 import type { RetrievedContext } from "./retrieveContext.processor.js";
 import {buildJourneyStatistics,type JourneyStatistics,} from "./journeyStatistics.processor.js";
-import {buildTimelineFeed,type JourneyTimeline,} from "./timelineFeed.processor.js";
+import {buildTimelineFeed,type  RelevantJourney,} from "./timelineFeed.processor.js";
 import {buildCommonPatterns,type CommonPattern,} from "./commonPatterns.processor.js";
 import {buildAiInsights,} from "./aiInsights.processor.js";
 import type {AiInsights} from "./aiInsights.schema.js";
 
 export interface AggregatedContext {
   journeyStatistics: JourneyStatistics;
-  timelineFeed: JourneyTimeline[];
+  timelineFeed: RelevantJourney[];
   commonPatterns: CommonPattern[];
   aiInsights: AiInsights;
 }

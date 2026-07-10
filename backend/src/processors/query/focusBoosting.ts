@@ -41,7 +41,7 @@ export function applyFocusBoost(
     experience.organization,
     experience.applicationStatus,
     ...(experience.achievements ?? []),
-    ...experience.skillNames,
+    ...experience.skills.map((skill) => skill.name),
     ...experience.transitions.map(
       (transition) => transition.decisionLabel
     ),
@@ -80,7 +80,7 @@ export function matchesFocus(
   const searchableText = [
     experience.title, experience.timelineSummary, experience.context, experience.challengeFaced, experience.outcome,
     ...(experience.achievements ?? []),
-    ...experience.skillNames,
+    ...experience.skills.map((skill) => skill.name),
     ...relatedGoals.map(
       (goal) => goal.title),
     ...relatedGoals.map(
