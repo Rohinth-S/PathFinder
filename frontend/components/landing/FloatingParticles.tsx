@@ -12,27 +12,30 @@ import Animated, {
 import { UI } from '../../constants/colors';
 
 const { width } = Dimensions.get('window');
-const PARTICLE_COUNT = 40;
-const CHARACTERS = ['0', '1', 'f(x)', '+', '{ }', '()', '/>', '42', '∑', '∞', 'const', '=>', 'import', 'export'];
+const PARTICLE_COUNT = 30;
 
-function Particle({ index }: { index: number }) {
-  const randomChar = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
+function Bubble({ index }: { index: number }) {
+  const size = 15 + Math.random() * 45; // Bubbles between 15px and 60px
   const randomX = Math.random() * width;
   const startY = Math.random() * 800;
-  const isOrange = Math.random() > 0.85; // 15% orange
-  const fontSize = 10 + Math.random() * 14;
+  
+  // Very subtle colors: mostly white/gray, occasionally orange
+  const isOrange = Math.random() > 0.85; 
   
   const translateY = useSharedValue(startY);
+  const translateX = useSharedValue(0);
   const opacity = useSharedValue(0);
 
   useEffect(() => {
-    const duration = 20000 + Math.random() * 15000;
+    // Ultra slow durations (25 to 45 seconds)
+    const duration = 25000 + Math.random() * 20000;
     const delay = Math.random() * 5000;
 
+    // Slow upward drift
     translateY.value = withDelay(
       delay,
       withRepeat(
-        withTiming(startY - 150 - Math.random() * 100, {
+        withTiming(startY - 200 - Math.random() * 150, {
           duration,
           easing: Easing.linear,
         }),
@@ -41,11 +44,25 @@ function Particle({ index }: { index: number }) {
       )
     );
 
+    // Subtle horizontal sway
+    translateX.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(20 + Math.random() * 30, { duration: duration / 2, easing: Easing.inOut(Easing.ease) }),
+          withTiming(-(20 + Math.random() * 30), { duration: duration / 2, easing: Easing.inOut(Easing.ease) })
+        ),
+        -1,
+        true
+      )
+    );
+
+    // Fade in and out very softly (max opacity is extremely low so it isn't distracting)
     opacity.value = withDelay(
       delay,
       withRepeat(
         withSequence(
-          withTiming(isOrange ? 0.20 : 0.08, { duration: duration / 2, easing: Easing.ease }),
+          withTiming(isOrange ? 0.04 : 0.02, { duration: duration / 2, easing: Easing.ease }),
           withTiming(0, { duration: duration / 2, easing: Easing.ease })
         ),
         -1,
@@ -55,27 +72,29 @@ function Particle({ index }: { index: number }) {
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
+    transform: [
+      { translateY: translateY.value },
+      { translateX: translateX.value }
+    ],
     opacity: opacity.value,
   }));
 
   return (
-    <Animated.Text
+    <Animated.View
       style={[
         {
           position: 'absolute',
           left: randomX,
           top: 0,
-          color: isOrange ? UI.accent : '#FFFFFF',
-          fontSize,
-          fontFamily: 'JetBrainsMono_700Bold',
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: isOrange ? UI.accent : '#FFFFFF',
           zIndex: 0,
         },
         animatedStyle,
       ]}
-    >
-      {randomChar}
-    </Animated.Text>
+    />
   );
 }
 
@@ -83,7 +102,7 @@ export function FloatingParticles() {
   return (
     <View style={{ position: 'absolute', width: '100%', height: '100%', overflow: 'hidden', zIndex: 0 }} pointerEvents="none">
       {Array.from({ length: PARTICLE_COUNT }).map((_, i) => (
-        <Particle key={i} index={i} />
+        <Bubble key={i} index={i} />
       ))}
     </View>
   );
