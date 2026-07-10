@@ -240,12 +240,6 @@ export default function ProfilePage() {
         {/* Actions */}
         <Animated.View entering={FadeInUp.delay(300).duration(400).springify()} style={{ gap: 12, marginBottom: 48 }}>
           <GradientButton
-            label="View Full Journey"
-            onPress={() => router.push('/full-journey')}
-            icon="map"
-          />
-
-          <GradientButton
             label="Add Experience"
             onPress={() => router.push('/share-journey')}
             variant="outlined"
