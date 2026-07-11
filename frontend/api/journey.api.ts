@@ -81,7 +81,10 @@ export interface StartJourneyResponse {
 export interface SendMessageResponse {
   success: boolean;
   conversationId: string;
-  journeyDraft: any;
+  journeyDraft: {
+    goals: JourneyGoal[];
+    experiences: any[];
+  };
 }
 
 export interface SubmitJourneyResponse {
@@ -111,6 +114,37 @@ export async function sendJourneyMessage(
     {
       method: "POST",
       body: JSON.stringify({ conversationId, message }),
+    },
+    token
+  );
+}
+
+export interface SubmitGoalResponse {
+  success: boolean;
+  id: string;
+  title: string;
+}
+
+/**
+ * Submit a new goal manually during onboarding
+ */
+export async function submitJourneyGoal(
+  token: string,
+  goalPayload: {
+    title: string;
+    description?: string;
+    status: string;
+    topics: string[];
+    subtopics: string[];
+    startDate?: string;
+    endDate?: string;
+  }
+): Promise<SubmitGoalResponse> {
+  return apiFetch<SubmitGoalResponse>(
+    "/journey/submit/goal",
+    {
+      method: "POST",
+      body: JSON.stringify(goalPayload),
     },
     token
   );

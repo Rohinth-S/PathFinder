@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, FlatList, TextInput,
   TouchableOpacity, KeyboardAvoidingView, Platform,
-  ActivityIndicator, Alert, SafeAreaView, ScrollView
+  ActivityIndicator, Alert, SafeAreaView, ScrollView, Modal
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
-import { startJourneySession, sendJourneyMessage, submitJourney } from '../api/journey.api';
+import { startJourneySession, sendJourneyMessage, submitJourney, submitJourneyGoal } from '../api/journey.api';
 import { UI } from '../constants/colors';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
@@ -33,7 +33,39 @@ export default function ShareJourneyPage() {
   
   const [journeyDraft, setJourneyDraft] = useState<any>(null);
   const [editableExperiences, setEditableExperiences] = useState<any[]>([]);
+  const [userGoals, setUserGoals] = useState<any[]>([]);
   const flatListRef = useRef<FlatList>(null);
+
+  const [isGoalModalVisible, setIsGoalModalVisible] = useState(false);
+  const [newGoalTitle, setNewGoalTitle] = useState('');
+  const [newGoalDesc, setNewGoalDesc] = useState('');
+  const [isCreatingGoal, setIsCreatingGoal] = useState(false);
+
+  const handleCreateGoal = async () => {
+    if (!newGoalTitle.trim()) return;
+    setIsCreatingGoal(true);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      const res = await submitJourneyGoal(token, {
+        title: newGoalTitle,
+        description: newGoalDesc,
+        status: "In Progress",
+        topics: [],
+        subtopics: [],
+      });
+      if (res.success) {
+        setUserGoals(prev => [...prev, { id: res.id, title: res.title }]);
+        setIsGoalModalVisible(false);
+        setNewGoalTitle('');
+        setNewGoalDesc('');
+      }
+    } catch (err) {
+      Alert.alert("Error", "Could not create goal");
+    } finally {
+      setIsCreatingGoal(false);
+    }
+  };
 
   const updateExperience = (index: number, field: string, value: string) => {
     const newExps = [...editableExperiences];
@@ -77,6 +109,7 @@ export default function ShareJourneyPage() {
       if (res.success) {
         setJourneyDraft(res.journeyDraft);
         setEditableExperiences(res.journeyDraft?.experiences || []);
+        setUserGoals(res.journeyDraft?.goals || []);
         setMessages(prev => [...prev, {
           id: Date.now().toString(),
           sender: 'ai',
@@ -137,13 +170,11 @@ export default function ShareJourneyPage() {
           borderBottomRightRadius: isUser ? 4 : 20,
           borderBottomLeftRadius: !isUser ? 4 : 20,
           alignSelf: isUser ? 'flex-end' : 'flex-start',
-          backgroundColor: isUser ? UI.accent : 'rgba(255,255,255,0.05)',
-          borderWidth: isUser ? 0 : 1,
-          borderColor: 'rgba(255,255,255,0.1)',
+          backgroundColor: isUser ? '#0F172A' : '#EAF4F4',
         }}
       >
         <Text style={{ 
-          color: isUser ? '#FFFFFF' : 'rgba(255,255,255,0.9)', 
+          color: isUser ? '#FFFFFF' : '#36585E', 
           fontFamily: 'Inter_400Regular', 
           fontSize: 15, 
           lineHeight: 22 
@@ -200,6 +231,40 @@ export default function ShareJourneyPage() {
                 placeholder="e.g. Software Engineer Intern"
                 placeholderTextColor="rgba(255,255,255,0.3)"
               />
+            </View>
+
+            <View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13 }}>Associated Goal (Optional)</Text>
+                <TouchableOpacity onPress={() => setIsGoalModalVisible(true)}>
+                  <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium', fontSize: 12 }}>+ Create Goal</Text>
+                </TouchableOpacity>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row' }}>
+                {userGoals.map(goal => {
+                  const isSelected = exp.goalIds?.includes(goal.id);
+                  return (
+                    <TouchableOpacity
+                      key={goal.id}
+                      onPress={() => {
+                        const currentIds = exp.goalIds || [];
+                        const newIds = isSelected ? currentIds.filter((id: string) => id !== goal.id) : [...currentIds, goal.id];
+                        updateExperience(index, 'goalIds', newIds);
+                      }}
+                      style={{
+                        paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16,
+                        backgroundColor: isSelected ? UI.accent : 'rgba(255,255,255,0.05)',
+                        borderWidth: 1, borderColor: isSelected ? UI.accent : 'rgba(255,255,255,0.1)',
+                        marginRight: 8
+                      }}
+                    >
+                      <Text style={{ color: isSelected ? '#FFFFFF' : 'rgba(255,255,255,0.7)', fontSize: 13, fontFamily: 'Inter_500Medium' }}>
+                        {goal.title}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
             </View>
 
             <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -264,6 +329,21 @@ export default function ShareJourneyPage() {
               />
             </View>
 
+            {index > 0 && (
+              <View>
+                <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>What led you to this experience? (Mandatory)</Text>
+                <TextInput
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 60 }}
+                  value={exp.decisionReason || ''}
+                  onChangeText={t => updateExperience(index, 'decisionReason', t)}
+                  placeholder="e.g. I wanted to apply my skills from the previous project..."
+                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  multiline
+                  textAlignVertical="top"
+                />
+              </View>
+            )}
+
             {exp.skills?.length > 0 && (
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
                 {exp.skills.map((skill: any, i: number) => (
@@ -319,7 +399,7 @@ export default function ShareJourneyPage() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: UI.surfaceInverse }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#FAF9F6' }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -327,15 +407,15 @@ export default function ShareJourneyPage() {
         <View style={{ 
           flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', 
           paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16,
-          borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.05)'
+          borderBottomWidth: 1, borderColor: '#EAE7E0'
         }}>
           <TouchableOpacity onPress={() => router.back()} style={{ width: 40, height: 40, justifyContent: 'center' }}>
-            <Feather name="arrow-left" size={24} color="#FFFFFF" />
+            <Feather name="arrow-left" size={24} color="#0F172A" />
           </TouchableOpacity>
           
           <View style={{ 
             flexDirection: 'row', 
-            backgroundColor: 'rgba(255,255,255,0.05)', 
+            backgroundColor: '#EAE7E0', 
             borderRadius: 20, 
             padding: 4 
           }}>
@@ -345,11 +425,11 @@ export default function ShareJourneyPage() {
                 flexDirection: 'row', alignItems: 'center', gap: 6,
                 paddingVertical: 8, paddingHorizontal: 16,
                 borderRadius: 16,
-                backgroundColor: activeTab === 'chat' ? 'rgba(255,255,255,0.1)' : 'transparent',
+                backgroundColor: activeTab === 'chat' ? '#FFFFFF' : 'transparent',
               }}
             >
-              <Feather name="message-circle" size={16} color={activeTab === 'chat' ? '#FFFFFF' : 'rgba(255,255,255,0.5)'} />
-              <Text style={{ color: activeTab === 'chat' ? '#FFFFFF' : 'rgba(255,255,255,0.5)', fontFamily: 'Inter_500Medium', fontSize: 14 }}>
+              <Feather name="message-circle" size={16} color={activeTab === 'chat' ? '#0F172A' : '#4A5568'} />
+              <Text style={{ color: activeTab === 'chat' ? '#0F172A' : '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 14 }}>
                 Chat
               </Text>
             </TouchableOpacity>
@@ -359,11 +439,11 @@ export default function ShareJourneyPage() {
                 flexDirection: 'row', alignItems: 'center', gap: 6,
                 paddingVertical: 8, paddingHorizontal: 16,
                 borderRadius: 16,
-                backgroundColor: activeTab === 'form' ? 'rgba(255,255,255,0.1)' : 'transparent',
+                backgroundColor: activeTab === 'form' ? '#FFFFFF' : 'transparent',
               }}
             >
-              <Feather name="file-text" size={16} color={activeTab === 'form' ? '#FFFFFF' : 'rgba(255,255,255,0.5)'} />
-              <Text style={{ color: activeTab === 'form' ? '#FFFFFF' : 'rgba(255,255,255,0.5)', fontFamily: 'Inter_500Medium', fontSize: 14 }}>
+              <Feather name="file-text" size={16} color={activeTab === 'form' ? '#0F172A' : '#4A5568'} />
+              <Text style={{ color: activeTab === 'form' ? '#0F172A' : '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 14 }}>
                 Form
               </Text>
               {journeyDraft?.experiences?.length > 0 && (
@@ -385,7 +465,7 @@ export default function ShareJourneyPage() {
               messages.length <= 1 ? (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, paddingBottom: 100 }}>
                   <Text style={{ 
-                    color: '#FFFFFF', 
+                    color: '#0F172A', 
                     fontFamily: 'InstrumentSerif_400Regular', 
                     fontSize: 40, 
                     marginBottom: 16,
@@ -394,7 +474,7 @@ export default function ShareJourneyPage() {
                     Share Your Journey
                   </Text>
                   <Text style={{ 
-                    color: 'rgba(255,255,255,0.7)', 
+                    color: '#4A5568', 
                     fontFamily: 'Inter_400Regular', 
                     fontSize: 16, 
                     textAlign: 'center',
@@ -406,48 +486,44 @@ export default function ShareJourneyPage() {
                   
                   <View style={{
                     width: '100%',
-                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    backgroundColor: '#FFFFFF',
                     borderRadius: 24,
                     padding: 16,
                     borderWidth: 1,
-                    borderColor: 'rgba(255,255,255,0.1)',
-                    minHeight: 140
+                    borderColor: '#EAE7E0',
+                    minHeight: 140,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.05,
+                    shadowRadius: 10,
+                    elevation: 2,
                   }}>
                     <TextInput
                       style={{
-                        color: '#FFFFFF',
+                        color: '#0F172A',
                         fontFamily: 'Inter_400Regular',
                         fontSize: 16,
                         textAlignVertical: 'top',
                         flex: 1
                       }}
                       placeholder="Describe your journey so far..."
-                      placeholderTextColor="rgba(255,255,255,0.4)"
+                      placeholderTextColor="#94A3B8"
                       value={inputText}
                       onChangeText={setInputText}
                       multiline
                       editable={!isLoading}
                     />
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
-                      <TouchableOpacity>
-                        <View style={{
-                          width: 44, height: 44, borderRadius: 22,
-                          backgroundColor: 'rgba(255,255,255,0.05)',
-                          justifyContent: 'center', alignItems: 'center'
-                        }}>
-                          <Feather name="mic" size={20} color="#21C55E" />
-                        </View>
-                      </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 12 }}>
                       <TouchableOpacity
                         style={{
                           width: 44, height: 44, borderRadius: 22,
-                          backgroundColor: inputText.trim() ? UI.accent : 'rgba(255,255,255,0.1)',
+                          backgroundColor: inputText.trim() ? '#D06757' : '#F1F5F9',
                           justifyContent: 'center', alignItems: 'center'
                         }}
                         onPress={sendMessage}
                         disabled={isLoading || !inputText.trim()}
                       >
-                        <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : 'rgba(255,255,255,0.3)'} />
+                        <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : '#94A3B8'} />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -472,23 +548,24 @@ export default function ShareJourneyPage() {
                   <View style={{ 
                     flexDirection: 'row', alignItems: 'center', 
                     padding: 12, paddingHorizontal: 16, gap: 12,
-                    borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
-                    backgroundColor: UI.surfaceInverse
+                    backgroundColor: '#FAF9F6'
                   }}>
                     <TextInput
                       style={{
                         flex: 1,
-                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        backgroundColor: '#FFFFFF',
                         borderRadius: 24,
                         paddingHorizontal: 20,
                         paddingVertical: 12,
-                        color: '#FFFFFF',
+                        color: '#0F172A',
                         fontFamily: 'Inter_400Regular',
                         fontSize: 15,
-                        maxHeight: 100
+                        maxHeight: 100,
+                        borderWidth: 1,
+                        borderColor: '#EAE7E0',
                       }}
-                      placeholder="Type your experience..."
-                      placeholderTextColor="rgba(255,255,255,0.4)"
+                      placeholder="Describe your journey so far..."
+                      placeholderTextColor="#94A3B8"
                       value={inputText}
                       onChangeText={setInputText}
                       multiline
@@ -497,13 +574,13 @@ export default function ShareJourneyPage() {
                     <TouchableOpacity
                       style={{
                         width: 44, height: 44, borderRadius: 22,
-                        backgroundColor: inputText.trim() ? UI.accent : 'rgba(255,255,255,0.1)',
+                        backgroundColor: inputText.trim() ? '#D06757' : '#F1F5F9',
                         justifyContent: 'center', alignItems: 'center'
                       }}
                       onPress={sendMessage}
                       disabled={isLoading || !inputText.trim()}
                     >
-                      <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : 'rgba(255,255,255,0.3)'} />
+                      <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : '#94A3B8'} />
                     </TouchableOpacity>
                   </View>
                 </>
@@ -513,6 +590,52 @@ export default function ShareJourneyPage() {
             )}
           </View>
         )}
+
+        <Modal
+          visible={isGoalModalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setIsGoalModalVisible(false)}
+        >
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', padding: 20 }}>
+            <View style={{ backgroundColor: UI.surfaceInverse, padding: 24, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
+              <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'InstrumentSerif_400Regular', marginBottom: 16 }}>Create New Goal</Text>
+              
+              <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 6, fontFamily: 'Inter_500Medium' }}>Goal Title</Text>
+              <TextInput
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFFFFF', borderRadius: 12, padding: 12, marginBottom: 16 }}
+                placeholder="e.g. Become a Senior Developer"
+                placeholderTextColor="rgba(255,255,255,0.3)"
+                value={newGoalTitle}
+                onChangeText={setNewGoalTitle}
+              />
+              
+              <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 6, fontFamily: 'Inter_500Medium' }}>Description (Optional)</Text>
+              <TextInput
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFFFFF', borderRadius: 12, padding: 12, marginBottom: 24, minHeight: 80 }}
+                placeholder="What exactly do you want to achieve?"
+                placeholderTextColor="rgba(255,255,255,0.3)"
+                value={newGoalDesc}
+                onChangeText={setNewGoalDesc}
+                multiline
+                textAlignVertical="top"
+              />
+
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 12 }}>
+                <TouchableOpacity onPress={() => setIsGoalModalVisible(false)} style={{ padding: 12 }}>
+                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'Inter_500Medium' }}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={handleCreateGoal}
+                  disabled={isCreatingGoal || !newGoalTitle.trim()}
+                  style={{ backgroundColor: UI.accent, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, opacity: (!newGoalTitle.trim() || isCreatingGoal) ? 0.5 : 1 }}
+                >
+                  {isCreatingGoal ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={{ color: '#FFF', fontFamily: 'Inter_600SemiBold' }}>Save Goal</Text>}
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
