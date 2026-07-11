@@ -13,7 +13,8 @@ import { getGoalsByIds } from "../../services/goal.service.js";
 import { generateUserSummary } from "./generateUserSummary.processor.js";
 import { updateUserSummary } from "../../services/user.service.js";
 import { validateExperienceDuplicate } from "./staticAnalysis/experienceDuplicate.validator.js";
-import {deleteJourneySession} from "../../services/journeySession.service.js";
+import { deleteJourneySession } from "../../services/journeySession.service.js";
+import { addExperienceReputation } from "../../services/reputation.service.js";
 
 export interface SubmitJourneyResponse {
     goals: JourneyGoal[];
@@ -158,6 +159,8 @@ export async function submitJourney(
         }
     );
     await createTransitions(validatedTransitions);
+    const verifiedCount = experiences.filter((experience) => experience.isVerified).length;
+    await addExperienceReputation(userId,experiences.length,verifiedCount);
     const { summary, expertiseAreas } = await generateUserSummary(userId);
     await updateUserSummary(userId, summary, expertiseAreas);
     const goalIds = [...new Set(experiences.flatMap((experience) => experience.goalIds))];
