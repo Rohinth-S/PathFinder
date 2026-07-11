@@ -82,6 +82,7 @@ export default function ShareJourneyPage() {
           sender: 'ai',
           text: "Got it! I've updated your journey draft. Keep telling me more, or switch to the Form view when you're ready to review."
         }]);
+        setActiveTab('form');
       } else {
         throw new Error("Failed to process message");
       }
@@ -381,60 +382,132 @@ export default function ShareJourneyPage() {
         ) : (
           <View style={{ flex: 1 }}>
             {activeTab === 'chat' ? (
-              <>
-                <FlatList
-                  ref={flatListRef}
-                  data={messages}
-                  renderItem={renderMessage}
-                  keyExtractor={item => item.id}
-                  contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 24 }}
-                  onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-                />
-                
-                {isLoading && (
-                  <Animated.View entering={FadeIn} style={{ padding: 16, alignSelf: 'flex-start' }}>
-                    <ActivityIndicator color="rgba(255,255,255,0.5)" size="small" />
-                  </Animated.View>
-                )}
-
-                <View style={{ 
-                  flexDirection: 'row', alignItems: 'center', 
-                  padding: 12, paddingHorizontal: 16, gap: 12,
-                  borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
-                  backgroundColor: UI.surfaceInverse
-                }}>
-                  <TextInput
-                    style={{
-                      flex: 1,
-                      backgroundColor: 'rgba(255,255,255,0.05)',
-                      borderRadius: 24,
-                      paddingHorizontal: 20,
-                      paddingVertical: 12,
-                      color: '#FFFFFF',
-                      fontFamily: 'Inter_400Regular',
-                      fontSize: 15,
-                      maxHeight: 100
-                    }}
-                    placeholder="Type your experience..."
-                    placeholderTextColor="rgba(255,255,255,0.4)"
-                    value={inputText}
-                    onChangeText={setInputText}
-                    multiline
-                    editable={!isLoading}
-                  />
-                  <TouchableOpacity
-                    style={{
-                      width: 44, height: 44, borderRadius: 22,
-                      backgroundColor: inputText.trim() ? UI.accent : 'rgba(255,255,255,0.1)',
-                      justifyContent: 'center', alignItems: 'center'
-                    }}
-                    onPress={sendMessage}
-                    disabled={isLoading || !inputText.trim()}
-                  >
-                    <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : 'rgba(255,255,255,0.3)'} />
-                  </TouchableOpacity>
+              messages.length <= 1 ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, paddingBottom: 100 }}>
+                  <Text style={{ 
+                    color: '#FFFFFF', 
+                    fontFamily: 'InstrumentSerif_400Regular', 
+                    fontSize: 40, 
+                    marginBottom: 16,
+                    textAlign: 'center'
+                  }}>
+                    Share Your Journey
+                  </Text>
+                  <Text style={{ 
+                    color: 'rgba(255,255,255,0.7)', 
+                    fontFamily: 'Inter_400Regular', 
+                    fontSize: 16, 
+                    textAlign: 'center',
+                    marginBottom: 40,
+                    lineHeight: 24
+                  }}>
+                    {messages[0]?.text || "Tell me about your journey so far. You can mention your education, internships, projects, hackathons, startups, competitions, jobs, research, or any important experiences that helped shape your path."}
+                  </Text>
+                  
+                  <View style={{
+                    width: '100%',
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    borderRadius: 24,
+                    padding: 16,
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    minHeight: 140
+                  }}>
+                    <TextInput
+                      style={{
+                        color: '#FFFFFF',
+                        fontFamily: 'Inter_400Regular',
+                        fontSize: 16,
+                        textAlignVertical: 'top',
+                        flex: 1
+                      }}
+                      placeholder="Describe your journey so far..."
+                      placeholderTextColor="rgba(255,255,255,0.4)"
+                      value={inputText}
+                      onChangeText={setInputText}
+                      multiline
+                      editable={!isLoading}
+                    />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+                      <TouchableOpacity>
+                        <View style={{
+                          width: 44, height: 44, borderRadius: 22,
+                          backgroundColor: 'rgba(255,255,255,0.05)',
+                          justifyContent: 'center', alignItems: 'center'
+                        }}>
+                          <Feather name="mic" size={20} color="#21C55E" />
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          width: 44, height: 44, borderRadius: 22,
+                          backgroundColor: inputText.trim() ? UI.accent : 'rgba(255,255,255,0.1)',
+                          justifyContent: 'center', alignItems: 'center'
+                        }}
+                        onPress={sendMessage}
+                        disabled={isLoading || !inputText.trim()}
+                      >
+                        <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : 'rgba(255,255,255,0.3)'} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
-              </>
+              ) : (
+                <>
+                  <FlatList
+                    ref={flatListRef}
+                    data={messages}
+                    renderItem={renderMessage}
+                    keyExtractor={item => item.id}
+                    contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 24 }}
+                    onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+                  />
+                  
+                  {isLoading && (
+                    <Animated.View entering={FadeIn} style={{ padding: 16, alignSelf: 'flex-start' }}>
+                      <ActivityIndicator color="rgba(255,255,255,0.5)" size="small" />
+                    </Animated.View>
+                  )}
+
+                  <View style={{ 
+                    flexDirection: 'row', alignItems: 'center', 
+                    padding: 12, paddingHorizontal: 16, gap: 12,
+                    borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+                    backgroundColor: UI.surfaceInverse
+                  }}>
+                    <TextInput
+                      style={{
+                        flex: 1,
+                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        borderRadius: 24,
+                        paddingHorizontal: 20,
+                        paddingVertical: 12,
+                        color: '#FFFFFF',
+                        fontFamily: 'Inter_400Regular',
+                        fontSize: 15,
+                        maxHeight: 100
+                      }}
+                      placeholder="Type your experience..."
+                      placeholderTextColor="rgba(255,255,255,0.4)"
+                      value={inputText}
+                      onChangeText={setInputText}
+                      multiline
+                      editable={!isLoading}
+                    />
+                    <TouchableOpacity
+                      style={{
+                        width: 44, height: 44, borderRadius: 22,
+                        backgroundColor: inputText.trim() ? UI.accent : 'rgba(255,255,255,0.1)',
+                        justifyContent: 'center', alignItems: 'center'
+                      }}
+                      onPress={sendMessage}
+                      disabled={isLoading || !inputText.trim()}
+                    >
+                      <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : 'rgba(255,255,255,0.3)'} />
+                    </TouchableOpacity>
+                  </View>
+                </>
+              )
             ) : (
               renderFormContent()
             )}
