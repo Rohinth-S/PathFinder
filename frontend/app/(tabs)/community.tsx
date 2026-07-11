@@ -9,7 +9,7 @@ import Animated, {
   useSharedValue, useAnimatedStyle, withTiming, withSequence,
   Easing, interpolateColor, FadeInDown,
 } from 'react-native-reanimated';
-import { UI } from '../../constants/colors';
+import { L } from '../../constants/colors';
 import {
   getTopics, getSubtopics, searchCommunity, SearchCommunityUser,
 } from '../../api/community.api';
@@ -37,16 +37,16 @@ function BottomSheetPicker({ visible, title, options, selected, onSelect, onClos
         <Pressable
           onPress={(e) => e.stopPropagation()}
           style={{
-            backgroundColor: UI.background, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+            backgroundColor: L.background, borderTopLeftRadius: 24, borderTopRightRadius: 24,
             paddingTop: 20, paddingBottom: Platform.OS === 'ios' ? 40 : 24,
             maxHeight: '60%',
           }}
         >
           {/* Handle bar */}
-          <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: UI.fg20, alignSelf: 'center', marginBottom: 16 }} />
+          <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: L.border, alignSelf: 'center', marginBottom: 16 }} />
 
           {/* Title */}
-          <Text style={{ fontSize: 18, color: UI.foreground, paddingHorizontal: 24, marginBottom: 16, fontFamily: 'InstrumentSerif_400Regular' }}>
+          <Text style={{ fontSize: 18, color: L.navy, paddingHorizontal: 24, marginBottom: 16, fontFamily: 'InstrumentSerif_400Regular' }}>
             {title}
           </Text>
 
@@ -62,17 +62,17 @@ function BottomSheetPicker({ visible, title, options, selected, onSelect, onClos
                   style={{
                     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
                     paddingVertical: 14, paddingHorizontal: 16, borderRadius: 12, marginBottom: 4,
-                    backgroundColor: isSelected ? UI.accentSoft : 'transparent',
+                    backgroundColor: isSelected ? L.terracottaTint : 'transparent',
                   }}
                 >
                   <Text style={{
-                    fontSize: 15, color: isSelected ? UI.accent : UI.foreground,
+                    fontSize: 15, color: isSelected ? L.terracotta : L.navy,
                     fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
                   }}>
                     {opt}
                   </Text>
                   {isSelected && (
-                    <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.accent, alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: L.terracotta, alignItems: 'center', justifyContent: 'center' }}>
                       <Feather name="check" size={14} color="#FFFFFF" />
                     </View>
                   )}
@@ -112,13 +112,13 @@ function FilterTrigger({ label, value, disabled, onPress }: FilterTriggerProps) 
   }, [disabled, flashProgress]);
 
   const flashStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(flashProgress.value, [0, 1], ['transparent', UI.accentSoft]),
+    backgroundColor: interpolateColor(flashProgress.value, [0, 1], ['transparent', L.terracottaTint]),
   }));
 
-  const borderColor = disabled ? UI.fg08 : (value ? UI.accentTint : UI.fg20);
-  const bgColor = disabled ? UI.background : (value ? UI.accentSoft : UI.surface);
-  const textColor = disabled ? UI.fg40 : (value ? UI.foreground : UI.fg50);
-  const chevronColor = disabled ? UI.fg40 : UI.fg80;
+  const borderColor = disabled ? L.border : (value ? L.terracottaTint : L.border);
+  const bgColor = disabled ? L.background : (value ? L.terracottaTint : L.surface);
+  const textColor = disabled ? L.navySoft : (value ? L.navy : L.navySoft);
+  const chevronColor = disabled ? L.navySoft : L.navySoft;
 
   return (
     <TouchableOpacity
@@ -147,7 +147,7 @@ function FilterTrigger({ label, value, disabled, onPress }: FilterTriggerProps) 
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           {disabled && (
-            <Feather name="lock" size={10} color={UI.fg40} />
+            <Feather name="lock" size={10} color={L.border} />
           )}
           <Feather name="chevron-down" size={14} color={chevronColor} />
         </View>
@@ -179,7 +179,7 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
 
   return (
     <View style={{
-      backgroundColor: UI.surface, borderRadius: 20, borderWidth: 1, borderColor: UI.fg08,
+      backgroundColor: L.surface, borderRadius: 20, borderWidth: 1, borderColor: L.border,
       paddingHorizontal: 20, paddingVertical: 20, marginBottom: 16,
     }}>
       {/* Header: avatar + username + reputation */}
@@ -187,22 +187,22 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           {/* Avatar circle */}
           <View style={{
-            width: 42, height: 42, borderRadius: 21, backgroundColor: UI.surfaceInverse,
+            width: 42, height: 42, borderRadius: 21, backgroundColor: L.teal,
             alignItems: 'center', justifyContent: 'center',
           }}>
             <Text style={{ fontSize: 17, color: '#FFFFFF', fontFamily: 'Inter_700Bold' }}>{initial}</Text>
           </View>
-          <Text style={{ fontSize: 15, color: UI.foreground, fontFamily: 'Inter_700Bold' }}>@{user.username || 'unknown'}</Text>
+          <Text style={{ fontSize: 15, color: L.navy, fontFamily: 'Inter_700Bold' }}>@{user.username || 'unknown'}</Text>
         </View>
 
         {/* Reputation badge */}
         {hasReputation && (
           <View style={{
             flexDirection: 'row', alignItems: 'center', gap: 4,
-            backgroundColor: UI.accentSoft, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
+            backgroundColor: L.terracottaTint, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
           }}>
-            <Text style={{ fontSize: 11, color: UI.accent }}>★</Text>
-            <Text style={{ fontSize: 12, color: UI.accent, fontFamily: 'Inter_700Bold' }}>{repScore}</Text>
+            <Text style={{ fontSize: 11, color: L.terracotta }}>★</Text>
+            <Text style={{ fontSize: 12, color: L.terracotta, fontFamily: 'Inter_700Bold' }}>{repScore}</Text>
           </View>
         )}
       </View>
@@ -210,7 +210,7 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
       {/* Summary */}
       <Text
         numberOfLines={3}
-        style={{ fontSize: 14, color: UI.fg80, lineHeight: 22, marginBottom: 16, fontFamily: 'Inter_400Regular' }}
+        style={{ fontSize: 14, color: L.navySoft, lineHeight: 22, marginBottom: 16, fontFamily: 'Inter_400Regular' }}
       >
         {summary}
       </Text>
@@ -218,14 +218,14 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
       {/* Expertise Areas */}
       {expertiseAreas.length > 0 && (
         <View style={{ marginBottom: 16 }}>
-          <SectionLabel style={{ marginBottom: 8 }}>EXPERTISE AREAS</SectionLabel>
+          <SectionLabel style={{ marginBottom: 8 }} color={L.teal}>EXPERTISE AREAS</SectionLabel>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
             {expertiseAreas.map((area) => (
               <View key={area} style={{
                 paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20,
-                backgroundColor: UI.accentSoft,
+                backgroundColor: L.tealTint,
               }}>
-                <Text style={{ fontSize: 12, color: UI.accent, fontFamily: 'Inter_600SemiBold' }}>{area}</Text>
+                <Text style={{ fontSize: 12, color: L.teal, fontFamily: 'Inter_600SemiBold' }}>{area}</Text>
               </View>
             ))}
           </View>
@@ -236,24 +236,24 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
       {matchingGoals.length > 0 && (
         <View style={{ marginBottom: 16 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <SectionLabel>GOALS MATCHING YOUR SEARCH</SectionLabel>
+            <SectionLabel color={L.navy}>GOALS MATCHING YOUR SEARCH</SectionLabel>
             <View style={{
               paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
-              backgroundColor: UI.accentSoft,
+              backgroundColor: L.terracottaTint,
             }}>
-              <Text style={{ fontSize: 10, color: UI.accent, fontFamily: 'Inter_700Bold' }}>
+              <Text style={{ fontSize: 10, color: L.terracotta, fontFamily: 'Inter_700Bold' }}>
                 {matchingGoalCount} {matchingGoalCount === 1 ? 'Goal' : 'Goals'} Matched
               </Text>
             </View>
           </View>
           {matchingGoals.slice(0, 3).map((goal, i) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
-              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: UI.accent, marginTop: 7 }} />
-              <Text style={{ fontSize: 14, color: UI.fg80, flex: 1, lineHeight: 20, fontFamily: 'Inter_400Regular' }}>{goal}</Text>
+              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: L.terracotta, marginTop: 7 }} />
+              <Text style={{ fontSize: 14, color: L.navySoft, flex: 1, lineHeight: 20, fontFamily: 'Inter_400Regular' }}>{goal}</Text>
             </View>
           ))}
           {matchingGoalCount > 3 && (
-            <Text style={{ fontSize: 13, color: UI.fg50, fontFamily: 'Inter_600SemiBold', marginTop: 2 }}>
+            <Text style={{ fontSize: 13, color: L.navySoft, fontFamily: 'Inter_600SemiBold', marginTop: 2 }}>
               +{matchingGoalCount - 3} more
             </Text>
           )}
@@ -263,11 +263,11 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
       {/* Journey Highlights */}
       {journeyHighlights.length > 0 && (
         <View style={{ marginBottom: 16 }}>
-          <SectionLabel color={UI.accent} style={{ marginBottom: 10 }}>JOURNEY HIGHLIGHTS</SectionLabel>
+          <SectionLabel color={L.terracotta} style={{ marginBottom: 10 }}>JOURNEY HIGHLIGHTS</SectionLabel>
           {journeyHighlights.map((highlight, i) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
-              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: UI.fg40, marginTop: 7 }} />
-              <Text style={{ fontSize: 14, color: UI.fg80, flex: 1, lineHeight: 20, fontFamily: 'Inter_400Regular' }}>{highlight}</Text>
+              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: L.border, marginTop: 7 }} />
+              <Text style={{ fontSize: 14, color: L.navySoft, flex: 1, lineHeight: 20, fontFamily: 'Inter_400Regular' }}>{highlight}</Text>
             </View>
           ))}
         </View>
@@ -280,12 +280,12 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
         style={{
           flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
           paddingVertical: 14, borderRadius: 9999,
-          borderWidth: 1.5, borderColor: UI.fg20,
+          borderWidth: 1.5, borderColor: L.teal,
           marginTop: 4,
         }}
       >
-        <Feather name="map" size={16} color={UI.foreground} />
-        <Text style={{ fontSize: 14, color: UI.foreground, fontFamily: 'Inter_600SemiBold' }}>
+        <Feather name="map" size={16} color={L.teal} />
+        <Text style={{ fontSize: 14, color: L.teal, fontFamily: 'Inter_600SemiBold' }}>
           View Full Journey
         </Text>
       </TouchableOpacity>
@@ -300,7 +300,7 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
 function SkeletonCard() {
   return (
     <View style={{
-      backgroundColor: UI.surfaceDim, borderRadius: 20, height: 240, marginBottom: 16,
+      backgroundColor: L.tealTint, borderRadius: 20, height: 240, marginBottom: 16,
       opacity: 0.5,
     }} />
   );
@@ -419,18 +419,18 @@ export default function CommunityPage() {
   const isSearchEnabled = selectedTopic != null;
 
   return (
-    <View style={{ flex: 1, backgroundColor: UI.background }}>
+    <View style={{ flex: 1, backgroundColor: L.background }}>
       {/* Header */}
       <View style={{ paddingHorizontal: 24, paddingTop: 56, paddingBottom: 8 }}>
         <Text style={{
           fontFamily: 'InstrumentSerif_400Regular',
-          fontSize: 32, color: UI.foreground, marginBottom: 4,
+          fontSize: 32, color: L.navy, marginBottom: 4,
         }}>
           Community
         </Text>
         <Text style={{
           fontFamily: 'Inter_400Regular',
-          fontSize: 14, color: UI.fg50, lineHeight: 20,
+          fontSize: 14, color: L.navySoft, lineHeight: 20,
         }}>
           Discover journeys from people pursuing similar goals.
         </Text>
@@ -456,11 +456,11 @@ export default function CommunityPage() {
           activeOpacity={0.7}
           style={{
             width: 44, height: 44, borderRadius: 22,
-            backgroundColor: isSearchEnabled ? UI.accent : UI.fg08,
+            backgroundColor: isSearchEnabled ? L.terracotta : L.border,
             alignItems: 'center', justifyContent: 'center',
           }}
         >
-          <Feather name="search" size={18} color={isSearchEnabled ? '#FFFFFF' : UI.fg40} />
+          <Feather name="search" size={18} color={isSearchEnabled ? '#FFFFFF' : L.navySoft} />
         </TouchableOpacity>
       </View>
 
@@ -483,10 +483,10 @@ export default function CommunityPage() {
       ) : users.length === 0 ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingBottom: 80 }}>
           <Text style={{ fontSize: 48, marginBottom: 16 }}>🌱</Text>
-          <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
+          <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: L.navy, textAlign: 'center', marginBottom: 8 }}>
             No journeys match yet
           </Text>
-          <Text style={{ fontSize: 14, color: UI.fg50, textAlign: 'center', fontFamily: 'Inter_400Regular' }}>
+          <Text style={{ fontSize: 14, color: L.navySoft, textAlign: 'center', fontFamily: 'Inter_400Regular' }}>
             Try exploring a different topic or subtopic.
           </Text>
         </View>
@@ -498,7 +498,7 @@ export default function CommunityPage() {
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
           refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={UI.accent} />
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={L.terracotta} />
           }
         />
       )}

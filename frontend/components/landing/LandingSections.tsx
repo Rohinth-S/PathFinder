@@ -10,10 +10,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { ProblemDividerDot, RippleMicBadge, SectionReveal, StaggerItem } from './landingMotion';
-import { UI } from '../../constants/colors';
+import { UI, L } from '../../constants/colors';
 import { GradientButton } from '../ui/GradientButton';
 import { SectionLabel, PillBadge } from '../ui/SectionLabel';
 import { FloatingParticles } from './FloatingParticles';
+import Svg, { Path } from 'react-native-svg';
 
 // ═══════════════════════════════════════════════════════
 //  Shared style helpers 
@@ -379,23 +380,22 @@ export function HowItWorksSection() {
 
 export function VerificationSection() {
   return (
-    <SectionReveal style={[s.sectionPy16, { backgroundColor: UI.surfaceInverse }]}>
-      <FloatingParticles />
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: L.tealTint }]}>
       <View style={{ alignItems: 'center', zIndex: 1 }}>
         <StaggerItem index={0}>
-          <SectionLabel color="rgba(255,255,255,0.4)" style={{ marginBottom: 16 }}>VERIFICATION</SectionLabel>
+          <SectionLabel color={L.teal} style={{ marginBottom: 16 }}>VERIFICATION</SectionLabel>
         </StaggerItem>
         <StaggerItem index={1}>
-          <Text style={[s.h1, { marginBottom: 16, color: '#FFFFFF', textAlign: 'center' }]}>Trust begins with authenticity.</Text>
+          <Text style={[s.h1, { marginBottom: 16, color: L.navy, textAlign: 'center' }]}>Trust begins with authenticity.</Text>
         </StaggerItem>
         <StaggerItem index={2}>
-          <Text style={[s.body, { marginBottom: 32, color: 'rgba(255,255,255,0.7)', textAlign: 'center', maxWidth: '90%' }]}>
+          <Text style={[s.body, { marginBottom: 32, color: L.navySoft, textAlign: 'center', maxWidth: '90%' }]}>
             People hesitate to share failures or unconventional decisions for fear of judgment, especially on traditional professional networks. PathFinder encourages honest storytelling; verification confirms experiences are genuine — not that someone is "successful."
           </Text>
         </StaggerItem>
         <StaggerItem index={3}>
-          <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(255, 255, 255, 0.05)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-            <Feather name="shield" size={40} color={UI.accent} />
+          <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: L.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: L.border }}>
+            <Feather name="shield" size={40} color={L.teal} />
           </View>
         </StaggerItem>
       </View>
@@ -408,38 +408,134 @@ export function VerificationSection() {
 //  bg-surface with avatar dots motif
 // ═══════════════════════════════════════════════════════
 
+function GraphMotif() {
+  // Warm earth-tone palette that harmonizes with the terracotta-tint (#F5E4DD) bg
+  const palette = {
+    center:     '#4A3728',   // Deep espresso brown — warm, rich, premium
+    centerRing: '#F8EDE6',   // Warm cream border for the center
+    pivot:      '#5B7B6A',   // Sage green — earthy, calming
+    entry:      '#D4917A',   // Warm coral-peach — complements terracotta
+    insight:    '#C4A265',   // Golden amber — warm, luminous
+    growth:     '#7BAF96',   // Eucalyptus green — fresh, alive
+    dotBorder:  '#FAF0EA',   // Warm off-white borders on nodes
+    linePivot:  '#8BA89A',   // Muted sage for connector
+    lineEntry:  '#D4917A',   // Coral connector
+    lineInsight:'#D4C19B',   // Sandy connector
+    lineGrowth: '#8BB8A2',   // Green connector
+    labelDark:  '#5A4535',   // Warm dark brown for labels
+  };
+
+  return (
+    <View style={{ width: 300, height: 320, alignItems: 'center', justifyContent: 'center', marginVertical: 16 }}>
+      {/* SVG connector lines */}
+      <View style={{ position: 'absolute', width: '100%', height: '100%', zIndex: 0 }}>
+        <Svg width="300" height="320" viewBox="0 0 300 320">
+          {/* Pivot (top-left) → Center */}
+          <Path d="M 95 85 Q 115 120 150 160" stroke={palette.linePivot} strokeWidth="1.8" fill="none" />
+          {/* Entry (top-right) → Center */}
+          <Path d="M 228 72 Q 195 105 158 152" stroke={palette.lineEntry} strokeWidth="1.5" fill="none" />
+          {/* Insight (bottom-left) → Center */}
+          <Path d="M 100 230 Q 120 200 148 170" stroke={palette.lineInsight} strokeWidth="1.5" fill="none" />
+          {/* Growth (bottom-right) → Center */}
+          <Path d="M 210 255 Q 185 220 155 172" stroke={palette.lineGrowth} strokeWidth="1.5" fill="none" />
+        </Svg>
+      </View>
+
+      {/* ── Satellite Nodes ── */}
+
+      {/* PIVOT — top-left, sage green */}
+      <View style={{ position: 'absolute', top: 20, left: 30, alignItems: 'center', zIndex: 1 }}>
+        <View style={{
+          width: 72, height: 72, borderRadius: 36,
+          backgroundColor: palette.pivot,
+          borderWidth: 4, borderColor: palette.dotBorder,
+          shadowColor: palette.pivot, shadowOpacity: 0.25, shadowRadius: 12,
+          shadowOffset: { width: 0, height: 6 }, elevation: 6,
+        }} />
+        <Text style={{ marginTop: 8, fontSize: 12, color: palette.pivot, fontFamily: 'Manrope_700Bold', letterSpacing: 1.5 }}>PIVOT</Text>
+      </View>
+
+      {/* ENTRY — top-right, warm coral */}
+      <View style={{ position: 'absolute', top: 18, right: 28, alignItems: 'center', zIndex: 1 }}>
+        <View style={{
+          width: 56, height: 56, borderRadius: 28,
+          backgroundColor: palette.entry,
+          borderWidth: 4, borderColor: palette.dotBorder,
+          shadowColor: palette.entry, shadowOpacity: 0.2, shadowRadius: 10,
+          shadowOffset: { width: 0, height: 4 }, elevation: 5,
+        }} />
+        <Text style={{ marginTop: 8, fontSize: 12, color: palette.entry, fontFamily: 'Manrope_700Bold', letterSpacing: 1.5 }}>ENTRY</Text>
+      </View>
+
+      {/* INSIGHT — bottom-left, golden amber */}
+      <View style={{ position: 'absolute', bottom: 25, left: 30, alignItems: 'center', zIndex: 1 }}>
+        <View style={{
+          width: 68, height: 68, borderRadius: 34,
+          backgroundColor: palette.insight,
+          borderWidth: 4, borderColor: palette.dotBorder,
+          shadowColor: palette.insight, shadowOpacity: 0.25, shadowRadius: 12,
+          shadowOffset: { width: 0, height: 6 }, elevation: 6,
+        }} />
+        <Text style={{ marginTop: 8, fontSize: 12, color: palette.labelDark, fontFamily: 'Manrope_700Bold', letterSpacing: 1.5 }}>INSIGHT</Text>
+      </View>
+
+      {/* GROWTH — bottom-right, eucalyptus green */}
+      <View style={{ position: 'absolute', bottom: 30, right: 40, alignItems: 'center', zIndex: 1 }}>
+        <View style={{
+          width: 50, height: 50, borderRadius: 25,
+          backgroundColor: palette.growth,
+          borderWidth: 4, borderColor: palette.dotBorder,
+          shadowColor: palette.growth, shadowOpacity: 0.2, shadowRadius: 10,
+          shadowOffset: { width: 0, height: 4 }, elevation: 5,
+        }} />
+        <Text style={{ marginTop: 8, fontSize: 12, color: palette.growth, fontFamily: 'Manrope_700Bold', letterSpacing: 1.5 }}>GROWTH</Text>
+      </View>
+
+      {/* ── Center Hub ── */}
+      {/* Outer glow ring */}
+      <View style={{
+        width: 126, height: 126, borderRadius: 63,
+        backgroundColor: 'rgba(74, 55, 40, 0.08)',
+        alignItems: 'center', justifyContent: 'center',
+        zIndex: 2,
+      }}>
+        <View style={{
+          width: 108, height: 108, borderRadius: 54,
+          backgroundColor: palette.center,
+          alignItems: 'center', justifyContent: 'center',
+          borderWidth: 4, borderColor: palette.centerRing,
+          shadowColor: '#3A2A1E', shadowOpacity: 0.3, shadowRadius: 24,
+          shadowOffset: { width: 0, height: 12 }, elevation: 12,
+        }}>
+          {/* Inner constellation dots — warm cream */}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 3 }}>
+            <View style={{ width: 13, height: 13, borderRadius: 7, backgroundColor: palette.centerRing, marginRight: 5, opacity: 0.9 }} />
+            <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#FFF', marginBottom: 2 }} />
+          </View>
+          <View style={{ width: 11, height: 11, borderRadius: 6, backgroundColor: palette.centerRing, marginLeft: 14, opacity: 0.85 }} />
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export function CommunitySection() {
   return (
-    <SectionReveal style={[s.sectionPy16, { backgroundColor: UI.surfaceInverse }]}>
-      <FloatingParticles />
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: L.terracottaTint }]}>
       <View style={{ alignItems: 'center', zIndex: 1 }}>
         <StaggerItem index={0}>
-          <SectionLabel color="rgba(255,255,255,0.4)" style={{ marginBottom: 16 }}>COMMUNITY</SectionLabel>
+          <SectionLabel color={L.terracotta} style={{ marginBottom: 16 }}>COMMUNITY</SectionLabel>
         </StaggerItem>
         <StaggerItem index={1}>
-          <Text style={[s.h1, { marginBottom: 16, color: '#FFFFFF', textAlign: 'center' }]}>Collective knowledge, not social networking.</Text>
+          <Text style={[s.h1, { marginBottom: 16, color: L.navy, textAlign: 'center' }]}>Collective knowledge, not social networking.</Text>
         </StaggerItem>
         <StaggerItem index={2}>
-          <Text style={[s.body, { marginBottom: 40, color: 'rgba(255,255,255,0.7)', textAlign: 'center', maxWidth: '90%' }]}>
+          <Text style={[s.body, { marginBottom: 24, color: L.navySoft, textAlign: 'center', maxWidth: '90%' }]}>
             Every contributed journey helps someone else facing similar uncertainty — one founder's pivot helps another avoid the same mistake, one student's internship prep guides hundreds. As more verified journeys are added, the graph gets richer and recommendations get stronger for everyone.
           </Text>
         </StaggerItem>
-        {/* Avatar dots motif — overlapping circles converging */}
         <StaggerItem index={3}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: UI.accent, marginRight: -12, borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 4 }} />
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.4)', marginRight: -12, borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 3 }} />
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.2)', marginRight: -12, borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 2 }} />
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.1)', borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 1 }} />
-            {/* Arrow */}
-            <View style={{ marginLeft: 20 }}>
-              <Feather name="arrow-right" size={24} color={UI.accent} />
-            </View>
-            {/* Larger target circle */}
-            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(255, 105, 0, 0.1)', borderWidth: 2, borderColor: UI.accent, alignItems: 'center', justifyContent: 'center', marginLeft: 20 }}>
-              <Feather name="git-merge" size={28} color={UI.accent} />
-            </View>
-          </View>
+          <GraphMotif />
         </StaggerItem>
       </View>
     </SectionReveal>

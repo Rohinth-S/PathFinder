@@ -15,7 +15,7 @@ export async function translateInsights(
   language: string
 ): Promise<TranslateResponse> {
   return apiFetch<TranslateResponse>(
-    "/translate",
+    "/output/translate",
     {
       method: "POST",
       body: JSON.stringify({ aiInsights, language }),
@@ -31,7 +31,7 @@ export async function generateSpeechUri(
   aiInsights: any,
   language: string
 ): Promise<string> {
-  const response = await fetch(`${API_BASE_URL}/speech`, {
+  const response = await fetch(`${API_BASE_URL}/output/speech`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

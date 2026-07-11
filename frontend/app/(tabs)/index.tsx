@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import { Audio } from 'expo-av';
 import { useAuth } from '@clerk/clerk-expo';
 import { submitQuery } from '../../api/query.api';
-import { UI } from '../../constants/colors';
+import { L } from '../../constants/colors';
 import { SectionLabel } from '../../components/ui/SectionLabel';
 import { GradientButton } from '../../components/ui/GradientButton';
 import Animated, {
@@ -151,7 +151,7 @@ export default function QueryPage() {
   /* ── UI ────────────────────────────────────────────── */
 
   return (
-    <View style={{ flex: 1, backgroundColor: UI.background }}>
+    <View style={{ flex: 1, backgroundColor: L.background }}>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"
@@ -160,26 +160,24 @@ export default function QueryPage() {
         {/* Header */}
         <Animated.View
           entering={FadeInDown.delay(100).duration(500).springify()}
-          style={{ paddingTop: 64, paddingHorizontal: 24, alignItems: 'center', marginBottom: 8 }}
+          style={{ paddingTop: 64, paddingHorizontal: 24, alignItems: 'flex-start', marginBottom: 8 }}
         >
           <Text style={{
-            fontFamily: 'InstrumentSerif_400Regular',
-            fontSize: 34,
-            lineHeight: 40,
+            fontFamily: 'Manrope_700Bold',
+            fontSize: 26,
+            lineHeight: 32,
             letterSpacing: -0.5,
-            color: UI.foreground,
-            textAlign: 'center',
+            color: L.navy,
             marginBottom: 12,
           }}>
             Ask Anything
           </Text>
           <Text style={{
-            fontFamily: 'Inter_400Regular',
+            fontFamily: 'Manrope_400Regular',
             fontSize: 15,
             lineHeight: 22,
-            color: UI.fg50,
-            textAlign: 'center',
-            maxWidth: 320,
+            color: L.navySoft,
+            maxWidth: '100%',
           }}>
             Ask questions about your journey, learn from similar people's experiences, or get AI-powered guidance.
           </Text>
@@ -191,10 +189,10 @@ export default function QueryPage() {
           style={{ paddingHorizontal: 24, marginTop: 28 }}
         >
           <View style={{
-            backgroundColor: UI.surface,
-            borderRadius: 24,
-            borderWidth: 1.5,
-            borderColor: isFocused ? `${UI.accent}30` : UI.fg08,
+            backgroundColor: L.surface,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: isFocused ? L.teal : L.border,
             overflow: 'hidden',
           }}>
             {/* Text area */}
@@ -202,14 +200,14 @@ export default function QueryPage() {
               <TextInput
                 style={{
                   fontSize: 15,
-                  color: UI.foreground,
-                  fontFamily: 'Inter_400Regular',
+                  color: L.navy,
+                  fontFamily: 'Manrope_400Regular',
                   minHeight: 100,
                   textAlignVertical: 'top',
                   lineHeight: 22,
                 }}
                 placeholder="Ask anything about your journey..."
-                placeholderTextColor={UI.fg40}
+                placeholderTextColor={L.navySoft}
                 value={query}
                 onChangeText={setQuery}
                 onFocus={() => setIsFocused(true)}
@@ -227,7 +225,7 @@ export default function QueryPage() {
               paddingHorizontal: 16,
               paddingVertical: 12,
               borderTopWidth: 1,
-              borderTopColor: UI.fg08,
+              borderTopColor: L.border,
             }}>
               {/* Mic button */}
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -238,9 +236,9 @@ export default function QueryPage() {
                       {
                         position: 'absolute',
                         width: 40, height: 40, borderRadius: 20,
-                        backgroundColor: UI.accentTint,
+                        backgroundColor: L.terracottaTint,
                         borderWidth: 1.5,
-                        borderColor: `${UI.accent}40`,
+                        borderColor: L.terracotta,
                       },
                     ]}
                   />
@@ -252,22 +250,22 @@ export default function QueryPage() {
                   style={{
                     width: 40, height: 40, borderRadius: 20,
                     alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: isRecording ? UI.accent : UI.surfaceDim,
+                    backgroundColor: isRecording ? L.terracotta : L.tealTint,
                   }}
                 >
                   <Feather
                     name={isRecording ? 'square' : 'mic'}
                     size={16}
-                    color={isRecording ? '#FFF' : UI.fg50}
+                    color={isRecording ? '#FFF' : L.teal}
                   />
                 </TouchableOpacity>
               </View>
 
               {/* Recording indicator */}
               {isRecording && (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: UI.accent }} />
-                  <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 11, color: UI.accent, letterSpacing: 0.5 }}>
+               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: L.terracotta }} />
+                  <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 11, color: L.terracotta, letterSpacing: 0.5 }}>
                     Listening...
                   </Text>
                 </View>
@@ -281,7 +279,7 @@ export default function QueryPage() {
                 style={{
                   width: 40, height: 40, borderRadius: 20,
                   alignItems: 'center', justifyContent: 'center',
-                  backgroundColor: (!query.trim() && !isRecording) ? UI.surfaceDim : UI.accent,
+                  backgroundColor: (!query.trim() && !isRecording) ? L.tealTint : L.teal,
                 }}
               >
                 {isSearching ? (
@@ -290,7 +288,7 @@ export default function QueryPage() {
                   <Feather
                     name="arrow-up"
                     size={18}
-                    color={(!query.trim() && !isRecording) ? UI.fg40 : '#FFFFFF'}
+                    color={(!query.trim() && !isRecording) ? L.teal : '#FFFFFF'}
                   />
                 )}
               </TouchableOpacity>
@@ -303,7 +301,9 @@ export default function QueryPage() {
           entering={FadeInDown.delay(350).duration(500).springify()}
           style={{ paddingHorizontal: 24, marginTop: 36 }}
         >
-          <SectionLabel color={UI.accent} style={{ marginBottom: 16 }}>SUGGESTED QUESTIONS</SectionLabel>
+          <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 1, textTransform: 'uppercase', color: L.teal, marginBottom: 16 }}>
+            SUGGESTED QUESTIONS
+          </Text>
 
           <View style={{ gap: 10 }}>
             {SUGGESTED_QUESTIONS.map((q, i) => (
@@ -316,31 +316,31 @@ export default function QueryPage() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 12,
-                    backgroundColor: UI.surface,
+                    backgroundColor: L.surface,
                     borderRadius: 16,
                     paddingVertical: 14,
                     paddingHorizontal: 16,
                     borderWidth: 1,
-                    borderColor: UI.fg08,
+                    borderColor: L.border,
                   }}
                 >
                   <View style={{
                     width: 28, height: 28, borderRadius: 8,
-                    backgroundColor: UI.accentTint,
+                    backgroundColor: L.tealTint,
                     alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <Feather name="zap" size={14} color={UI.accent} />
+                    <Feather name="zap" size={14} color={L.teal} />
                   </View>
                   <Text style={{
                     flex: 1,
-                    fontFamily: 'Inter_400Regular',
+                    fontFamily: 'Manrope_400Regular',
                     fontSize: 14,
                     lineHeight: 20,
-                    color: UI.fg80,
+                    color: L.navy,
                   }}>
                     {q}
                   </Text>
-                  <Feather name="arrow-up-right" size={14} color={UI.fg40} />
+                  <Feather name="arrow-up-right" size={14} color={L.navySoft} />
                 </TouchableOpacity>
               </Animated.View>
             ))}

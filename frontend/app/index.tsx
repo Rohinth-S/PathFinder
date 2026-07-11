@@ -90,23 +90,21 @@ function LandingPageContent() {
         >
           {/* 1. Hero — centered, auth */}
           <HeroSection onPressGoogle={onPressGoogle} />
-          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 2. Problem Statement — left-aligned editorial */}
           <ProblemSection />
-          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 3. Comparison — fragmented → unified */}
           <ComparisonSection />
-          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24 }} />
 
           {/* 4. Journey Sequence — timeline in white card */}
           <JourneySequenceSection />
-          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24 }} />
 
           {/* 5. Sample Questions — question cards */}
           <SampleQuestionsSection />
-          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
+          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24 }} />
 
           {/* 6. How It Works — tealTint bg zone */}
           <HowItWorksSection />
