@@ -140,7 +140,7 @@ export default function ResultsPage() {
   
   const { journeyStatistics: stats, aiInsights, timelineFeed, commonPatterns } = data.aggregatedContext;
   const topDecisions = commonPatterns?.slice(1, 4) || [];
-  const totalExperiences = timelineFeed?.reduce((acc, user) => acc + user.timeline.length, 0) || 186;
+  const totalExperiences = timelineFeed?.reduce((acc, user) => acc + (user.timeline?.length || 0), 0) || 186;
 
   async function handleFollowUp() {
     if (!followUpQuery.trim()) return;

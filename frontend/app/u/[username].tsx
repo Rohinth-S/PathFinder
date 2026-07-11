@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Share, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Share, ActivityIndicator, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { UI } from '../../constants/colors';
 import { getCommunityJourney, CommunityJourney } from '../../api/community.api';
@@ -73,7 +73,8 @@ export default function PublicProfilePage() {
     );
   }
 
-  const { user, experiences } = journey;
+  const user = journey?.user || {} as any;
+  const experiences = journey?.experiences || [];
   const sortedExperiences = [...experiences].sort((a, b) => {
     const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
     const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
@@ -104,11 +105,15 @@ export default function PublicProfilePage() {
           <View style={{ alignItems: 'center', marginBottom: 24 }}>
             <View style={{
               width: 72, height: 72, borderRadius: 36, backgroundColor: UI.surfaceInverse,
-              alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+              alignItems: 'center', justifyContent: 'center', marginBottom: 12, overflow: 'hidden'
             }}>
-              <Text style={{ fontSize: 28, color: '#FFFFFF', fontFamily: 'Inter_700Bold' }}>
-                {(user.username || 'U')[0].toUpperCase()}
-              </Text>
+              {user.avatarUrl ? (
+                <Image source={{ uri: user.avatarUrl }} style={{ width: 72, height: 72 }} />
+              ) : (
+                <Text style={{ fontSize: 28, color: '#FFFFFF', fontFamily: 'Inter_700Bold' }}>
+                  {(user.username || 'U')[0].toUpperCase()}
+                </Text>
+              )}
             </View>
             <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, marginBottom: 6 }}>
               @{user.username || 'unknown'}
