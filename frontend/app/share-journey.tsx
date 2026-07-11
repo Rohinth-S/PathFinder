@@ -331,7 +331,7 @@ export default function ShareJourneyPage() {
 
             {index > 0 && (
               <View>
-                <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>What led you to this experience? (Mandatory)</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>What led you to this experience? (Optional)</Text>
                 <TextInput
                   style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 60 }}
                   value={exp.decisionReason || ''}
