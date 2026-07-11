@@ -13,15 +13,14 @@ import communityRoutes from "./routes/community.routes.js";
 
 const app = express();
 
+const allowedOrigins = process.env.CORS_ORIGINS?.split(",") ?? [];
 app.use(
   cors({
-    origin: [
-      "http://localhost:8081", // Expo Web
-      "http://localhost:19006", // Older Expo Web
-    ],
+    origin: allowedOrigins,
     credentials: true,
   })
 );
+
 app.use(express.json());
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] Incoming request: ${req.method} ${req.url}`);
