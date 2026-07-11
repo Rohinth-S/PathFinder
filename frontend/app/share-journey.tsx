@@ -36,7 +36,6 @@ export default function ShareJourneyPage() {
   const [userGoals, setUserGoals] = useState<any[]>([]);
   const flatListRef = useRef<FlatList>(null);
 
-  const [isGoalModalVisible, setIsGoalModalVisible] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState('');
   const [newGoalDesc, setNewGoalDesc] = useState('');
   const [isCreatingGoal, setIsCreatingGoal] = useState(false);
@@ -56,7 +55,6 @@ export default function ShareJourneyPage() {
       });
       if (res.success) {
         setUserGoals(prev => [...prev, { id: res.id, title: res.title }]);
-        setIsGoalModalVisible(false);
         setNewGoalTitle('');
         setNewGoalDesc('');
       }
@@ -205,6 +203,46 @@ export default function ShareJourneyPage() {
           Review & Edit Draft
         </Text>
         
+        {/* Goal Form Section */}
+        <View style={{ backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginBottom: 8 }}>
+          <Text style={{ color: UI.accent, fontFamily: 'Inter_600SemiBold', fontSize: 18, marginBottom: 16 }}>Your Goals</Text>
+          
+          {userGoals.length > 0 && (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+              {userGoals.map(goal => (
+                <View key={goal.id} style={{ backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16 }}>
+                  <Text style={{ color: '#FFFFFF', fontSize: 13, fontFamily: 'Inter_500Medium' }}>{goal.title}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 6, fontFamily: 'Inter_500Medium' }}>Create a New Goal</Text>
+          <TextInput
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFFFFF', borderRadius: 12, padding: 12, marginBottom: 12 }}
+            placeholder="e.g. Become a Senior Developer"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            value={newGoalTitle}
+            onChangeText={setNewGoalTitle}
+          />
+          <TextInput
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFFFFF', borderRadius: 12, padding: 12, marginBottom: 12, minHeight: 60 }}
+            placeholder="Description (Optional)"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            value={newGoalDesc}
+            onChangeText={setNewGoalDesc}
+            multiline
+            textAlignVertical="top"
+          />
+          <TouchableOpacity 
+            onPress={handleCreateGoal}
+            disabled={isCreatingGoal || !newGoalTitle.trim()}
+            style={{ backgroundColor: UI.accent, paddingVertical: 12, borderRadius: 12, alignItems: 'center', opacity: (!newGoalTitle.trim() || isCreatingGoal) ? 0.5 : 1 }}
+          >
+            {isCreatingGoal ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={{ color: '#FFF', fontFamily: 'Inter_600SemiBold' }}>Add Goal</Text>}
+          </TouchableOpacity>
+        </View>
+
         {experiences.map((exp: any, index: number) => (
           <Animated.View 
             key={index}
@@ -236,9 +274,6 @@ export default function ShareJourneyPage() {
             <View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                 <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13 }}>Associated Goal (Optional)</Text>
-                <TouchableOpacity onPress={() => setIsGoalModalVisible(true)}>
-                  <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium', fontSize: 12 }}>+ Create Goal</Text>
-                </TouchableOpacity>
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row' }}>
                 {userGoals.map(goal => {
@@ -590,52 +625,6 @@ export default function ShareJourneyPage() {
             )}
           </View>
         )}
-
-        <Modal
-          visible={isGoalModalVisible}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setIsGoalModalVisible(false)}
-        >
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', padding: 20 }}>
-            <View style={{ backgroundColor: UI.surfaceInverse, padding: 24, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
-              <Text style={{ color: '#FFFFFF', fontSize: 20, fontFamily: 'InstrumentSerif_400Regular', marginBottom: 16 }}>Create New Goal</Text>
-              
-              <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 6, fontFamily: 'Inter_500Medium' }}>Goal Title</Text>
-              <TextInput
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFFFFF', borderRadius: 12, padding: 12, marginBottom: 16 }}
-                placeholder="e.g. Become a Senior Developer"
-                placeholderTextColor="rgba(255,255,255,0.3)"
-                value={newGoalTitle}
-                onChangeText={setNewGoalTitle}
-              />
-              
-              <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 6, fontFamily: 'Inter_500Medium' }}>Description (Optional)</Text>
-              <TextInput
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFFFFF', borderRadius: 12, padding: 12, marginBottom: 24, minHeight: 80 }}
-                placeholder="What exactly do you want to achieve?"
-                placeholderTextColor="rgba(255,255,255,0.3)"
-                value={newGoalDesc}
-                onChangeText={setNewGoalDesc}
-                multiline
-                textAlignVertical="top"
-              />
-
-              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 12 }}>
-                <TouchableOpacity onPress={() => setIsGoalModalVisible(false)} style={{ padding: 12 }}>
-                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'Inter_500Medium' }}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  onPress={handleCreateGoal}
-                  disabled={isCreatingGoal || !newGoalTitle.trim()}
-                  style={{ backgroundColor: UI.accent, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, opacity: (!newGoalTitle.trim() || isCreatingGoal) ? 0.5 : 1 }}
-                >
-                  {isCreatingGoal ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={{ color: '#FFF', fontFamily: 'Inter_600SemiBold' }}>Save Goal</Text>}
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
