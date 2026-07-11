@@ -32,7 +32,14 @@ export default function ShareJourneyPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [journeyDraft, setJourneyDraft] = useState<any>(null);
+  const [editableExperiences, setEditableExperiences] = useState<any[]>([]);
   const flatListRef = useRef<FlatList>(null);
+
+  const updateExperience = (index: number, field: string, value: string) => {
+    const newExps = [...editableExperiences];
+    newExps[index] = { ...newExps[index], [field]: value };
+    setEditableExperiences(newExps);
+  };
 
   useEffect(() => {
     async function initSession() {
@@ -69,6 +76,7 @@ export default function ShareJourneyPage() {
       const res = await sendJourneyMessage(token, conversationId, userText);
       if (res.success) {
         setJourneyDraft(res.journeyDraft);
+        setEditableExperiences(res.journeyDraft?.experiences || []);
         setMessages(prev => [...prev, {
           id: Date.now().toString(),
           sender: 'ai',
@@ -86,7 +94,7 @@ export default function ShareJourneyPage() {
   };
 
   const handleFinalSubmit = async () => {
-    if (!conversationId || !journeyDraft?.experiences?.length) {
+    if (!conversationId || editableExperiences.length === 0) {
       Alert.alert("Incomplete", "Please share your experiences in the chat first.");
       return;
     }
@@ -96,7 +104,8 @@ export default function ShareJourneyPage() {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
       
-      const res = await submitJourney(token, conversationId, journeyDraft);
+      const payload = { ...journeyDraft, experiences: editableExperiences };
+      const res = await submitJourney(token, conversationId, payload);
       if (res.success) {
         Alert.alert(
           "Journey Saved! 🎉",
@@ -145,7 +154,7 @@ export default function ShareJourneyPage() {
   };
 
   const renderFormContent = () => {
-    const experiences = journeyDraft?.experiences || [];
+    const experiences = editableExperiences;
     
     if (experiences.length === 0) {
       return (
@@ -161,7 +170,7 @@ export default function ShareJourneyPage() {
     return (
       <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }} showsVerticalScrollIndicator={false}>
         <Text style={{ color: '#FFFFFF', fontFamily: 'InstrumentSerif_400Regular', fontSize: 32, marginBottom: 8 }}>
-          Review Extracted Draft
+          Review & Edit Draft
         </Text>
         
         {experiences.map((exp: any, index: number) => (
@@ -174,23 +183,85 @@ export default function ShareJourneyPage() {
               padding: 20,
               borderWidth: 1,
               borderColor: 'rgba(255,255,255,0.1)',
-              gap: 12
+              gap: 16
             }}
           >
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <Text style={{ color: UI.accent, fontFamily: 'Inter_600SemiBold', fontSize: 18, flex: 1 }}>
-                {exp.title || 'Untitled Experience'}
-              </Text>
-              <View style={{ backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
-                <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'Inter_500Medium' }}>
-                  {exp.startDate} {exp.endDate ? `- ${exp.endDate}` : ''}
-                </Text>
+            <Text style={{ color: UI.accent, fontFamily: 'Inter_600SemiBold', fontSize: 18 }}>
+              Experience {index + 1}
+            </Text>
+
+            <View>
+              <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Title (Mandatory)</Text>
+              <TextInput
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15 }}
+                value={exp.title || ''}
+                onChangeText={t => updateExperience(index, 'title', t)}
+                placeholder="e.g. Software Engineer Intern"
+                placeholderTextColor="rgba(255,255,255,0.3)"
+              />
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Start Date</Text>
+                <TextInput
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15 }}
+                  value={exp.startDate || ''}
+                  onChangeText={t => updateExperience(index, 'startDate', t)}
+                  placeholder="MMM YYYY"
+                  placeholderTextColor="rgba(255,255,255,0.3)"
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>End Date</Text>
+                <TextInput
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15 }}
+                  value={exp.endDate || ''}
+                  onChangeText={t => updateExperience(index, 'endDate', t)}
+                  placeholder="Present"
+                  placeholderTextColor="rgba(255,255,255,0.3)"
+                />
               </View>
             </View>
+
+            <View>
+              <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Context / Description (Mandatory)</Text>
+              <TextInput
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80 }}
+                value={exp.context || ''}
+                onChangeText={t => updateExperience(index, 'context', t)}
+                placeholder="What did you do?"
+                placeholderTextColor="rgba(255,255,255,0.3)"
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
             
-            <Text style={{ color: 'rgba(255,255,255,0.8)', fontFamily: 'Inter_400Regular', fontSize: 15, lineHeight: 22 }}>
-              {exp.context}
-            </Text>
+            <View>
+              <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Challenge Faced (Optional)</Text>
+              <TextInput
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80 }}
+                value={exp.challengeFaced || ''}
+                onChangeText={t => updateExperience(index, 'challengeFaced', t)}
+                placeholder="Any hurdles you overcame?"
+                placeholderTextColor="rgba(255,255,255,0.3)"
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
+
+            <View>
+              <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Outcome (Optional)</Text>
+              <TextInput
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80 }}
+                value={exp.outcome || ''}
+                onChangeText={t => updateExperience(index, 'outcome', t)}
+                placeholder="What was the result?"
+                placeholderTextColor="rgba(255,255,255,0.3)"
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
 
             {exp.skills?.length > 0 && (
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
@@ -203,6 +274,23 @@ export default function ShareJourneyPage() {
             )}
           </Animated.View>
         ))}
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: 'rgba(255,255,255,0.05)',
+            paddingVertical: 16,
+            borderRadius: 12,
+            alignItems: 'center',
+            marginTop: 8,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.1)'
+          }}
+          onPress={() => setActiveTab('chat')}
+        >
+          <Text style={{ color: '#FFFFFF', fontFamily: 'Inter_600SemiBold', fontSize: 16 }}>
+            Back to Chat (Tell AI More)
+          </Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={{
