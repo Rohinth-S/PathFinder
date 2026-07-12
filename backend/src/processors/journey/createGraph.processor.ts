@@ -2,7 +2,7 @@ import type { Transaction } from "neo4j-driver";
 import { closeSession, getSession } from "../../services/neo4j.service.js";
 import { journeyJsonSchema } from "./journeySchema.js";
 import type {JourneyExperience,JourneyGoal,JourneyJson,JourneyProof,JourneyTransition,JourneyUser} from "../../types/journey/Journey.types.js";
-import{toNeo4jDate}from"../../utils/dateUtils.js";
+import { toNeo4jDate } from "../../utils/helper.jsjs";
 
 function nullIfUndefined<T>(value: T | undefined): T | null {
   return value ?? null;

@@ -15,6 +15,7 @@ import { updateUserSummary } from "../../services/user.service.js";
 import { validateExperienceDuplicate } from "./staticAnalysis/experienceDuplicate.validator.js";
 import { deleteJourneySession } from "../../services/journeySession.service.js";
 import { addExperienceReputation } from "../../services/reputation.service.js";
+import { verifyProof } from "./verifyProof.processor.js";
 
 export interface SubmitJourneyResponse {
     goals: JourneyGoal[];
