@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, Linking } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons, Feather } from '@expo/vector-icons';
 import Animated, {
   Easing,
@@ -102,7 +102,7 @@ export function HeroSection({ onPressGoogle }: HeroProps) {
 
 export function ProblemSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#F9F4EB' }]}>
       <StaggerItem index={0}><SectionLabel style={{ marginBottom: 12 }}>THE PROBLEM</SectionLabel></StaggerItem>
       <StaggerItem index={1}><Text style={[s.h1, { marginBottom: 16 }]}>The biggest decisions are often made with the least reliable information.</Text></StaggerItem>
       <StaggerItem index={2}><Text style={s.body}>People jump between LinkedIn, Reddit, YouTube, blogs, and AI assistants for important decisions. Every platform shows a different fragment — achievements, opinions, stories — but never the whole journey.</Text></StaggerItem>
@@ -167,7 +167,7 @@ function SwingingPlusBadge() {
 
 export function ComparisonSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#F2F4F7' }]}>
       <StaggerItem index={0}>
         <Text style={[s.h1, { marginBottom: 24 }]}>
           Every platform shows a piece.{"\n"}PathFinder shows the whole picture.
@@ -244,7 +244,7 @@ const TIMELINE = [
 
 export function JourneySequenceSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#E8F3EE' }]}>
       <View style={{ backgroundColor: UI.surface, borderRadius: 24, paddingHorizontal: 24, paddingVertical: 40, borderWidth: 1, borderColor: UI.fg08 }}>
         <StaggerItem index={0}>
           <Text style={[s.h1, { marginBottom: 40 }]}>
@@ -296,7 +296,7 @@ const QUESTIONS = [
 
 export function SampleQuestionsSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#FFF5EB' }]}>
       <StaggerItem index={0}><Text style={[s.h1, { marginBottom: 24 }]}>Ask questions that matter.</Text></StaggerItem>
       <StaggerItem index={1} style={{ gap: 12 }}>
         <View style={{ gap: 12 }}>
@@ -331,7 +331,7 @@ const STEPS = [
 
 export function HowItWorksSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#F6F2EC' }]}>
       <StaggerItem index={0}><SectionLabel style={{ marginBottom: 12 }}>HOW IT WORKS</SectionLabel></StaggerItem>
       <StaggerItem index={1}><Text style={[s.h1, { marginBottom: 16 }]}>Powered by journeys, not assumptions.</Text></StaggerItem>
       <StaggerItem index={2}>
@@ -551,7 +551,7 @@ const LANG_CHIPS = ['हिन्दी', 'தமிழ்', 'తెలుగు
 
 export function AccessibilitySection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#EEF1F7' }]}>
       <StaggerItem index={0}>
         <View style={{ alignItems: 'flex-start', marginBottom: 18 }}>
           <RippleMicBadge label="NATURAL INTERACTION" />
@@ -673,11 +673,22 @@ export function FooterSection() {
       {/* Nav links */}
       <StaggerItem index={3}>
         <View style={{ flexDirection: 'row', gap: 20, marginBottom: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {['PRIVACY', 'TERMS', 'GITHUB', 'CONTACT'].map((link, i) => (
-            <Text key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)', letterSpacing: 1, fontFamily: 'Manrope_600SemiBold' }}>
-              {link}
-            </Text>
-          ))}
+          {['PRIVACY', 'TERMS', 'GITHUB', 'CONTACT'].map((link, i) => {
+            if (link === 'GITHUB') {
+              return (
+                <TouchableOpacity key={i} onPress={() => Linking.openURL('https://github.com/mithulcrafts/PathFinder')}>
+                  <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)', letterSpacing: 1, fontFamily: 'Manrope_600SemiBold', textDecorationLine: 'underline' }}>
+                    {link}
+                  </Text>
+                </TouchableOpacity>
+              );
+            }
+            return (
+              <Text key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)', letterSpacing: 1, fontFamily: 'Manrope_600SemiBold' }}>
+                {link}
+              </Text>
+            );
+          })}
         </View>
       </StaggerItem>
 

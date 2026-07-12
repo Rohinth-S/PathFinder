@@ -273,7 +273,13 @@ export default function QueryPage() {
 
               {/* Send button */}
               <TouchableOpacity
-                onPress={() => handleSubmit()}
+                onPress={() => {
+                  if (isRecording) {
+                    stopRecording();
+                  } else {
+                    handleSubmit();
+                  }
+                }}
                 disabled={isSearching || (!query.trim() && !isRecording)}
                 activeOpacity={0.7}
                 style={{

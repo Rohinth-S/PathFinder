@@ -27,8 +27,8 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": "22.x",
-    "npm": ">=10"
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
   },
   "type": "module",
   "dependencies": {

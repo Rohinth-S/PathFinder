@@ -9,33 +9,31 @@ import Animated, {
   Easing,
   withDelay,
 } from 'react-native-reanimated';
-import { UI } from '../../constants/colors';
+import { UI, L } from '../../constants/colors';
 
 const { width } = Dimensions.get('window');
 const PARTICLE_COUNT = 30;
 
 function Bubble({ index }: { index: number }) {
-  const size = 15 + Math.random() * 45; // Bubbles between 15px and 60px
+  const size = 15 + Math.random() * 45;
   const randomX = Math.random() * width;
-  const startY = Math.random() * 800;
+  const startY = Math.random() * 1200; // Increased range to cover the whole screen and then some
   
-  // Very subtle colors: mostly white/gray, occasionally orange
-  const isOrange = Math.random() > 0.85; 
+  // Reverting to white bubbles as requested by user
+  const color = '#FFFFFF';
   
   const translateY = useSharedValue(startY);
   const translateX = useSharedValue(0);
   const opacity = useSharedValue(0);
 
   useEffect(() => {
-    // Ultra slow durations (25 to 45 seconds)
     const duration = 25000 + Math.random() * 20000;
     const delay = Math.random() * 5000;
 
-    // Slow upward drift
     translateY.value = withDelay(
       delay,
       withRepeat(
-        withTiming(startY - 200 - Math.random() * 150, {
+        withTiming(startY - 400 - Math.random() * 300, {
           duration,
           easing: Easing.linear,
         }),
@@ -44,7 +42,6 @@ function Bubble({ index }: { index: number }) {
       )
     );
 
-    // Subtle horizontal sway
     translateX.value = withDelay(
       delay,
       withRepeat(
@@ -57,12 +54,12 @@ function Bubble({ index }: { index: number }) {
       )
     );
 
-    // Fade in and out very softly (max opacity is extremely low so it isn't distracting)
+    // Slightly higher opacity to be visible against tinted backgrounds
     opacity.value = withDelay(
       delay,
       withRepeat(
         withSequence(
-          withTiming(isOrange ? 0.35 : 0.15, { duration: duration / 2, easing: Easing.ease }),
+          withTiming(0.25, { duration: duration / 2, easing: Easing.ease }),
           withTiming(0.02, { duration: duration / 2, easing: Easing.ease })
         ),
         -1,
@@ -89,8 +86,8 @@ function Bubble({ index }: { index: number }) {
           width: size,
           height: size,
           borderRadius: size / 2,
-          backgroundColor: isOrange ? UI.accent : '#FFFFFF',
-          zIndex: 0,
+          backgroundColor: color,
+          zIndex: 100,
         },
         animatedStyle,
       ]}
@@ -100,7 +97,7 @@ function Bubble({ index }: { index: number }) {
 
 export function FloatingParticles() {
   return (
-    <View style={{ position: 'absolute', width: '100%', height: '100%', overflow: 'hidden', zIndex: 0 }} pointerEvents="none">
+    <View style={{ position: 'absolute', width: '100%', height: '100%', overflow: 'hidden', zIndex: 100, elevation: 100 }} pointerEvents="none">
       {Array.from({ length: PARTICLE_COUNT }).map((_, i) => (
         <Bubble key={i} index={i} />
       ))}
