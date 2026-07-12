@@ -59,16 +59,6 @@ export interface UserJourneyResponse {
   transitions: JourneyTransition[];
 }
 
-export interface ExtractJourneyResponse {
-  success: boolean;
-  data?: any;
-  staticAnalysis?: {
-    success: boolean;
-    issues: any[];
-  };
-  error?: string;
-}
-
 /**
  * Fetch the authenticated user's own journey.
  */
@@ -82,22 +72,97 @@ export async function getUserJourney(
   );
 }
 
+export interface StartJourneyResponse {
+  success: boolean;
+  message: string;
+  conversationId: string;
+}
+
+export interface SendMessageResponse {
+  success: boolean;
+  conversationId: string;
+  journeyDraft: {
+    goals: JourneyGoal[];
+    experiences: any[];
+  };
+}
+
+export interface SubmitJourneyResponse {
+  success: boolean;
+  goals: any[];
+  experiences: any[];
+  transitions: any[];
+}
+
 /**
- * Submit a journey narrative for extraction and graph creation.
+ * Start a new journey onboarding session
  */
-export async function extractJourney(
+export async function startJourneySession(token: string): Promise<StartJourneyResponse> {
+  return apiFetch<StartJourneyResponse>("/journey/start", { method: "POST" }, token);
+}
+
+/**
+ * Send a message to the AI onboarding assistant
+ */
+export async function sendJourneyMessage(
   token: string,
-  journeyText: string,
-  userData?: { username?: string }
-): Promise<ExtractJourneyResponse> {
-  return apiFetch<ExtractJourneyResponse>(
-    "/journey/extract",
+  conversationId: string,
+  message: string
+): Promise<SendMessageResponse> {
+  return apiFetch<SendMessageResponse>(
+    "/journey/message",
     {
       method: "POST",
-      body: JSON.stringify({
-        journey: journeyText,
-        user: userData || {},
-      }),
+      body: JSON.stringify({ conversationId, message }),
+    },
+    token
+  );
+}
+
+export interface SubmitGoalResponse {
+  success: boolean;
+  id: string;
+  title: string;
+}
+
+/**
+ * Submit a new goal manually during onboarding
+ */
+export async function submitJourneyGoal(
+  token: string,
+  goalPayload: {
+    title: string;
+    description?: string;
+    status: string;
+    topics: string[];
+    subtopics: string[];
+    startDate?: string;
+    endDate?: string;
+  }
+): Promise<SubmitGoalResponse> {
+  return apiFetch<SubmitGoalResponse>(
+    "/journey/submit/goal",
+    {
+      method: "POST",
+      body: JSON.stringify(goalPayload),
+    },
+    token
+  );
+}
+
+/**
+ * Submit the final parsed journey draft for graph creation
+ */
+export async function submitJourney(
+  token: string,
+  conversationId: string,
+  journeyPayload: any
+): Promise<SubmitJourneyResponse> {
+  return apiFetch<SubmitJourneyResponse>(
+    "/journey/submit",
+    {
+      method: "POST",
+      body: JSON.stringify({ conversationId, ...journeyPayload }),
     },
     token
   );

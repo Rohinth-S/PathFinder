@@ -3,7 +3,7 @@ import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { View, Platform, StyleSheet, ActivityIndicator } from "react-native";
-import { useFonts, Manrope_400Regular, Manrope_600SemiBold, Manrope_700Bold } from "@expo-google-fonts/manrope";
+import { useFonts, Manrope_400Regular, Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold } from "@expo-google-fonts/manrope";
 import { InstrumentSerif_400Regular, InstrumentSerif_400Regular_Italic } from "@expo-google-fonts/instrument-serif";
 import { JetBrainsMono_400Regular, JetBrainsMono_700Bold } from "@expo-google-fonts/jetbrains-mono";
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from "@expo-google-fonts/inter";
@@ -49,6 +49,7 @@ if (!process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY) {
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     Manrope_400Regular,
+    Manrope_500Medium,
     Manrope_600SemiBold,
     Manrope_700Bold,
     InstrumentSerif_400Regular,

@@ -110,15 +110,12 @@ function LandingPageContent() {
 
           {/* 6. How It Works — tealTint bg zone */}
           <HowItWorksSection />
-          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 7. Verification & Trust */}
           <VerificationSection />
-          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 8. Community / Collective Knowledge */}
           <CommunitySection />
-          <View style={{ height: 1, backgroundColor: UI.fg08, marginHorizontal: 24, marginVertical: 16 }} />
 
           {/* 9. Accessibility / Voice & Language */}
           <AccessibilitySection />

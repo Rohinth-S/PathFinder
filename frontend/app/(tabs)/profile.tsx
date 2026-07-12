@@ -109,7 +109,7 @@ export default function ProfilePage() {
   const usernameAnimStyle = useAnimatedStyle(() => ({ transform: [{ scale: usernameScale.value }] }));
   const languageAnimStyle = useAnimatedStyle(() => ({ transform: [{ scale: languageScale.value }] }));
 
-  const displayUsername = username || 'Set Username';
+  const displayName = username ? `@${username}` : clerkUser?.firstName || 'New User';
   const reputationScore = typeof user?.reputationScore === 'object'
     ? (user.reputationScore as any)?.low ?? 0
     : user?.reputationScore ?? 0;
@@ -171,7 +171,7 @@ export default function ProfilePage() {
             )}
           </View>
           <Text style={{ fontSize: 22, color: UI.foreground, fontFamily: 'Inter_700Bold', letterSpacing: -0.5 }}>
-            @{displayUsername}
+            {displayName}
           </Text>
           
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12 }}>
@@ -239,12 +239,6 @@ export default function ProfilePage() {
 
         {/* Actions */}
         <Animated.View entering={FadeInUp.delay(300).duration(400).springify()} style={{ gap: 12, marginBottom: 48 }}>
-          <GradientButton
-            label="View Full Journey"
-            onPress={() => router.push('/full-journey')}
-            icon="map"
-          />
-
           <GradientButton
             label="Add Experience"
             onPress={() => router.push('/share-journey')}

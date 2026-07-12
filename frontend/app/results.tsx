@@ -140,7 +140,7 @@ export default function ResultsPage() {
   
   const { journeyStatistics: stats, aiInsights, timelineFeed, commonPatterns } = data.aggregatedContext;
   const topDecisions = commonPatterns?.slice(1, 4) || [];
-  const totalExperiences = timelineFeed?.reduce((acc, user) => acc + user.timeline.length, 0) || 186;
+  const totalExperiences = timelineFeed?.reduce((acc, user) => acc + (user.timeline?.length || 0), 0) || 186;
 
   async function handleFollowUp() {
     if (!followUpQuery.trim()) return;
@@ -299,9 +299,46 @@ export default function ResultsPage() {
         {expandedInsight && (
           <Animated.View entering={FadeInDown.duration(300)}>
             <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginBottom: 16 }} />
-            <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: 'rgba(255,255,255,0.9)', lineHeight: 24 }}>
-              {translatedInsight || aiInsights.directAnswer || aiInsights.actionableTakeaway}
-            </Text>
+            
+            <View style={{ gap: 24 }}>
+              {aiInsights.directAnswer && (
+                <View style={{ gap: 8 }}>
+                  <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 0.5, color: '#F5E4DD', textTransform: 'uppercase' }}>
+                    AI Insights
+                  </Text>
+                  <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: 'rgba(255,255,255,0.9)', lineHeight: 24 }}>
+                    {translatedInsight || aiInsights.directAnswer}
+                  </Text>
+                </View>
+              )}
+
+              {aiInsights.keyPoints && aiInsights.keyPoints.length > 0 && !translatedInsight && (
+                <View style={{ gap: 8 }}>
+                  <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 0.5, color: '#F5E4DD', textTransform: 'uppercase' }}>
+                    Key Takeaways
+                  </Text>
+                  <View style={{ gap: 8 }}>
+                    {aiInsights.keyPoints.map((point: string, idx: number) => (
+                      <View key={idx} style={{ flexDirection: 'row', gap: 8 }}>
+                        <Text style={{ color: '#F5E4DD' }}>•</Text>
+                        <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: 'rgba(255,255,255,0.9)', lineHeight: 20 }}>{point}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {aiInsights.actionableTakeaway && !translatedInsight && (
+                <View style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
+                  <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 0.5, color: '#F5E4DD', textTransform: 'uppercase', marginBottom: 8 }}>
+                    Recommended Next Step
+                  </Text>
+                  <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: 'rgba(255,255,255,0.9)', lineHeight: 24 }}>
+                    {aiInsights.actionableTakeaway}
+                  </Text>
+                </View>
+              )}
+            </View>
           </Animated.View>
         )}
       </DarkCard>

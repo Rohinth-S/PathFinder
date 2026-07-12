@@ -62,8 +62,8 @@ function Bubble({ index }: { index: number }) {
       delay,
       withRepeat(
         withSequence(
-          withTiming(isOrange ? 0.04 : 0.02, { duration: duration / 2, easing: Easing.ease }),
-          withTiming(0, { duration: duration / 2, easing: Easing.ease })
+          withTiming(isOrange ? 0.35 : 0.15, { duration: duration / 2, easing: Easing.ease }),
+          withTiming(0.02, { duration: duration / 2, easing: Easing.ease })
         ),
         -1,
         false

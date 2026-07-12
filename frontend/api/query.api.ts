@@ -9,6 +9,7 @@ export interface QueryResponse {
 }
 
 import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
 
 export async function submitQuery(
   token: string,
@@ -19,11 +20,21 @@ export async function submitQuery(
 
   if (audioUri) {
     const formData = new FormData();
-    formData.append('audio', {
-      uri: audioUri,
-      name: 'recording.m4a',
-      type: 'audio/m4a',
-    } as any);
+    if (Platform.OS === 'web') {
+      try {
+        const res = await fetch(audioUri);
+        const blob = await res.blob();
+        formData.append('audio', blob, 'recording.m4a');
+      } catch (e) {
+        console.error("Failed to fetch blob on web", e);
+      }
+    } else {
+      formData.append('audio', {
+        uri: audioUri,
+        name: 'recording.m4a',
+        type: 'audio/m4a',
+      } as any);
+    }
 
     response = await fetch(`${API_BASE_URL}/query`, {
       method: 'POST',
