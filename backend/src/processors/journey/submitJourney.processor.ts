@@ -78,8 +78,17 @@ export async function submitJourney(
             return parsed.data as JourneyExperience;
         }
     );
+    const verifiedExperiences: JourneyExperience[] = [];
 
-    for (const exp of experiences) {
+    for (const experience of experiences) {
+        const verifiedProofs = await Promise.all(experience.proofs.map((proof) => verifyProof(experience, proof)));
+        verifiedExperiences.push({...experience,
+            proofs: verifiedProofs,
+            isVerified: verifiedProofs.some((proof) => proof.status === "verified"),
+        });
+    }
+
+    for (const exp of verifiedExperiences) {
         const isDuplicate = await validateExperienceDuplicate(userId, {
             title: exp.title,
             organization: exp.organization ?? undefined,
@@ -106,8 +115,8 @@ export async function submitJourney(
         }];
     });
     const username = await getUsernameByUserId(userId);
-    await createExperiences(username, experiences);
-    for (const experience of experiences) {
+    await createExperiences(username, verifiedExperiences);
+    for (const experience of verifiedExperiences) {
         await generateExperienceEmbedding({
             id: experience.id,
             title: experience.title,
@@ -159,11 +168,11 @@ export async function submitJourney(
         }
     );
     await createTransitions(validatedTransitions);
-    const verifiedCount = experiences.filter((experience) => experience.isVerified).length;
-    await addExperienceReputation(userId,experiences.length,verifiedCount);
+    const verifiedCount = verifiedExperiences.filter((experience) => experience.isVerified).length;
+    await addExperienceReputation(userId, verifiedExperiences.length, verifiedCount);
     const { summary, expertiseAreas } = await generateUserSummary(userId);
     await updateUserSummary(userId, summary, expertiseAreas);
-    const goalIds = [...new Set(experiences.flatMap((experience) => experience.goalIds))];
+    const goalIds = [...new Set(verifiedExperiences.flatMap((experience) => experience.goalIds))];
     const goals = await getGoalsByIds(goalIds);
     try {
         await deleteJourneySession(conversationId);
@@ -172,7 +181,7 @@ export async function submitJourney(
     }
     return {
         goals,
-        experiences: experiences.map(
+        experiences: verifiedExperiences.map(
             ({ proofs, ...experience }) => experience
         ),
         transitions: validatedTransitions,
