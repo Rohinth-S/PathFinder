@@ -52,17 +52,21 @@ export function PillBadge({ label, color, bgColor, style }: PillBadgeProps) {
           backgroundColor: bgColor || UI.fg06,
           paddingHorizontal: 8,
           paddingVertical: 4,
+          maxWidth: '100%',
         },
         style,
       ]}
     >
       <Text
+        numberOfLines={1}
+        ellipsizeMode="tail"
         style={{
           fontFamily: 'JetBrainsMono_700Bold',
           fontSize: 9,
           letterSpacing: 1,
           textTransform: 'uppercase',
           color: color || UI.fg50,
+          flexShrink: 1,
         }}
       >
         {label}

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View, Text, FlatList, TextInput,
   TouchableOpacity, KeyboardAvoidingView, Platform,
@@ -8,7 +9,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { startJourneySession, sendJourneyMessage, submitJourney, submitJourneyGoal } from '../api/journey.api';
 import { UI } from '../constants/colors';
-import { Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
 
 interface ChatMessage {
@@ -65,15 +66,50 @@ export default function ShareJourneyPage() {
     }
   };
 
-  const updateExperience = (index: number, field: string, value: string) => {
+  const updateExperience = (index: number, field: string, value: any) => {
     const newExps = [...editableExperiences];
     newExps[index] = { ...newExps[index], [field]: value };
+    setEditableExperiences(newExps);
+  };
+
+  const addProofToExperience = (index: number) => {
+    const newExps = [...editableExperiences];
+    const exp = newExps[index];
+    exp.proofs = exp.proofs || [];
+    // Only URL proofs are supported for now based on V1 requirements
+    exp.proofs.push({ type: 'url', url: '' });
+    setEditableExperiences(newExps);
+  };
+
+  const updateProof = (expIndex: number, proofIndex: number, url: string) => {
+    const newExps = [...editableExperiences];
+    newExps[expIndex].proofs[proofIndex].url = url;
+    setEditableExperiences(newExps);
+  };
+  
+  const removeProof = (expIndex: number, proofIndex: number) => {
+    const newExps = [...editableExperiences];
+    newExps[expIndex].proofs.splice(proofIndex, 1);
     setEditableExperiences(newExps);
   };
 
   useEffect(() => {
     async function initSession() {
       try {
+        const stored = await AsyncStorage.getItem('share_journey_draft_state');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.conversationId) {
+            setConversationId(parsed.conversationId);
+            setMessages(parsed.messages || []);
+            setJourneyDraft(parsed.journeyDraft || null);
+            setEditableExperiences(parsed.editableExperiences || []);
+            setUserGoals(parsed.userGoals || []);
+            setIsInitializing(false);
+            return;
+          }
+        }
+
         const token = await getToken();
         if (!token) throw new Error('Unauthenticated');
         const res = await startJourneySession(token);
@@ -89,6 +125,18 @@ export default function ShareJourneyPage() {
     }
     initSession();
   }, [getToken]);
+
+  useEffect(() => {
+    if (conversationId && !isInitializing) {
+      AsyncStorage.setItem('share_journey_draft_state', JSON.stringify({
+        conversationId,
+        messages,
+        journeyDraft,
+        editableExperiences,
+        userGoals
+      })).catch(err => console.warn('Failed to save draft to storage', err));
+    }
+  }, [conversationId, messages, journeyDraft, editableExperiences, userGoals, isInitializing]);
 
   const sendMessage = async () => {
     if (!inputText.trim() || !conversationId) return;
@@ -139,6 +187,7 @@ export default function ShareJourneyPage() {
       const payload = { ...journeyDraft, experiences: editableExperiences };
       const res = await submitJourney(token, conversationId, payload);
       if (res.success) {
+        await AsyncStorage.removeItem('share_journey_draft_state');
         Alert.alert(
           "Journey Saved! 🎉",
           "Your experiences have been verified and added to your Life Graph.",
@@ -158,28 +207,34 @@ export default function ShareJourneyPage() {
   const renderMessage = ({ item }: { item: ChatMessage }) => {
     const isUser = item.sender === 'user';
     return (
-      <Animated.View
-        entering={FadeInUp.duration(300)}
-        layout={Layout.springify()}
-        style={{
-          maxWidth: '85%',
-          padding: 16,
-          borderRadius: 20,
-          borderBottomRightRadius: isUser ? 4 : 20,
-          borderBottomLeftRadius: !isUser ? 4 : 20,
-          alignSelf: isUser ? 'flex-end' : 'flex-start',
-          backgroundColor: isUser ? '#0F172A' : '#EAF4F4',
-        }}
-      >
-        <Text style={{ 
-          color: isUser ? '#FFFFFF' : '#36585E', 
-          fontFamily: 'Inter_400Regular', 
-          fontSize: 15, 
-          lineHeight: 22 
-        }}>
-          {item.text}
-        </Text>
-      </Animated.View>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: isUser ? 'flex-end' : 'flex-start', gap: 8 }}>
+        {!isUser && (
+          <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center', marginTop: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 1 }}>
+            <Ionicons name="sparkles" size={16} color="#36585E" />
+          </View>
+        )}
+        <Animated.View
+          entering={FadeInUp.duration(300)}
+          layout={Layout.springify()}
+          style={{
+            maxWidth: isUser ? '85%' : '80%',
+            padding: 16,
+            borderRadius: 20,
+            borderBottomRightRadius: isUser ? 4 : 20,
+            borderBottomLeftRadius: !isUser ? 4 : 20,
+            backgroundColor: isUser ? '#0F172A' : '#EAF4F4',
+          }}
+        >
+          <Text style={{ 
+            color: isUser ? '#FFFFFF' : '#36585E', 
+            fontFamily: 'Inter_400Regular', 
+            fontSize: 15, 
+            lineHeight: 22 
+          }}>
+            {item.text}
+          </Text>
+        </Animated.View>
+      </View>
     );
   };
 
@@ -379,6 +434,41 @@ export default function ShareJourneyPage() {
               </View>
             )}
 
+            {/* Proofs UI */}
+            <View>
+              <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Verify Experience (Optional)</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'Inter_400Regular', fontSize: 12, marginBottom: 12 }}>
+                Provide links (LinkedIn, GitHub, Portfolio) to verify this experience. Verified experiences earn more reputation.
+              </Text>
+              
+              {exp.proofs?.map((proof: any, pIndex: number) => (
+                <View key={pIndex} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 8 }}>
+                  <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 4, flexDirection: 'row', alignItems: 'center' }}>
+                    <Feather name="link" size={16} color="rgba(255,255,255,0.4)" style={{ marginRight: 8 }} />
+                    <TextInput
+                      style={{ flex: 1, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15, paddingVertical: 10 }}
+                      value={proof.url}
+                      onChangeText={t => updateProof(index, pIndex, t)}
+                      placeholder="https://..."
+                      placeholderTextColor="rgba(255,255,255,0.3)"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                    />
+                  </View>
+                  <TouchableOpacity onPress={() => removeProof(index, pIndex)} style={{ padding: 10 }}>
+                    <Feather name="x" size={20} color="rgba(255,255,255,0.5)" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+              
+              <TouchableOpacity
+                onPress={() => addProofToExperience(index)}
+                style={{ alignSelf: 'flex-start', paddingVertical: 8, paddingHorizontal: 12, backgroundColor: 'rgba(255,105,0,0.1)', borderRadius: 8, marginTop: 4 }}
+              >
+                <Text style={{ color: UI.accent, fontSize: 13, fontFamily: 'Inter_600SemiBold' }}>+ Add Proof Link</Text>
+              </TouchableOpacity>
+            </View>
+
             {exp.skills?.length > 0 && (
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
                 {exp.skills.map((skill: any, i: number) => (
@@ -497,73 +587,6 @@ export default function ShareJourneyPage() {
         ) : (
           <View style={{ flex: 1 }}>
             {activeTab === 'chat' ? (
-              messages.length <= 1 ? (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, paddingBottom: 100 }}>
-                  <Text style={{ 
-                    color: '#0F172A', 
-                    fontFamily: 'InstrumentSerif_400Regular', 
-                    fontSize: 40, 
-                    marginBottom: 16,
-                    textAlign: 'center'
-                  }}>
-                    Share Your Journey
-                  </Text>
-                  <Text style={{ 
-                    color: '#4A5568', 
-                    fontFamily: 'Inter_400Regular', 
-                    fontSize: 16, 
-                    textAlign: 'center',
-                    marginBottom: 40,
-                    lineHeight: 24
-                  }}>
-                    {messages[0]?.text || "Tell me about your journey so far. You can mention your education, internships, projects, hackathons, startups, competitions, jobs, research, or any important experiences that helped shape your path."}
-                  </Text>
-                  
-                  <View style={{
-                    width: '100%',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: 24,
-                    padding: 16,
-                    borderWidth: 1,
-                    borderColor: '#EAE7E0',
-                    minHeight: 140,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 10,
-                    elevation: 2,
-                  }}>
-                    <TextInput
-                      style={{
-                        color: '#0F172A',
-                        fontFamily: 'Inter_400Regular',
-                        fontSize: 16,
-                        textAlignVertical: 'top',
-                        flex: 1
-                      }}
-                      placeholder="Describe your journey so far..."
-                      placeholderTextColor="#94A3B8"
-                      value={inputText}
-                      onChangeText={setInputText}
-                      multiline
-                      editable={!isLoading}
-                    />
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 12 }}>
-                      <TouchableOpacity
-                        style={{
-                          width: 44, height: 44, borderRadius: 22,
-                          backgroundColor: inputText.trim() ? '#D06757' : '#F1F5F9',
-                          justifyContent: 'center', alignItems: 'center'
-                        }}
-                        onPress={sendMessage}
-                        disabled={isLoading || !inputText.trim()}
-                      >
-                        <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : '#94A3B8'} />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              ) : (
                 <>
                   <FlatList
                     ref={flatListRef}
@@ -572,6 +595,29 @@ export default function ShareJourneyPage() {
                     keyExtractor={item => item.id}
                     contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 24 }}
                     onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+                    ListHeaderComponent={() => (
+                      <View style={{ alignItems: 'center', marginBottom: 24, marginTop: 16 }}>
+                        <Text style={{
+                          color: '#0F172A',
+                          fontFamily: 'Inter_700Bold',
+                          fontSize: 24,
+                          marginBottom: 8,
+                          textAlign: 'center'
+                        }}>
+                          Build Your Journey
+                        </Text>
+                        <Text style={{
+                          color: '#64748B',
+                          fontFamily: 'Inter_400Regular',
+                          fontSize: 14,
+                          textAlign: 'center',
+                          lineHeight: 20,
+                          paddingHorizontal: 24
+                        }}>
+                          The AI will extract experiences from your story and prepare an editable draft.
+                        </Text>
+                      </View>
+                    )}
                   />
                   
                   {isLoading && (
@@ -619,13 +665,25 @@ export default function ShareJourneyPage() {
                     </TouchableOpacity>
                   </View>
                 </>
-              )
             ) : (
               renderFormContent()
             )}
           </View>
         )}
       </KeyboardAvoidingView>
+
+      {/* Full-screen Loading Overlay for Final Submit */}
+      <Modal visible={isSubmitting} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <ActivityIndicator size="large" color={UI.accent} style={{ marginBottom: 24 }} />
+          <Text style={{ color: '#FFFFFF', fontFamily: 'InstrumentSerif_400Regular', fontSize: 32, textAlign: 'center', marginBottom: 8 }}>
+            Generating your Life Graph
+          </Text>
+          <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_400Regular', fontSize: 15, textAlign: 'center' }}>
+            We're extracting semantic insights, generating embeddings, and building connections in Neo4j. This might take up to a minute...
+          </Text>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
