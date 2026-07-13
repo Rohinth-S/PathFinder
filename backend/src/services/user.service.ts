@@ -85,8 +85,8 @@ export async function getUsernameByUserId(
     if (result.records.length === 0) {
       throw new Error("User not found.");
     }
-    const username = result.records[0]?.get( "username") as string;
-    if (!username) { throw new Error("Username not found.");}
+    const username = result.records[0]?.get("username") as string;
+    if (!username) { throw new Error("Username not found."); }
     return username;
   } finally {
     await closeSession(session);
@@ -101,6 +101,7 @@ export interface UserJourneyStatistics {
 
 export interface UserJourney {
   username: string;
+  imageUrl: string | null;
   statistics: UserJourneyStatistics;
   goals: JourneyGoal[];
   experiences: Omit<JourneyExperience, "proofs">[];
@@ -116,14 +117,22 @@ export async function getUserJourney(
     const userResult = await session.run(
       `
       MATCH (u:User {clerkId: $clerkId})
-      RETURN u.username AS username
+      RETURN u.username AS username,
+      u.imageUrl AS imageUrl
       `,
       { clerkId }
     );
     if (userResult.records.length === 0) {
       throw new Error("User not found.");
     }
-    const username = userResult.records[0]!.get("username") as string;
+    const record = userResult.records[0];
+
+    if (!record) {
+      throw new Error("User not found.");
+    }
+
+    const username = record.get("username") as string;
+    const imageUrl = record.get("imageUrl") as string | null;
 
     const goalsResult = await session.run(
       `
@@ -212,6 +221,7 @@ export async function getUserJourney(
 
     return {
       username,
+      imageUrl,
       statistics: {
         goals: goals.length,
         experiences: experiences.length,

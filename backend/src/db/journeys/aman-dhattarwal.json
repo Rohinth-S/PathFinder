@@ -1,0 +1,570 @@
+{
+  "user": {
+    "username": "build-fast-73",
+    "clerkId": null,
+    "preferredLanguage": "en",
+    "summary": "An engineering educator and community architect who transitioned from a rigorous technical preparation background to build open-access development portals, automated peer placement tools, and international tech bootcamps serving millions of aspiring software engineers.",
+    "imageUrl": "https://ui-avatars.com/api/?name=build-fast&background=random&rounded=true",
+    "expertiseAreas": [
+      "Full-Stack Web Architectures and Application Design",
+      "Asynchronous Data Aggregation and Caching Layers",
+      "Developer Education Curriculum Engine Engineering",
+      "Large-Scale Community Network Infrastructure Scaling",
+      "Peer-to-Peer Technical Mentoring System Design"
+    ],
+    "reputationScore": 88,
+    "flagCount": 0,
+    "isFlagged": false,
+    "email": null
+  },
+  "goals": [
+    {
+      "id": "aman-g-competitive-prep",
+      "title": "Mastering Advanced Computational Logic and Engineering Entrance Metrics",
+      "description": "My target during my early high school years in New Delhi was to completely master hyper-competitive mathematics, physics bounds, and logical thinking patterns to confidently clear premier technical entrance requirements.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Getting Into IITs/NITs"],
+      "startDate": "Apr 2013",
+      "endDate": "May 2015"
+    },
+    {
+      "id": "aman-g-software-basics",
+      "title": "Building Production-Grade Web Projects and Core Software Applications",
+      "description": "The goal was to move past old, theory-only classroom textbook pages by learning modern programming tools, database schemas, and building real interactive full-stack tools during my college semesters.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Software Engineering"],
+      "startDate": "Jul 2015",
+      "endDate": "May 2017"
+    },
+    {
+      "id": "aman-g-placement-matrix",
+      "title": "Architecting an Asynchronous Peer Skill Assessment and Job Matching Tool",
+      "description": "The target was to code a functional database software platform that scans local campus recruitment rules and maps them directly against student portfolio profiles without system execution delays.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Cracking Placements", "Software Engineering"],
+      "startDate": "Jun 2017",
+      "endDate": "May 2019"
+    },
+    {
+      "id": "aman-g-curriculum-engines",
+      "title": "Structuring Unified Data Structures and Software Development Training Frameworks",
+      "description": "The benchmark was to create highly accessible developer lesson pathways, coding challenge guidelines, and deployment step-lists to replace slow, outdated university lab note loops.",
+      "status": "achieved",
+      "topics": ["Professionals"],
+      "subtopics": ["Edtech", "Software Engineering"],
+      "startDate": "Jun 2019",
+      "endDate": "May 2021"
+    },
+    {
+      "id": "aman-g-open-portals",
+      "title": "Launching Scaled Open-Access Tech Education Platforms Internationally",
+      "description": "The objective was to deploy optimized video streaming configurations and community forums to deliver first-principles programming training resources directly to millions of under-resourced young developers.",
+      "status": "achieved",
+      "topics": ["Professionals", "Startup"],
+      "subtopics": ["SaaS / Tech", "Edtech"],
+      "startDate": "Jun 2021",
+      "endDate": "May 2023"
+    },
+    {
+      "id": "aman-g-global-bootcamps",
+      "title": "Scaling Comprehensive Live Programming Cohorts and Interactive Developer Forums",
+      "description": "The ongoing milestone target is to operate global interactive coding bootcamps, managing real-time student evaluation systems and infrastructure matrices to scale engineering communities worldwide.",
+      "status": "ongoing",
+      "topics": ["Professionals", "Startup"],
+      "subtopics": ["SaaS / Tech", "Edtech", "Social Impact"],
+      "startDate": "Jun 2023",
+      "endDate": null
+    }
+  ],
+  "experiences": [
+    {
+      "id": "aman-e-1",
+      "title": "Grinding Through Competitive Engineering Entry Preparation",
+      "startDate": "Apr 2013",
+      "endDate": "May 2014",
+      "context": "Began rigorous preparation blocks in New Delhi, working through complex math equations and physics theorems to build a top-tier analytical mindset early. I spent my personal hours solving grid books manually instead of following casual study models.",
+      "organization": "Delhi Technical Preparation Center",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Mastered advanced calculus limits and matrix verification rules under intense timeline constraints.",
+        "Built comprehensive formula derivation manuals to simplify high-stakes logic challenges for my local study group."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-competitive-prep"],
+      "skills": [
+        { "name": "Advanced Analytical Calculus", "type": "Technical" },
+        { "name": "Logical Matrix Proofs", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-1",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Started my competitive technical training track, building a strong baseline in numerical problem-solving."
+    },
+    {
+      "id": "aman-e-2",
+      "title": "Completing High-Stakes Technical Entry Qualifications",
+      "startDate": "Jun 2014",
+      "endDate": "May 2015",
+      "context": "Passed hyper-competitive entrance examinations through strict discipline, learning how to handle stressful evaluation blocks and sort information quickly under pressure.",
+      "organization": "Central Testing Evaluation Board",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Finished in the elite percentage ranks of national engineering entrance program participants.",
+        "Created an optimized timeline strategy catalog used by fellow applicants to structure preparation workflows."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-competitive-prep"],
+      "skills": [
+        { "name": "Strategic Time Planning", "type": "Soft" },
+        { "name": "Stress Target Management", "type": "Soft" }
+      ],
+      "proofs": [{
+          "id": "aman-p-2",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Cleared highly competitive entry barriers, unlocking access to premier engineering university clusters."
+    },
+    {
+      "id": "aman-e-3",
+      "title": "Entering University Computer Science Engineering Tracks",
+      "startDate": "Jul 2015",
+      "endDate": "May 2016",
+      "context": "Enrolled in university classes, but quickly looked past default classroom rules to practice typing out live script parameters on my computer terminal instead of just copying blackboard logs.",
+      "organization": "Netaji Subhas Institute of Technology",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Earned highest performance remarks in early structural coding modules and server configuration labs.",
+        "Wrote an independent background automation tool to index file directories cleanly on local university machines."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-software-basics"],
+      "skills": [
+        { "name": "Terminal Script Configuration", "type": "Technical" },
+        { "name": "Structural Programming Logic", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-3",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Began college software training, focusing deeply on practical project building over old theories."
+    },
+    {
+      "id": "aman-e-4",
+      "title": "Developing Multi-Tier Full-Stack Web Tools",
+      "startDate": "Jun 2016",
+      "endDate": "May 2017",
+      "context": "Spent my evening hours building database-connected web portals, learning how frontend interface frames communicate cleanly with backend server setups without dropouts.",
+      "organization": "Netaji Subhas Institute of Technology",
+      "achievements": [
+        "Programmed three comprehensive practice tools that handled basic transaction records cleanly.",
+        "Designed detailed relational table schemas that prevented data duplication bugs across student class lists."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-software-basics"],
+      "skills": [
+        { "name": "Full-Stack Web Design", "type": "Technical" },
+        { "name": "Relational Schema Architecture", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-4",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Mastered full-stack web basics by constructing fully interactive database portals outside daytime lectures."
+    },
+    {
+      "id": "aman-e-5",
+      "title": "Auditing Legacy University Laboratory Notebook Sheets",
+      "startDate": "Jun 2017",
+      "endDate": "Dec 2017",
+      "context": "Realized that our college labs forced students to copy old, obsolete programming code structures that had zero alignment with what modern tech companies actually test for during live recruitment drives.",
+      "challengeFaced": "Balancing high university grade requirements while systematically mapping real software engineering pipeline metrics late at night.",
+      "outcome": "Maintained top classroom rankings while launching an open community initiative to upgrade campus programming habits.",
+      "organization": "Netaji Subhas Institute of Technology",
+      "achievements": [
+        "Identified over fifty obsolete coding sections across traditional department framework guides.",
+        "Drafted a modern alternative documentation blueprint that quickly spread across student developer groups."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-placement-matrix"],
+      "skills": [
+        { "name": "Systemic Gap Identification", "type": "Domain" },
+        { "name": "Developer Framework Adaptation", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-5",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Tracked major technological mismatches in traditional college spaces before starting an independent campus platform design."
+    },
+    {
+      "id": "aman-e-6",
+      "title": "Scripting the Campus Placement Matrix Ingestion Layer",
+      "startDate": "Jan 2018",
+      "endDate": "May 2018",
+      "context": "Began coding my core project: a customized platform script that automatically pulls job requirement parameters from recruiter lists and maps them against student portfolio files.",
+      "organization": "Sovereign Community Tooling Lab",
+      "achievements": [
+        "Built a lightweight data conversion layer that collected external job criteria details cleanly.",
+        "Organized clear validation routes that classified student code profiles by skill parameters instantly."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-placement-matrix"],
+      "skills": [
+        { "name": "Job Criteria Data Ingestion", "type": "Technical" },
+        { "name": "Profile Skill Classification", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-6",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Started development on a custom placement engine to bridge the gap between student portfolios and real recruiters."
+    },
+    {
+      "id": "aman-e-7",
+      "title": "Integrating Real-Time Skill Mapping Portals",
+      "startDate": "Jun 2018",
+      "endDate": "Dec 2018",
+      "context": "Connected visual metrics dashboards to my matching tool, letting peer programmers see exactly what technical skills they were missing to pass top-tier enterprise interview loops.",
+      "organization": "Sovereign Community Tooling Lab",
+      "achievements": [
+        "Linked raw candidate profile fields smoothly with interactive career readiness charts.",
+        "Maintained safe data indexing routines across hundreds of practice data entries without system slowdowns."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-placement-matrix"],
+      "skills": [
+        { "name": "Metrics Dashboard Engineering", "type": "Technical" },
+        { "name": "Interactive Career Mapping", "type": "Domain" }
+      ],
+      "proofs": [{
+          "id": "aman-p-7",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Added advanced visual tracking elements to my platform to guide peer developers with data-driven feedback."
+    },
+    {
+      "id": "aman-e-8",
+      "title": "Conquering the Real-Time Data Aggregation Breakdown",
+      "startDate": "Jan 2019",
+      "endDate": "May 2019",
+      "context": "Hit a major platform bottleneck during high-traffic mock tests when asynchronous student updates clashed with recruiter batch query rules, crashing system memory loops completely.",
+      "challengeFaced": "Preventing total server memory exhaustion and query timeouts when thousands of students updated profiles simultaneously.",
+      "outcome": "Spent three weeks rewriting query logic from first principles, building an optimized caching layer that processed heavy searches in optimized, non-blocking cycles.",
+      "organization": "Sovereign Community Tooling Lab",
+      "achievements": [
+        "Completely eliminated query execution stalls during heavy traffic mock placement drives.",
+        "Maintained stable load speeds under half a second, ensuring a flawless community user experience."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-placement-matrix"],
+      "skills": [
+        { "name": "Asynchronous Query Optimization", "type": "Technical" },
+        { "name": "Database Caching Design", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-8",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Resolved a critical data aggregation crash by engineering high-speed query routes, proving my platform infrastructure skills."
+    },
+    {
+      "id": "aman-e-9",
+      "title": "Launching the Peer Technical Placement Framework",
+      "startDate": "Jun 2019",
+      "endDate": "Nov 2019",
+      "context": "Deployed the fully operational placement portal across campus groups, completely bypassing traditional slow university pathways to help hundreds of programmers prepare for interviews.",
+      "organization": "Campus Developer Network Movement",
+      "achievements": [
+        "Helped over 300 engineering peers secure direct technical roles through clear skill-matching paths.",
+        "Earned extensive recognition across regional developer clubs for building highly practical training tools."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-curriculum-engines"],
+      "skills": [
+        { "name": "Peer Network Deployment", "type": "Domain" },
+        { "name": "Technical Interview Readiness", "type": "Soft" }
+      ],
+      "proofs": [{
+          "id": "aman-p-9",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Launched the open matching framework successfully, generating verified placement results across campus communities."
+    },
+    {
+      "id": "aman-e-10",
+      "title": "Designing Unified Data Structures Curriculum Models",
+      "startDate": "Dec 2019",
+      "endDate": "May 2020",
+      "context": "Transitioned into full-scale digital education workflows, structuring comprehensive training guides that explain complex computer logic using easy, project-driven visual steps.",
+      "organization": "Dhattarwal Developer Education Ventures",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Authored ten detailed code training modules that completely replaced dry corporate slide templates.",
+        "Built interactive test suites that let students run practice code updates inside clean learning panels."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-curriculum-engines"],
+      "skills": [
+        { "name": "Curriculum Engine Construction", "type": "Technical" },
+        { "name": "Interactive Code Education", "type": "Domain" }
+      ],
+      "proofs": [{
+          "id": "aman-p-10",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Formally entered tech education tracks, designing high-impact coding curriculum models built on practical execution."
+    },
+    {
+      "id": "aman-e-11",
+      "title": "Building Open-Access Advanced Coding Material",
+      "startDate": "Jun 2020",
+      "endDate": "May 2021",
+      "context": "Released a massive library of clear engineering lesson tracks online, ensuring that under-resourced students could learn elite computer science skills for free without expensive private academy fees.",
+      "organization": "Dhattarwal Developer Education Ventures",
+      "achievements": [
+        "Delivered structured coding training to over 500,000 active digital platform users nationally.",
+        "Optimized our media asset storage methods, cutting page loading delays down by 20% for rural mobile devices."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-curriculum-engines"],
+      "skills": [
+        { "name": "Open-Access Content Architecture", "type": "Technical" },
+        { "name": "Asset Optimization Tuning", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-11",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Distributed high-quality programming resources on a national scale, opening technical opportunities for thousands."
+    },
+    {
+      "id": "aman-e-12",
+      "title": "Deploying Interactive Full-Stack Coding Portals",
+      "startDate": "Jun 2021",
+      "endDate": "May 2022",
+      "context": "Launched production-grade web learning environments where student developers can code, test, and host full applications inside an unified cloud container environment.",
+      "organization": "Apni Kaksha Platform Hub",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Integrated robust online terminal compilers that evaluate user code submissions instantly.",
+        "Maintained stable platform operations during massive concurrent user login surges during nationwide bootcamps."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-open-portals"],
+      "skills": [
+        { "name": "Cloud Terminal Integration", "type": "Technical" },
+        { "name": "High-Traffic Platform Stability", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-12",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Launched next-generation interactive web coding environments, scaling server pipelines to handle heavy student traffic."
+    },
+    {
+      "id": "aman-e-13",
+      "title": "Optimizing Cross-Regional Developer Community Systems",
+      "startDate": "Jun 2022",
+      "endDate": "May 2023",
+      "context": "Restructured our community database nodes to support real-time peer code reviews and programming discussions among engineering students from diverse technical backgrounds.",
+      "organization": "Apni Kaksha Platform Hub",
+      "achievements": [
+        "Connected multiple localized regional database rings into a single unified global chat platform.",
+        "Cut database latency marks down by 30% by refactoring internal cluster indexing rules."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-open-portals"],
+      "skills": [
+        { "name": "Distributed Cluster Indexing", "type": "Technical" },
+        { "name": "Community Data Synchronization", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-13",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Refined distributed community platform layers, linking hundreds of thousands of student developers seamlessly."
+    },
+    {
+      "id": "aman-e-14",
+      "title": "Orchestrating Nationwide Programming Bootcamps",
+      "startDate": "Jun 2023",
+      "endDate": "May 2024",
+      "context": "Directed comprehensive, multi-month programming cohort sprints, managing dedicated engineering mentors and setting up automated milestone tracking systems for students.",
+      "organization": "Apni Kaksha Platform Hub",
+      "achievements": [
+        "Guided over 50,000 cohort students through live system architecture and code optimization sprints.",
+        "Partnered with top technology platform leads to align student final projects directly with industry standards."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-global-bootcamps"],
+      "skills": [
+        { "name": "Large-Scale Bootcamp Orchestration", "type": "Domain" },
+        { "name": "Cohort Milestone Automation", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-14",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Directed intensive nationwide programming cohorts, setting new standards for practical developer training."
+    },
+    {
+      "id": "aman-e-15",
+      "title": "Scaling Global Open Engineering Education Infrastructure",
+      "startDate": "Jun 2024",
+      "endDate": null,
+      "context": "Directing extensive open-access developer portals and scaling interactive coding bootcamps globally, ensuring modern learning environments stay completely free of traditional academic bottlenecks.",
+      "organization": "Apni Kaksha & Dhattarwal Education Ecosystem",
+      "achievements": [
+        "Streamlined technical training architecture pipelines serving millions of active student users daily.",
+        "Established collaborative technical resource networks that connect global developers with live project opportunities."
+      ],
+      "isVerified": true,
+      "goalIds": ["aman-g-global-bootcamps"],
+      "skills": [
+        { "name": "Global Tech Education Scale", "type": "Technical" },
+        { "name": "Ecosystem Platform Architecture", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "aman-p-15",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Currently guiding massive open developer platforms and training ecosystems globally, shaping future engineering scale daily."
+    }
+  ],
+  "transitions": [
+    {
+      "fromExperienceId": "aman-e-1",
+      "toExperienceId": "aman-e-2",
+      "decisionLabel": "Moving from early calculus limits to clear high-stakes national entry tests through rigorous study planning."
+    },
+    {
+      "fromExperienceId": "aman-e-2",
+      "toExperienceId": "aman-e-3",
+      "decisionLabel": "Pivoting from competitive entrance test routines to enter university computer labs and write terminal scripts."
+    },
+    {
+      "fromExperienceId": "aman-e-3",
+      "toExperienceId": "aman-e-4",
+      "decisionLabel": "Applying my programming logic baseline to engineer fully interactive full-stack web application tools."
+    },
+    {
+      "fromExperienceId": "aman-e-4",
+      "toExperienceId": "aman-e-5",
+      "decisionLabel": "Auditing outdated university lab manuals while developing a self-taught plan to replace traditional classroom frameworks."
+    },
+    {
+      "fromExperienceId": "aman-e-5",
+      "toExperienceId": "aman-e-6",
+      "decisionLabel": "Formally scripting the data conversion tier of my custom campus placement matrix engine."
+    },
+    {
+      "fromExperienceId": "aman-e-6",
+      "toExperienceId": "aman-e-7",
+      "decisionLabel": "Transitioning from backend script setups to integrate visual metrics dashboards and skill readiness metrics."
+    },
+    {
+      "fromExperienceId": "aman-e-7",
+      "toExperienceId": "aman-e-8",
+      "decisionLabel": "Resolving a major real-time query aggregation collapse by coding an optimized asynchronous caching layer."
+    },
+    {
+      "fromExperienceId": "aman-e-8",
+      "toExperienceId": "aman-e-9",
+      "decisionLabel": "Deploying the verified placement tool across campus networks to help hundreds of student peers secure tech roles."
+    },
+    {
+      "fromExperienceId": "aman-e-9",
+      "toExperienceId": "aman-e-10",
+      "decisionLabel": "Entering the digital tech education field full-time to design next-generation code curriculum engines."
+    },
+    {
+      "fromExperienceId": "aman-e-10",
+      "toExperienceId": "aman-e-11",
+      "decisionLabel": "Expanding my teaching frameworks into a nationwide open-access library optimized for all mobile platforms."
+    },
+    {
+      "fromExperienceId": "aman-e-11",
+      "toExperienceId": "aman-e-12",
+      "decisionLabel": "Launching interactive cloud-hosted compiler portals to allow students to run full-stack software live inside browsers."
+    },
+    {
+      "fromExperienceId": "aman-e-12",
+      "toExperienceId": "aman-e-13",
+      "decisionLabel": "Refactoring database index rings to connect hundreds of thousands of peer developers inside global review rooms."
+    },
+    {
+      "fromExperienceId": "aman-e-13",
+      "toExperienceId": "aman-e-14",
+      "decisionLabel": "Orchestrating high-density nationwide coding cohorts and automating milestone trackers for student groups."
+    },
+    {
+      "fromExperienceId": "aman-e-14",
+      "toExperienceId": "aman-e-15",
+      "decisionLabel": "Directing global open-access engineering infrastructure networks and managing interactive developer platforms daily."
+    }
+  ]
+}
