@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import { Audio } from 'expo-av';
 import { useAuth } from '@clerk/clerk-expo';
 import { submitQuery } from '../../api/query.api';
-import { L } from '../../constants/colors';
+import { UI } from '../../constants/colors';
 import { SectionLabel } from '../../components/ui/SectionLabel';
 import { GradientButton } from '../../components/ui/GradientButton';
 import Animated, {
@@ -33,6 +33,7 @@ export default function QueryPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [intent, setIntent] = useState<'exploring' | 'myself'>('exploring');
 
   const displayAlert = (title: string, message: string) => {
     if (Platform.OS === 'web') {
@@ -161,166 +162,157 @@ export default function QueryPage() {
   /* ── UI ────────────────────────────────────────────── */
 
   return (
-    <View style={{ flex: 1, backgroundColor: L.background }}>
+    <View style={{ flex: 1, backgroundColor: UI.background }}>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <Animated.View
-          entering={FadeInDown.delay(100).duration(500).springify()}
-          style={{ paddingTop: 64, paddingHorizontal: 24, alignItems: 'flex-start', marginBottom: 8 }}
-        >
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 56, paddingBottom: 8 }}>
+          <TouchableOpacity
+            onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}
+            style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Feather name="arrow-left" size={20} color={UI.foreground} />
+          </TouchableOpacity>
+          <SectionLabel>Ask PathFinder</SectionLabel>
+          <View style={{ width: 40 }} />
+        </View>
+
+        <View style={{ paddingHorizontal: 24, marginTop: 12 }}>
+          {/* Editorial Headline */}
           <Text style={{
-            fontFamily: 'Manrope_700Bold',
-            fontSize: 26,
-            lineHeight: 32,
+            fontFamily: 'InstrumentSerif_400Regular',
+            fontSize: 36,
+            lineHeight: 42,
             letterSpacing: -0.5,
-            color: L.navy,
-            marginBottom: 12,
+            color: UI.foreground,
+            marginBottom: 32,
           }}>
-            Ask Anything
+            What do you want{'\n'}to learn from{'\n'}real journeys?
           </Text>
-          <Text style={{
-            fontFamily: 'Manrope_400Regular',
-            fontSize: 15,
-            lineHeight: 22,
-            color: L.navySoft,
-            maxWidth: '100%',
-          }}>
-            Ask questions about your journey, learn from similar people's experiences, or get AI-powered guidance.
-          </Text>
-        </Animated.View>
 
-        {/* Query Input Card */}
-        <Animated.View
-          entering={FadeInDown.delay(200).duration(500).springify()}
-          style={{ paddingHorizontal: 24, marginTop: 28 }}
-        >
+          {/* Intent Toggle — pill segments */}
           <View style={{
-            backgroundColor: L.surface,
-            borderRadius: 16,
-            borderWidth: 1,
-            borderColor: isFocused ? L.teal : L.border,
-            overflow: 'hidden',
+            flexDirection: 'row', backgroundColor: '#ECFDF5', borderRadius: 12,
+            padding: 4, marginBottom: 20, borderWidth: 1, borderColor: UI.successTint,
+            gap: 4,
           }}>
-            {/* Text area */}
-            <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 }}>
-              <TextInput
-                style={{
-                  fontSize: 15,
-                  color: L.navy,
-                  fontFamily: 'Manrope_400Regular',
-                  minHeight: 100,
-                  textAlignVertical: 'top',
-                  lineHeight: 22,
-                  ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
-                }}
-                placeholder="Ask anything about your journey..."
-                placeholderTextColor={L.navySoft}
-                value={query}
-                onChangeText={setQuery}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                multiline
-                editable={!isSearching}
-              />
-            </View>
-
-            {/* Bottom toolbar */}
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: 16,
-              paddingVertical: 12,
-              borderTopWidth: 1,
-              borderTopColor: L.border,
-            }}>
-              {/* Mic button */}
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                {isRecording && (
-                  <Animated.View
-                    style={[
-                      pulseStyle,
-                      {
-                        position: 'absolute',
-                        width: 40, height: 40, borderRadius: 20,
-                        backgroundColor: L.terracottaTint,
-                        borderWidth: 1.5,
-                        borderColor: L.terracotta,
-                      },
-                    ]}
-                  />
-                )}
+            {(['exploring', 'myself'] as const).map((opt) => {
+              const active = intent === opt;
+              return (
                 <TouchableOpacity
-                  onPress={isRecording ? stopRecording : startRecording}
-                  disabled={isSearching}
-                  activeOpacity={0.7}
+                  key={opt}
+                  onPress={() => setIntent(opt)}
                   style={{
-                    width: 40, height: 40, borderRadius: 20,
-                    alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: isRecording ? L.terracotta : L.tealTint,
+                    flex: 1, paddingVertical: 10, alignItems: 'center',
+                    borderRadius: 8,
+                    backgroundColor: active ? UI.success : 'transparent',
                   }}
                 >
-                  <Feather
-                    name={isRecording ? 'square' : 'mic'}
-                    size={16}
-                    color={isRecording ? '#FFF' : L.teal}
-                  />
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Feather 
+                      name={opt === 'exploring' ? 'search' : 'target'} 
+                      size={14} 
+                      color={active ? '#FFFFFF' : UI.success} 
+                    />
+                    <Text style={{
+                      fontFamily: 'Inter_600SemiBold',
+                      fontSize: 13,
+                      color: active ? '#FFFFFF' : UI.success,
+                      letterSpacing: 0.3,
+                    }}>
+                      {opt === 'exploring' ? 'Exploring' : 'For Myself'}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
-              </View>
+              );
+            })}
+          </View>
 
-              {/* Recording indicator */}
+          {/* Input Card */}
+          <View style={{
+            backgroundColor: '#ECFDF5', borderRadius: 16,
+            borderWidth: 1, borderColor: UI.successTint,
+            flexDirection: 'row', alignItems: 'flex-end',
+            paddingRight: 8, paddingBottom: 8,
+            marginBottom: 12,
+          }}>
+            <TextInput
+              style={{
+                flex: 1, fontSize: 15, color: UI.foreground,
+                padding: 16, minHeight: 100,
+                textAlignVertical: 'top',
+                fontFamily: 'Inter_400Regular',
+              }}
+              placeholder="e.g. Should I drop out to build a startup?"
+              placeholderTextColor={UI.success}
+              value={query}
+              onChangeText={setQuery}
+              multiline
+              editable={!isSearching}
+            />
+            <View style={{ alignItems: 'center', justifyContent: 'center', width: 48, height: 48 }}>
+              {/* Pulse ring */}
               {isRecording && (
-               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: L.terracotta }} />
-                  <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 11, color: L.terracotta, letterSpacing: 0.5 }}>
-                    Listening...
-                  </Text>
-                </View>
+                <Animated.View
+                  style={[
+                    pulseStyle,
+                    {
+                      position: 'absolute',
+                      width: 44, height: 44, borderRadius: 22,
+                      backgroundColor: UI.successTint,
+                      borderWidth: 1.5,
+                      borderColor: `${UI.success}40`,
+                    },
+                  ]}
+                />
               )}
-
-              {/* Send button */}
               <TouchableOpacity
-                onPress={() => {
-                  if (isRecording) {
-                    stopRecording();
-                  } else {
-                    handleSubmit();
-                  }
-                }}
-                disabled={isSearching || (!query.trim() && !isRecording)}
-                activeOpacity={0.7}
+                onPress={isRecording ? stopRecording : startRecording}
+                disabled={isSearching}
                 style={{
-                  width: 40, height: 40, borderRadius: 20,
+                  width: 44, height: 44, borderRadius: 22,
                   alignItems: 'center', justifyContent: 'center',
-                  backgroundColor: (!query.trim() && !isRecording) ? L.tealTint : L.teal,
+                  backgroundColor: isRecording ? UI.success : UI.surfaceDim,
                 }}
               >
-                {isSearching ? (
-                  <ActivityIndicator size="small" color="#FFF" />
-                ) : (
-                  <Feather
-                    name="arrow-up"
-                    size={18}
-                    color={(!query.trim() && !isRecording) ? L.teal : '#FFFFFF'}
-                  />
-                )}
+                <Feather
+                  name={isRecording ? 'square' : 'mic'}
+                  size={18}
+                  color={isRecording ? '#FFF' : UI.fg50}
+                />
               </TouchableOpacity>
             </View>
           </View>
-        </Animated.View>
+
+          {isRecording && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 12 }}>
+              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: UI.success }} />
+              <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 12, color: UI.success, letterSpacing: 0.5 }}>
+                Listening... tap to stop
+              </Text>
+            </View>
+          )}
+
+          {/* Submit */}
+          <GradientButton
+            label={isSearching ? 'Searching pathways...' : 'Search Pathways'}
+            onPress={() => handleSubmit()}
+            loading={isSearching}
+            disabled={isSearching || (!query.trim() && !isRecording)}
+            size="lg"
+            style={{ alignSelf: 'stretch' }}
+          />
+        </View>
 
         {/* Suggested Questions */}
         <Animated.View
           entering={FadeInDown.delay(350).duration(500).springify()}
-          style={{ paddingHorizontal: 24, marginTop: 36 }}
+          style={{ paddingHorizontal: 24, marginTop: 48 }}
         >
-          <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 1, textTransform: 'uppercase', color: L.teal, marginBottom: 16 }}>
-            SUGGESTED QUESTIONS
-          </Text>
+          <SectionLabel color={UI.success} style={{ marginBottom: 16 }}>SUGGESTED QUESTIONS</SectionLabel>
 
           <View style={{ gap: 10 }}>
             {SUGGESTED_QUESTIONS.map((q, i) => (
@@ -333,31 +325,31 @@ export default function QueryPage() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 12,
-                    backgroundColor: L.surface,
+                    backgroundColor: '#ECFDF5',
                     borderRadius: 16,
                     paddingVertical: 14,
                     paddingHorizontal: 16,
                     borderWidth: 1,
-                    borderColor: L.border,
+                    borderColor: UI.successTint,
                   }}
                 >
                   <View style={{
                     width: 28, height: 28, borderRadius: 8,
-                    backgroundColor: L.tealTint,
+                    backgroundColor: UI.successTint,
                     alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <Feather name="zap" size={14} color={L.teal} />
+                    <Feather name="zap" size={14} color={UI.success} />
                   </View>
                   <Text style={{
                     flex: 1,
-                    fontFamily: 'Manrope_400Regular',
+                    fontFamily: 'Inter_400Regular',
                     fontSize: 14,
                     lineHeight: 20,
-                    color: L.navy,
+                    color: UI.fg80,
                   }}>
                     {q}
                   </Text>
-                  <Feather name="arrow-up-right" size={14} color={L.navySoft} />
+                  <Feather name="arrow-up-right" size={14} color={UI.fg40} />
                 </TouchableOpacity>
               </Animated.View>
             ))}

@@ -11,12 +11,26 @@ export async function translateAiInsights(
   targetLanguage: string
 ): Promise<TranslatedAiInsights> {
 
-  const [directAnswer, actionableTakeaway,keyPoints] = await Promise.all([
-    sarvamProvider.translate(aiInsights.directAnswer,targetLanguage,"en-IN"),
-    sarvamProvider.translate(aiInsights.actionableTakeaway,targetLanguage,"en-IN"),
+  const directAnswerPromise = aiInsights.directAnswer
+    ? sarvamProvider.translate(aiInsights.directAnswer, targetLanguage, "en-IN")
+    : Promise.resolve("");
 
-    Promise.all(aiInsights.keyPoints.map((point) =>
-          sarvamProvider.translate( point,targetLanguage,"en-IN"))),
+  const actionableTakeawayPromise = aiInsights.actionableTakeaway
+    ? sarvamProvider.translate(aiInsights.actionableTakeaway, targetLanguage, "en-IN")
+    : Promise.resolve("");
+
+  const keyPointsPromise = Array.isArray(aiInsights.keyPoints)
+    ? Promise.all(
+        aiInsights.keyPoints.map((point) =>
+          point ? sarvamProvider.translate(point, targetLanguage, "en-IN") : Promise.resolve("")
+        )
+      )
+    : Promise.resolve([]);
+
+  const [directAnswer, actionableTakeaway, keyPoints] = await Promise.all([
+    directAnswerPromise,
+    actionableTakeawayPromise,
+    keyPointsPromise,
   ]);
 
   return {

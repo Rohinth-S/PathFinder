@@ -163,6 +163,8 @@ export async function submitJourney(
 ): Promise<SubmitJourneyResponse> {
   if (files && files.length > 0) {
     const formData = new FormData();
+    
+    // Append 'journey' as a JSON string containing conversationId and the payload
     formData.append('journey', JSON.stringify({ conversationId, ...journeyPayload }));
     
     files.forEach(f => {
@@ -188,9 +190,7 @@ export async function submitJourney(
     "/journey/submit",
     {
       method: "POST",
-      body: JSON.stringify({
-        journey: JSON.stringify({ conversationId, ...journeyPayload })
-      }),
+      body: JSON.stringify({ journey: JSON.stringify({ conversationId, ...journeyPayload }) }),
     },
     token
   );

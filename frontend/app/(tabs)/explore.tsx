@@ -7,41 +7,24 @@ import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { L } from '../../constants/colors';
-import { getGlobalFeed, toggleUpvote, FeedExperience, getCommunityGraph, CommunityGraph } from '../../api/community.api';
+import { getGlobalFeed, FeedExperience, getCommunityGraph, CommunityGraph } from '../../api/community.api';
 import { useAuth } from '@clerk/clerk-expo';
 import { VisualGraph } from '../../components/community/VisualGraph';
 
 function FeedCard({ 
   experience, 
-  onViewJourney, 
-  onToggleUpvote 
+  onViewJourney
 }: { 
   experience: FeedExperience; 
   onViewJourney: () => void;
-  onToggleUpvote: (id: string) => void;
 }) {
   const initial = (experience.authorUsername || '?')[0].toUpperCase();
 
-  // Optimistic state
-  const [upvotes, setUpvotes] = useState(experience.upvoteCount || 0);
-  const [hasUpvoted, setHasUpvoted] = useState(experience.hasUpvoted || false);
-
-  // Sync state if props change
-  useEffect(() => {
-    setUpvotes(experience.upvoteCount || 0);
-    setHasUpvoted(experience.hasUpvoted || false);
-  }, [experience]);
-
-  const handleUpvote = () => {
-    const newHasUpvoted = !hasUpvoted;
-    setHasUpvoted(newHasUpvoted);
-    setUpvotes(prev => newHasUpvoted ? prev + 1 : Math.max(0, prev - 1));
-    onToggleUpvote(experience.id);
-  };
-
   return (
     <View style={{
-      backgroundColor: L.surface, borderRadius: 20, borderWidth: 1, borderColor: L.border,
+      backgroundColor: '#FFFFFF',
+      borderRadius: 24,
+      padding: 20, borderColor: L.border,
       paddingHorizontal: 20, paddingVertical: 20, marginBottom: 16,
     }}>
       {/* Header: avatar + username + verified badge */}
@@ -95,17 +78,7 @@ function FeedCard({
       )}
 
       {/* Actions */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8, paddingTop: 16, borderTopWidth: 1, borderTopColor: L.border }}>
-        <TouchableOpacity 
-          onPress={handleUpvote}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 24, backgroundColor: hasUpvoted ? L.terracottaTint : L.background, borderWidth: hasUpvoted ? 0 : 1, borderColor: L.border }}
-        >
-          <Feather name="thumbs-up" size={16} color={hasUpvoted ? L.terracotta : L.navySoft} />
-          <Text style={{ fontSize: 14, color: hasUpvoted ? L.terracotta : L.navySoft, fontFamily: hasUpvoted ? 'Inter_700Bold' : 'Inter_600SemiBold' }}>
-            {upvotes > 0 ? upvotes : 'Helpful'}
-          </Text>
-        </TouchableOpacity>
-
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginTop: 8, paddingTop: 16, borderTopWidth: 1, borderTopColor: L.border }}>
         <TouchableOpacity
           onPress={onViewJourney}
           activeOpacity={0.7}
@@ -167,25 +140,11 @@ export default function ExplorePage() {
     fetchFeed();
   }, []);
 
-  const handleToggleUpvote = async (id: string) => {
-    try {
-      const token = await getToken();
-      if (!token) {
-        console.warn("User must be signed in to upvote.");
-        return;
-      }
-      await toggleUpvote(token, id);
-    } catch (e) {
-      console.warn('Failed to toggle upvote:', e);
-    }
-  };
-
   const renderFeedCard = useCallback(({ item, index }: { item: FeedExperience; index: number }) => (
     <Animated.View entering={FadeInDown.delay(index * 60).springify().damping(20)}>
       <FeedCard
         experience={item}
         onViewJourney={() => router.push(`/u/${item.authorUsername || 'unknown'}`)}
-        onToggleUpvote={handleToggleUpvote}
       />
     </Animated.View>
   ), [router]);
@@ -217,7 +176,7 @@ export default function ExplorePage() {
         </View>
       ) : feed.length === 0 ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingBottom: 80 }}>
-          <Text style={{ fontSize: 48, marginBottom: 16 }}>🌱</Text>
+          <Feather name="wind" size={48} color={L.navySoft} style={{ marginBottom: 16 }} />
           <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: L.navy, textAlign: 'center', marginBottom: 8 }}>
             It's quiet here
           </Text>

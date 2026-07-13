@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "temp-expo-app",
-    "slug": "temp-expo-app",
+    "slug": "pathfinder",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,6 +10,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.pathfinder.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -24,7 +25,21 @@
     "scheme": "pathfinder",
     "plugins": [
       "expo-router",
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      "expo-sharing"
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7e31f547-e555-4bfc-b1b2-12da59229c9d"
+      }
+    },
+    "owner": "starboyrohinths-team",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7e31f547-e555-4bfc-b1b2-12da59229c9d"
+    }
   }
 }
