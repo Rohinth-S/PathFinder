@@ -99,9 +99,9 @@ PathFinder’s core is built using a highly synergistic stack. Sponsor technolog
 
 Read the following deep-dive manuals to understand, build, and deploy PathFinder:
 
-* **[Architecture Guide](file:///c:/Users/nagav/Downloads/HackHazards/PathFinder/docs/architecture.md)**: Explore our Neo4j schema, AI ingestion pipeline, and caching layer design.
-* **[Product Lifecycle Guide](file:///c:/Users/nagav/Downloads/HackHazards/PathFinder/docs/how-it-works.md)**: Follow a journey from voice recording to verification and query retrieval.
-* **[Local Setup Manual](file:///c:/Users/nagav/Downloads/HackHazards/PathFinder/docs/setup.md)**: Follow the step-by-step instructions to configure variables, migrate databases, and run the monorepo locally.
+* **[Architecture Guide](docs/architecture.md)**: Explore our Neo4j schema, AI ingestion pipeline, and caching layer design.
+* **[Product Lifecycle Guide](docs/how-it-works.md)**: Follow a journey from voice recording to verification and query retrieval.
+* **[Local Setup Manual](docs/setup.md)**: Follow the step-by-step instructions to configure variables, migrate databases, and run the monorepo locally.
 
 ---
 
