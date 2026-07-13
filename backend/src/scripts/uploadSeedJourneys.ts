@@ -12,7 +12,7 @@ import type { JourneyJson } from "../types/journey/Journey.types.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const journeysDir = resolve(__dirname, "../db/journeys");
+const journeysDir = resolve(__dirname, "../../db/journeys");
 
 const verificationQueries = [
   { label: "Users", query: "MATCH (u:User) RETURN count(u) AS total" },

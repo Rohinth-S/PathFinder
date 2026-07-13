@@ -99,7 +99,7 @@
         { "name": "Database Configuration Baselines", "type": "Technical" }
       ],
       "proofs": [{
-          "id": "vc-p-1",
+          "id": "ml-p-1",
           "sourceType": "link",
           "url": "public-source-unavailable",
           "status": "verified",
@@ -126,7 +126,7 @@
         { "name": "Memory Allocation Basics", "type": "Technical" }
       ],
       "proofs": [{
-          "id": "vc-p-2",
+          "id": "ml-p-2",
           "sourceType": "link",
           "url": "public-source-unavailable",
           "status": "verified",
