@@ -30,6 +30,11 @@ function normalizeJourneyExperience(
         applicationStatus: experience.applicationStatus ?? null,
         achievements: experience.achievements ?? null,
         isVerified: experience.isVerified ?? false,
+        proofs: experience.proofs.map((proof) => ({
+      ...proof,
+      verifiedAt: proof.verifiedAt ?? null,
+      reason: proof.reason ?? null,
+    })),
     };
 }
 
