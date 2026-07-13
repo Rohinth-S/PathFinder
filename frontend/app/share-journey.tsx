@@ -86,7 +86,7 @@ export default function ShareJourneyPage() {
     if (!tempProofUrl.trim()) return;
     const newExps = [...editableExperiences];
     const proofs = newExps[proofUrlPrompt.expIndex].proofs || [];
-    proofs.push({ id: Date.now().toString(), sourceType: 'LINK', url: tempProofUrl.trim(), status: 'PENDING' });
+    proofs.push({ id: Date.now().toString(), sourceType: 'url', url: tempProofUrl.trim(), status: 'PENDING' });
     newExps[proofUrlPrompt.expIndex].proofs = proofs;
     setEditableExperiences(newExps);
     setProofUrlPrompt({ visible: false, expIndex: -1 });
@@ -95,15 +95,23 @@ export default function ShareJourneyPage() {
   const handleAddProofPhoto = async (index: number) => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      base64: true,
+      base64: false,
       allowsEditing: false,
       quality: 0.7,
     });
     if (!result.canceled && result.assets[0]) {
-      const base64Url = `data:${result.assets[0].mimeType || 'image/jpeg'};base64,${result.assets[0].base64}`;
+      const asset = result.assets[0];
       const newExps = [...editableExperiences];
       const proofs = newExps[index].proofs || [];
-      proofs.push({ id: Date.now().toString(), sourceType: 'DOCUMENT', url: base64Url, status: 'PENDING' });
+      const proofId = Date.now().toString();
+      proofs.push({
+        id: proofId,
+        sourceType: 'image',
+        localUri: asset.uri,
+        mimeType: asset.mimeType || 'image/jpeg',
+        filename: asset.fileName || 'photo.jpg',
+        status: 'PENDING'
+      });
       newExps[index].proofs = proofs;
       setEditableExperiences(newExps);
     }
@@ -115,19 +123,20 @@ export default function ShareJourneyPage() {
       copyToCacheDirectory: true,
     });
     if (!result.canceled && result.assets[0]) {
-      const fileUri = result.assets[0].uri;
-      try {
-        const base64 = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
-        const mimeType = result.assets[0].mimeType || 'application/octet-stream';
-        const base64Url = `data:${mimeType};base64,${base64}`;
-        const newExps = [...editableExperiences];
-        const proofs = newExps[index].proofs || [];
-        proofs.push({ id: Date.now().toString(), sourceType: 'DOCUMENT', url: base64Url, status: 'PENDING' });
-        newExps[index].proofs = proofs;
-        setEditableExperiences(newExps);
-      } catch (err) {
-        Alert.alert("Error", "Failed to read document file");
-      }
+      const asset = result.assets[0];
+      const newExps = [...editableExperiences];
+      const proofs = newExps[index].proofs || [];
+      const proofId = Date.now().toString();
+      proofs.push({
+        id: proofId,
+        sourceType: 'pdf',
+        localUri: asset.uri,
+        mimeType: asset.mimeType || 'application/pdf',
+        filename: asset.name || 'document.pdf',
+        status: 'PENDING'
+      });
+      newExps[index].proofs = proofs;
+      setEditableExperiences(newExps);
     }
   };
 
@@ -203,10 +212,35 @@ export default function ShareJourneyPage() {
       if (!token) throw new Error("Not authenticated");
       
       const payload = { ...journeyDraft, experiences: editableExperiences };
-      const res = await submitJourney(token, conversationId, payload);
+      
+      // Extract files to upload
+      const filesToUpload: { id: string, uri: string, name: string, type: string }[] = [];
+      const cleanedExperiences = editableExperiences.map(exp => {
+        const cleanedExp = { ...exp };
+        if (cleanedExp.proofs) {
+          cleanedExp.proofs = cleanedExp.proofs.map((p: any) => {
+            if (p.localUri) {
+              filesToUpload.push({
+                id: p.id,
+                uri: p.localUri,
+                name: p.filename || 'upload',
+                type: p.mimeType || 'application/octet-stream'
+              });
+              const { localUri, filename, mimeType, ...rest } = p;
+              return rest;
+            }
+            return p;
+          });
+        }
+        return cleanedExp;
+      });
+      
+      payload.experiences = cleanedExperiences;
+
+      const res = await submitJourney(token, conversationId, payload, filesToUpload.length > 0 ? filesToUpload : undefined);
       if (res.success) {
         Alert.alert(
-          "Journey Saved! 🎉",
+          "Journey Saved! ??",
           "Your experiences have been verified and added to your Life Graph.",
           [{ text: "View Graph", onPress: () => router.replace('/(tabs)/history') }]
         );
@@ -463,9 +497,9 @@ export default function ShareJourneyPage() {
                 <View style={{ gap: 8, marginBottom: 12 }}>
                   {exp.proofs.map((proof: any, pIdx: number) => (
                     <View key={pIdx} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 8, padding: 10 }}>
-                      <Feather name={proof.sourceType === 'LINK' ? 'link' : 'file'} size={16} color={UI.accent} style={{ marginRight: 8 }} />
+                      <Feather name={proof.sourceType === 'url' ? 'link' : 'file'} size={16} color={UI.accent} style={{ marginRight: 8 }} />
                       <Text style={{ color: '#FFFFFF', flex: 1 }} numberOfLines={1}>
-                        {proof.sourceType === 'LINK' ? proof.url : 'Uploaded File'}
+                        {proof.sourceType === 'url' ? proof.url : 'Uploaded File'}
                       </Text>
                       <TouchableOpacity onPress={() => handleRemoveProof(index, pIdx)}>
                         <Feather name="trash-2" size={16} color="#ef4444" />

@@ -14,7 +14,7 @@ export interface JourneyExperience {
   isVerified: boolean;
   goalIds: string[];
   skills: { name: string; type: string | null }[];
-  proofs: { id: string; sourceType: string; url: string; status: string; verifiedAt: string | null; reason: string | null }[];
+  proofs: { id: string; sourceType: string; url?: string; localUri?: string; status: string; verifiedAt: string | null; reason: string | null; filename?: string; mimeType?: string }[];
   timelineSummary: string;
 }
 
@@ -156,8 +156,40 @@ export async function submitJourneyGoal(
 export async function submitJourney(
   token: string,
   conversationId: string,
-  journeyPayload: any
+  journeyPayload: any,
+  files?: { id: string; uri: string; name: string; type: string }[]
 ): Promise<SubmitJourneyResponse> {
+  if (files && files.length > 0) {
+    const formData = new FormData();
+    formData.append('conversationId', conversationId);
+    
+    // Append complex objects as strings (the backend will need to JSON.parse them)
+    if (journeyPayload.experiences) formData.append('experiences', JSON.stringify(journeyPayload.experiences));
+    if (journeyPayload.goals) formData.append('goals', JSON.stringify(journeyPayload.goals));
+    if (journeyPayload.transitions) formData.append('transitions', JSON.stringify(journeyPayload.transitions));
+    
+    // Fallback: in case backend checks for journeyPayload
+    formData.append('journeyPayload', JSON.stringify(journeyPayload));
+    
+    files.forEach(f => {
+      formData.append(f.id, {
+        uri: f.uri,
+        name: f.name,
+        type: f.type,
+      } as any);
+    });
+
+    return apiFetch<SubmitJourneyResponse>(
+      "/journey/submit",
+      {
+        method: "POST",
+        body: formData,
+      },
+      token,
+      true // isMultipart
+    );
+  }
+
   return apiFetch<SubmitJourneyResponse>(
     "/journey/submit",
     {
