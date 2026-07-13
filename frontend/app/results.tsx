@@ -172,7 +172,8 @@ export default function ResultsPage() {
       setLoading(false);
     }
     init();
-  }, [getToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) return <LoadingSkeleton />;
 
@@ -499,7 +500,8 @@ export default function ResultsPage() {
             style={{
               flex: 1, backgroundColor: L.surface, borderRadius: 28, paddingHorizontal: 20, paddingVertical: 16,
               fontSize: 15, fontFamily: 'Manrope_400Regular', color: L.navy,
-              borderWidth: 1, borderColor: L.border
+              borderWidth: 1, borderColor: L.border,
+              ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
             }}
             placeholder="Ask a follow-up question..."
             placeholderTextColor={L.navySoft}

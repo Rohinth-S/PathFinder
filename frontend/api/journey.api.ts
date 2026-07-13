@@ -121,8 +121,10 @@ export async function sendJourneyMessage(
 
 export interface SubmitGoalResponse {
   success: boolean;
-  id: string;
-  title: string;
+  goal: {
+    id: string;
+    title: string;
+  };
 }
 
 /**

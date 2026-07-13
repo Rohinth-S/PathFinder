@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
-import { startJourneySession, sendJourneyMessage, submitJourney, submitJourneyGoal } from '../api/journey.api';
+import { startJourneySession, sendJourneyMessage, submitJourney, submitJourneyGoal, getUserJourney } from '../api/journey.api';
 import { UI } from '../constants/colors';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
@@ -23,6 +23,48 @@ interface ChatMessage {
 export default function ShareJourneyPage() {
   const router = useRouter();
   const { getToken } = useAuth();
+
+  const displayAlert = (title: string, message: string, onPress?: () => void) => {
+    if (Platform.OS === 'web') {
+      alert(`${title}: ${message}`);
+      if (onPress) onPress();
+    } else {
+      if (onPress) {
+        Alert.alert(title, message, [{ text: "OK", onPress }]);
+      } else {
+        Alert.alert(title, message);
+      }
+    }
+  };
+
+  const displayConfirm = (title: string, message: string, onConfirm: () => void) => {
+    if (Platform.OS === 'web') {
+      if (window.confirm(`${title}\n\n${message}`)) {
+        onConfirm();
+      }
+    } else {
+      Alert.alert(title, message, [
+        { text: "Cancel", style: "cancel" },
+        { text: "Confirm", style: "destructive", onPress: onConfirm }
+      ]);
+    }
+  };
+
+  const displayProofChoice = (index: number) => {
+    if (Platform.OS === 'web') {
+      const choice = window.prompt("Choose proof type:\n1. URL Link\n2. Upload Photo\n3. Upload Document\nType 1, 2, or 3:");
+      if (choice === '1') handleAddProofUrl(index);
+      else if (choice === '2') handleAddProofPhoto(index);
+      else if (choice === '3') handleAddProofDocument(index);
+    } else {
+      Alert.alert("Add Proof", "Choose proof type", [
+        { text: "URL Link", onPress: () => handleAddProofUrl(index) },
+        { text: "Upload Photo", onPress: () => handleAddProofPhoto(index) },
+        { text: "Upload Document", onPress: () => handleAddProofDocument(index) },
+        { text: "Cancel", style: "cancel" }
+      ]);
+    }
+  };
   
   const [activeTab, setActiveTab] = useState<'chat' | 'form'>('chat');
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -59,13 +101,13 @@ export default function ShareJourneyPage() {
         topics: [],
         subtopics: [],
       });
-      if (res.success) {
-        setUserGoals(prev => [...prev, { id: res.id, title: res.title }]);
+      if (res.success && res.goal) {
+        setUserGoals(prev => [...prev, { id: res.goal.id, title: res.goal.title }]);
         setNewGoalTitle('');
         setNewGoalDesc('');
       }
-    } catch (err) {
-      Alert.alert("Error", "Could not create goal");
+    } catch (err: any) {
+      displayAlert("Error", err.message || "Could not create goal");
     } finally {
       setIsCreatingGoal(false);
     }
@@ -86,7 +128,10 @@ export default function ShareJourneyPage() {
     if (!tempProofUrl.trim()) return;
     const newExps = [...editableExperiences];
     const proofs = newExps[proofUrlPrompt.expIndex].proofs || [];
-    proofs.push({ id: Date.now().toString(), sourceType: 'url', url: tempProofUrl.trim(), status: 'PENDING' });
+    const url = tempProofUrl.trim();
+    const isGithub = url.toLowerCase().includes('github.com');
+    const sourceType = isGithub ? 'github' : 'link';
+    proofs.push({ id: Date.now().toString(), sourceType, url, status: 'PENDING' });
     newExps[proofUrlPrompt.expIndex].proofs = proofs;
     setEditableExperiences(newExps);
     setProofUrlPrompt({ visible: false, expIndex: -1 });
@@ -151,6 +196,16 @@ export default function ShareJourneyPage() {
       try {
         const token = await getToken();
         if (!token) throw new Error('Unauthenticated');
+        
+        try {
+          const journeyData = await getUserJourney(token);
+          if (journeyData && journeyData.goals) {
+            setUserGoals(journeyData.goals);
+          }
+        } catch (e) {
+          console.warn('Failed to load existing goals:', e);
+        }
+
         const res = await startJourneySession(token);
         if (res.success && res.conversationId) {
           setConversationId(res.conversationId);
@@ -163,6 +218,7 @@ export default function ShareJourneyPage() {
       }
     }
     initSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const sendMessage = async () => {
@@ -194,7 +250,7 @@ export default function ShareJourneyPage() {
       }
     } catch (err: any) {
       console.warn('Failed to send message:', err);
-      Alert.alert("Error", "Could not process your message. Please try again.");
+      displayAlert("Error", "Could not process your message. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -202,7 +258,7 @@ export default function ShareJourneyPage() {
 
   const handleFinalSubmit = async () => {
     if (!conversationId || editableExperiences.length === 0) {
-      Alert.alert("Incomplete", "Please share your experiences in the chat first.");
+      displayAlert("Incomplete", "Please share your experiences in the chat first.");
       return;
     }
 
@@ -216,7 +272,7 @@ export default function ShareJourneyPage() {
       // Extract files to upload
       const filesToUpload: { id: string, uri: string, name: string, type: string }[] = [];
       const cleanedExperiences = editableExperiences.map(exp => {
-        const cleanedExp = { ...exp };
+        const { tempGoalInput, ...cleanedExp } = exp;
         if (cleanedExp.proofs) {
           cleanedExp.proofs = cleanedExp.proofs.map((p: any) => {
             if (p.localUri) {
@@ -226,10 +282,9 @@ export default function ShareJourneyPage() {
                 name: p.filename || 'upload',
                 type: p.mimeType || 'application/octet-stream'
               });
-              const { localUri, filename, mimeType, ...rest } = p;
-              return rest;
             }
-            return p;
+            const { localUri, filename, mimeType, status, ...rest } = p;
+            return rest;
           });
         }
         return cleanedExp;
@@ -239,17 +294,17 @@ export default function ShareJourneyPage() {
 
       const res = await submitJourney(token, conversationId, payload, filesToUpload.length > 0 ? filesToUpload : undefined);
       if (res.success) {
-        Alert.alert(
-          "Journey Saved! ??",
+        displayAlert(
+          "Journey Saved! 🚀",
           "Your experiences have been verified and added to your Life Graph.",
-          [{ text: "View Graph", onPress: () => router.replace('/(tabs)/history') }]
+          () => router.replace('/(tabs)/journey')
         );
       } else {
-        Alert.alert("Submission Issue", "Could not save your journey.");
+        displayAlert("Submission Issue", "Could not save your journey.");
       }
     } catch (err: any) {
       console.warn("Failed to submit journey:", err);
-      Alert.alert("Error", err?.message || "Failed to submit. Check required fields.");
+      displayAlert("Error", err?.message || "Failed to submit. Check required fields.");
     } finally {
       setIsSubmitting(false);
     }
@@ -289,8 +344,8 @@ export default function ShareJourneyPage() {
     if (experiences.length === 0) {
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-          <Feather name="file-text" size={48} color="rgba(255,255,255,0.2)" />
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'Inter_400Regular', marginTop: 16, textAlign: 'center', fontSize: 16 }}>
+          <Feather name="file-text" size={48} color="#94A3B8" />
+          <Text style={{ color: '#4A5568', fontFamily: 'Inter_400Regular', marginTop: 16, textAlign: 'center', fontSize: 16 }}>
             Your drafted journey will appear here once you share some details in the chat.
           </Text>
         </View>
@@ -299,36 +354,36 @@ export default function ShareJourneyPage() {
 
     return (
       <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }} showsVerticalScrollIndicator={false}>
-        <Text style={{ color: '#FFFFFF', fontFamily: 'InstrumentSerif_400Regular', fontSize: 32, marginBottom: 8 }}>
+        <Text style={{ color: '#0F172A', fontFamily: 'InstrumentSerif_400Regular', fontSize: 32, marginBottom: 8 }}>
           Review & Edit Draft
         </Text>
         
         {/* Goal Form Section */}
-        <View style={{ backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginBottom: 8 }}>
+        <View style={{ backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#EAE7E0', marginBottom: 8 }}>
           <Text style={{ color: UI.accent, fontFamily: 'Inter_600SemiBold', fontSize: 18, marginBottom: 16 }}>Your Goals</Text>
           
           {userGoals.length > 0 && (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
               {userGoals.map(goal => (
-                <View key={goal.id} style={{ backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16 }}>
-                  <Text style={{ color: '#FFFFFF', fontSize: 13, fontFamily: 'Inter_500Medium' }}>{goal.title}</Text>
+                <View key={goal.id} style={{ backgroundColor: '#F1F5F9', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0' }}>
+                  <Text style={{ color: '#0F172A', fontSize: 13, fontFamily: 'Inter_500Medium' }}>{goal.title}</Text>
                 </View>
               ))}
             </View>
           )}
 
-          <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 6, fontFamily: 'Inter_500Medium' }}>Create a New Goal</Text>
+          <Text style={{ color: '#4A5568', fontSize: 13, marginBottom: 6, fontFamily: 'Inter_500Medium' }}>Create a New Goal</Text>
           <TextInput
-            style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFFFFF', borderRadius: 12, padding: 12, marginBottom: 12 }}
+            style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', color: '#0F172A', borderRadius: 12, padding: 12, marginBottom: 12, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
             placeholder="e.g. Become a Senior Developer"
-            placeholderTextColor="rgba(255,255,255,0.3)"
+            placeholderTextColor="#94A3B8"
             value={newGoalTitle}
             onChangeText={setNewGoalTitle}
           />
           <TextInput
-            style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFFFFF', borderRadius: 12, padding: 12, marginBottom: 12, minHeight: 60 }}
+            style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', color: '#0F172A', borderRadius: 12, padding: 12, marginBottom: 12, minHeight: 60, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
             placeholder="Description (Optional)"
-            placeholderTextColor="rgba(255,255,255,0.3)"
+            placeholderTextColor="#94A3B8"
             value={newGoalDesc}
             onChangeText={setNewGoalDesc}
             multiline
@@ -348,11 +403,11 @@ export default function ShareJourneyPage() {
             key={index}
             entering={FadeInDown.delay(index * 100).duration(400)}
             style={{
-              backgroundColor: 'rgba(255,255,255,0.03)',
+              backgroundColor: '#FFFFFF',
               borderRadius: 16,
               padding: 20,
               borderWidth: 1,
-              borderColor: 'rgba(255,255,255,0.1)',
+              borderColor: '#EAE7E0',
               gap: 16
             }}
           >
@@ -361,104 +416,162 @@ export default function ShareJourneyPage() {
             </Text>
 
             <View>
-              <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Title (Mandatory)</Text>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Title (Mandatory)</Text>
               <TextInput
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15 }}
+                style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                 value={exp.title || ''}
                 onChangeText={t => updateExperience(index, 'title', t)}
                 placeholder="e.g. Software Engineer Intern"
-                placeholderTextColor="rgba(255,255,255,0.3)"
+                placeholderTextColor="#94A3B8"
               />
             </View>
 
             <View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13 }}>Associated Goal (Optional)</Text>
+                <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13 }}>Associated Goal (Optional)</Text>
               </View>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row' }}>
-                {userGoals.map(goal => {
-                  const isSelected = exp.goalIds?.includes(goal.id);
-                  return (
-                    <TouchableOpacity
-                      key={goal.id}
-                      onPress={() => {
+              
+              {userGoals.length > 0 && (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', marginBottom: 10 }}>
+                  {userGoals.map(goal => {
+                    const isSelected = exp.goalIds?.includes(goal.id);
+                    return (
+                      <TouchableOpacity
+                        key={goal.id}
+                        onPress={() => {
+                           const currentIds = exp.goalIds || [];
+                           const newIds = isSelected ? currentIds.filter((id: string) => id !== goal.id) : [...currentIds, goal.id];
+                           updateExperience(index, 'goalIds', newIds);
+                        }}
+                        style={{
+                          paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16,
+                          backgroundColor: isSelected ? UI.accent : '#F1F5F9',
+                          borderWidth: 1, borderColor: isSelected ? UI.accent : '#E2E8F0',
+                          marginRight: 8
+                        }}
+                      >
+                        <Text style={{ color: isSelected ? '#FFFFFF' : '#4A5568', fontSize: 13, fontFamily: 'Inter_500Medium' }}>
+                          {goal.title}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+              )}
+
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                <TextInput
+                  style={{ 
+                    flex: 1, 
+                    backgroundColor: '#FFFFFF', 
+                    borderWidth: 1, 
+                    borderColor: '#EAE7E0', 
+                    borderRadius: 12, 
+                    paddingHorizontal: 12, 
+                    paddingVertical: 10, 
+                    color: '#0F172A', 
+                    fontFamily: 'Inter_400Regular', 
+                    fontSize: 14, 
+                    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) 
+                  }}
+                  placeholder="Type new goal to associate..."
+                  placeholderTextColor="#94A3B8"
+                  value={exp.tempGoalInput || ''}
+                  onChangeText={t => updateExperience(index, 'tempGoalInput', t)}
+                />
+                <TouchableOpacity
+                  onPress={async () => {
+                    const goalTitle = exp.tempGoalInput?.trim();
+                    if (!goalTitle) return;
+                    try {
+                      const token = await getToken();
+                      if (!token) throw new Error("Not authenticated");
+                      const res = await submitJourneyGoal(token, {
+                        title: goalTitle,
+                        status: "In Progress",
+                        topics: [],
+                        subtopics: [],
+                      });
+                      if (res.success && res.goal) {
+                        setUserGoals(prev => [...prev, { id: res.goal.id, title: res.goal.title }]);
                         const currentIds = exp.goalIds || [];
-                        const newIds = isSelected ? currentIds.filter((id: string) => id !== goal.id) : [...currentIds, goal.id];
-                        updateExperience(index, 'goalIds', newIds);
-                      }}
-                      style={{
-                        paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16,
-                        backgroundColor: isSelected ? UI.accent : 'rgba(255,255,255,0.05)',
-                        borderWidth: 1, borderColor: isSelected ? UI.accent : 'rgba(255,255,255,0.1)',
-                        marginRight: 8
-                      }}
-                    >
-                      <Text style={{ color: isSelected ? '#FFFFFF' : 'rgba(255,255,255,0.7)', fontSize: 13, fontFamily: 'Inter_500Medium' }}>
-                        {goal.title}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
+                        updateExperience(index, 'goalIds', [...currentIds, res.goal.id]);
+                        updateExperience(index, 'tempGoalInput', '');
+                      }
+                    } catch (err: any) {
+                      displayAlert("Error", err.message || "Could not create goal");
+                    }
+                  }}
+                  style={{
+                    backgroundColor: UI.accent,
+                    paddingHorizontal: 16,
+                    borderRadius: 12,
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Text style={{ color: '#FFFFFF', fontFamily: 'Inter_600SemiBold', fontSize: 13 }}>Link</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             <View style={{ flexDirection: 'row', gap: 12 }}>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Start Date</Text>
+                <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Start Date</Text>
                 <TextInput
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15 }}
+                  style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                   value={exp.startDate || ''}
                   onChangeText={t => updateExperience(index, 'startDate', t)}
-                  placeholder="MMM YYYY"
-                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  placeholder="MM YYYY"
+                  placeholderTextColor="#94A3B8"
                 />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>End Date</Text>
+                <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>End Date</Text>
                 <TextInput
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15 }}
+                  style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                   value={exp.endDate || ''}
                   onChangeText={t => updateExperience(index, 'endDate', t)}
                   placeholder="Present"
-                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  placeholderTextColor="#94A3B8"
                 />
               </View>
             </View>
 
             <View>
-              <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Context / Description (Mandatory)</Text>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Context / Description (Mandatory)</Text>
               <TextInput
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80 }}
+                style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                 value={exp.context || ''}
                 onChangeText={t => updateExperience(index, 'context', t)}
                 placeholder="What did you do?"
-                placeholderTextColor="rgba(255,255,255,0.3)"
+                placeholderTextColor="#94A3B8"
                 multiline
                 textAlignVertical="top"
               />
             </View>
             
             <View>
-              <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Challenge Faced (Optional)</Text>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Challenge Faced (Optional)</Text>
               <TextInput
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80 }}
+                style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                 value={exp.challengeFaced || ''}
                 onChangeText={t => updateExperience(index, 'challengeFaced', t)}
                 placeholder="Any hurdles you overcame?"
-                placeholderTextColor="rgba(255,255,255,0.3)"
+                placeholderTextColor="#94A3B8"
                 multiline
                 textAlignVertical="top"
               />
             </View>
 
             <View>
-              <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Outcome (Optional)</Text>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Outcome (Optional)</Text>
               <TextInput
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80 }}
+                style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                 value={exp.outcome || ''}
                 onChangeText={t => updateExperience(index, 'outcome', t)}
                 placeholder="What was the result?"
-                placeholderTextColor="rgba(255,255,255,0.3)"
+                placeholderTextColor="#94A3B8"
                 multiline
                 textAlignVertical="top"
               />
@@ -466,13 +579,13 @@ export default function ShareJourneyPage() {
 
             {index > 0 && (
               <View>
-                <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>What led you to this experience? (Optional)</Text>
+                <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>What led you to this experience? (Optional)</Text>
                 <TextInput
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 60 }}
+                  style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 60, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                   value={exp.decisionReason || ''}
                   onChangeText={t => updateExperience(index, 'decisionReason', t)}
                   placeholder="e.g. I wanted to apply my skills from the previous project..."
-                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  placeholderTextColor="#94A3B8"
                   multiline
                   textAlignVertical="top"
                 />
@@ -491,14 +604,14 @@ export default function ShareJourneyPage() {
 
             {/* Proofs Section */}
             <View style={{ marginTop: 8 }}>
-              <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Proofs (Optional)</Text>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Proofs (Optional)</Text>
               
               {exp.proofs && exp.proofs.length > 0 && (
                 <View style={{ gap: 8, marginBottom: 12 }}>
                   {exp.proofs.map((proof: any, pIdx: number) => (
-                    <View key={pIdx} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 8, padding: 10 }}>
+                    <View key={pIdx} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 8, padding: 10, borderWidth: 1, borderColor: '#E2E8F0' }}>
                       <Feather name={proof.sourceType === 'url' ? 'link' : 'file'} size={16} color={UI.accent} style={{ marginRight: 8 }} />
-                      <Text style={{ color: '#FFFFFF', flex: 1 }} numberOfLines={1}>
+                      <Text style={{ color: '#0F172A', flex: 1 }} numberOfLines={1}>
                         {proof.sourceType === 'url' ? proof.url : 'Uploaded File'}
                       </Text>
                       <TouchableOpacity onPress={() => handleRemoveProof(index, pIdx)}>
@@ -511,14 +624,9 @@ export default function ShareJourneyPage() {
 
               <TouchableOpacity 
                 onPress={() => {
-                  Alert.alert("Add Proof", "Choose proof type", [
-                    { text: "URL Link", onPress: () => handleAddProofUrl(index) },
-                    { text: "Upload Photo", onPress: () => handleAddProofPhoto(index) },
-                    { text: "Upload Document", onPress: () => handleAddProofDocument(index) },
-                    { text: "Cancel", style: "cancel" }
-                  ]);
+                  displayProofChoice(index);
                 }}
-                style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start' }}
+                style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start', borderWidth: 1, borderColor: '#E2E8F0' }}
               >
                 <Feather name="plus" size={16} color={UI.accent} style={{ marginRight: 6 }} />
                 <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium' }}>Add Proof</Text>
@@ -529,17 +637,17 @@ export default function ShareJourneyPage() {
 
         <TouchableOpacity
           style={{
-            backgroundColor: 'rgba(255,255,255,0.05)',
+            backgroundColor: '#FFFFFF',
             paddingVertical: 16,
             borderRadius: 12,
             alignItems: 'center',
             marginTop: 8,
             borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.1)'
+            borderColor: '#EAE7E0'
           }}
           onPress={() => setActiveTab('chat')}
         >
-          <Text style={{ color: '#FFFFFF', fontFamily: 'Inter_600SemiBold', fontSize: 16 }}>
+          <Text style={{ color: '#0F172A', fontFamily: 'Inter_600SemiBold', fontSize: 16 }}>
             Back to Chat (Tell AI More)
           </Text>
         </TouchableOpacity>
@@ -580,7 +688,7 @@ export default function ShareJourneyPage() {
           paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16,
           borderBottomWidth: 1, borderColor: '#EAE7E0'
         }}>
-          <TouchableOpacity onPress={() => router.back()} style={{ width: 40, height: 40, justifyContent: 'center' }}>
+          <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={{ width: 40, height: 40, justifyContent: 'center' }}>
             <Feather name="arrow-left" size={24} color="#0F172A" />
           </TouchableOpacity>
           
@@ -634,11 +742,20 @@ export default function ShareJourneyPage() {
           <View style={{ flex: 1 }}>
             {activeTab === 'chat' ? (
               messages.length <= 1 ? (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, paddingBottom: 100 }}>
+                <ScrollView 
+                  contentContainerStyle={{ 
+                    flexGrow: 1, 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    padding: 24, 
+                    paddingBottom: Platform.OS === 'web' ? 100 : 40 
+                  }}
+                  showsVerticalScrollIndicator={false}
+                >
                   <Text style={{ 
                     color: '#0F172A', 
                     fontFamily: 'InstrumentSerif_400Regular', 
-                    fontSize: 40, 
+                    fontSize: Platform.OS === 'web' ? 40 : 32, 
                     marginBottom: 16,
                     textAlign: 'center'
                   }}>
@@ -647,10 +764,10 @@ export default function ShareJourneyPage() {
                   <Text style={{ 
                     color: '#4A5568', 
                     fontFamily: 'Inter_400Regular', 
-                    fontSize: 16, 
+                    fontSize: Platform.OS === 'web' ? 16 : 14, 
                     textAlign: 'center',
-                    marginBottom: 40,
-                    lineHeight: 24
+                    marginBottom: Platform.OS === 'web' ? 40 : 24,
+                    lineHeight: Platform.OS === 'web' ? 24 : 20
                   }}>
                     {messages[0]?.text || "Tell me about your journey so far. You can mention your education, internships, projects, hackathons, startups, competitions, jobs, research, or any important experiences that helped shape your path."}
                   </Text>
@@ -675,7 +792,8 @@ export default function ShareJourneyPage() {
                         fontFamily: 'Inter_400Regular',
                         fontSize: 16,
                         textAlignVertical: 'top',
-                        flex: 1
+                        flex: 1,
+                        ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
                       }}
                       placeholder="Describe your journey so far..."
                       placeholderTextColor="#94A3B8"
@@ -698,7 +816,7 @@ export default function ShareJourneyPage() {
                       </TouchableOpacity>
                     </View>
                   </View>
-                </View>
+                </ScrollView>
               ) : (
                 <>
                   <FlatList
@@ -734,6 +852,7 @@ export default function ShareJourneyPage() {
                         maxHeight: 100,
                         borderWidth: 1,
                         borderColor: '#EAE7E0',
+                        ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
                       }}
                       placeholder="Describe your journey so far..."
                       placeholderTextColor="#94A3B8"
