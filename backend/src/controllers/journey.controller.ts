@@ -65,10 +65,10 @@ export async function submitGoalController(
   res: Response
 ): Promise<void> {
   try {
-    const { goal } = req.body;
+    const goal = req.body.goal || (req.body.title || req.body.narrative ? req.body : null);
     if (!goal) {
       res.status(400).json({
-        error: "goal is required",
+        error: "goal details are required",
       });
       return;
     }
@@ -111,8 +111,12 @@ export async function submitJourneyController(
     for (const file of (req.files as Express.Multer.File[]) ?? []) {
       proofFiles.set(file.fieldname, file);
     }
-    
-    const result = await submitJourney(userId,conversationId, journeyPayload,proofFiles);
+    const result = await submitJourney(
+      userId,
+      conversationId,
+      { experiences: journeyPayload.experiences },
+      proofFiles
+    );
     res.json({
       success: true,
       ...result,

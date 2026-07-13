@@ -121,8 +121,10 @@ export async function sendJourneyMessage(
 
 export interface SubmitGoalResponse {
   success: boolean;
-  id: string;
-  title: string;
+  goal: {
+    id: string;
+    title: string;
+  };
 }
 
 /**
@@ -144,7 +146,7 @@ export async function submitJourneyGoal(
     "/journey/submit/goal",
     {
       method: "POST",
-      body: JSON.stringify(goalPayload),
+      body: JSON.stringify({ goal: goalPayload }),
     },
     token
   );
@@ -161,15 +163,7 @@ export async function submitJourney(
 ): Promise<SubmitJourneyResponse> {
   if (files && files.length > 0) {
     const formData = new FormData();
-    formData.append('conversationId', conversationId);
-    
-    // Append complex objects as strings (the backend will need to JSON.parse them)
-    if (journeyPayload.experiences) formData.append('experiences', JSON.stringify(journeyPayload.experiences));
-    if (journeyPayload.goals) formData.append('goals', JSON.stringify(journeyPayload.goals));
-    if (journeyPayload.transitions) formData.append('transitions', JSON.stringify(journeyPayload.transitions));
-    
-    // Fallback: in case backend checks for journeyPayload
-    formData.append('journeyPayload', JSON.stringify(journeyPayload));
+    formData.append('journey', JSON.stringify({ conversationId, ...journeyPayload }));
     
     files.forEach(f => {
       formData.append(f.id, {
@@ -194,7 +188,9 @@ export async function submitJourney(
     "/journey/submit",
     {
       method: "POST",
-      body: JSON.stringify({ conversationId, ...journeyPayload }),
+      body: JSON.stringify({
+        journey: JSON.stringify({ conversationId, ...journeyPayload })
+      }),
     },
     token
   );

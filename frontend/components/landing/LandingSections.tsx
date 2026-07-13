@@ -21,7 +21,7 @@ const LegacyUI = {
 };
 import { GradientButton } from '../ui/GradientButton';
 import { SectionLabel, PillBadge } from '../ui/SectionLabel';
-import { FloatingParticles } from './FloatingParticles';
+
 import Svg, { Path } from 'react-native-svg';
 
 // ═══════════════════════════════════════════════════════
@@ -48,7 +48,7 @@ type HeroProps = {
 export function HeroSection({ onPressGoogle }: HeroProps) {
   return (
     <SectionReveal style={{ minHeight: 700, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 80, backgroundColor: LegacyUI.surfaceInverse }}>
-      <FloatingParticles />
+
       
       {/* Logo mark */}
       <StaggerItem index={0}>

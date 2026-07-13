@@ -85,17 +85,7 @@ export function formatToMonthYear(dateStr: string | null | undefined): string {
   if (parts.length < 2) return dateStr; // Fallback if the string is malformed
 
   const year = parts[0];
-  const monthIndex = parseInt(parts[1], 10) - 1; // Convert "01" -> 0 index
+  const month = parts[1]; // "01", "12", etc.
 
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-
-  // Return formatted string if month index is valid
-  if (monthIndex >= 0 && monthIndex < 12) {
-    return `${months[monthIndex]} ${year}`;
-  }
-
-  return dateStr;
+  return `${month} ${year}`;
 }

@@ -20,7 +20,7 @@ import {
   ClosingVisionSection,
   FooterSection,
 } from '../components/landing/LandingSections';
-import { FloatingParticles } from '../components/landing/FloatingParticles';
+
 
 export default function LandingPage() {
   return (
@@ -123,7 +123,6 @@ function LandingPageContent() {
           <FooterSection />
         </Animated.ScrollView>
       </SafeAreaView>
-      <FloatingParticles />
     </Animated.View>
   );
 }

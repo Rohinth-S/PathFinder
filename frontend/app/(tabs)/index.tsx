@@ -17,10 +17,12 @@ import Animated, {
 import { Feather } from '@expo/vector-icons';
 
 const SUGGESTED_QUESTIONS = [
-  'What should I do after my current experience?',
-  'How did others prepare for Google STEP?',
-  'Summarize my journey so far.',
-  'Find mentorship opportunities.',
+  "Show me the exact steps service-based company developers took to prepare for system design rounds at product tech companies, and what projects they built to prove their skills.",
+  "How did technical founders and platform engineers handle sudden database locks or server overloads during a high-traffic live launch, and what were their technical fixes?",
+  "What specific actions or side-projects did internal corporate professionals use to convince their leadership teams to transition them out of non-tech or reporting roles into Product Management?",
+  "What deep technical skills and browser rendering concepts did self-taught developers focus on to compete successfully against elite college graduates in frontend product interviews?",
+  "How did self-funded or bootstrapped founders scale their SaaS or edtech platforms past the 50 LPA milestone without spending heavy capital on traditional ad agencies?",
+  "Once a software engineer moves past basic application frameworks and masters low-level infrastructure scaling, what complex systems-level goals do they typically target next?"
 ];
 
 export default function QueryPage() {
@@ -31,6 +33,14 @@ export default function QueryPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+
+  const displayAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      alert(`${title}: ${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
 
   // Pulse animation for recording
   const pulseScale = useSharedValue(1);
@@ -67,7 +77,7 @@ export default function QueryPage() {
     try {
       const permission = await Audio.requestPermissionsAsync();
       if (permission.status !== 'granted') {
-        Alert.alert('Permission Denied', 'Please grant microphone access to use voice search.');
+        displayAlert('Permission Denied', 'Please grant microphone access to use voice search.');
         return;
       }
 
@@ -83,7 +93,7 @@ export default function QueryPage() {
       setIsRecording(true);
     } catch (err) {
       console.warn('Failed to start recording', err);
-      Alert.alert('Recording Error', 'Failed to start recording. Please try again.');
+      displayAlert('Recording Error', 'Failed to start recording. Please try again.');
       setIsRecording(false);
     }
   }
@@ -134,7 +144,7 @@ export default function QueryPage() {
       });
     } catch (error) {
       console.warn('Query Pipeline Error:', error);
-      Alert.alert(
+      displayAlert(
         'Connection Error',
         'Could not reach the backend. Please ensure the server is running and try again.'
       );
@@ -205,6 +215,7 @@ export default function QueryPage() {
                   minHeight: 100,
                   textAlignVertical: 'top',
                   lineHeight: 22,
+                  ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
                 }}
                 placeholder="Ask anything about your journey..."
                 placeholderTextColor={L.navySoft}

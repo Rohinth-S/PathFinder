@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
   Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform, Image
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { getUserJourney, UserJourneyResponse } from '../../api/journey.api';
 import { calculateDuration, formatToMonthYear } from '../../utils/helpers';
@@ -158,9 +158,11 @@ export default function HistoryPage() {
   const [error, setError] = useState<string | null>(null);
   const [showGraph, setShowGraph] = useState(false);
 
-  useEffect(() => {
-    loadJourney();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadJourney();
+    }, [])
+  );
 
   const loadJourney = async () => {
     setIsLoading(true);
