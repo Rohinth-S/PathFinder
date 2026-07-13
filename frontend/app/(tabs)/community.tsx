@@ -187,22 +187,27 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           {/* Avatar circle */}
           <View style={{
-            width: 42, height: 42, borderRadius: 21, backgroundColor: UI.surfaceInverse,
-            alignItems: 'center', justifyContent: 'center',
+            width: 42, height: 42, borderRadius: 21, backgroundColor: user.imageUrl ? 'transparent' : UI.surfaceInverse,
+            alignItems: 'center', justifyContent: 'center', overflow: 'hidden'
           }}>
-            <Text style={{ fontSize: 17, color: '#FFFFFF', fontFamily: 'Inter_700Bold' }}>{initial}</Text>
+            {user.imageUrl ? (
+              <Image source={{ uri: user.imageUrl }} style={{ width: 42, height: 42 }} />
+            ) : (
+              <Text style={{ fontSize: 17, color: '#FFFFFF', fontFamily: 'Inter_700Bold' }}>{initial}</Text>
+            )}
           </View>
-          <Text style={{ fontSize: 15, color: UI.foreground, fontFamily: 'Inter_700Bold' }}>@{user.username || 'unknown'}</Text>
+          <Text style={{ fontSize: 15, color: UI.foreground, fontFamily: 'Inter_700Bold' }}>@{user.username || 'user'}</Text>
         </View>
 
         {/* Reputation badge */}
         {hasReputation && (
           <View style={{
             flexDirection: 'row', alignItems: 'center', gap: 4,
-            backgroundColor: UI.accentSoft, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
+            backgroundColor: 'rgba(234, 179, 8, 0.12)', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
+            borderWidth: 1, borderColor: 'rgba(234, 179, 8, 0.2)'
           }}>
-            <Text style={{ fontSize: 11, color: UI.accent }}>★</Text>
-            <Text style={{ fontSize: 12, color: UI.accent, fontFamily: 'Inter_700Bold' }}>{repScore}</Text>
+            <Text style={{ fontSize: 11, color: '#CA8A04' }}>★</Text>
+            <Text style={{ fontSize: 12, color: '#CA8A04', fontFamily: 'Inter_700Bold' }}>{repScore}</Text>
           </View>
         )}
       </View>
@@ -222,10 +227,11 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
             {expertiseAreas.map((area) => (
               <View key={area} style={{
-                paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20,
-                backgroundColor: UI.accentSoft,
+                paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20,
+                backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: '#E5E7EB',
+                maxWidth: '100%'
               }}>
-                <Text style={{ fontSize: 12, color: UI.accent, fontFamily: 'Inter_600SemiBold' }}>{area}</Text>
+                <Text numberOfLines={1} style={{ fontSize: 12, color: '#374151', fontFamily: 'Inter_600SemiBold', flexShrink: 1 }}>{area}</Text>
               </View>
             ))}
           </View>
@@ -238,22 +244,23 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <SectionLabel>GOALS MATCHING YOUR SEARCH</SectionLabel>
             <View style={{
-              paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
-              backgroundColor: UI.accentSoft,
+              paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6,
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              borderWidth: 1, borderColor: 'rgba(59, 130, 246, 0.2)'
             }}>
-              <Text style={{ fontSize: 10, color: UI.accent, fontFamily: 'Inter_700Bold' }}>
+              <Text style={{ fontSize: 10, color: '#2563EB', fontFamily: 'Inter_700Bold' }}>
                 {matchingGoalCount} {matchingGoalCount === 1 ? 'Goal' : 'Goals'} Matched
               </Text>
             </View>
           </View>
           {matchingGoals.slice(0, 3).map((goal, i) => (
-            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
-              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: UI.accent, marginTop: 7 }} />
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8, paddingRight: 8 }}>
+              <Feather name="check-circle" size={14} color="#3B82F6" style={{ marginTop: 3 }} />
               <Text style={{ fontSize: 14, color: UI.fg80, flex: 1, lineHeight: 20, fontFamily: 'Inter_400Regular' }}>{goal}</Text>
             </View>
           ))}
           {matchingGoalCount > 3 && (
-            <Text style={{ fontSize: 13, color: UI.fg50, fontFamily: 'Inter_600SemiBold', marginTop: 2 }}>
+            <Text style={{ fontSize: 13, color: UI.fg50, fontFamily: 'Inter_600SemiBold', marginTop: 2, paddingLeft: 24 }}>
               +{matchingGoalCount - 3} more
             </Text>
           )}
@@ -263,10 +270,10 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
       {/* Journey Highlights */}
       {journeyHighlights.length > 0 && (
         <View style={{ marginBottom: 16 }}>
-          <SectionLabel color={UI.accent} style={{ marginBottom: 10 }}>JOURNEY HIGHLIGHTS</SectionLabel>
+          <SectionLabel style={{ marginBottom: 10 }}>JOURNEY HIGHLIGHTS</SectionLabel>
           {journeyHighlights.map((highlight, i) => (
-            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
-              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: UI.fg40, marginTop: 7 }} />
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8, paddingRight: 8 }}>
+              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#9CA3AF', marginTop: 7 }} />
               <Text style={{ fontSize: 14, color: UI.fg80, flex: 1, lineHeight: 20, fontFamily: 'Inter_400Regular' }}>{highlight}</Text>
             </View>
           ))}
@@ -411,7 +418,7 @@ export default function CommunityPage() {
     <Animated.View entering={FadeInDown.delay(index * 60).springify().damping(20)}>
       <UserCard
         user={item}
-        onViewJourney={() => router.push(`/u/${item.username || 'unknown'}`)}
+        onViewJourney={() => router.push(`/u/${item.username || 'user'}`)}
       />
     </Animated.View>
   ), [router]);

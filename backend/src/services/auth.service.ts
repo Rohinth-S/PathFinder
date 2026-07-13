@@ -31,7 +31,7 @@ export async function syncUser(
 
         ON CREATE SET
           u.createdAt = datetime(),
-          u.username = null,
+          u.username = split($email, '@')[0] + '-' + substring($clerkId, 5, 5),
           u.summary = "",
           u.imageUrl = $imageUrl,
           u.expertiseAreas = [],
@@ -43,7 +43,8 @@ export async function syncUser(
         SET
           u.updatedAt = datetime(),
           u.email = $email,
-          u.imageUrl = $imageUrl
+          u.imageUrl = $imageUrl,
+          u.username = coalesce(u.username, split($email, '@')[0] + '-' + substring($clerkId, 5, 5))
 
         RETURN
           u.clerkId AS clerkId,

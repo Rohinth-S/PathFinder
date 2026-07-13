@@ -10,6 +10,9 @@ import { startJourneySession, sendJourneyMessage, submitJourney, submitJourneyGo
 import { UI } from '../constants/colors';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
 
 interface ChatMessage {
   id: string;
@@ -40,6 +43,9 @@ export default function ShareJourneyPage() {
   const [newGoalDesc, setNewGoalDesc] = useState('');
   const [isCreatingGoal, setIsCreatingGoal] = useState(false);
 
+  const [proofUrlPrompt, setProofUrlPrompt] = useState<{ visible: boolean, expIndex: number }>({ visible: false, expIndex: -1 });
+  const [tempProofUrl, setTempProofUrl] = useState('');
+
   const handleCreateGoal = async () => {
     if (!newGoalTitle.trim()) return;
     setIsCreatingGoal(true);
@@ -65,9 +71,69 @@ export default function ShareJourneyPage() {
     }
   };
 
-  const updateExperience = (index: number, field: string, value: string) => {
+  const updateExperience = (index: number, field: string, value: any) => {
     const newExps = [...editableExperiences];
     newExps[index] = { ...newExps[index], [field]: value };
+    setEditableExperiences(newExps);
+  };
+
+  const handleAddProofUrl = (index: number) => {
+    setTempProofUrl('');
+    setProofUrlPrompt({ visible: true, expIndex: index });
+  };
+
+  const submitProofUrl = () => {
+    if (!tempProofUrl.trim()) return;
+    const newExps = [...editableExperiences];
+    const proofs = newExps[proofUrlPrompt.expIndex].proofs || [];
+    proofs.push({ id: Date.now().toString(), sourceType: 'LINK', url: tempProofUrl.trim(), status: 'PENDING' });
+    newExps[proofUrlPrompt.expIndex].proofs = proofs;
+    setEditableExperiences(newExps);
+    setProofUrlPrompt({ visible: false, expIndex: -1 });
+  };
+
+  const handleAddProofPhoto = async (index: number) => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      base64: true,
+      allowsEditing: false,
+      quality: 0.7,
+    });
+    if (!result.canceled && result.assets[0]) {
+      const base64Url = `data:${result.assets[0].mimeType || 'image/jpeg'};base64,${result.assets[0].base64}`;
+      const newExps = [...editableExperiences];
+      const proofs = newExps[index].proofs || [];
+      proofs.push({ id: Date.now().toString(), sourceType: 'DOCUMENT', url: base64Url, status: 'PENDING' });
+      newExps[index].proofs = proofs;
+      setEditableExperiences(newExps);
+    }
+  };
+
+  const handleAddProofDocument = async (index: number) => {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+      copyToCacheDirectory: true,
+    });
+    if (!result.canceled && result.assets[0]) {
+      const fileUri = result.assets[0].uri;
+      try {
+        const base64 = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
+        const mimeType = result.assets[0].mimeType || 'application/octet-stream';
+        const base64Url = `data:${mimeType};base64,${base64}`;
+        const newExps = [...editableExperiences];
+        const proofs = newExps[index].proofs || [];
+        proofs.push({ id: Date.now().toString(), sourceType: 'DOCUMENT', url: base64Url, status: 'PENDING' });
+        newExps[index].proofs = proofs;
+        setEditableExperiences(newExps);
+      } catch (err) {
+        Alert.alert("Error", "Failed to read document file");
+      }
+    }
+  };
+
+  const handleRemoveProof = (expIndex: number, proofIndex: number) => {
+    const newExps = [...editableExperiences];
+    newExps[expIndex].proofs.splice(proofIndex, 1);
     setEditableExperiences(newExps);
   };
 
@@ -388,6 +454,42 @@ export default function ShareJourneyPage() {
                 ))}
               </View>
             )}
+
+            {/* Proofs Section */}
+            <View style={{ marginTop: 8 }}>
+              <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Proofs (Optional)</Text>
+              
+              {exp.proofs && exp.proofs.length > 0 && (
+                <View style={{ gap: 8, marginBottom: 12 }}>
+                  {exp.proofs.map((proof: any, pIdx: number) => (
+                    <View key={pIdx} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 8, padding: 10 }}>
+                      <Feather name={proof.sourceType === 'LINK' ? 'link' : 'file'} size={16} color={UI.accent} style={{ marginRight: 8 }} />
+                      <Text style={{ color: '#FFFFFF', flex: 1 }} numberOfLines={1}>
+                        {proof.sourceType === 'LINK' ? proof.url : 'Uploaded File'}
+                      </Text>
+                      <TouchableOpacity onPress={() => handleRemoveProof(index, pIdx)}>
+                        <Feather name="trash-2" size={16} color="#ef4444" />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              <TouchableOpacity 
+                onPress={() => {
+                  Alert.alert("Add Proof", "Choose proof type", [
+                    { text: "URL Link", onPress: () => handleAddProofUrl(index) },
+                    { text: "Upload Photo", onPress: () => handleAddProofPhoto(index) },
+                    { text: "Upload Document", onPress: () => handleAddProofDocument(index) },
+                    { text: "Cancel", style: "cancel" }
+                  ]);
+                }}
+                style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start' }}
+              >
+                <Feather name="plus" size={16} color={UI.accent} style={{ marginRight: 6 }} />
+                <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium' }}>Add Proof</Text>
+              </TouchableOpacity>
+            </View>
           </Animated.View>
         ))}
 
@@ -626,6 +728,32 @@ export default function ShareJourneyPage() {
           </View>
         )}
       </KeyboardAvoidingView>
+
+      {/* Proof URL Modal */}
+      <Modal visible={proofUrlPrompt.visible} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <View style={{ backgroundColor: '#2D3748', width: '100%', borderRadius: 16, padding: 20 }}>
+            <Text style={{ color: '#FFFFFF', fontSize: 18, fontFamily: 'Inter_600SemiBold', marginBottom: 12 }}>Enter Proof URL</Text>
+            <TextInput
+              style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFFFFF', borderRadius: 8, padding: 12, marginBottom: 16 }}
+              placeholder="https://..."
+              placeholderTextColor="rgba(255,255,255,0.3)"
+              value={tempProofUrl}
+              onChangeText={setTempProofUrl}
+              autoCapitalize="none"
+              keyboardType="url"
+            />
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 12 }}>
+              <TouchableOpacity onPress={() => setProofUrlPrompt({ visible: false, expIndex: -1 })} style={{ padding: 12 }}>
+                <Text style={{ color: 'rgba(255,255,255,0.7)' }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={submitProofUrl} style={{ backgroundColor: UI.accent, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 8 }}>
+                <Text style={{ color: '#FFFFFF', fontFamily: 'Inter_600SemiBold' }}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
