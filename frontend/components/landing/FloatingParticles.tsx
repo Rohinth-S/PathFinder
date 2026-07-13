@@ -19,8 +19,8 @@ function Bubble({ index }: { index: number }) {
   const randomX = Math.random() * width;
   const startY = Math.random() * 800;
   
-  // Very subtle colors: mostly white/gray, occasionally orange
-  const isOrange = Math.random() > 0.85; 
+  // All bubbles should be white
+  const isOrange = false;
   
   const translateY = useSharedValue(startY);
   const translateX = useSharedValue(0);

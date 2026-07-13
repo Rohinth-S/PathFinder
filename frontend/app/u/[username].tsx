@@ -1,12 +1,150 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Share, ActivityIndicator, Image } from 'react-native';
+import {
+  View, Text, ScrollView, TouchableOpacity,
+  Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform, Image
+} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { UI } from '../../constants/colors';
 import { getCommunityJourney, CommunityJourney } from '../../api/community.api';
+import { calculateDuration, formatToMonthYear } from '../../utils/helpers';
+import { ExpandableGoalCard, ExpandableExperienceCard } from '../full-journey/expandables';
+import { L } from '../../constants/colors';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { SectionLabel } from '../../components/ui/SectionLabel';
+import { WebView } from 'react-native-webview';
 
+// Enable LayoutAnimation for Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+// ───────────────────────────────────────────────
+// Cytoscape HTML Template
+// ───────────────────────────────────────────────
+const createCytoscapeHtml = (elementsJson: string) => `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
+    <style>
+        body, html { width: 100%; height: 100%; margin: 0; padding: 0; background-color: ${L.background}; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        #cy { width: 100%; height: 100%; }
+        /* A gentle fade-in animation for the graph */
+        #cy { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <div id="cy"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: ${elementsJson},
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'label': 'data(label)',
+                            'text-valign': 'center',
+                            'color': 'data(textColor)',
+                            'font-size': '13px',
+                            'font-family': 'system-ui, -apple-system, sans-serif',
+                            'font-weight': 'bold',
+                            'background-color': 'data(color)',
+                            'shape': 'data(shape)',
+                            'border-width': 'data(borderWidth)',
+                            'border-color': 'data(borderColor)',
+                            'width': 'label',
+                            'height': 'label',
+                            'padding': '16px',
+                            'text-wrap': 'wrap',
+                            'text-max-width': '120px',
+                            'text-justification': 'center',
+                            'shadow-blur': 12,
+                            'shadow-color': '#0f172a',
+                            'shadow-opacity': 0.08,
+                            'shadow-offset-y': 4,
+                            'transition-property': 'background-color, border-color, shadow-opacity',
+                            'transition-duration': '0.3s'
+                        }
+                    },
+                    {
+                        selector: 'node[shape="ellipse"]',
+                        style: {
+                            'padding': '20px',
+                            'font-size': '14px',
+                            'shadow-opacity': 0.15,
+                            'shadow-offset-y': 6,
+                            'shadow-blur': 16,
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 2,
+                            'line-color': '#CBD5E1',
+                            'target-arrow-color': '#CBD5E1',
+                            'target-arrow-shape': 'vee',
+                            'curve-style': 'bezier',
+                            'label': 'data(label)',
+                            'font-size': '10px',
+                            'font-weight': '600',
+                            'font-family': 'system-ui, -apple-system, sans-serif',
+                            'text-background-opacity': 1,
+                            'text-background-color': '${L.background}',
+                            'text-background-shape': 'roundrectangle',
+                            'text-background-padding': '4px',
+                            'text-border-opacity': 1,
+                            'text-border-width': 1,
+                            'text-border-color': '#E2E8F0',
+                            'color': '#475569',
+                            'text-wrap': 'ellipsis',
+                            'text-max-width': '100px',
+                            'text-rotation': 'none', /* Keeps labels readable horizontally */
+                            'edge-text-rotation': 'none'
+                        }
+                    },
+                    {
+                        selector: 'edge[label="HAS_EXPERIENCE"], edge[label="HAS_GOAL"]',
+                        style: {
+                            'line-style': 'dashed',
+                            'line-dash-pattern': [4, 4],
+                            'line-color': '#94A3B8',
+                            'target-arrow-color': '#94A3B8'
+                        }
+                    }
+                ],
+                layout: {
+                  name: 'cose',
+                  animate: true,
+                  animationDuration: 800,
+                  animationEasing: 'ease-out',
+                  fit: true,           
+                  padding: 50,         
+                  componentSpacing: 100,
+                  nodeRepulsion: 40000,
+                  idealEdgeLength: 120,
+                  edgeElasticity: 60,
+                  nestingFactor: 1.2
+                }
+            });
+
+            // Interactive hover effects for modern feel
+            cy.on('tapstart', 'node', function(e) {
+                var node = e.target;
+                node.style('shadow-opacity', 0.25);
+            });
+            cy.on('tapend', 'node', function(e) {
+                var node = e.target;
+                node.style('shadow-opacity', node.data('shape') === 'ellipse' ? 0.15 : 0.08);
+            });
+        });
+    </script>
+</body>
+</html>
+`;
+
+// ───────────────────────────────────────────────
 export default function PublicProfilePage() {
   const router = useRouter();
   const { username } = useLocalSearchParams<{ username: string }>();
@@ -14,199 +152,221 @@ export default function PublicProfilePage() {
   const [journey, setJourney] = useState<CommunityJourney | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showGraph, setShowGraph] = useState(false);
 
   useEffect(() => {
     if (username) {
-      fetchJourney();
+      loadJourney();
     }
   }, [username]);
 
-  const fetchJourney = async () => {
+  const loadJourney = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
-      setIsLoading(true);
-      setError(null);
-      const data = await getCommunityJourney(username!);
-      setJourney(data);
-    } catch (e: any) {
-      setError(e.message || "Failed to load profile");
+      const result = await getCommunityJourney(username as string);
+      setJourney(result);
+    } catch (err: any) {
+      setError(err?.message || "Failed to load profile");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleShare = async () => {
-    try {
-      await Share.share({
-        message: `Check out ${username || 'this user'}'s professional journey on PathFinder! https://pathfinder.app/u/${username || 'unknown'}`,
+  const prepareGraphElements = () => {
+    if (!journey) return "[]";
+    const elements: any[] = [];
+    // User Node
+    elements.push({ data: { id: 'user', label: '@' + journey.user.username, color: L.navy, shape: 'ellipse', textColor: '#fff', borderWidth: 0, borderColor: '#000' } });
+
+    // Goals
+    journey.goals.forEach(g => {
+      elements.push({ data: { id: 'g_' + g.id, label: g.title, color: L.terracotta, shape: 'round-rectangle', textColor: '#fff', borderWidth: 0, borderColor: '#000' } });
+      elements.push({ data: { id: 'e_ug_' + g.id, source: 'user', target: 'g_' + g.id, label: 'HAS_GOAL' } });
+    });
+
+    // Experiences & Transitions
+    journey.experiences.forEach(exp => {
+      elements.push({ data: { id: 'x_' + exp.id, label: exp.title, color: L.teal, shape: 'round-rectangle', textColor: '#fff', borderWidth: 0, borderColor: '#000' } });
+      elements.push({ data: { id: 'e_ux_' + exp.id, source: 'user', target: 'x_' + exp.id, label: 'HAS_EXPERIENCE' } });
+
+      exp.goals?.forEach(g => {
+        elements.push({ data: { id: `e_xg_${exp.id}_${g.id}`, source: 'x_' + exp.id, target: 'g_' + g.id, label: 'CONTRIBUTED_TO' } });
       });
-    } catch (error: any) {
-      console.warn(error.message);
-    }
+
+      exp.skills?.forEach((s, idx) => {
+        const sId = 's_' + exp.id + '_' + idx;
+        elements.push({ data: { id: sId, label: s.name, color: L.surface, shape: 'round-rectangle', textColor: L.navy, borderWidth: 1, borderColor: L.teal } });
+        elements.push({ data: { id: 'e_xs_' + sId, source: 'x_' + exp.id, target: sId, label: 'BUILT_SKILL' } });
+      });
+
+      if (exp.transition) {
+        elements.push({ data: { id: 't_' + exp.id, source: 'x_' + exp.transition.toExperienceId, target: 'x_' + exp.id, label: exp.transition.decisionLabel || '' } });
+      }
+    });
+
+    return JSON.stringify(elements);
   };
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, backgroundColor: UI.background, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={UI.accent} />
+      <View style={{ flex: 1, backgroundColor: L.background, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={L.teal} />
+        <Text style={{ marginTop: 12, color: L.navySoft, fontSize: 14 }}>Loading profile...</Text>
       </View>
     );
   }
 
   if (error || !journey) {
     return (
-      <View style={{ flex: 1, backgroundColor: UI.background, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-        <Text style={{ fontSize: 48, marginBottom: 16 }}>😔</Text>
-        <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 22, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
-          {error || "User not found"}
-        </Text>
-        <TouchableOpacity
-          onPress={fetchJourney}
-          activeOpacity={0.7}
-          style={{
-            paddingHorizontal: 24, paddingVertical: 12, borderRadius: 9999,
-            backgroundColor: UI.accent, marginTop: 16,
-          }}
-        >
-          <Text style={{ fontSize: 14, color: '#FFFFFF', fontFamily: 'Inter_600SemiBold' }}>Retry</Text>
+      <View style={{ flex: 1, backgroundColor: L.background, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+        <Text style={{ fontSize: 15, color: L.navySoft, textAlign: 'center', marginBottom: 16 }}>{error || 'No profile found'}</Text>
+        <TouchableOpacity onPress={loadJourney} style={{ backgroundColor: L.teal, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20 }}>
+          <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>Retry</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  const user = journey?.user || {} as any;
-  const experiences = journey?.experiences || [];
-  const sortedExperiences = [...experiences].sort((a, b) => {
-    const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
-    const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
-    return dateB - dateA;
-  });
+  // Derive transitions from experiences for the UI mapping
+  const transitions = journey.experiences
+    .filter(e => e.transition)
+    .map(e => ({ fromExperienceId: e.transition!.toExperienceId, toExperienceId: e.id, decisionLabel: e.transition!.decisionLabel }));
 
   return (
-    <View style={{ flex: 1, backgroundColor: UI.background }}>
+    <View style={{ flex: 1, backgroundColor: L.background }}>
       {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 56, paddingBottom: 16 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 56, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.background }}>
         <TouchableOpacity
           onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}
           activeOpacity={0.7}
-          style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}
         >
-          <Feather name="arrow-left" size={20} color={UI.foreground} />
+          <Feather name="arrow-left" size={20} color={L.navy} />
         </TouchableOpacity>
-        <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 15, color: UI.foreground }}>Public Profile</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 20, fontWeight: '500', color: L.navy, letterSpacing: 0.4 }}>Public Profile</Text>
+        </View>
+        <TouchableOpacity onPress={() => setShowGraph(true)} style={{ backgroundColor: L.tealTint, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}>
+          <Feather name="git-merge" size={14} color={L.teal} style={{ marginRight: 6 }} />
+          <Text style={{ fontSize: 12, fontWeight: '700', color: L.teal }}>Graph</Text>
+        </TouchableOpacity>
       </View>
 
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Profile Card */}
-        <Animated.View entering={FadeInDown.delay(100).duration(500).springify()}>
-          <View style={{ alignItems: 'center', marginBottom: 24 }}>
-            <View style={{
-              width: 72, height: 72, borderRadius: 36, backgroundColor: UI.surfaceInverse,
-              alignItems: 'center', justifyContent: 'center', marginBottom: 12, overflow: 'hidden'
-            }}>
-              {user.avatarUrl ? (
-                <Image source={{ uri: user.avatarUrl }} style={{ width: 72, height: 72 }} />
-              ) : (
-                <Text style={{ fontSize: 28, color: '#FFFFFF', fontFamily: 'Inter_700Bold' }}>
-                  {(user.username || 'U')[0].toUpperCase()}
-                </Text>
-              )}
-            </View>
-            <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, marginBottom: 6 }}>
-              @{user.username || 'unknown'}
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Text style={{ fontSize: 14 }}>★</Text>
-              <Text style={{ fontSize: 16, color: UI.accent, fontFamily: 'Inter_700Bold' }}>{user.reputationScore}</Text>
-            </View>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24 }} showsVerticalScrollIndicator={false}>
+
+        {/* Summary Stat Block */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: L.tealTint, borderRadius: 16, padding: 20, marginBottom: 32 }}>
+          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: journey.user.avatarUrl ? L.surface : '#9CA3AF', alignItems: 'center', justifyContent: 'center', marginRight: 16, borderWidth: 2, borderColor: L.teal, overflow: 'hidden' }}>
+            {journey.user.avatarUrl ? (
+              <Image source={{ uri: journey.user.avatarUrl }} style={{ width: 48, height: 48 }} />
+            ) : (
+              <Feather name="user" size={30} color="#475569" style={{ marginTop: 12 }} />
+            )}
           </View>
-        </Animated.View>
-
-        {/* Share Button */}
-        <Animated.View entering={FadeInDown.delay(200).duration(500).springify()}>
-          <TouchableOpacity
-            onPress={handleShare}
-            activeOpacity={0.7}
-            style={{
-              flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-              paddingVertical: 14, borderRadius: 9999,
-              backgroundColor: UI.accent, marginBottom: 32,
-            }}
-          >
-            <Feather name="share-2" size={16} color="#FFFFFF" />
-            <Text style={{ fontSize: 14, color: '#FFFFFF', fontFamily: 'Inter_600SemiBold' }}>Share this Journey</Text>
-          </TouchableOpacity>
-        </Animated.View>
-
-        {/* Timeline */}
-        <Animated.View entering={FadeInDown.delay(300).duration(500).springify()}>
-          <SectionLabel style={{ marginBottom: 16 }}>LIFE GRAPH</SectionLabel>
-        </Animated.View>
-
-        {sortedExperiences.length === 0 ? (
-          <View style={{ alignItems: 'center', paddingVertical: 32 }}>
-            <Text style={{ fontSize: 14, color: UI.fg50, fontFamily: 'Inter_400Regular', fontStyle: 'italic', textAlign: 'center' }}>
-              This user hasn't added any experiences yet.
+          <View>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>@{journey.user.username}</Text>
+            <Text style={{ fontSize: 12, fontWeight: '500', color: L.teal, marginTop: 4 }}>
+              {journey.goals.length} Goals • {journey.experiences.length} Experiences
             </Text>
           </View>
-        ) : (
-          sortedExperiences.map((event, idx) => {
-            const isLast = idx === sortedExperiences.length - 1;
-            return (
-              <Animated.View
-                key={event.id}
-                entering={FadeInDown.delay(350 + idx * 60).duration(400).springify()}
-              >
-                <View style={{ flexDirection: 'row' }}>
-                  {/* Timeline dot + line */}
-                  <View style={{ width: 24, alignItems: 'center' }}>
-                    <View style={{
-                      width: 12, height: 12, borderRadius: 6, marginTop: 16,
-                      backgroundColor: event.isVerified ? UI.accent : UI.fg20,
-                      zIndex: 2,
-                    }} />
-                    {!isLast && (
-                      <View style={{ width: 2, flex: 1, backgroundColor: UI.fg08, marginTop: -2 }} />
-                    )}
-                  </View>
+        </View>
 
-                  {/* Experience card */}
-                  <View style={{
-                    flex: 1, marginLeft: 12, marginBottom: 12,
-                    backgroundColor: UI.surface, borderRadius: 16, padding: 16,
-                    borderWidth: 1, borderColor: UI.fg08,
-                  }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <Text style={{ fontSize: 15, color: UI.foreground, fontFamily: 'Inter_700Bold', flex: 1 }}>
-                        {event.title}
-                      </Text>
-                      {event.isVerified && (
-                        <View style={{
-                          paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8,
-                          backgroundColor: UI.accentSoft,
-                        }}>
-                          <Text style={{ fontSize: 10, color: UI.accent, fontFamily: 'Inter_700Bold' }}>✓ Verified</Text>
-                        </View>
-                      )}
-                    </View>
-                    <Text style={{ fontSize: 12, color: UI.fg50, marginBottom: 6, fontFamily: 'Inter_600SemiBold' }}>
-                      {event.startDate ? new Date(event.startDate).getFullYear() : 'Unknown'}
-                      {event.endDate ? ` – ${new Date(event.endDate).getFullYear()}` : ' – Present'}
-                      {event.organization ? `  •  ${event.organization}` : ''}
-                    </Text>
-                    <Text style={{ fontSize: 14, color: UI.fg80, lineHeight: 20, fontFamily: 'Inter_400Regular' }}>
-                      {event.timelineSummary}
-                    </Text>
-                  </View>
-                </View>
-              </Animated.View>
-            );
-          })
+        {/* Goals Section */}
+        {journey.goals.length > 0 && (
+          <View style={{ marginBottom: 32 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16, gap: 12 }}>
+              <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy }}>GOALS</Text>
+              <View style={{ flex: 1, maxWidth: 60, height: 1, backgroundColor: '#A3B8B5', borderRadius: 1 }} />
+            </View>
+            {journey.goals.map(goal => (
+              <ExpandableGoalCard
+                key={goal.id}
+                title={goal.title}
+                badgeText={goal.status}
+                description={goal.description}
+                topics={goal.topics || []}
+                subtopics={goal.subtopics || ['Microservices', 'Event-Driven']}
+                duration={calculateDuration(goal.startDate || '', goal.endDate || '')}
+              />
+            ))}
+          </View>
         )}
-      </ScrollView>
+
+        {/* Timeline Section */}
+        {journey.experiences.length > 0 && (
+          <View style={{ marginBottom: 32 }}>
+            <View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16, gap: 12 }}>
+                <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy }}> EXPERIENCE TIMELINE</Text>
+                <View style={{ flex: 1, maxWidth: 60, height: 1, backgroundColor: '#A3B8B5', borderRadius: 1 }} />
+              </View>
+              <View style={{ position: 'relative' }}>
+                {/* Timeline Rail */}
+                <View style={{ position: 'absolute', left: 15, top: 0, bottom: 0, width: 2, backgroundColor: 'rgba(62, 107, 102, 0.25)', zIndex: 1 }} />
+
+                {journey.experiences.map((exp, index) => {
+                  const matchingTransition = transitions.find(t => t.toExperienceId === exp.id);
+                  const fromExperience = matchingTransition
+                    ? journey.experiences.find(e => e.id === matchingTransition.fromExperienceId)
+                    : null;
+                  const calculatedTransitionLabel = fromExperience
+                    ? fromExperience.title
+                    : undefined;
+                  const linkedGoalTitles = exp.goals
+                    ? exp.goals.map(g => g.title).filter((title): title is string => !!title)
+                    : [];
+                  return (
+                    <View key={exp.id} style={{ paddingLeft: 32, position: 'relative', zIndex: 10 }}>
+                      <ExpandableExperienceCard
+                        title={exp.title}
+                        previewText={exp.timelineSummary}
+                        organization={`${exp.organization || 'TechNova Global'}`}
+                        duration={`${formatToMonthYear(exp.startDate || '')} - ${formatToMonthYear(exp.endDate || '')}`}
+                        description={exp.context}
+                        isVerified={exp.isVerified}
+                        challenge={exp.challengeFaced ?? undefined}
+                        outcome={exp.outcome ?? undefined}
+                        achievements={exp.achievements ?? undefined}
+                        skills={exp.skills?.map((s: any) => s.name) || []}
+                        linkedGoalTitles={linkedGoalTitles}
+                        transitionLabel={calculatedTransitionLabel}
+                        transitionDecision={matchingTransition?.decisionLabel || undefined}
+                      />
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          </View>
+        )}
+      </ScrollView >
+
+      {/* Graph Modal */}
+      <Modal visible={showGraph} animationType="slide" presentationStyle="formSheet">
+        <View style={{ flex: 1, backgroundColor: L.background }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.surface }}>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: L.navy }}>Knowledge Graph Preview</Text>
+            <TouchableOpacity onPress={() => setShowGraph(false)} style={{ padding: 8, backgroundColor: L.surface, borderRadius: 20 }}>
+              <Feather name="x" size={20} color={L.navy} />
+            </TouchableOpacity>
+          </View>
+          {Platform.OS === 'web' ? (
+            <iframe
+              // @ts-ignore
+              srcDoc={createCytoscapeHtml(prepareGraphElements())}
+              style={{ flex: 1, width: '100%', height: '100%', border: 'none' }}
+            />
+          ) : (
+            <WebView
+              originWhitelist={['*']}
+              source={{ html: createCytoscapeHtml(prepareGraphElements()) }}
+              style={{ flex: 1 }}
+            />
+          )}
+        </View>
+      </Modal>
+
     </View>
   );
 }

@@ -11,7 +11,7 @@ import { syncUser } from '../api/auth.api';
 import { translateInsights, generateSpeechUri } from '../api/output.api';
 import { submitQuery } from '../api/query.api';
 import { DecisionAtlasBackendResponse } from '../types/schema';
-import { UI } from '../constants/colors';
+import { UI, L } from '../constants/colors';
 import { SectionLabel, PillBadge } from '../components/ui/SectionLabel';
 import { DarkCard } from '../components/ui/DarkCard';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, FadeInDown } from 'react-native-reanimated';
@@ -74,12 +74,68 @@ export default function ResultsPage() {
   const { getToken } = useAuth();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [journeyIdx, setJourneyIdx] = useState(0);
   const [translatedInsight, setTranslatedInsight] = useState<string | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [preferredLang, setPreferredLang] = useState('en');
+  const [preferredLang, setPreferredLang] = useState('hi-IN');
   const [followUpQuery, setFollowUpQuery] = useState('');
   const [isSubmittingFollowUp, setIsSubmittingFollowUp] = useState(false);
   const [expandedInsight, setExpandedInsight] = useState(true);
+  
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+  const [playbackPosition, setPlaybackPosition] = useState(0);
+  const [playbackDuration, setPlaybackDuration] = useState(0);
+  const [playbackProgress, setPlaybackProgress] = useState(0);
+
+  const formatTime = (millis: number) => {
+    if (isNaN(millis)) return "0:00";
+    const totalSeconds = Math.floor(millis / 1000);
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  const handlePlayPauseAudio = async (aiInsights: any) => {
+    try {
+      if (sound) {
+        if (isPlaying) {
+          await sound.pauseAsync();
+        } else {
+          await sound.playAsync();
+        }
+        return;
+      }
+
+      setIsGeneratingAudio(true);
+      const token = await getToken();
+      if (!token) throw new Error("No token");
+      const uri = await generateSpeechUri(token, aiInsights, preferredLang);
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        { uri },
+        { shouldPlay: true },
+        (status) => {
+          if (status.isLoaded) {
+            setPlaybackPosition(status.positionMillis);
+            setPlaybackDuration(status.durationMillis || 0);
+            if (status.durationMillis && status.durationMillis > 0) {
+              setPlaybackProgress(status.positionMillis / status.durationMillis);
+            }
+            setIsPlaying(status.isPlaying);
+            if (status.didJustFinish) {
+              setIsPlaying(false);
+              setPlaybackPosition(0);
+              setPlaybackProgress(0);
+            }
+          }
+        }
+      );
+      setSound(newSound);
+    } catch (err) {
+      console.warn(err);
+    } finally {
+      setIsGeneratingAudio(false);
+    }
+  };
 
   let data: DecisionAtlasBackendResponse | null = null;
   try {
@@ -140,7 +196,7 @@ export default function ResultsPage() {
   
   const { journeyStatistics: stats, aiInsights, timelineFeed, commonPatterns } = data.aggregatedContext;
   const topDecisions = commonPatterns?.slice(1, 4) || [];
-  const totalExperiences = timelineFeed?.reduce((acc, user) => acc + (user.timeline?.length || 0), 0) || 186;
+  const totalExperiences = timelineFeed?.reduce((acc, user) => acc + user.timeline.length, 0) || 186;
 
   async function handleFollowUp() {
     if (!followUpQuery.trim()) return;
@@ -187,10 +243,12 @@ export default function ResultsPage() {
       <SectionLabel style={{ marginBottom: 16, marginLeft: 8 }} color={UI.teal}>EMERGING PATTERNS</SectionLabel>
       <View style={{ gap: 12 }}>
         {topDecisions.map((d, i) => (
-          <View key={i} style={{ backgroundColor: i === 0 ? UI.accentSoft : 'rgba(231, 239, 238, 0.5)', borderRadius: 16, padding: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: i === 0 ? 'transparent' : 'rgba(62, 107, 102, 0.1)' }}>
-            <Text style={{ flex: 1, fontFamily: 'Manrope_600SemiBold', fontSize: 15, color: UI.foreground }}>{d.description}</Text>
-            <View style={{ backgroundColor: i === 0 ? UI.surface : UI.teal, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, marginLeft: 12 }}>
-              <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 11, color: i === 0 ? UI.accent : '#FFF' }}>{d.percentage || getPseudoPct(d.description, 20, 70)}% MATCH</Text>
+          <View key={i} style={{ backgroundColor: i === 0 ? UI.accentSoft : 'rgba(231, 239, 238, 0.5)', borderRadius: 16, padding: 16, position: 'relative', borderWidth: 1, borderColor: i === 0 ? 'transparent' : 'rgba(62, 107, 102, 0.1)' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 15, color: UI.foreground, flex: 1, paddingRight: 16 }}>{d.description}</Text>
+              <View style={{ backgroundColor: i === 0 ? UI.surface : UI.teal, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 }}>
+                <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 10, color: i === 0 ? UI.accent : '#FFF' }}>{Math.round(Number(d.percentage || getPseudoPct(d.description, 20, 70)))}%</Text>
+              </View>
             </View>
           </View>
         ))}
@@ -198,14 +256,38 @@ export default function ResultsPage() {
     </Animated.View>
   );
 
-  const renderJourneys = () => timelineFeed && timelineFeed.length > 0 && (
-    <Animated.View entering={FadeInDown.delay(400).springify().damping(20)} key="journeys" style={{ marginBottom: 32 }}>
-      <SectionLabel style={{ marginBottom: 16, marginLeft: 8 }} color={UI.teal}>MATCHING JOURNEYS</SectionLabel>
-      {timelineFeed.slice(0, 3).map((user, idx) => (
-        <View key={idx} style={{ backgroundColor: UI.surface, borderRadius: 24, padding: 20, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.1)', shadowColor: UI.foreground, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.04, shadowRadius: 20, elevation: 2 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <Image source={{ uri: `https://api.dicebear.com/7.x/notionists/png?seed=${user.username}` }} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: UI.tealTint, borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.1)' }} />
-            <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 16, color: UI.foreground }}>@{user.username}</Text>
+  const renderJourneys = () => {
+    if (!timelineFeed || timelineFeed.length === 0) return null;
+    const user = timelineFeed[journeyIdx];
+    return (
+      <Animated.View entering={FadeInDown.delay(400).springify().damping(20)} key="journeys" style={{ marginBottom: 32 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <SectionLabel style={{ marginLeft: 8 }} color={UI.teal}>MATCHING JOURNEYS</SectionLabel>
+          <View style={{ flexDirection: 'row', gap: 8, marginRight: 8 }}>
+            <TouchableOpacity onPress={() => setJourneyIdx(Math.max(0, journeyIdx - 1))} disabled={journeyIdx === 0} style={{ padding: 8, opacity: journeyIdx === 0 ? 0.3 : 1 }}>
+              <Feather name="chevron-left" size={24} color={UI.teal} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setJourneyIdx(Math.min(timelineFeed.length - 1, journeyIdx + 1))} disabled={journeyIdx === timelineFeed.length - 1} style={{ padding: 8, opacity: journeyIdx === timelineFeed.length - 1 ? 0.3 : 1 }}>
+              <Feather name="chevron-right" size={24} color={UI.teal} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        <View style={{ backgroundColor: UI.surface, borderRadius: 24, padding: 20, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(62, 107, 102, 0.1)', shadowColor: UI.foreground, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.04, shadowRadius: 20, elevation: 2 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: L.teal, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontSize: 18, color: '#FFFFFF', fontFamily: 'Manrope_700Bold' }}>{user.username.charAt(0).toUpperCase()}</Text>
+              </View>
+              <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 16, color: UI.foreground }}>@{user.username}</Text>
+            </View>
+            {(user.reputationScore !== undefined && user.reputationScore > 0) && (
+              <PillBadge 
+                label={`★ ${user.reputationScore}`} 
+                color={L.terracotta} 
+                bgColor={L.terracottaTint} 
+              />
+            )}
           </View>
           <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: UI.foreground, lineHeight: 22, marginBottom: 16 }}>
             {user.ai_summary || "Backend engineering student building scalable systems through hackathons, open source contributions and internships."}
@@ -214,23 +296,23 @@ export default function ResultsPage() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
             {(!user.skills || user.skills.length === 0) ? (
               <>
-                <PillBadge label="Backend Development" color={UI.teal} bgColor={UI.tealTint} />
-                <PillBadge label="Open Source" color={UI.teal} bgColor={UI.tealTint} />
+                <PillBadge label="Backend Development" color={L.terracotta} bgColor={L.terracottaTint} />
+                <PillBadge label="Open Source" color={L.terracotta} bgColor={L.terracottaTint} />
               </>
             ) : (
               user.skills.slice(0, 3).map((skill: any, i: number) => (
-                <PillBadge key={i} label={skill.name || skill} color={UI.teal} bgColor={UI.tealTint} />
+                <PillBadge key={i} label={skill.name || skill} color={L.terracotta} bgColor={L.terracottaTint} />
               ))
             )}
           </View>
-          <TouchableOpacity style={{ height: 56, borderRadius: 28, borderWidth: 2, borderColor: UI.teal, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }} onPress={() => router.push('/history')}>
+          <TouchableOpacity style={{ height: 56, borderRadius: 28, borderWidth: 2, borderColor: UI.teal, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }} onPress={() => router.push(`/u/${user.username}`)}>
             <Feather name="navigation" size={16} color={UI.teal} />
             <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 14, color: UI.teal }}>View Relevant Journey</Text>
           </TouchableOpacity>
         </View>
-      ))}
-    </Animated.View>
-  );
+      </Animated.View>
+    );
+  };
 
   const renderAIInsight = () => aiInsights && (
     <Animated.View entering={FadeInDown.delay(500).springify().damping(20)} key="aiInsight" style={{ marginBottom: 16 }}>
@@ -242,55 +324,46 @@ export default function ResultsPage() {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             {expandedInsight && (
-              <View style={{ flexDirection: 'row', gap: 12, marginRight: 8 }}>
-                <TouchableOpacity 
-                  onPress={async (e) => {
-                    e.stopPropagation();
-                    if (isPlaying) {
-                      sound?.stopAsync();
-                      setIsPlaying(false);
-                      return;
-                    }
-                    setIsPlaying(true);
-                    try {
-                      const token = await getToken();
-                      if (!token) return;
-                      const uri = await generateSpeechUri(token, aiInsights, preferredLang);
-                      const { sound: newSound } = await Audio.Sound.createAsync({ uri });
-                      setSound(newSound);
-                      await newSound.playAsync();
-                      newSound.setOnPlaybackStatusUpdate((status) => {
-                        if (status.isLoaded && status.didJustFinish) setIsPlaying(false);
-                      });
-                    } catch (err) {
-                      setIsPlaying(false);
-                    }
-                  }}
-                  disabled={isTranslating}
-                  style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  {isPlaying ? <Feather name="square" size={14} color="#FFF" /> : <Feather name="volume-2" size={16} color="#FFF" />}
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  onPress={async (e) => {
-                    e.stopPropagation();
-                    setIsTranslating(true);
-                    try {
-                      const token = await getToken();
-                      if (!token) return;
-                      const res = await translateInsights(token, aiInsights, preferredLang);
-                      setTranslatedInsight(res.translatedAiInsights.directAnswer || res.translatedAiInsights.actionableTakeaway);
-                    } finally {
-                      setIsTranslating(false);
-                    }
-                  }}
-                  disabled={isTranslating || isPlaying}
-                  style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  {isTranslating ? <ActivityIndicator color="#FFF" size="small" /> : <Feather name="globe" size={16} color="#FFF" />}
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity 
+                onPress={async (e) => {
+                  e.stopPropagation();
+                  if (translatedInsight) {
+                    setTranslatedInsight(null);
+                    return;
+                  }
+                  setIsTranslating(true);
+                  try {
+                    const token = await getToken();
+                    if (!token) return;
+                    const res = await translateInsights(token, aiInsights, preferredLang);
+                    setTranslatedInsight(res.translatedAiInsights.directAnswer || res.translatedAiInsights.actionableTakeaway);
+                  } catch (err) {
+                    console.warn(err);
+                  } finally {
+                    setIsTranslating(false);
+                  }
+                }}
+                disabled={isTranslating}
+                style={{ 
+                  paddingHorizontal: 16, 
+                  paddingVertical: 6, 
+                  borderRadius: 20, 
+                  borderWidth: 1, 
+                  borderColor: 'rgba(255,255,255,0.2)', 
+                  backgroundColor: 'rgba(255,255,255,0.05)',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 6
+                }}
+              >
+                {isTranslating ? (
+                  <ActivityIndicator color="#FFF" size="small" />
+                ) : (
+                  <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: '#FFF' }}>
+                    {translatedInsight ? 'Original' : 'Translate'}
+                  </Text>
+                )}
+              </TouchableOpacity>
             )}
             <Feather name={expandedInsight ? "chevron-up" : "chevron-down"} size={20} color="#FFF" />
           </View>
@@ -298,30 +371,78 @@ export default function ResultsPage() {
         
         {expandedInsight && (
           <Animated.View entering={FadeInDown.duration(300)}>
+            {/* Audio Player */}
+            <View style={{ 
+              backgroundColor: 'rgba(255,255,255,0.05)', 
+              borderRadius: 16, 
+              padding: 12, 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              gap: 16,
+              marginBottom: 20
+            }}>
+              <TouchableOpacity 
+                style={{ 
+                  width: 44, 
+                  height: 44, 
+                  borderRadius: 22, 
+                  backgroundColor: L.tealTint, 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}
+                disabled={isGeneratingAudio}
+                onPress={() => handlePlayPauseAudio(aiInsights)}
+              >
+                {isGeneratingAudio ? (
+                  <ActivityIndicator color={L.teal} size="small" />
+                ) : isPlaying ? (
+                  <Feather name="pause" size={20} color={L.teal} />
+                ) : (
+                  <Feather name="play" size={20} color={L.teal} />
+                )}
+              </TouchableOpacity>
+              
+              <View style={{ flex: 1, gap: 8 }}>
+                <View style={{ height: 4, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 2, overflow: 'hidden' }}>
+                  <View style={{ width: `${Math.min(100, Math.max(0, playbackProgress * 100))}%`, height: '100%', backgroundColor: 'rgba(255,255,255,0.8)' }} />
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, fontFamily: 'Manrope_500Medium' }}>{formatTime(playbackPosition)}</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, fontFamily: 'Manrope_500Medium' }}>{formatTime(playbackDuration)}</Text>
+                </View>
+              </View>
+            </View>
+
             <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginBottom: 16 }} />
             
             <View style={{ gap: 24 }}>
               {aiInsights.directAnswer && (
-                <View style={{ gap: 8 }}>
-                  <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 0.5, color: '#F5E4DD', textTransform: 'uppercase' }}>
-                    AI Insights
-                  </Text>
-                  <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: 'rgba(255,255,255,0.9)', lineHeight: 24 }}>
+                <View style={{ gap: 10 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Feather name="zap" size={14} color={L.terracotta} />
+                    <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 0.8, color: L.terracotta, textTransform: 'uppercase' }}>
+                      DIRECT ANSWER
+                    </Text>
+                  </View>
+                  <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 15, color: L.navy, lineHeight: 24 }}>
                     {translatedInsight || aiInsights.directAnswer}
                   </Text>
                 </View>
               )}
 
               {aiInsights.keyPoints && aiInsights.keyPoints.length > 0 && !translatedInsight && (
-                <View style={{ gap: 8 }}>
-                  <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 0.5, color: '#F5E4DD', textTransform: 'uppercase' }}>
-                    Key Takeaways
-                  </Text>
-                  <View style={{ gap: 8 }}>
+                <View style={{ gap: 12 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Feather name="list" size={14} color={L.teal} />
+                    <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 0.8, color: L.teal, textTransform: 'uppercase' }}>
+                      KEY TAKEAWAYS
+                    </Text>
+                  </View>
+                  <View style={{ gap: 12, paddingLeft: 4 }}>
                     {aiInsights.keyPoints.map((point: string, idx: number) => (
-                      <View key={idx} style={{ flexDirection: 'row', gap: 8 }}>
-                        <Text style={{ color: '#F5E4DD' }}>•</Text>
-                        <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: 'rgba(255,255,255,0.9)', lineHeight: 20 }}>{point}</Text>
+                      <View key={idx} style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+                        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: L.teal, marginTop: 8 }} />
+                        <Text style={{ flex: 1, fontFamily: 'Manrope_400Regular', fontSize: 14, color: L.navy, lineHeight: 22 }}>{point}</Text>
                       </View>
                     ))}
                   </View>
@@ -329,11 +450,16 @@ export default function ResultsPage() {
               )}
 
               {aiInsights.actionableTakeaway && !translatedInsight && (
-                <View style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
-                  <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 0.5, color: '#F5E4DD', textTransform: 'uppercase', marginBottom: 8 }}>
-                    Recommended Next Step
-                  </Text>
-                  <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: 'rgba(255,255,255,0.9)', lineHeight: 24 }}>
+                <View style={{ backgroundColor: L.surface, borderRadius: 16, padding: 20, borderWidth: 1, borderColor: L.border, marginTop: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                    <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: L.terracottaTint, alignItems: 'center', justifyContent: 'center' }}>
+                      <Feather name="arrow-up-right" size={14} color={L.terracotta} />
+                    </View>
+                    <Text style={{ fontFamily: 'Manrope_700Bold', fontSize: 13, letterSpacing: 0.5, color: L.navy, textTransform: 'uppercase' }}>
+                      Recommended Next Step
+                    </Text>
+                  </View>
+                  <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 15, color: L.navySoft, lineHeight: 24 }}>
                     {aiInsights.actionableTakeaway}
                   </Text>
                 </View>
@@ -346,11 +472,11 @@ export default function ResultsPage() {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: UI.background }}>
+    <View style={{ flex: 1, backgroundColor: L.background }}>
       {/* Header */}
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingBottom: 16, backgroundColor: UI.background }}>
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingBottom: 16, backgroundColor: L.background }}>
         <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={{ padding: 8 }}>
-          <Feather name="arrow-left" size={24} color={UI.teal} />
+          <Feather name="arrow-left" size={24} color={L.teal} />
         </TouchableOpacity>
       </View>
 
@@ -367,12 +493,12 @@ export default function ResultsPage() {
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
           <TextInput
             style={{
-              flex: 1, backgroundColor: UI.surface, borderRadius: 28, paddingHorizontal: 20, paddingVertical: 16,
-              fontSize: 15, fontFamily: 'Manrope_400Regular', color: UI.foreground,
-              borderWidth: 1, borderColor: UI.borderSubtle
+              flex: 1, backgroundColor: L.surface, borderRadius: 28, paddingHorizontal: 20, paddingVertical: 16,
+              fontSize: 15, fontFamily: 'Manrope_400Regular', color: L.navy,
+              borderWidth: 1, borderColor: L.border
             }}
             placeholder="Ask a follow-up question..."
-            placeholderTextColor={UI.fg40}
+            placeholderTextColor={L.navySoft}
             value={followUpQuery}
             onChangeText={setFollowUpQuery}
             onSubmitEditing={handleFollowUp}
@@ -382,16 +508,16 @@ export default function ResultsPage() {
           <TouchableOpacity 
             style={{
               position: 'absolute', right: 8,
-              width: 40, height: 40, borderRadius: 20, backgroundColor: isSubmittingFollowUp || !followUpQuery.trim() ? UI.fg08 : UI.accentSoft,
+              width: 40, height: 40, borderRadius: 20, backgroundColor: isSubmittingFollowUp || !followUpQuery.trim() ? L.tealTint : L.terracottaTint,
               alignItems: 'center', justifyContent: 'center'
             }}
             onPress={handleFollowUp}
             disabled={isSubmittingFollowUp || !followUpQuery.trim()}
           >
             {isSubmittingFollowUp ? (
-              <ActivityIndicator color={UI.accent} size="small" />
+              <ActivityIndicator color={L.teal} size="small" />
             ) : (
-              <Feather name="send" size={16} color={!followUpQuery.trim() ? UI.fg40 : UI.accent} style={{ marginLeft: -2, marginTop: 2 }} />
+              <Feather name="send" size={16} color={!followUpQuery.trim() ? L.teal : L.terracotta} style={{ marginLeft: -2, marginTop: 2 }} />
             )}
           </TouchableOpacity>
         </View>

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { UI } from '../../constants/colors';
+import { L } from '../../constants/colors';
 import { View, Platform } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
@@ -8,8 +8,8 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: UI.accent,
-        tabBarInactiveTintColor: UI.fg40,
+        tabBarActiveTintColor: L.teal,
+        tabBarInactiveTintColor: L.navySoft,
         tabBarLabelStyle: {
           fontWeight: '600',
           fontSize: 10,
@@ -19,9 +19,9 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: Platform.OS === 'web'
             ? 'rgba(250, 249, 246, 0.90)'
-            : UI.background,
+            : L.background,
           borderTopWidth: 1,
-          borderTopColor: UI.fg08,
+          borderTopColor: L.border,
           height: 80,
           paddingBottom: 12,
           paddingTop: 12,
@@ -30,7 +30,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="community"
+        name="explore"
         options={{
           title: 'Explore',
           tabBarIcon: ({ color, focused }) => (
@@ -38,7 +38,7 @@ export default function TabLayout() {
               {focused && (
                 <View style={{
                   width: 20, height: 3, borderRadius: 1.5,
-                  backgroundColor: UI.accent,
+                  backgroundColor: L.teal,
                   position: 'absolute', top: -8,
                 }} />
               )}
@@ -56,7 +56,7 @@ export default function TabLayout() {
               {focused && (
                 <View style={{
                   width: 20, height: 3, borderRadius: 1.5,
-                  backgroundColor: UI.accent,
+                  backgroundColor: L.teal,
                   position: 'absolute', top: -8,
                 }} />
               )}
@@ -66,7 +66,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="history"
+        name="journey"
         options={{
           title: 'Journey',
           tabBarIcon: ({ color, focused }) => (
@@ -74,7 +74,7 @@ export default function TabLayout() {
               {focused && (
                 <View style={{
                   width: 20, height: 3, borderRadius: 1.5,
-                  backgroundColor: UI.accent,
+                  backgroundColor: L.teal,
                   position: 'absolute', top: -8,
                 }} />
               )}
@@ -92,7 +92,7 @@ export default function TabLayout() {
               {focused && (
                 <View style={{
                   width: 20, height: 3, borderRadius: 1.5,
-                  backgroundColor: UI.accent,
+                  backgroundColor: L.teal,
                   position: 'absolute', top: -8,
                 }} />
               )}

@@ -182,7 +182,6 @@ export async function searchCommunityUsers(
 
       RETURN
         u.username AS username,
-        u.imageUrl AS imageUrl,
         u.summary AS summary,
         u.expertiseAreas AS expertiseAreas,
         u.reputationScore AS reputationScore,
@@ -211,7 +210,6 @@ export async function searchCommunityUsers(
 
     return result.records.map((record) => ({
       username: record.get("username"),
-      imageUrl: record.get("imageUrl"),
       summary: record.get("summary"),
       expertiseAreas: record.get("expertiseAreas"),
       reputationScore: record.get("reputationScore"),
@@ -229,8 +227,9 @@ function neo4jDateToString(date: any): string | null {
 }
 
 export async function getCommunityJourney(
-  username: string
-): Promise<UserJourney> {
+  username: string,
+  userId?: string
+): Promise<any> {
   const session = getSession();
 
   try {
@@ -238,8 +237,7 @@ export async function getCommunityJourney(
     const userResult = await session.run(
       `
       MATCH (u:User {username: $username})
-      RETURN u.username AS username,
-      u.imageUrl AS imageUrl
+      RETURN u.username AS username, u.avatarUrl AS avatarUrl, coalesce(u.reputationScore, 0) AS reputationScore
       `,
       { username }
     );
@@ -247,12 +245,7 @@ export async function getCommunityJourney(
     if (userResult.records.length === 0) {
       throw new Error("User not found.");
     }
-    const record = userResult.records[0];
-    if (!record) {
-      throw new Error("User not found.");
-    }
-    const usernameValue = record.get("username") as string;
-    const imageUrl = record.get("imageUrl") as string | null;
+    const userRecord = userResult.records[0];
 
     const goalsResult = await session.run(
       `
@@ -283,9 +276,24 @@ export async function getCommunityJourney(
       `
       MATCH (u:User {username: $username})-[:HAS_EXPERIENCE]->(e:Experience)
       OPTIONAL MATCH (e)-[:BUILT_SKILL]->(s:Skill)
-      RETURN e, collect(DISTINCT s) AS skills
+      
+      // Calculate upvote count
+      CALL {
+        WITH e
+        OPTIONAL MATCH (e)<-[:UPVOTED]-()
+        RETURN COUNT(DISTINCT e)<-[:UPVOTED]-() AS upvoteCount, SIZE((e)<-[:UPVOTED]-()) AS fastUpvoteCount
+      }
+      
+      // Calculate if current user has upvoted
+      CALL {
+        WITH e
+        OPTIONAL MATCH (me:User {clerkId: $userId})-[:UPVOTED]->(e)
+        RETURN CASE WHEN me IS NOT NULL THEN true ELSE false END AS hasUpvoted
+      }
+
+      RETURN e, collect(DISTINCT s) AS skills, fastUpvoteCount, hasUpvoted
       `,
-      { username }
+      { username, userId: userId ?? "anonymous" }
     );
 
     const experiences = experiencesResult.records.map((record) => {
@@ -307,6 +315,8 @@ export async function getCommunityJourney(
         achievements: experience.achievements ?? null,
         isVerified: experience.isVerified ?? false,
         timelineSummary: experience.timelineSummary,
+        upvoteCount: Number(record.get("fastUpvoteCount")),
+        hasUpvoted: record.get("hasUpvoted"),
         goalIds: [] as string[],
         skills: skillNodes
           .filter(Boolean)
@@ -363,8 +373,11 @@ export async function getCommunityJourney(
     ) satisfies JourneyTransition[];
 
     return {
-      username: usernameValue,
-      imageUrl,
+      user: {
+        username: userRecord!.get("username"),
+        avatarUrl: userRecord!.get("avatarUrl"),
+        reputationScore: Number(userRecord!.get("reputationScore"))
+      },
       statistics: {
         goals: goals.length,
         experiences: experiences.length,
@@ -376,6 +389,220 @@ export async function getCommunityJourney(
       experiences,
 
       transitions,
+    };
+  } finally {
+    await closeSession(session);
+  }
+}
+
+export interface FeedExperience {
+  id: string;
+  title: string;
+  context: string;
+  outcome: string | null;
+  isVerified: boolean;
+  startDate: string;
+  upvoteCount: number;
+  hasUpvoted: boolean;
+  authorUsername: string;
+}
+
+export async function getGlobalFeed(
+  userId?: string,
+  page = 1,
+  limit = 20
+): Promise<FeedExperience[]> {
+  const session = getSession();
+
+  try {
+    const skip = (page - 1) * limit;
+
+    const result = await session.run(
+      `
+      MATCH (u:User)-[:HAS_EXPERIENCE]->(e:Experience)
+      
+      // Calculate upvote count
+      OPTIONAL MATCH (e)<-[:UPVOTED]-(:User)
+      WITH u, e, COUNT(DISTINCT e)<-[:UPVOTED]-() AS upvoteCount
+      
+      // Calculate if current user has upvoted
+      CALL {
+        WITH e
+        OPTIONAL MATCH (me:User {clerkId: $userId})-[:UPVOTED]->(e)
+        RETURN CASE WHEN me IS NOT NULL THEN true ELSE false END AS hasUpvoted
+      }
+
+      RETURN
+        e.id AS id,
+        e.title AS title,
+        e.context AS context,
+        e.outcome AS outcome,
+        e.isVerified AS isVerified,
+        e.startDate AS startDate,
+        SIZE((e)<-[:UPVOTED]-()) AS fastUpvoteCount,
+        hasUpvoted,
+        u.username AS authorUsername,
+        u.summary AS authorSummary
+      ORDER BY e.startDate DESC, fastUpvoteCount DESC
+      SKIP toInteger($skip)
+      LIMIT toInteger($limit)
+      `,
+      {
+        userId: userId ?? "anonymous",
+        skip,
+        limit,
+      }
+    );
+
+    return result.records.map((record) => ({
+      id: record.get("id"),
+      title: record.get("title"),
+      context: record.get("context"),
+      outcome: record.get("outcome"),
+      isVerified: record.get("isVerified") ?? false,
+      startDate: record.get("startDate").toString(),
+      upvoteCount: Number(record.get("fastUpvoteCount")),
+      hasUpvoted: record.get("hasUpvoted"),
+      authorUsername: record.get("authorUsername"),
+      authorSummary: record.get("authorSummary") || "Backend engineering student building scalable systems through hackathons, open source contributions and internships.",
+    }));
+  } finally {
+    await closeSession(session);
+  }
+}
+
+export async function toggleUpvote(
+  userId: string,
+  experienceId: string
+): Promise<{ upvoteCount: number; hasUpvoted: boolean }> {
+  const session = getSession();
+
+  try {
+    const result = await session.run(
+      `
+      MATCH (u:User {clerkId: $userId})
+      MATCH (e:Experience {id: $experienceId})
+      
+      // Get the author to reward reputation
+      MATCH (author:User)-[:HAS_EXPERIENCE]->(e)
+
+      // Toggle relationship using standard Cypher (apoc might not be installed, better safe)
+      OPTIONAL MATCH (u)-[rel:UPVOTED]->(e)
+      
+      // First, handle deletion if it exists
+      WITH u, e, author, rel
+      CALL {
+        WITH u, e, author, rel
+        WITH u, e, author, rel
+        WHERE rel IS NOT NULL
+        DELETE rel
+        SET author.reputationScore = coalesce(author.reputationScore, 2) - 2
+        RETURN false AS toggledState
+        
+        UNION
+        
+        WITH u, e, author, rel
+        WITH u, e, author, rel
+        WHERE rel IS NULL
+        MERGE (u)-[:UPVOTED]->(e)
+        SET author.reputationScore = coalesce(author.reputationScore, 0) + 2
+        RETURN true AS toggledState
+      }
+      
+      RETURN toggledState AS hasUpvoted, SIZE((e)<-[:UPVOTED]-()) AS upvoteCount
+      `,
+      { userId, experienceId }
+    );
+
+    if (result.records.length === 0) {
+      throw new Error("Experience not found or user not found");
+    }
+
+    const record = result.records[0];
+    return {
+      upvoteCount: Number(record!.get("upvoteCount")),
+      hasUpvoted: record!.get("hasUpvoted"),
+    };
+  } finally {
+    await closeSession(session);
+  }
+}
+
+export interface GraphNode {
+  id: string;
+  title: string;
+  authorUsername: string;
+  upvoteCount: number;
+}
+
+export interface GraphEdge {
+  fromId: string;
+  toId: string;
+  label: string | null;
+}
+
+export async function getTrendingGraph(limit = 20): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> {
+  const session = getSession();
+
+  try {
+    const result = await session.run(
+      `
+      MATCH (u1:User)-[:HAS_EXPERIENCE]->(e1:Experience)-[t:TRANSITION]->(e2:Experience)<-[:HAS_EXPERIENCE]-(u2:User)
+      
+      // We only want paths that have some upvotes to be considered 'trending', or just recent ones.
+      // For now, let's just grab the most upvoted or any transitions if there are few.
+      OPTIONAL MATCH (e1)<-[:UPVOTED]-()
+      WITH e1, e2, t, u1, u2, SIZE((e1)<-[:UPVOTED]-()) AS e1Upvotes
+      
+      OPTIONAL MATCH (e2)<-[:UPVOTED]-()
+      WITH e1, e2, t, u1, u2, e1Upvotes, SIZE((e2)<-[:UPVOTED]-()) AS e2Upvotes
+      
+      ORDER BY (e1Upvotes + e2Upvotes) DESC, e1.startDate DESC
+      LIMIT toInteger($limit)
+      
+      RETURN 
+        e1.id AS e1Id, e1.title AS e1Title, u1.username AS e1Author, e1Upvotes,
+        e2.id AS e2Id, e2.title AS e2Title, u2.username AS e2Author, e2Upvotes,
+        t.decisionLabel AS decisionLabel
+      `,
+      { limit }
+    );
+
+    const nodesMap = new Map<string, GraphNode>();
+    const edges: GraphEdge[] = [];
+
+    for (const record of result.records) {
+      const e1Id = record.get("e1Id");
+      const e2Id = record.get("e2Id");
+
+      if (!nodesMap.has(e1Id)) {
+        nodesMap.set(e1Id, {
+          id: e1Id,
+          title: record.get("e1Title"),
+          authorUsername: record.get("e1Author"),
+          upvoteCount: Number(record.get("e1Upvotes"))
+        });
+      }
+
+      if (!nodesMap.has(e2Id)) {
+        nodesMap.set(e2Id, {
+          id: e2Id,
+          title: record.get("e2Title"),
+          authorUsername: record.get("e2Author"),
+          upvoteCount: Number(record.get("e2Upvotes"))
+        });
+      }
+
+      edges.push({
+        fromId: e1Id,
+        toId: e2Id,
+        label: record.get("decisionLabel") || null
+      });
+    }
+
+    return {
+      nodes: Array.from(nodesMap.values()),
+      edges
     };
   } finally {
     await closeSession(session);

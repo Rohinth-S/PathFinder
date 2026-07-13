@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, Linking } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons, Feather } from '@expo/vector-icons';
 import Animated, {
   Easing,
@@ -10,20 +10,29 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { ProblemDividerDot, RippleMicBadge, SectionReveal, StaggerItem } from './landingMotion';
-import { UI } from '../../constants/colors';
+import { UI, L } from '../../constants/colors';
+
+const LegacyUI = {
+  ...UI,
+  accent: '#FF6900',
+  accentEnd: '#FF4500',
+  accentTint: 'rgba(255, 105, 0, 0.10)',
+  accentSoft: 'rgba(255, 105, 0, 0.06)'
+};
 import { GradientButton } from '../ui/GradientButton';
 import { SectionLabel, PillBadge } from '../ui/SectionLabel';
 import { FloatingParticles } from './FloatingParticles';
+import Svg, { Path } from 'react-native-svg';
 
 // ═══════════════════════════════════════════════════════
 //  Shared style helpers 
 // ═══════════════════════════════════════════════════════
 
 const s = {
-  h1: { fontSize: 36, color: UI.foreground, letterSpacing: -0.5, lineHeight: 42, fontFamily: 'InstrumentSerif_400Regular' },
-  h2: { fontSize: 24, color: UI.foreground, letterSpacing: -0.3, lineHeight: 28, fontFamily: 'InstrumentSerif_400Regular' },
-  body: { fontSize: 15, fontWeight: '400' as const, color: UI.fg50, lineHeight: 24, fontFamily: 'Manrope_400Regular' },
-  micro: { fontSize: 13, fontWeight: '400' as const, lineHeight: 18, color: UI.fg40, fontFamily: 'Manrope_400Regular' },
+  h1: { fontSize: 36, color: LegacyUI.foreground, letterSpacing: -0.5, lineHeight: 42, fontFamily: 'InstrumentSerif_400Regular' },
+  h2: { fontSize: 24, color: LegacyUI.foreground, letterSpacing: -0.3, lineHeight: 28, fontFamily: 'InstrumentSerif_400Regular' },
+  body: { fontSize: 15, fontWeight: '400' as const, color: LegacyUI.fg50, lineHeight: 24, fontFamily: 'Manrope_400Regular' },
+  micro: { fontSize: 13, fontWeight: '400' as const, lineHeight: 18, color: LegacyUI.fg40, fontFamily: 'Manrope_400Regular' },
   sectionPy16: { paddingVertical: 64, paddingHorizontal: 24 },
 };
 
@@ -38,7 +47,7 @@ type HeroProps = {
 
 export function HeroSection({ onPressGoogle }: HeroProps) {
   return (
-    <SectionReveal style={{ minHeight: 700, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 80, backgroundColor: UI.surfaceInverse }}>
+    <SectionReveal style={{ minHeight: 700, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 80, backgroundColor: LegacyUI.surfaceInverse }}>
       <FloatingParticles />
       
       {/* Logo mark */}
@@ -58,12 +67,12 @@ export function HeroSection({ onPressGoogle }: HeroProps) {
       {/* Tagline matching the "Read the research." style */}
       <StaggerItem index={2}>
         <Text style={{ fontSize: 56, color: '#FFFFFF', textAlign: 'center', fontFamily: 'InstrumentSerif_400Regular', lineHeight: 64, letterSpacing: -1 }}>
-          Trust the journey.
+          The search engine for
         </Text>
       </StaggerItem>
       <StaggerItem index={3}>
-        <Text style={{ fontSize: 56, color: UI.accent, textAlign: 'center', fontFamily: 'InstrumentSerif_400Regular', lineHeight: 64, letterSpacing: -1, marginBottom: 24 }}>
-          Find your path.
+        <Text style={{ fontSize: 56, color: LegacyUI.accent, textAlign: 'center', fontFamily: 'InstrumentSerif_400Regular', lineHeight: 64, letterSpacing: -1, marginBottom: 24 }}>
+          human experiences.
         </Text>
       </StaggerItem>
 
@@ -76,17 +85,39 @@ export function HeroSection({ onPressGoogle }: HeroProps) {
 
       {/* Auth buttons */}
       <StaggerItem index={5} style={{ width: '100%', maxWidth: 300, alignItems: 'center' }}>
-        <GradientButton 
-          label="Explore our work ->"
+        <TouchableOpacity 
           onPress={onPressGoogle}
-          size="lg"
-          style={{ width: '100%', paddingHorizontal: 0 }}
-        />
+          style={{ 
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: LegacyUI.accent,
+            paddingVertical: 16,
+            paddingHorizontal: 24,
+            borderRadius: 32,
+            width: '100%',
+            gap: 12
+          }}
+          activeOpacity={0.8}
+        >
+          <Image 
+            source={require('../../assets/google.png')}
+            style={{ width: 24, height: 24 }}
+            resizeMode="contain"
+          />
+          <Text style={{ 
+            color: '#FFFFFF',
+            fontSize: 16,
+            fontFamily: 'Inter_600SemiBold'
+          }}>
+            Sign in with Google
+          </Text>
+        </TouchableOpacity>
       </StaggerItem>
 
       {/* Micro-copy */}
       <StaggerItem index={4} style={{ width: '100%', alignItems: 'center' }}>
-        <Text style={{ fontSize: 12, color: UI.fg40, textAlign: 'center', marginTop: 16, fontFamily: 'Manrope_400Regular' }}>
+        <Text style={{ fontSize: 12, color: LegacyUI.fg40, textAlign: 'center', marginTop: 16, fontFamily: 'Manrope_400Regular' }}>
           By continuing you agree to our Terms & Privacy.
         </Text>
       </StaggerItem>
@@ -101,12 +132,12 @@ export function HeroSection({ onPressGoogle }: HeroProps) {
 
 export function ProblemSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#F9F4EB' }]}>
       <StaggerItem index={0}><SectionLabel style={{ marginBottom: 12 }}>THE PROBLEM</SectionLabel></StaggerItem>
       <StaggerItem index={1}><Text style={[s.h1, { marginBottom: 16 }]}>The biggest decisions are often made with the least reliable information.</Text></StaggerItem>
       <StaggerItem index={2}><Text style={s.body}>People jump between LinkedIn, Reddit, YouTube, blogs, and AI assistants for important decisions. Every platform shows a different fragment — achievements, opinions, stories — but never the whole journey.</Text></StaggerItem>
       <StaggerItem index={3}>
-        <ProblemDividerDot dotColor={UI.accent} lineColor={UI.fg08} style={{ marginTop: 64 }} />
+        <ProblemDividerDot dotColor={LegacyUI.accent} lineColor={LegacyUI.fg08} style={{ marginTop: 64 }} />
       </StaggerItem>
     </SectionReveal>
   );
@@ -152,21 +183,21 @@ function SwingingPlusBadge() {
           width: 48,
           height: 48,
           borderRadius: 24,
-          backgroundColor: UI.accentSoft,
+          backgroundColor: LegacyUI.accentSoft,
           alignItems: 'center',
           justifyContent: 'center',
         },
         animatedStyle,
       ]}
     >
-      <Text style={{ fontSize: 28, lineHeight: 32, color: UI.accent, fontWeight: '500' }}>+</Text>
+      <Text style={{ fontSize: 28, lineHeight: 32, color: LegacyUI.accent, fontWeight: '500' }}>+</Text>
     </Animated.View>
   );
 }
 
 export function ComparisonSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#F2F4F7' }]}>
       <StaggerItem index={0}>
         <Text style={[s.h1, { marginBottom: 24 }]}>
           Every platform shows a piece.{"\n"}PathFinder shows the whole picture.
@@ -178,13 +209,13 @@ export function ComparisonSection() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 6 }} contentContainerStyle={{ gap: 12, paddingHorizontal: 4 }}>
           {PLATFORMS.map((p, i) => (
             <View key={i} style={{
-              width: 128, height: 128, backgroundColor: UI.surface, borderRadius: 16,
-              borderWidth: 1, borderColor: UI.fg08, alignItems: 'center', justifyContent: 'center', padding: 12,
+              width: 128, height: 128, backgroundColor: LegacyUI.surface, borderRadius: 16,
+              borderWidth: 1, borderColor: LegacyUI.fg08, alignItems: 'center', justifyContent: 'center', padding: 12,
             }}>
-              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: UI.fg06, alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
-                <MaterialCommunityIcons name={p.icon} size={22} color={UI.foreground} />
+              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: LegacyUI.fg06, alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
+                <MaterialCommunityIcons name={p.icon} size={22} color={LegacyUI.foreground} />
               </View>
-              <Text style={{ fontSize: 14, color: UI.foreground, marginBottom: 6, fontFamily: 'Manrope_600SemiBold' }}>{p.name}</Text>
+              <Text style={{ fontSize: 14, color: LegacyUI.foreground, marginBottom: 6, fontFamily: 'Manrope_600SemiBold' }}>{p.name}</Text>
               <PillBadge label={p.tag} />
             </View>
           ))}
@@ -200,7 +231,7 @@ export function ComparisonSection() {
 
       {/* Unified "Verified Journeys" card */}
       <StaggerItem index={3}>
-        <View style={{ backgroundColor: UI.accent, borderRadius: 24, padding: 24 }}>
+        <View style={{ backgroundColor: LegacyUI.accent, borderRadius: 24, padding: 24 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <MaterialCommunityIcons name="shield-check" size={24} color="#FFFFFF" />
             <Text style={{ fontSize: 20, color: '#FFFFFF', marginLeft: 10, fontFamily: 'InstrumentSerif_400Regular', marginTop: 2 }}>Verified Journeys</Text>
@@ -233,18 +264,18 @@ export function ComparisonSection() {
 // ═══════════════════════════════════════════════════════
 
 const TIMELINE = [
-  { label: 'College', caption: '"Chose projects over grades."', color: UI.accentSoft, dot: UI.accent },
-  { label: 'Internship', caption: '"Rejected campus placement."', color: UI.surface, dot: UI.fg40 },
-  { label: 'First Job', caption: '"Interviewed customers before writing code."', color: UI.surface, dot: UI.fg40 },
-  { label: 'Startup', caption: '"Prioritized learning over salary."', color: UI.surface, dot: UI.fg40 },
-  { label: 'Pivot', caption: '"Followed the data, not the ego."', color: UI.surface, dot: UI.fg40 },
-  { label: 'Product-Market Fit', caption: '"Built what people actually needed."', color: UI.surface, dot: UI.success, isFlag: true },
+  { label: 'College', caption: '"Chose projects over grades."', color: LegacyUI.accentSoft, dot: LegacyUI.accent },
+  { label: 'Internship', caption: '"Rejected campus placement."', color: LegacyUI.surface, dot: LegacyUI.fg40 },
+  { label: 'First Job', caption: '"Interviewed customers before writing code."', color: LegacyUI.surface, dot: LegacyUI.fg40 },
+  { label: 'Startup', caption: '"Prioritized learning over salary."', color: LegacyUI.surface, dot: LegacyUI.fg40 },
+  { label: 'Pivot', caption: '"Followed the data, not the ego."', color: LegacyUI.surface, dot: LegacyUI.fg40 },
+  { label: 'Product-Market Fit', caption: '"Built what people actually needed."', color: LegacyUI.surface, dot: LegacyUI.success, isFlag: true },
 ];
 
 export function JourneySequenceSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
-      <View style={{ backgroundColor: UI.surface, borderRadius: 24, paddingHorizontal: 24, paddingVertical: 40, borderWidth: 1, borderColor: UI.fg08 }}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#E8F3EE' }]}>
+      <View style={{ backgroundColor: LegacyUI.surface, borderRadius: 24, paddingHorizontal: 24, paddingVertical: 40, borderWidth: 1, borderColor: LegacyUI.fg08 }}>
         <StaggerItem index={0}>
           <Text style={[s.h1, { marginBottom: 40 }]}>
             Success isn't a moment.{'\n'}It's a sequence of decisions.
@@ -254,22 +285,22 @@ export function JourneySequenceSection() {
         <StaggerItem index={1}>
           <View style={{ position: 'relative', paddingLeft: 28 }}>
             {/* Timeline rail */}
-            <View style={{ position: 'absolute', left: 5, top: 8, bottom: 8, width: 2, backgroundColor: UI.fg08 }} />
+            <View style={{ position: 'absolute', left: 5, top: 8, bottom: 8, width: 2, backgroundColor: LegacyUI.fg08 }} />
 
             {TIMELINE.map((node, i) => (
               <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: i < TIMELINE.length - 1 ? 32 : 0, gap: 20 }}>
                 <View style={{ marginLeft: -28, alignItems: 'center', width: 12, position: 'relative', zIndex: 10 }}>
                   {node.isFlag ? (
-                    <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: UI.success, alignItems: 'center', justifyContent: 'center', marginLeft: -10, marginTop: -8 }}>
+                    <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: LegacyUI.success, alignItems: 'center', justifyContent: 'center', marginLeft: -10, marginTop: -8 }}>
                       <MaterialCommunityIcons name="flag-variant" size={16} color="#FFF" />
                     </View>
                   ) : (
-                    <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: node.dot, borderWidth: 3, borderColor: UI.surface }} />
+                    <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: node.dot, borderWidth: 3, borderColor: LegacyUI.surface }} />
                   )}
                 </View>
                 <View style={{ flex: 1, marginTop: -2 }}>
-                  <Text style={{ fontSize: 16, color: UI.foreground, fontFamily: 'Manrope_600SemiBold' }}>{node.label}</Text>
-                  <Text style={{ fontSize: 14, fontStyle: 'italic', color: UI.fg50, marginTop: 4, fontFamily: 'Manrope_400Regular' }}>{node.caption}</Text>
+                  <Text style={{ fontSize: 16, color: LegacyUI.foreground, fontFamily: 'Manrope_600SemiBold' }}>{node.label}</Text>
+                  <Text style={{ fontSize: 14, fontStyle: 'italic', color: LegacyUI.fg50, marginTop: 4, fontFamily: 'Manrope_400Regular' }}>{node.caption}</Text>
                 </View>
               </View>
             ))}
@@ -295,19 +326,19 @@ const QUESTIONS = [
 
 export function SampleQuestionsSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#FFF5EB' }]}>
       <StaggerItem index={0}><Text style={[s.h1, { marginBottom: 24 }]}>Ask questions that matter.</Text></StaggerItem>
       <StaggerItem index={1} style={{ gap: 12 }}>
         <View style={{ gap: 12 }}>
           {QUESTIONS.map((q, i) => (
             <View key={i} style={{
               flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-              backgroundColor: UI.surface, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16,
-              borderWidth: 1, borderColor: UI.fg08,
+              backgroundColor: LegacyUI.surface, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16,
+              borderWidth: 1, borderColor: LegacyUI.fg08,
             }}>
-              <Text style={{ fontSize: 15, color: UI.foreground, flex: 1, paddingRight: 12, fontFamily: 'Manrope_400Regular' }}>{q}</Text>
-              <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: UI.fg06, alignItems: 'center', justifyContent: 'center' }}>
-                <Feather name="chevron-right" size={16} color={UI.fg50} />
+              <Text style={{ fontSize: 15, color: LegacyUI.foreground, flex: 1, paddingRight: 12, fontFamily: 'Manrope_400Regular' }}>{q}</Text>
+              <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: LegacyUI.fg06, alignItems: 'center', justifyContent: 'center' }}>
+                <Feather name="chevron-right" size={16} color={LegacyUI.fg50} />
               </View>
             </View>
           ))}
@@ -330,7 +361,7 @@ const STEPS = [
 
 export function HowItWorksSection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#F6F2EC' }]}>
       <StaggerItem index={0}><SectionLabel style={{ marginBottom: 12 }}>HOW IT WORKS</SectionLabel></StaggerItem>
       <StaggerItem index={1}><Text style={[s.h1, { marginBottom: 16 }]}>Powered by journeys, not assumptions.</Text></StaggerItem>
       <StaggerItem index={2}>
@@ -352,16 +383,16 @@ export function HowItWorksSection() {
               <View style={{ alignItems: 'center', width: 92 }}>
                 <View style={{
                   width: 52, height: 52, borderRadius: 26,
-                  backgroundColor: UI.accent,
+                  backgroundColor: LegacyUI.accent,
                   alignItems: 'center', justifyContent: 'center', marginBottom: 12,
                 }}>
                   <Feather name={step.icon as any} size={22} color="#FFFFFF" />
                 </View>
-                <Text style={{ fontSize: 13, color: UI.foreground, textAlign: 'center', fontFamily: 'Manrope_600SemiBold' }}>{step.label}</Text>
+                <Text style={{ fontSize: 13, color: LegacyUI.foreground, textAlign: 'center', fontFamily: 'Manrope_600SemiBold' }}>{step.label}</Text>
               </View>
               {i < STEPS.length - 1 && (
                 <View style={{ flex: 1, alignItems: 'center', paddingTop: 26 }}>
-                  <View style={{ width: '100%', borderTopWidth: 2, borderTopColor: UI.fg20, borderStyle: 'dashed' }} />
+                  <View style={{ width: '100%', borderTopWidth: 2, borderTopColor: LegacyUI.fg20, borderStyle: 'dashed' }} />
                 </View>
               )}
             </React.Fragment>
@@ -379,23 +410,22 @@ export function HowItWorksSection() {
 
 export function VerificationSection() {
   return (
-    <SectionReveal style={[s.sectionPy16, { backgroundColor: UI.surfaceInverse }]}>
-      <FloatingParticles />
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: L.tealTint }]}>
       <View style={{ alignItems: 'center', zIndex: 1 }}>
         <StaggerItem index={0}>
-          <SectionLabel color="rgba(255,255,255,0.4)" style={{ marginBottom: 16 }}>VERIFICATION</SectionLabel>
+          <SectionLabel color={L.teal} style={{ marginBottom: 16 }}>VERIFICATION</SectionLabel>
         </StaggerItem>
         <StaggerItem index={1}>
-          <Text style={[s.h1, { marginBottom: 16, color: '#FFFFFF', textAlign: 'center' }]}>Trust begins with authenticity.</Text>
+          <Text style={[s.h1, { marginBottom: 16, color: L.navy, textAlign: 'center' }]}>Trust begins with authenticity.</Text>
         </StaggerItem>
         <StaggerItem index={2}>
-          <Text style={[s.body, { marginBottom: 32, color: 'rgba(255,255,255,0.7)', textAlign: 'center', maxWidth: '90%' }]}>
+          <Text style={[s.body, { marginBottom: 32, color: L.navySoft, textAlign: 'center', maxWidth: '90%' }]}>
             People hesitate to share failures or unconventional decisions for fear of judgment, especially on traditional professional networks. PathFinder encourages honest storytelling; verification confirms experiences are genuine — not that someone is "successful."
           </Text>
         </StaggerItem>
         <StaggerItem index={3}>
-          <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(255, 255, 255, 0.05)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-            <Feather name="shield" size={40} color={UI.accent} />
+          <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: L.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: L.border }}>
+            <Feather name="shield" size={40} color={L.teal} />
           </View>
         </StaggerItem>
       </View>
@@ -408,38 +438,134 @@ export function VerificationSection() {
 //  bg-surface with avatar dots motif
 // ═══════════════════════════════════════════════════════
 
+function GraphMotif() {
+  // Warm earth-tone palette that harmonizes with the terracotta-tint (#F5E4DD) bg
+  const palette = {
+    center:     '#4A3728',   // Deep espresso brown — warm, rich, premium
+    centerRing: '#F8EDE6',   // Warm cream border for the center
+    pivot:      '#5B7B6A',   // Sage green — earthy, calming
+    entry:      '#D4917A',   // Warm coral-peach — complements terracotta
+    insight:    '#C4A265',   // Golden amber — warm, luminous
+    growth:     '#7BAF96',   // Eucalyptus green — fresh, alive
+    dotBorder:  '#FAF0EA',   // Warm off-white borders on nodes
+    linePivot:  '#8BA89A',   // Muted sage for connector
+    lineEntry:  '#D4917A',   // Coral connector
+    lineInsight:'#D4C19B',   // Sandy connector
+    lineGrowth: '#8BB8A2',   // Green connector
+    labelDark:  '#5A4535',   // Warm dark brown for labels
+  };
+
+  return (
+    <View style={{ width: 300, height: 320, alignItems: 'center', justifyContent: 'center', marginVertical: 16 }}>
+      {/* SVG connector lines */}
+      <View style={{ position: 'absolute', width: '100%', height: '100%', zIndex: 0 }}>
+        <Svg width="300" height="320" viewBox="0 0 300 320">
+          {/* Pivot (top-left) → Center */}
+          <Path d="M 95 85 Q 115 120 150 160" stroke={palette.linePivot} strokeWidth="1.8" fill="none" />
+          {/* Entry (top-right) → Center */}
+          <Path d="M 228 72 Q 195 105 158 152" stroke={palette.lineEntry} strokeWidth="1.5" fill="none" />
+          {/* Insight (bottom-left) → Center */}
+          <Path d="M 100 230 Q 120 200 148 170" stroke={palette.lineInsight} strokeWidth="1.5" fill="none" />
+          {/* Growth (bottom-right) → Center */}
+          <Path d="M 210 255 Q 185 220 155 172" stroke={palette.lineGrowth} strokeWidth="1.5" fill="none" />
+        </Svg>
+      </View>
+
+      {/* ── Satellite Nodes ── */}
+
+      {/* PIVOT — top-left, sage green */}
+      <View style={{ position: 'absolute', top: 20, left: 30, alignItems: 'center', zIndex: 1 }}>
+        <View style={{
+          width: 72, height: 72, borderRadius: 36,
+          backgroundColor: palette.pivot,
+          borderWidth: 4, borderColor: palette.dotBorder,
+          shadowColor: palette.pivot, shadowOpacity: 0.25, shadowRadius: 12,
+          shadowOffset: { width: 0, height: 6 }, elevation: 6,
+        }} />
+        <Text style={{ marginTop: 8, fontSize: 12, color: palette.pivot, fontFamily: 'Manrope_700Bold', letterSpacing: 1.5 }}>PIVOT</Text>
+      </View>
+
+      {/* ENTRY — top-right, warm coral */}
+      <View style={{ position: 'absolute', top: 18, right: 28, alignItems: 'center', zIndex: 1 }}>
+        <View style={{
+          width: 56, height: 56, borderRadius: 28,
+          backgroundColor: palette.entry,
+          borderWidth: 4, borderColor: palette.dotBorder,
+          shadowColor: palette.entry, shadowOpacity: 0.2, shadowRadius: 10,
+          shadowOffset: { width: 0, height: 4 }, elevation: 5,
+        }} />
+        <Text style={{ marginTop: 8, fontSize: 12, color: palette.entry, fontFamily: 'Manrope_700Bold', letterSpacing: 1.5 }}>ENTRY</Text>
+      </View>
+
+      {/* INSIGHT — bottom-left, golden amber */}
+      <View style={{ position: 'absolute', bottom: 25, left: 30, alignItems: 'center', zIndex: 1 }}>
+        <View style={{
+          width: 68, height: 68, borderRadius: 34,
+          backgroundColor: palette.insight,
+          borderWidth: 4, borderColor: palette.dotBorder,
+          shadowColor: palette.insight, shadowOpacity: 0.25, shadowRadius: 12,
+          shadowOffset: { width: 0, height: 6 }, elevation: 6,
+        }} />
+        <Text style={{ marginTop: 8, fontSize: 12, color: palette.labelDark, fontFamily: 'Manrope_700Bold', letterSpacing: 1.5 }}>INSIGHT</Text>
+      </View>
+
+      {/* GROWTH — bottom-right, eucalyptus green */}
+      <View style={{ position: 'absolute', bottom: 30, right: 40, alignItems: 'center', zIndex: 1 }}>
+        <View style={{
+          width: 50, height: 50, borderRadius: 25,
+          backgroundColor: palette.growth,
+          borderWidth: 4, borderColor: palette.dotBorder,
+          shadowColor: palette.growth, shadowOpacity: 0.2, shadowRadius: 10,
+          shadowOffset: { width: 0, height: 4 }, elevation: 5,
+        }} />
+        <Text style={{ marginTop: 8, fontSize: 12, color: palette.growth, fontFamily: 'Manrope_700Bold', letterSpacing: 1.5 }}>GROWTH</Text>
+      </View>
+
+      {/* ── Center Hub ── */}
+      {/* Outer glow ring */}
+      <View style={{
+        width: 126, height: 126, borderRadius: 63,
+        backgroundColor: 'rgba(74, 55, 40, 0.08)',
+        alignItems: 'center', justifyContent: 'center',
+        zIndex: 2,
+      }}>
+        <View style={{
+          width: 108, height: 108, borderRadius: 54,
+          backgroundColor: palette.center,
+          alignItems: 'center', justifyContent: 'center',
+          borderWidth: 4, borderColor: palette.centerRing,
+          shadowColor: '#3A2A1E', shadowOpacity: 0.3, shadowRadius: 24,
+          shadowOffset: { width: 0, height: 12 }, elevation: 12,
+        }}>
+          {/* Inner constellation dots — warm cream */}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 3 }}>
+            <View style={{ width: 13, height: 13, borderRadius: 7, backgroundColor: palette.centerRing, marginRight: 5, opacity: 0.9 }} />
+            <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#FFF', marginBottom: 2 }} />
+          </View>
+          <View style={{ width: 11, height: 11, borderRadius: 6, backgroundColor: palette.centerRing, marginLeft: 14, opacity: 0.85 }} />
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export function CommunitySection() {
   return (
-    <SectionReveal style={[s.sectionPy16, { backgroundColor: UI.surfaceInverse }]}>
-      <FloatingParticles />
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: L.terracottaTint }]}>
       <View style={{ alignItems: 'center', zIndex: 1 }}>
         <StaggerItem index={0}>
-          <SectionLabel color="rgba(255,255,255,0.4)" style={{ marginBottom: 16 }}>COMMUNITY</SectionLabel>
+          <SectionLabel color={L.terracotta} style={{ marginBottom: 16 }}>COMMUNITY</SectionLabel>
         </StaggerItem>
         <StaggerItem index={1}>
-          <Text style={[s.h1, { marginBottom: 16, color: '#FFFFFF', textAlign: 'center' }]}>Collective knowledge, not social networking.</Text>
+          <Text style={[s.h1, { marginBottom: 16, color: L.navy, textAlign: 'center' }]}>Collective knowledge, not social networking.</Text>
         </StaggerItem>
         <StaggerItem index={2}>
-          <Text style={[s.body, { marginBottom: 40, color: 'rgba(255,255,255,0.7)', textAlign: 'center', maxWidth: '90%' }]}>
+          <Text style={[s.body, { marginBottom: 24, color: L.navySoft, textAlign: 'center', maxWidth: '90%' }]}>
             Every contributed journey helps someone else facing similar uncertainty — one founder's pivot helps another avoid the same mistake, one student's internship prep guides hundreds. As more verified journeys are added, the graph gets richer and recommendations get stronger for everyone.
           </Text>
         </StaggerItem>
-        {/* Avatar dots motif — overlapping circles converging */}
         <StaggerItem index={3}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: UI.accent, marginRight: -12, borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 4 }} />
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.4)', marginRight: -12, borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 3 }} />
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.2)', marginRight: -12, borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 2 }} />
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.1)', borderWidth: 2, borderColor: UI.surfaceInverse, zIndex: 1 }} />
-            {/* Arrow */}
-            <View style={{ marginLeft: 20 }}>
-              <Feather name="arrow-right" size={24} color={UI.accent} />
-            </View>
-            {/* Larger target circle */}
-            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(255, 105, 0, 0.1)', borderWidth: 2, borderColor: UI.accent, alignItems: 'center', justifyContent: 'center', marginLeft: 20 }}>
-              <Feather name="git-merge" size={28} color={UI.accent} />
-            </View>
-          </View>
+          <GraphMotif />
         </StaggerItem>
       </View>
     </SectionReveal>
@@ -455,7 +581,7 @@ const LANG_CHIPS = ['हिन्दी', 'தமிழ்', 'తెలుగు
 
 export function AccessibilitySection() {
   return (
-    <SectionReveal style={s.sectionPy16}>
+    <SectionReveal style={[s.sectionPy16, { backgroundColor: '#EEF1F7' }]}>
       <StaggerItem index={0}>
         <View style={{ alignItems: 'flex-start', marginBottom: 18 }}>
           <RippleMicBadge label="NATURAL INTERACTION" />
@@ -473,8 +599,8 @@ export function AccessibilitySection() {
       <StaggerItem index={3}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
           {LANG_CHIPS.map((lang, i) => (
-            <View key={i} style={{ backgroundColor: UI.surface, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1, borderColor: UI.fg08 }}>
-              <Text style={{ fontSize: 13, color: UI.accent, fontFamily: 'Manrope_700Bold' }}>{lang}</Text>
+            <View key={i} style={{ backgroundColor: LegacyUI.surface, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1, borderColor: LegacyUI.fg08 }}>
+              <Text style={{ fontSize: 13, color: LegacyUI.accent, fontFamily: 'Manrope_700Bold' }}>{lang}</Text>
             </View>
           ))}
         </View>
@@ -483,16 +609,16 @@ export function AccessibilitySection() {
       {/* Feature cards */}
       <StaggerItem index={4}>
         <View style={{ gap: 12 }}>
-          <View style={{ backgroundColor: UI.surface, padding: 20, borderRadius: 16, borderWidth: 1, borderColor: UI.fg08 }}>
-            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: UI.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-              <Feather name="globe" size={20} color={UI.accent} />
+          <View style={{ backgroundColor: LegacyUI.surface, padding: 20, borderRadius: 16, borderWidth: 1, borderColor: LegacyUI.fg08 }}>
+            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: LegacyUI.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <Feather name="globe" size={20} color={LegacyUI.accent} />
             </View>
             <Text style={[s.h2, { marginBottom: 6 }]}>Native Support</Text>
             <Text style={s.micro}>Switch between languages instantly with perfect semantic translation.</Text>
           </View>
-          <View style={{ backgroundColor: UI.surface, padding: 20, borderRadius: 16, borderWidth: 1, borderColor: UI.fg08 }}>
-            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: UI.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-              <Feather name="volume-2" size={20} color={UI.accent} />
+          <View style={{ backgroundColor: LegacyUI.surface, padding: 20, borderRadius: 16, borderWidth: 1, borderColor: LegacyUI.fg08 }}>
+            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: LegacyUI.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <Feather name="volume-2" size={20} color={LegacyUI.accent} />
             </View>
             <Text style={[s.h2, { marginBottom: 6 }]}>Read Aloud</Text>
             <Text style={s.micro}>Hear your milestones narrated with human-like, empathetic voice synthesis.</Text>
@@ -510,7 +636,7 @@ export function AccessibilitySection() {
 
 export function ClosingVisionSection() {
   return (
-    <SectionReveal style={{ backgroundColor: UI.surfaceInverse, paddingVertical: 80, paddingHorizontal: 24, alignItems: 'stretch' }}>
+    <SectionReveal style={{ backgroundColor: LegacyUI.surfaceInverse, paddingVertical: 80, paddingHorizontal: 24, alignItems: 'stretch' }}>
       <StaggerItem index={0}>
         <SectionLabel color="rgba(255,255,255,0.6)" style={{ alignSelf: 'flex-start', marginBottom: 56 }}>OUR VISION</SectionLabel>
       </StaggerItem>
@@ -519,7 +645,7 @@ export function ClosingVisionSection() {
       <StaggerItem index={1}>
         <View style={{ alignItems: 'center', marginBottom: 32 }}>
           <View style={{ width: 1, height: 40, backgroundColor: 'rgba(255,255,255,0.2)' }} />
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: UI.accent, marginTop: 6 }} />
+          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: LegacyUI.accent, marginTop: 6 }} />
         </View>
       </StaggerItem>
 
@@ -537,7 +663,7 @@ export function ClosingVisionSection() {
       {/* Decorative flag */}
       <StaggerItem index={4}>
         <View style={{ alignItems: 'center', marginTop: 48 }}>
-          <MaterialCommunityIcons name="flag-variant" size={28} color={UI.accent} />
+          <MaterialCommunityIcons name="flag-variant" size={28} color={LegacyUI.accent} />
         </View>
       </StaggerItem>
     </SectionReveal>
@@ -551,7 +677,7 @@ export function ClosingVisionSection() {
 
 export function FooterSection() {
   return (
-    <SectionReveal style={{ backgroundColor: UI.surfaceInverse, paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center' }}>
+    <SectionReveal style={{ backgroundColor: LegacyUI.surfaceInverse, paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center' }}>
       {/* Small logo mark */}
       <StaggerItem index={0}>
         <Image
@@ -577,11 +703,22 @@ export function FooterSection() {
       {/* Nav links */}
       <StaggerItem index={3}>
         <View style={{ flexDirection: 'row', gap: 20, marginBottom: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {['PRIVACY', 'TERMS', 'GITHUB', 'CONTACT'].map((link, i) => (
-            <Text key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)', letterSpacing: 1, fontFamily: 'Manrope_600SemiBold' }}>
-              {link}
-            </Text>
-          ))}
+          {['PRIVACY', 'TERMS', 'GITHUB', 'CONTACT'].map((link, i) => {
+            if (link === 'GITHUB') {
+              return (
+                <TouchableOpacity key={i} onPress={() => Linking.openURL('https://github.com/mithulcrafts/PathFinder')}>
+                  <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)', letterSpacing: 1, fontFamily: 'Manrope_600SemiBold', textDecorationLine: 'underline' }}>
+                    {link}
+                  </Text>
+                </TouchableOpacity>
+              );
+            }
+            return (
+              <Text key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)', letterSpacing: 1, fontFamily: 'Manrope_600SemiBold' }}>
+                {link}
+              </Text>
+            );
+          })}
         </View>
       </StaggerItem>
 

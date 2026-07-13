@@ -15,10 +15,11 @@ export async function startJourneyController(
       res.status(401).json({ error: "Unauthorized", });
       return;
     }
-    const message = await startJourney(userId);
+    const { conversationId, message } = await startJourney(userId);
 
     res.json({
       success: true,
+      conversationId,
       message,
     });
   } catch (error: unknown) {

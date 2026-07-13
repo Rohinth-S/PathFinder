@@ -27,8 +27,11 @@ const createCytoscapeHtml = (elementsJson: string) => `
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
     <style>
-        body, html { width: 100%; height: 100%; margin: 0; padding: 0; background-color: ${L.background}; font-family: sans-serif; }
+        body, html { width: 100%; height: 100%; margin: 0; padding: 0; background-color: ${L.background}; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
         #cy { width: 100%; height: 100%; }
+        /* A gentle fade-in animation for the graph */
+        #cy { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -45,48 +48,96 @@ const createCytoscapeHtml = (elementsJson: string) => `
                             'label': 'data(label)',
                             'text-valign': 'center',
                             'color': 'data(textColor)',
-                            'font-size': '12px',
-                            'font-weight': '600',
+                            'font-size': '13px',
+                            'font-family': 'system-ui, -apple-system, sans-serif',
+                            'font-weight': 'bold',
                             'background-color': 'data(color)',
                             'shape': 'data(shape)',
                             'border-width': 'data(borderWidth)',
                             'border-color': 'data(borderColor)',
                             'width': 'label',
                             'height': 'label',
-                            'padding': '14px',
+                            'padding': '16px',
                             'text-wrap': 'wrap',
-                            'text-max-width': '100px'
+                            'text-max-width': '120px',
+                            'text-justification': 'center',
+                            'shadow-blur': 12,
+                            'shadow-color': '#0f172a',
+                            'shadow-opacity': 0.08,
+                            'shadow-offset-y': 4,
+                            'transition-property': 'background-color, border-color, shadow-opacity',
+                            'transition-duration': '0.3s'
+                        }
+                    },
+                    {
+                        selector: 'node[shape="ellipse"]',
+                        style: {
+                            'padding': '20px',
+                            'font-size': '14px',
+                            'shadow-opacity': 0.15,
+                            'shadow-offset-y': 6,
+                            'shadow-blur': 16,
                         }
                     },
                     {
                         selector: 'edge',
                         style: {
-                            'width': 1.5,
-                            'line-color': '#A3B8B5',
-                            'target-arrow-color': '#A3B8B5',
-                            'target-arrow-shape': 'triangle',
+                            'width': 2,
+                            'line-color': '#CBD5E1',
+                            'target-arrow-color': '#CBD5E1',
+                            'target-arrow-shape': 'vee',
                             'curve-style': 'bezier',
                             'label': 'data(label)',
-                            'font-size': '9px',
-                            'font-weight': '500',
-                            'text-rotation': 'autorotate',
+                            'font-size': '10px',
+                            'font-weight': '600',
+                            'font-family': 'system-ui, -apple-system, sans-serif',
                             'text-background-opacity': 1,
                             'text-background-color': '${L.background}',
-                            'text-background-padding': '3px',
-                            'color': '${L.navy}'
+                            'text-background-shape': 'roundrectangle',
+                            'text-background-padding': '4px',
+                            'text-border-opacity': 1,
+                            'text-border-width': 1,
+                            'text-border-color': '#E2E8F0',
+                            'color': '#475569',
+                            'text-wrap': 'ellipsis',
+                            'text-max-width': '100px',
+                            'text-rotation': 'none', /* Keeps labels readable horizontally */
+                            'edge-text-rotation': 'none'
+                        }
+                    },
+                    {
+                        selector: 'edge[label="HAS_EXPERIENCE"], edge[label="HAS_GOAL"]',
+                        style: {
+                            'line-style': 'dashed',
+                            'line-dash-pattern': [4, 4],
+                            'line-color': '#94A3B8',
+                            'target-arrow-color': '#94A3B8'
                         }
                     }
                 ],
                 layout: {
                   name: 'cose',
-                  animate: false,      
+                  animate: true,
+                  animationDuration: 800,
+                  animationEasing: 'ease-out',
                   fit: true,           
-                  padding: 40,         
-                  componentSpacing: 80,
-                  nodeRepulsion: 12000,
-                  idealEdgeLength: 100,
-                  edgeElasticity: 80
+                  padding: 50,         
+                  componentSpacing: 100,
+                  nodeRepulsion: 40000,
+                  idealEdgeLength: 120,
+                  edgeElasticity: 60,
+                  nestingFactor: 1.2
                 }
+            });
+
+            // Interactive hover effects for modern feel
+            cy.on('tapstart', 'node', function(e) {
+                var node = e.target;
+                node.style('shadow-opacity', 0.25);
+            });
+            cy.on('tapend', 'node', function(e) {
+                var node = e.target;
+                node.style('shadow-opacity', node.data('shape') === 'ellipse' ? 0.15 : 0.08);
             });
         });
     </script>
