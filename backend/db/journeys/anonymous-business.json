@@ -108,7 +108,14 @@
         { "name": "Quantitative Analysis", "type": "Technical" },
         { "name": "Spreadsheet Modeling", "type": "Domain" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-1",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Started business training with a heavy focus on data tracking rules and logic sheets."
     },
     {
@@ -118,7 +125,6 @@
       "endDate": "May 2020",
       "context": "Dedicated my elective terms to advanced dataset structures, practicing how to query data tables and display findings cleanly on tracking windows.",
       "organization": "Mumbai Management Science Institute",
-      "applicationStatus": null,
       "achievements": [
         "Designed twenty custom relational database models to practice sorting customer transactions safely.",
         "Created an educational tutorial guide detailing database matching methods for our student club."
@@ -129,7 +135,14 @@
         { "name": "Database Querying", "type": "Technical" },
         { "name": "Data Visual Design", "type": "Technical" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-2",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Built strong data reporting skills by exploring enterprise analytical models."
     },
     {
@@ -139,7 +152,6 @@
       "endDate": "May 2021",
       "context": "Built complex mathematical data indexes to chart product demand shifts for our university retail lab, ensuring results loaded cleanly without query delays.",
       "organization": "Mumbai Management Science Institute",
-      "applicationStatus": null,
       "achievements": [
         "Cut down reporting calculation load delays by 20% by restructuring indexing paths.",
         "Programmed conditional validation scripts that caught duplicate account records."
@@ -150,7 +162,14 @@
         { "name": "Data Restructuring", "type": "Technical" },
         { "name": "Validation Logic scripting", "type": "Technical" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-3",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Optimized university lab database queries, learning how to manipulate high-volume attributes cleanly."
     },
     {
@@ -160,7 +179,6 @@
       "endDate": "May 2022",
       "context": "Graduated after presenting a detailed resource allocation dashboard study as my final capstone project, highlighting how data accuracy directly improves corporate strategy.",
       "organization": "Mumbai Management Science Institute",
-      "applicationStatus": null,
       "achievements": [
         "Earned high marks from corporate panels for showcasing clear commercial mapping insights.",
         "Connected multiple public data sources to automatically chart regional shipping price shifts."
@@ -171,7 +189,14 @@
         { "name": "Resource Mapping Insights", "type": "Domain" },
         { "name": "Multi-Source Extraction", "type": "Technical" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-4",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Graduated college after launching a quantitative resource dashboard, matching high professional scales."
     },
     {
@@ -192,7 +217,14 @@
         { "name": "Requirements Documentation", "type": "Domain" },
         { "name": "Feedback Log Sorting", "type": "Domain" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-5",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Entered the corporate analyst tier, drafting specifications sheets under corporate guidelines."
     },
     {
@@ -204,7 +236,6 @@
       "challengeFaced": "Spending hours running repetitive query updates manually while having zero say in why key product items were being prioritized.",
       "outcome": "Maintained clean data panels while planning a strict transition path toward product leadership to make direct strategy bets.",
       "organization": "Enterprise CRM Software Systems",
-      "applicationStatus": null,
       "achievements": [
         "Maintained flawless dashboard data accuracy throughout our entire division reorganization.",
         "Automated an excel data tracking workflow that saved our immediate team five hours every week."
@@ -215,7 +246,14 @@
         { "name": "Dashboard Maintenance", "type": "Technical" },
         { "name": "Workflow Optimization Mindset", "type": "Soft" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-6",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Tracked corporate tracking systems while preparing a thorough shift layout to move into product management lanes."
     },
     {
@@ -225,7 +263,6 @@
       "endDate": "Nov 2023",
       "context": "Spent my personal hours sitting in on customer success calls and sales conversations to understand user motivations and common software interface drop points.",
       "organization": "Enterprise CRM Software Systems",
-      "applicationStatus": null,
       "achievements": [
         "Analyzed over fifty user interview summaries to pinpoint customer usage drops.",
         "Created an internal onboarding checklist sheet highlighting main consumer configuration errors."
@@ -236,7 +273,14 @@
         { "name": "User Discovery Auditing", "type": "Domain" },
         { "name": "Customer Drop Identification", "type": "Soft" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-7",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Began internal transition efforts by auditing real customer problem logs outside standard shift blocks."
     },
     {
@@ -246,7 +290,6 @@
       "endDate": "May 2024",
       "context": "Shadowed technical product managers during agile roadmap planning loops, studying how engineering teams evaluate task capacity boundaries.",
       "organization": "Enterprise CRM Software Systems",
-      "applicationStatus": null,
       "achievements": [
         "Learned to map developer velocity timelines against immediate commercial business priorities.",
         "Helped coordinate task logs for two successful mid-sized product feature iterations."
@@ -257,7 +300,14 @@
         { "name": "Agile Sprint Monitoring", "type": "Domain" },
         { "name": "Cross-Functional Syncing", "type": "Soft" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-8",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Mastered product sprint orchestration habits by following active development teams."
     },
     {
@@ -267,7 +317,6 @@
       "endDate": "Nov 2024",
       "context": "Began scripting a custom internal analytics tool that hooks live user action tags directly from our CRM web portal into our warehouse tracking arrays.",
       "organization": "Internal Product Tooling Labs",
-      "applicationStatus": null,
       "achievements": [
         "Programmed a lightweight extraction script that tracks software feature hits without slowing load speeds.",
         "Organized clean database mapping criteria that sorted entries by account levels automatically."
@@ -278,7 +327,14 @@
         { "name": "User Event Instrumentation", "type": "Technical" },
         { "name": "Data Aggregator Scripting", "type": "Technical" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-9",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Started building a custom analytics script to connect code feature interactions directly to business values."
     },
     {
@@ -288,7 +344,6 @@
       "endDate": "May 2025",
       "context": "Integrated corporate account subscription logs into my metric matrix script, highlighting exactly which software updates directly caused commercial renewal improvements.",
       "organization": "Internal Product Tooling Labs",
-      "applicationStatus": null,
       "achievements": [
         "Linked complex contract dataset metrics smoothly with user interface button interactions.",
         "Handled data processing surge loops successfully during high-volume contract renewal weeks."
@@ -299,7 +354,14 @@
         { "name": "Financial Data Integration", "type": "Technical" },
         { "name": "Commercial Performance Mapping", "type": "Domain" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-10",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Linked corporate financial metrics with user features, creating a high-impact analytical tool."
     },
     {
@@ -311,7 +373,6 @@
       "challengeFaced": "Rebuilding user attribute pipelines under intense scrutiny from technical leads who doubted the tracking model's cross-team accuracy.",
       "outcome": "Spent three weeks auditing logging tags from first principles, building an automated layer that synced engineering files with commercial milestones perfectly.",
       "organization": "Enterprise CRM Software Systems",
-      "applicationStatus": null,
       "achievements": [
         "Completely aligned tracking discrepancies between developer logs and sales data dashboards.",
         "Proved with absolute statistical accuracy that a recent interface modification grew client retention by 15%."
@@ -322,7 +383,14 @@
         { "name": "Cross-Team Data Syncing", "type": "Technical" },
         { "name": "Data Verification Auditing", "type": "Technical" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-11",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Conquered a major data mismatch roadblock, winning full strategic backup from our director block."
     },
     {
@@ -332,7 +400,6 @@
       "endDate": "Dec 2025",
       "context": "Showcased my feature-revenue system results to executive leadership groups, proving that analytical tracking tools can prevent wasted development hours systematically.",
       "organization": "Enterprise CRM Software Systems",
-      "applicationStatus": null,
       "achievements": [
         "Obtained corporate approval to deploy my metrics matrix engine across three major platform sections.",
         "Shared the alignment blueprint across internal strategy boards, gaining widespread peer validation."
@@ -343,7 +410,14 @@
         { "name": "Executive Strategy Pitching", "type": "Soft" },
         { "name": "Data-Driven Prioritization", "type": "Domain" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-12",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Validated my strategic tool framework before leadership panels, earning corporate expansion support."
     },
     {
@@ -364,7 +438,14 @@
         { "name": "Whiteboard Prioritization Planning", "type": "Domain" },
         { "name": "Roadmap Defense Strategy", "type": "Soft" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-13",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Showcased first-principles strategy depth during competitive internal product management board panels."
     },
     {
@@ -385,17 +466,23 @@
         { "name": "Product Transition Strategy", "type": "Domain" },
         { "name": "Internal Placement Success", "type": "Soft" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-14",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Formally accepted the Associate PM title, completing a successful career migration away from task-based requirements logs."
     },
     {
       "id": "ba-e-15",
       "title": "Orchestrating B2B Enterprise Growth Software Roadmaps",
       "startDate": "Jul 2026",
-      "endDate": "Present",
+      "endDate": null,
       "context": "Leading engineering sprint blocks and managing user onboarding layouts within our enterprise growth squad, ensuring new features match corporate strategy goals perfectly.",
       "organization": "Enterprise CRM Software Systems",
-      "applicationStatus": null,
       "achievements": [
         "Streamlined layout onboarding flows across our high-value business client application hubs.",
         "Partnered with data engineers to enforce strict tracking tags across all new product feature rollouts."
@@ -406,7 +493,14 @@
         { "name": "B2B Product Management", "type": "Technical" },
         { "name": "Growth Funnel Optimization", "type": "Technical" }
       ],
-      "proofs": [],
+      "proofs": [{
+          "id": "bae-p-15",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
       "timelineSummary": "Currently directing core engineering sprint roadmaps inside the growth product squad, serving thousands of business accounts daily."
     }
   ],
