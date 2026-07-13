@@ -206,7 +206,7 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
             backgroundColor: 'rgba(234, 179, 8, 0.12)', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
             borderWidth: 1, borderColor: 'rgba(234, 179, 8, 0.2)'
           }}>
-            <Text style={{ fontSize: 11, color: '#CA8A04' }}>★</Text>
+            <Feather name="star" size={12} color="#CA8A04" style={{ marginTop: -1 }} />
             <Text style={{ fontSize: 12, color: '#CA8A04', fontFamily: 'Inter_700Bold' }}>{repScore}</Text>
           </View>
         )}

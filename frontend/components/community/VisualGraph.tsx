@@ -249,11 +249,6 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }}>
                 @{node.authorUsername}
               </Text>
-              {node.upvoteCount > 0 && (
-                <View style={{ backgroundColor: L.tealTint, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 }}>
-                  <Text style={{ color: L.teal, fontSize: 9, fontFamily: 'Inter_700Bold' }}>{node.upvoteCount} ↑</Text>
-                </View>
-              )}
             </View>
           </TouchableOpacity>
         ))}

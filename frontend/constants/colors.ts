@@ -111,12 +111,12 @@ export const NODE_BORDER_COLORS: Record<NodeType, string> = {
 };
 
 export const NODE_ICONS: Record<NodeType, string> = {
-  Education:   '🎓',
-  Job:         '💼',
-  Decision:    '◆',
-  Failure:     '⚠️',
-  Startup:     '🚀',
-  Achievement: '⭐',
+  Education:   'book',
+  Job:         'briefcase',
+  Decision:    'git-branch',
+  Failure:     'alert-triangle',
+  Startup:     'rocket',
+  Achievement: 'award',
 };
 
 export function getEmotionStyle(label: EmotionLabel) {
@@ -125,9 +125,8 @@ export function getEmotionStyle(label: EmotionLabel) {
 
 // Fallback categorization for product types
 export const CATEGORY_COLORS = {
-  blue: { iconBg: '#DBEAFE', iconText: '#3B82F6', icon: '🔧' },
-  green: { iconBg: '#D1FAE5', iconText: '#10B981', icon: '👥' },
-  purple: { iconBg: '#EDE9FE', iconText: '#8B5CF6', icon: '📈' },
-  orange: { iconBg: '#FFEDD5', iconText: '#F97316', icon: '🏪' },
+  blue: { iconBg: '#DBEAFE', iconText: '#3B82F6', icon: 'info' },
+  green: { iconBg: '#D1FAE5', iconText: '#10B981', icon: 'briefcase' },
+  purple: { iconBg: '#EDE9FE', iconText: '#8B5CF6', icon: 'cpu' },
+  orange: { iconBg: '#FFEDD5', iconText: '#F97316', icon: 'zap' },
 };
-

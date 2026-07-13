@@ -25,7 +25,6 @@ export interface GraphNode {
   id: string;
   title: string;
   authorUsername: string;
-  upvoteCount: number;
 }
 
 export interface GraphEdge {
@@ -75,8 +74,6 @@ export interface FeedExperience {
   outcome: string | null;
   isVerified: boolean;
   startDate: string;
-  upvoteCount: number;
-  hasUpvoted: boolean;
   authorUsername: string;
   authorSummary: string;
 }
@@ -91,12 +88,5 @@ export async function getGlobalFeed(token?: string, page = 1, limit = 20): Promi
   return apiFetch<FeedExperience[]>(`/community/feed?${query.toString()}`, { 
     method: "GET",
     headers 
-  });
-}
-
-export async function toggleUpvote(token: string, experienceId: string): Promise<{ upvoteCount: number; hasUpvoted: boolean }> {
-  return apiFetch<{ upvoteCount: number; hasUpvoted: boolean }>(`/community/experience/${experienceId}/upvote`, { 
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` }
   });
 }
