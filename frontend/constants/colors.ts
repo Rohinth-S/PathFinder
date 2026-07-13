@@ -21,11 +21,11 @@ export const UI = {
   fg08:         'rgba(3, 7, 18, 0.08)',
   fg06:         'rgba(3, 7, 18, 0.04)',
 
-  //  Accent (Mint Green / Emerald) 
-  accent:       '#10B981',   // Vibrant emerald green
-  accentEnd:    '#059669',   // For gradients
-  accentTint:   'rgba(16, 185, 129, 0.10)',
-  accentSoft:   'rgba(16, 185, 129, 0.06)',
+  //  Accent (Legendary Orange Gradient) 
+  accent:       '#FF6900',   // Vivid primary orange
+  accentEnd:    '#FF4500',   // For gradients
+  accentTint:   'rgba(255, 105, 0, 0.10)',
+  accentSoft:   'rgba(255, 105, 0, 0.06)',
 
   //  Success 
   success:      '#10B981',
