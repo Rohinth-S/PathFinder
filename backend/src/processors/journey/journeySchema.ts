@@ -112,6 +112,14 @@ export const journeyProofSchema = z
   })
   .strict();
 
+export const submitProofSchema = z
+  .object({
+    id: z.string().trim().min(1),
+    sourceType: proofSourceTypeSchema,
+    url: z.string().trim().min(1).optional(),
+  })
+  .strict();
+
 export const journeyExperienceSchema = z
   .object({
     id: z.string().trim().min(1),
@@ -165,7 +173,7 @@ export const submitExperienceSchema = z
     skills: z.array(journeySkillSchema).default([]),
     decisionReason: z.string().trim().min(1).nullable().optional(),
     goalIds: z.array(z.string().uuid()),
-    proofs: z.array(journeyProofSchema),
+    proofs: z.array(submitProofSchema).optional().default([]),
     isVerified: z.boolean(),
   })
   .strict();
@@ -236,9 +244,10 @@ export const journeyJsonSchema = z
       }
     });
   });
-export type journeyGoalSchema=z.infer<typeof journeyGoalSchema>;
+export type journeyGoalSchema = z.infer<typeof journeyGoalSchema>;
 export type JourneyExperience = z.infer<typeof journeyExperienceSchema>;
 export type SubmitGoal = z.infer<typeof submitGoalSchema>;
 export type JourneyTransition = z.infer<typeof journeyTransitionSchema>;
 export type SubmitJourney = z.infer<typeof submitJourneySchema>;
 export type JourneyJson = z.infer<typeof journeyJsonSchema>;
+export type SubmitProof = z.infer<typeof submitProofSchema>;

@@ -10,8 +10,9 @@ export async function startJourneyController(
 ): Promise<void> {
   try {
     const userId = req.userId;
-    if (!userId) { res.status(401).json({error: "Unauthorized",});
-    return;
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized", });
+      return;
     }
     const message = await startJourney(userId);
 
@@ -21,7 +22,7 @@ export async function startJourneyController(
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    res.status(500).json({error: message});
+    res.status(500).json({ error: message });
   }
 }
 
@@ -32,14 +33,14 @@ export async function continueJourneyController(
   try {
     const { conversationId, message } = req.body;
     if (!conversationId || typeof conversationId !== "string") {
-      res.status(400).json({error: "conversationId is required"});
+      res.status(400).json({ error: "conversationId is required" });
       return;
     }
     if (!message || typeof message !== "string") {
-      res.status(400).json({error: "message is required"});
+      res.status(400).json({ error: "message is required" });
       return;
     }
-    const response = await continueJourney(conversationId,message);
+    const response = await continueJourney(conversationId, message);
 
     res.json({
       success: true,
@@ -69,14 +70,14 @@ export async function submitGoalController(
       });
       return;
     }
-    const createdGoal = await submitGoal(req.userId,goal);
+    const createdGoal = await submitGoal(req.userId, goal);
     res.json({
       success: true,
       goal: createdGoal,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    res.status(500).json({error: message});
+    res.status(500).json({ error: message });
   }
 }
 
@@ -93,17 +94,40 @@ export async function submitJourneyController(
       return;
     }
 
-    const { conversationId, ...journeyPayload } = req.body;
+    const journeyPayload = JSON.parse(req.body.journey);
+    const { conversationId, experiences } = journeyPayload;
     if (!conversationId) {
       res.status(400).json({
         error: "Missing required parameter: conversationId",
       });
       return;
     }
+    for (const experience of experiences) {
+      if (!experience.proofs) {
+        continue;
+      }
+      for (const proof of experience.proofs) {
+        if (
+          proof.sourceType === "github" ||
+          proof.sourceType === "link"
+        ) {
+          continue;
+        }
+        const uploadedFile = files.find(
+          (file) => file.fieldname === proof.id
+        );
+        if (!uploadedFile) {
+          throw new Error(
+            `Missing uploaded file for proof ${proof.id}`
+          );
+        }
+        proof.url = uploadedFile.path;
+      }
+    }
     const result = await submitJourney(userId, conversationId, journeyPayload);
-    res.json({success: true,...result,});
+    res.json({ success: true, ...result, });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    res.status(500).json({error: message});
+    res.status(500).json({ error: message });
   }
 }
