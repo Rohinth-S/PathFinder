@@ -3,7 +3,7 @@ name: Deploy Frontend (Expo OTA Update)
 on:
   push:
     branches:
-      - frontend
+      - main
     paths:
       - 'frontend/**'
 
