@@ -1,3 +1,5 @@
+
+
 /* ── Backend-aligned TypeScript schema ────────────── */
 
 export interface StructuredQuery {
@@ -59,6 +61,13 @@ export interface UserTrajectory {
   timeline: TimelineEvent[];
   ai_summary?: string;
   skills?: any[];
+  summary?: string;
+  expertiseAreas?: string[];
+  expandedDetails?: {
+    goals: any[];
+    experiences: any[];
+    transitions: any[];
+  };
 }
 
 export interface CommonPattern {

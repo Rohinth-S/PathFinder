@@ -5,7 +5,7 @@ export const aiInsightsSchema = z.object({
 
   keyPoints: z.array(
     z.string().min(1)
-  ).min(1),
+  ),
 
   actionableTakeaway: z.string().min(1),
 });

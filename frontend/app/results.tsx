@@ -75,7 +75,11 @@ export default function ResultsPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [journeyIdx, setJourneyIdx] = useState(0);
-  const [translatedInsight, setTranslatedInsight] = useState<string | null>(null);
+  const [translatedInsight, setTranslatedInsight] = useState<{
+    directAnswer: string;
+    keyPoints: string[];
+    actionableTakeaway: string;
+  } | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [preferredLang, setPreferredLang] = useState('hi-IN');
   const [followUpQuery, setFollowUpQuery] = useState('');
@@ -196,7 +200,7 @@ export default function ResultsPage() {
   
   const { journeyStatistics: stats, aiInsights, timelineFeed, commonPatterns } = data.aggregatedContext;
   const topDecisions = commonPatterns?.slice(1, 4) || [];
-  const totalExperiences = timelineFeed?.reduce((acc, user) => acc + user.timeline.length, 0) || 186;
+  const totalExperiences = timelineFeed?.reduce((acc, user) => acc + (user.expandedDetails?.experiences?.length || 0), 0) || 186;
 
   async function handleFollowUp() {
     if (!followUpQuery.trim()) return;
@@ -290,18 +294,18 @@ export default function ResultsPage() {
             )}
           </View>
           <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 14, color: UI.foreground, lineHeight: 22, marginBottom: 16 }}>
-            {user.ai_summary || "Backend engineering student building scalable systems through hackathons, open source contributions and internships."}
+            {user.summary || user.ai_summary || "Backend engineering student building scalable systems through hackathons, open source contributions and internships."}
           </Text>
           <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 10, color: UI.teal, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 12 }}>Expertise Areas</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
-            {(!user.skills || user.skills.length === 0) ? (
+            {(!user.expertiseAreas || user.expertiseAreas.length === 0) ? (
               <>
                 <PillBadge label="Backend Development" color={L.terracotta} bgColor={L.terracottaTint} />
                 <PillBadge label="Open Source" color={L.terracotta} bgColor={L.terracottaTint} />
               </>
             ) : (
-              user.skills.slice(0, 3).map((skill: any, i: number) => (
-                <PillBadge key={i} label={skill.name || skill} color={L.terracotta} bgColor={L.terracottaTint} />
+              user.expertiseAreas.slice(0, 3).map((area: string, i: number) => (
+                <PillBadge key={i} label={area} color={L.terracotta} bgColor={L.terracottaTint} />
               ))
             )}
           </View>
@@ -336,7 +340,7 @@ export default function ResultsPage() {
                     const token = await getToken();
                     if (!token) return;
                     const res = await translateInsights(token, aiInsights, preferredLang);
-                    setTranslatedInsight(res.translatedAiInsights.directAnswer || res.translatedAiInsights.actionableTakeaway);
+                    setTranslatedInsight(res.translatedAiInsights);
                   } catch (err) {
                     console.warn(err);
                   } finally {
@@ -424,32 +428,32 @@ export default function ResultsPage() {
                       DIRECT ANSWER
                     </Text>
                   </View>
-                  <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 15, color: L.navy, lineHeight: 24 }}>
-                    {translatedInsight || aiInsights.directAnswer}
+                  <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 15, color: UI.onDark80, lineHeight: 24 }}>
+                    {translatedInsight ? translatedInsight.directAnswer : aiInsights.directAnswer}
                   </Text>
                 </View>
               )}
 
-              {aiInsights.keyPoints && aiInsights.keyPoints.length > 0 && !translatedInsight && (
+              {((translatedInsight ? translatedInsight.keyPoints : aiInsights.keyPoints)?.length > 0) && (
                 <View style={{ gap: 12 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Feather name="list" size={14} color={L.teal} />
-                    <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 0.8, color: L.teal, textTransform: 'uppercase' }}>
+                    <Feather name="list" size={14} color={L.tealTint} />
+                    <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 12, letterSpacing: 0.8, color: L.tealTint, textTransform: 'uppercase' }}>
                       KEY TAKEAWAYS
                     </Text>
                   </View>
                   <View style={{ gap: 12, paddingLeft: 4 }}>
-                    {aiInsights.keyPoints.map((point: string, idx: number) => (
+                    {(translatedInsight ? translatedInsight.keyPoints : aiInsights.keyPoints).map((point: string, idx: number) => (
                       <View key={idx} style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
-                        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: L.teal, marginTop: 8 }} />
-                        <Text style={{ flex: 1, fontFamily: 'Manrope_400Regular', fontSize: 14, color: L.navy, lineHeight: 22 }}>{point}</Text>
+                        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: L.tealTint, marginTop: 8 }} />
+                        <Text style={{ flex: 1, fontFamily: 'Manrope_400Regular', fontSize: 14, color: UI.onDark80, lineHeight: 22 }}>{point}</Text>
                       </View>
                     ))}
                   </View>
                 </View>
               )}
 
-              {aiInsights.actionableTakeaway && !translatedInsight && (
+              {((translatedInsight ? translatedInsight.actionableTakeaway : aiInsights.actionableTakeaway)) && (
                 <View style={{ backgroundColor: L.surface, borderRadius: 16, padding: 20, borderWidth: 1, borderColor: L.border, marginTop: 8 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                     <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: L.terracottaTint, alignItems: 'center', justifyContent: 'center' }}>
@@ -460,7 +464,7 @@ export default function ResultsPage() {
                     </Text>
                   </View>
                   <Text style={{ fontFamily: 'Manrope_400Regular', fontSize: 15, color: L.navySoft, lineHeight: 24 }}>
-                    {aiInsights.actionableTakeaway}
+                    {translatedInsight ? translatedInsight.actionableTakeaway : aiInsights.actionableTakeaway}
                   </Text>
                 </View>
               )}
