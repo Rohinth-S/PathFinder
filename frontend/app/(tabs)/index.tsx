@@ -201,14 +201,21 @@ export default function QueryPage() {
                     backgroundColor: active ? UI.success : 'transparent',
                   }}
                 >
-                  <Text style={{
-                    fontFamily: 'Inter_600SemiBold',
-                    fontSize: 13,
-                    color: active ? '#FFFFFF' : UI.success,
-                    letterSpacing: 0.3,
-                  }}>
-                    {opt === 'exploring' ? '🔍  Exploring' : '🎯  For Myself'}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Feather 
+                      name={opt === 'exploring' ? 'search' : 'target'} 
+                      size={14} 
+                      color={active ? '#FFFFFF' : UI.success} 
+                    />
+                    <Text style={{
+                      fontFamily: 'Inter_600SemiBold',
+                      fontSize: 13,
+                      color: active ? '#FFFFFF' : UI.success,
+                      letterSpacing: 0.3,
+                    }}>
+                      {opt === 'exploring' ? 'Exploring' : 'For Myself'}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               );
             })}

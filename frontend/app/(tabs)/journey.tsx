@@ -11,7 +11,7 @@ import { ExpandableGoalCard, ExpandableExperienceCard } from '../full-journey/ex
 import { L, getEmotionStyle } from '../../constants/colors';
 import { Feather } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 
 // Enable LayoutAnimation for Android
