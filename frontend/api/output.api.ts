@@ -37,7 +37,7 @@ export async function generateSpeechUri(
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify({ aiInsights, language, speaker: "meera" }), // Sarvam uses meera as default speaker
+    body: JSON.stringify({ aiInsights, language, speaker: "shubh" }), // Use valid speaker "shubh"
   });
 
   if (!response.ok) {

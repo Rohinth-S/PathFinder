@@ -280,8 +280,7 @@ export async function getCommunityJourney(
       // Calculate upvote count
       CALL {
         WITH e
-        OPTIONAL MATCH (e)<-[:UPVOTED]-()
-        RETURN COUNT(DISTINCT e)<-[:UPVOTED]-() AS upvoteCount, SIZE((e)<-[:UPVOTED]-()) AS fastUpvoteCount
+        RETURN count { (e)<-[:UPVOTED]-() } AS fastUpvoteCount
       }
       
       // Calculate if current user has upvoted
@@ -421,10 +420,6 @@ export async function getGlobalFeed(
       `
       MATCH (u:User)-[:HAS_EXPERIENCE]->(e:Experience)
       
-      // Calculate upvote count
-      OPTIONAL MATCH (e)<-[:UPVOTED]-(:User)
-      WITH u, e, COUNT(DISTINCT e)<-[:UPVOTED]-() AS upvoteCount
-      
       // Calculate if current user has upvoted
       CALL {
         WITH e
@@ -439,7 +434,7 @@ export async function getGlobalFeed(
         e.outcome AS outcome,
         e.isVerified AS isVerified,
         e.startDate AS startDate,
-        SIZE((e)<-[:UPVOTED]-()) AS fastUpvoteCount,
+        count { (e)<-[:UPVOTED]-() } AS fastUpvoteCount,
         hasUpvoted,
         u.username AS authorUsername,
         u.summary AS authorSummary
@@ -509,7 +504,7 @@ export async function toggleUpvote(
         RETURN true AS toggledState
       }
       
-      RETURN toggledState AS hasUpvoted, SIZE((e)<-[:UPVOTED]-()) AS upvoteCount
+      RETURN toggledState AS hasUpvoted, count { (e)<-[:UPVOTED]-() } AS upvoteCount
       `,
       { userId, experienceId }
     );
@@ -549,13 +544,7 @@ export async function getTrendingGraph(limit = 20): Promise<{ nodes: GraphNode[]
       `
       MATCH (u1:User)-[:HAS_EXPERIENCE]->(e1:Experience)-[t:TRANSITION]->(e2:Experience)<-[:HAS_EXPERIENCE]-(u2:User)
       
-      // We only want paths that have some upvotes to be considered 'trending', or just recent ones.
-      // For now, let's just grab the most upvoted or any transitions if there are few.
-      OPTIONAL MATCH (e1)<-[:UPVOTED]-()
-      WITH e1, e2, t, u1, u2, SIZE((e1)<-[:UPVOTED]-()) AS e1Upvotes
-      
-      OPTIONAL MATCH (e2)<-[:UPVOTED]-()
-      WITH e1, e2, t, u1, u2, e1Upvotes, SIZE((e2)<-[:UPVOTED]-()) AS e2Upvotes
+      WITH e1, e2, t, u1, u2, count { (e1)<-[:UPVOTED]-() } AS e1Upvotes, count { (e2)<-[:UPVOTED]-() } AS e2Upvotes
       
       ORDER BY (e1Upvotes + e2Upvotes) DESC, e1.startDate DESC
       LIMIT toInteger($limit)
