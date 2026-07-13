@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform, Image
+  Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform, Image, Share, Alert
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { getCommunityJourney, CommunityJourney } from '../../api/community.api';
@@ -10,6 +10,8 @@ import { ExpandableGoalCard, ExpandableExperienceCard } from '../full-journey/ex
 import { L } from '../../constants/colors';
 import { Feather } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -25,16 +27,26 @@ const createCytoscapeHtml = (elementsJson: string) => `
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body, html { width: 100%; height: 100%; margin: 0; padding: 0; background-color: ${L.background}; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        body, html { 
+          width: 100%; height: 100%; margin: 0; padding: 0; 
+          background-color: ${L.background}; 
+          font-family: 'Inter', sans-serif; 
+          background-image: radial-gradient(${L.navySoft}40 1px, transparent 1px);
+          background-size: 24px 24px;
+        }
         #cy { width: 100%; height: 100%; }
-        /* A gentle fade-in animation for the graph */
-        #cy { animation: fadeIn 0.8s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        #cy-wrapper {
+          width: 100%; height: 100%;
+          box-shadow: inset 0 0 40px rgba(0,0,0,0.03);
+        }
     </style>
 </head>
 <body>
-    <div id="cy"></div>
+    <div id="cy-wrapper">
+      <div id="cy"></div>
+    </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var cy = cytoscape({
@@ -46,10 +58,11 @@ const createCytoscapeHtml = (elementsJson: string) => `
                         style: {
                             'label': 'data(label)',
                             'text-valign': 'center',
+                            'text-halign': 'center',
                             'color': 'data(textColor)',
-                            'font-size': '13px',
-                            'font-family': 'system-ui, -apple-system, sans-serif',
-                            'font-weight': 'bold',
+                            'font-size': '12px',
+                            'font-family': 'Inter, sans-serif',
+                            'font-weight': '600',
                             'background-color': 'data(color)',
                             'shape': 'data(shape)',
                             'border-width': 'data(borderWidth)',
@@ -59,58 +72,44 @@ const createCytoscapeHtml = (elementsJson: string) => `
                             'padding': '16px',
                             'text-wrap': 'wrap',
                             'text-max-width': '120px',
-                            'text-justification': 'center',
-                            'shadow-blur': 12,
-                            'shadow-color': '#0f172a',
-                            'shadow-opacity': 0.08,
-                            'shadow-offset-y': 4,
-                            'transition-property': 'background-color, border-color, shadow-opacity',
-                            'transition-duration': '0.3s'
+                            'transition-property': 'background-color, transform, border-width',
+                            'transition-duration': 0.2,
+                            'underlay-color': '#000000',
+                            'underlay-padding': '4px',
+                            'underlay-opacity': 0.1
                         }
                     },
                     {
-                        selector: 'node[shape="ellipse"]',
+                        selector: 'node:active',
                         style: {
-                            'padding': '20px',
-                            'font-size': '14px',
-                            'shadow-opacity': 0.15,
-                            'shadow-offset-y': 6,
-                            'shadow-blur': 16,
+                            'border-width': 3,
+                            'border-color': '${L.terracotta}',
+                            'underlay-opacity': 0.2,
+                            'underlay-padding': '6px'
                         }
                     },
                     {
                         selector: 'edge',
                         style: {
                             'width': 2,
-                            'line-color': '#CBD5E1',
-                            'target-arrow-color': '#CBD5E1',
-                            'target-arrow-shape': 'vee',
+                            'line-color': '#C4D4D1',
+                            'target-arrow-color': '#C4D4D1',
+                            'target-arrow-shape': 'triangle',
                             'curve-style': 'bezier',
                             'label': 'data(label)',
                             'font-size': '10px',
-                            'font-weight': '600',
-                            'font-family': 'system-ui, -apple-system, sans-serif',
+                            'font-family': 'Inter, sans-serif',
+                            'font-weight': '500',
+                            'text-rotation': 'autorotate',
                             'text-background-opacity': 1,
                             'text-background-color': '${L.background}',
-                            'text-background-shape': 'roundrectangle',
                             'text-background-padding': '4px',
+                            'text-background-shape': 'round-rectangle',
                             'text-border-opacity': 1,
                             'text-border-width': 1,
-                            'text-border-color': '#E2E8F0',
-                            'color': '#475569',
-                            'text-wrap': 'ellipsis',
-                            'text-max-width': '100px',
-                            'text-rotation': 'none', /* Keeps labels readable horizontally */
-                            'edge-text-rotation': 'none'
-                        }
-                    },
-                    {
-                        selector: 'edge[label="HAS_EXPERIENCE"], edge[label="HAS_GOAL"]',
-                        style: {
-                            'line-style': 'dashed',
-                            'line-dash-pattern': [4, 4],
-                            'line-color': '#94A3B8',
-                            'target-arrow-color': '#94A3B8'
+                            'text-border-color': '${L.border}',
+                            'color': '${L.navySoft}',
+                            'arrow-scale': 1.2
                         }
                     }
                 ],
@@ -118,33 +117,59 @@ const createCytoscapeHtml = (elementsJson: string) => `
                   name: 'cose',
                   animate: true,
                   animationDuration: 800,
-                  animationEasing: 'ease-out',
+                  animationEasing: 'ease-out-quint',
                   fit: true,           
-                  padding: 50,         
+                  padding: 40,         
                   componentSpacing: 100,
-                  nodeRepulsion: 40000,
-                  idealEdgeLength: 120,
-                  edgeElasticity: 60,
-                  nestingFactor: 1.2
+                  nodeRepulsion: 400000,
+                  nodeOverlap: 10,
+                  idealEdgeLength: 100,
+                  edgeElasticity: 100,
+                  nestingFactor: 5,
+                  gravity: 80,
+                  numIter: 1000
                 }
             });
 
-            // Interactive hover effects for modern feel
-            cy.on('tapstart', 'node', function(e) {
-                var node = e.target;
-                node.style('shadow-opacity', 0.25);
+            cy.on('tap', 'node', function(evt){
+              var node = evt.target;
+              cy.animate({
+                center: { eles: node },
+                zoom: 1.4,
+                duration: 400,
+                easing: 'ease-in-out-cubic'
+              });
+              if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(JSON.stringify({
+                  type: 'node_tap',
+                  nodeId: node.id(),
+                  nodeLabel: node.data('label')
+                }));
+              }
             });
-            cy.on('tapend', 'node', function(e) {
-                var node = e.target;
-                node.style('shadow-opacity', node.data('shape') === 'ellipse' ? 0.15 : 0.08);
+            
+            cy.on('tap', function(evt){
+              if(evt.target === cy){
+                cy.animate({
+                  fit: { padding: 40 },
+                  duration: 400,
+                  easing: 'ease-in-out-cubic'
+                });
+                if (window.ReactNativeWebView) {
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'bg_tap'
+                  }));
+                }
+              }
             });
+
+            window.cy = cy;
         });
     </script>
 </body>
 </html>
 `;
 
-// ───────────────────────────────────────────────
 export default function PublicProfilePage() {
   const router = useRouter();
   const { username } = useLocalSearchParams<{ username: string }>();
@@ -153,31 +178,80 @@ export default function PublicProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showGraph, setShowGraph] = useState(false);
+  const webViewRef = React.useRef<WebView>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   useEffect(() => {
     if (username) {
-      loadJourney();
+      fetchJourney();
     }
   }, [username]);
 
-  const loadJourney = async () => {
-    setIsLoading(true);
-    setError(null);
+  const fetchJourney = async () => {
     try {
-      const result = await getCommunityJourney(username as string);
-      setJourney(result);
-    } catch (err: any) {
-      setError(err?.message || "Failed to load profile");
+      setIsLoading(true);
+      setError(null);
+      const data = await getCommunityJourney(username!);
+      setJourney(data);
+    } catch (e: any) {
+      setError(e.message || "Failed to load profile");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Check out ${username || 'this user'}'s professional journey on PathFinder! https://pathfinder.app/u/${username || 'user'}`,
+      });
+    } catch (error: any) {
+      console.warn(error.message);
+    }
+  };
+
+  const handleWebViewMessage = async (event: any) => {
+    try {
+      const data = JSON.parse(event.nativeEvent.data);
+      if (data.type === 'node_tap') {
+        setSelectedNodeId(data.nodeId);
+      } else if (data.type === 'bg_tap') {
+        setSelectedNodeId(null);
+      } else if (data.type === 'export_result') {
+        const base64Data = data.data.replace(/^data:image\/png;base64,/, "");
+        const uri = FileSystem.cacheDirectory + 'journey-graph.png';
+        await FileSystem.writeAsStringAsync(uri, base64Data, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(uri, { UTI: 'public.png', mimeType: 'image/png', dialogTitle: 'Share Journey Graph' });
+        } else {
+          Alert.alert("Sharing not available");
+        }
+      }
+    } catch (e) {
+      console.warn('Error parsing webview message', e);
+    }
+  };
+
+  const handleExportGraph = () => {
+    const injected = `
+      if (window.cy && window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'export_result',
+          data: window.cy.png({ bg: '#FAF9F6', full: true, scale: 2 })
+        }));
+      }
+      true;
+    `;
+    webViewRef.current?.injectJavaScript(injected);
   };
 
   const prepareGraphElements = () => {
     if (!journey) return "[]";
     const elements: any[] = [];
     // User Node
-    elements.push({ data: { id: 'user', label: '@' + journey.user.username, color: L.navy, shape: 'ellipse', textColor: '#fff', borderWidth: 0, borderColor: '#000' } });
+    elements.push({ data: { id: 'user', label: '@' + journey.username, color: L.navy, shape: 'ellipse', textColor: '#fff', borderWidth: 0, borderColor: '#000' } });
 
     // Goals
     journey.goals.forEach(g => {
@@ -185,13 +259,13 @@ export default function PublicProfilePage() {
       elements.push({ data: { id: 'e_ug_' + g.id, source: 'user', target: 'g_' + g.id, label: 'HAS_GOAL' } });
     });
 
-    // Experiences & Transitions
+    // Experiences
     journey.experiences.forEach(exp => {
       elements.push({ data: { id: 'x_' + exp.id, label: exp.title, color: L.teal, shape: 'round-rectangle', textColor: '#fff', borderWidth: 0, borderColor: '#000' } });
       elements.push({ data: { id: 'e_ux_' + exp.id, source: 'user', target: 'x_' + exp.id, label: 'HAS_EXPERIENCE' } });
 
-      exp.goals?.forEach(g => {
-        elements.push({ data: { id: `e_xg_${exp.id}_${g.id}`, source: 'x_' + exp.id, target: 'g_' + g.id, label: 'CONTRIBUTED_TO' } });
+      exp.goalIds?.forEach(gid => {
+        elements.push({ data: { id: `e_xg_${exp.id}_${gid}`, source: 'x_' + exp.id, target: 'g_' + gid, label: 'CONTRIBUTED_TO' } });
       });
 
       exp.skills?.forEach((s, idx) => {
@@ -199,20 +273,69 @@ export default function PublicProfilePage() {
         elements.push({ data: { id: sId, label: s.name, color: L.surface, shape: 'round-rectangle', textColor: L.navy, borderWidth: 1, borderColor: L.teal } });
         elements.push({ data: { id: 'e_xs_' + sId, source: 'x_' + exp.id, target: sId, label: 'BUILT_SKILL' } });
       });
+    });
 
-      if (exp.transition) {
-        elements.push({ data: { id: 't_' + exp.id, source: 'x_' + exp.transition.toExperienceId, target: 'x_' + exp.id, label: exp.transition.decisionLabel || '' } });
-      }
+    // Transitions
+    journey.transitions.forEach((t, idx) => {
+      elements.push({ data: { id: 't_' + idx, source: 'x_' + t.fromExperienceId, target: 'x_' + t.toExperienceId, label: t.decisionLabel } });
     });
 
     return JSON.stringify(elements);
+  };
+
+  const renderBottomSheet = () => {
+    if (!selectedNodeId || !journey) return null;
+
+    let title = '';
+    let description = '';
+    let badgeText = '';
+
+    if (selectedNodeId.startsWith('g_')) {
+      const gId = selectedNodeId.replace('g_', '');
+      const goal = journey.goals.find(g => g.id === gId);
+      if (goal) {
+        title = goal.title;
+        description = goal.description;
+        badgeText = 'Goal';
+      }
+    } else if (selectedNodeId.startsWith('x_')) {
+      const xId = selectedNodeId.replace('x_', '');
+      const exp = journey.experiences.find(e => e.id === xId);
+      if (exp) {
+        title = exp.title;
+        description = exp.timelineSummary;
+        badgeText = 'Experience';
+      }
+    }
+
+    if (!title) return null;
+
+    return (
+      <View style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        backgroundColor: '#FFFFFF', padding: 24,
+        borderTopLeftRadius: 24, borderTopRightRadius: 24,
+        shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 10
+      }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <View style={{ backgroundColor: L.tealTint, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 16 }}>
+            <Text style={{ fontSize: 12, fontWeight: '600', color: L.teal }}>{badgeText}</Text>
+          </View>
+          <TouchableOpacity onPress={() => setSelectedNodeId(null)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Feather name="x" size={20} color={L.navySoft} />
+          </TouchableOpacity>
+        </View>
+        <Text style={{ fontSize: 18, fontWeight: '700', color: L.navy, marginBottom: 8 }}>{title}</Text>
+        <Text style={{ fontSize: 14, color: L.navySoft, lineHeight: 22 }}>{description}</Text>
+      </View>
+    );
   };
 
   if (isLoading) {
     return (
       <View style={{ flex: 1, backgroundColor: L.background, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color={L.teal} />
-        <Text style={{ marginTop: 12, color: L.navySoft, fontSize: 14 }}>Loading profile...</Text>
+        <Text style={{ marginTop: 12, color: L.navySoft, fontSize: 14 }}>Loading journey...</Text>
       </View>
     );
   }
@@ -220,33 +343,28 @@ export default function PublicProfilePage() {
   if (error || !journey) {
     return (
       <View style={{ flex: 1, backgroundColor: L.background, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-        <Text style={{ fontSize: 15, color: L.navySoft, textAlign: 'center', marginBottom: 16 }}>{error || 'No profile found'}</Text>
-        <TouchableOpacity onPress={loadJourney} style={{ backgroundColor: L.teal, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20 }}>
+        <Text style={{ fontSize: 15, color: L.navySoft, textAlign: 'center', marginBottom: 16 }}>{error || 'No journey found'}</Text>
+        <TouchableOpacity onPress={fetchJourney} style={{ backgroundColor: L.teal, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20 }}>
           <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>Retry</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  // Derive transitions from experiences for the UI mapping
-  const transitions = journey.experiences
-    .filter(e => e.transition)
-    .map(e => ({ fromExperienceId: e.transition!.toExperienceId, toExperienceId: e.id, decisionLabel: e.transition!.decisionLabel }));
-
   return (
     <View style={{ flex: 1, backgroundColor: L.background }}>
       {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 56, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.background }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 56, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.background }}>
         <TouchableOpacity
           onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}
           activeOpacity={0.7}
-          style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}
+          style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: L.surface }}
         >
           <Feather name="arrow-left" size={20} color={L.navy} />
         </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 20, fontWeight: '500', color: L.navy, letterSpacing: 0.4 }}>Public Profile</Text>
-        </View>
+        
+        <Text style={{ fontSize: 16, fontWeight: '600', color: L.navy, letterSpacing: 0.4 }}>Public Profile</Text>
+        
         <TouchableOpacity onPress={() => setShowGraph(true)} style={{ backgroundColor: L.tealTint, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}>
           <Feather name="git-merge" size={14} color={L.teal} style={{ marginRight: 6 }} />
           <Text style={{ fontSize: 12, fontWeight: '700', color: L.teal }}>Graph</Text>
@@ -256,28 +374,44 @@ export default function PublicProfilePage() {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24 }} showsVerticalScrollIndicator={false}>
 
         {/* Summary Stat Block */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: L.tealTint, borderRadius: 16, padding: 20, marginBottom: 32 }}>
-          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: journey.user.avatarUrl ? L.surface : '#9CA3AF', alignItems: 'center', justifyContent: 'center', marginRight: 16, borderWidth: 2, borderColor: L.teal, overflow: 'hidden' }}>
-            {journey.user.avatarUrl ? (
-              <Image source={{ uri: journey.user.avatarUrl }} style={{ width: 48, height: 48 }} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: L.tealTint, borderRadius: 16, padding: 20, marginBottom: 16 }}>
+          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: journey.imageUrl ? L.surface : '#9CA3AF', alignItems: 'center', justifyContent: 'center', marginRight: 16, borderWidth: 2, borderColor: L.teal, overflow: 'hidden' }}>
+            {journey.imageUrl ? (
+              <Image source={{ uri: journey.imageUrl }} style={{ width: 48, height: 48 }} />
             ) : (
-              <Feather name="user" size={30} color="#475569" style={{ marginTop: 12 }} />
+              <Text style={{ fontSize: 24, color: '#FFFFFF', fontWeight: '700' }}>
+                {(journey.username || 'U')[0].toUpperCase()}
+              </Text>
             )}
           </View>
           <View>
-            <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>@{journey.user.username}</Text>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>@{journey.username}</Text>
             <Text style={{ fontSize: 12, fontWeight: '500', color: L.teal, marginTop: 4 }}>
-              {journey.goals.length} Goals • {journey.experiences.length} Experiences
+              {journey.statistics.goals} Goals • {journey.statistics.experiences} Experiences
             </Text>
           </View>
         </View>
+
+        {/* Share Button */}
+        <TouchableOpacity
+          onPress={handleShare}
+          activeOpacity={0.7}
+          style={{
+            flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+            paddingVertical: 14, borderRadius: 16,
+            backgroundColor: L.navy, marginBottom: 32,
+          }}
+        >
+          <Feather name="share-2" size={16} color="#FFFFFF" />
+          <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: '600' }}>Share this Journey</Text>
+        </TouchableOpacity>
 
         {/* Goals Section */}
         {journey.goals.length > 0 && (
           <View style={{ marginBottom: 32 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16, gap: 12 }}>
               <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy }}>GOALS</Text>
-              <View style={{ flex: 1, maxWidth: 60, height: 1, backgroundColor: '#A3B8B5', borderRadius: 1 }} />
+              <View style={{ flex: 1, maxWidth: 60, height: 1, backgroundColor: '#A3B8B5', borderRadius: 1, }} />
             </View>
             {journey.goals.map(goal => (
               <ExpandableGoalCard
@@ -286,8 +420,8 @@ export default function PublicProfilePage() {
                 badgeText={goal.status}
                 description={goal.description}
                 topics={goal.topics || []}
-                subtopics={goal.subtopics || ['Microservices', 'Event-Driven']}
-                duration={calculateDuration(goal.startDate || '', goal.endDate || '')}
+                subtopics={goal.subtopics || ['Microservices', 'Event-Driven']} // Falls back cleanly if array is empty
+                duration={calculateDuration(goal.startDate, goal.endDate)}
               />
             ))}
           </View>
@@ -299,22 +433,24 @@ export default function PublicProfilePage() {
             <View>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16, gap: 12 }}>
                 <Text style={{ fontSize: 12, fontWeight: '500', color: L.navy }}> EXPERIENCE TIMELINE</Text>
-                <View style={{ flex: 1, maxWidth: 60, height: 1, backgroundColor: '#A3B8B5', borderRadius: 1 }} />
+                <View style={{ flex: 1, maxWidth: 60, height: 1, backgroundColor: '#A3B8B5', borderRadius: 1, }} />
               </View>
               <View style={{ position: 'relative' }}>
                 {/* Timeline Rail */}
                 <View style={{ position: 'absolute', left: 15, top: 0, bottom: 0, width: 2, backgroundColor: 'rgba(62, 107, 102, 0.25)', zIndex: 1 }} />
 
                 {journey.experiences.map((exp, index) => {
-                  const matchingTransition = transitions.find(t => t.toExperienceId === exp.id);
+                  const matchingTransition = journey.transitions.find(t => t.toExperienceId === exp.id);
                   const fromExperience = matchingTransition
                     ? journey.experiences.find(e => e.id === matchingTransition.fromExperienceId)
                     : null;
                   const calculatedTransitionLabel = fromExperience
                     ? fromExperience.title
                     : undefined;
-                  const linkedGoalTitles = exp.goals
-                    ? exp.goals.map(g => g.title).filter((title): title is string => !!title)
+                  const linkedGoalTitles = exp.goalIds && journey.goals
+                    ? exp.goalIds
+                      .map(gid => journey.goals.find(g => g.id === gid)?.title)
+                      .filter((title): title is string => !!title)
                     : [];
                   return (
                     <View key={exp.id} style={{ paddingLeft: 32, position: 'relative', zIndex: 10 }}>
@@ -322,7 +458,7 @@ export default function PublicProfilePage() {
                         title={exp.title}
                         previewText={exp.timelineSummary}
                         organization={`${exp.organization || 'TechNova Global'}`}
-                        duration={`${formatToMonthYear(exp.startDate || '')} - ${formatToMonthYear(exp.endDate || '')}`}
+                        duration={`${formatToMonthYear(exp.startDate)} - ${formatToMonthYear(exp.endDate)}`}
                         description={exp.context}
                         isVerified={exp.isVerified}
                         challenge={exp.challengeFaced ?? undefined}
@@ -331,7 +467,7 @@ export default function PublicProfilePage() {
                         skills={exp.skills?.map((s: any) => s.name) || []}
                         linkedGoalTitles={linkedGoalTitles}
                         transitionLabel={calculatedTransitionLabel}
-                        transitionDecision={matchingTransition?.decisionLabel || undefined}
+                        transitionDecision={matchingTransition?.decisionLabel}
                       />
                     </View>
                   );
@@ -343,7 +479,7 @@ export default function PublicProfilePage() {
       </ScrollView >
 
       {/* Graph Modal */}
-      <Modal visible={showGraph} animationType="slide" presentationStyle="formSheet">
+      < Modal visible={showGraph} animationType="slide" presentationStyle="formSheet" >
         <View style={{ flex: 1, backgroundColor: L.background }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.surface }}>
             <Text style={{ fontSize: 18, fontWeight: '700', color: L.navy }}>Knowledge Graph Preview</Text>
@@ -365,8 +501,8 @@ export default function PublicProfilePage() {
             />
           )}
         </View>
-      </Modal>
+      </Modal >
 
-    </View>
+    </View >
   );
 }

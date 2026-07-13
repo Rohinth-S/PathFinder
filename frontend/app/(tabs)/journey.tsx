@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform, Image
+  Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform, Image, Alert
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth, useUser } from '@clerk/clerk-expo';
@@ -11,6 +11,8 @@ import { ExpandableGoalCard, ExpandableExperienceCard } from '../full-journey/ex
 import { L, getEmotionStyle } from '../../constants/colors';
 import { Feather } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -26,16 +28,26 @@ const createCytoscapeHtml = (elementsJson: string) => `
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body, html { width: 100%; height: 100%; margin: 0; padding: 0; background-color: ${L.background}; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        body, html { 
+          width: 100%; height: 100%; margin: 0; padding: 0; 
+          background-color: ${L.background}; 
+          font-family: 'Inter', sans-serif; 
+          background-image: radial-gradient(${L.navySoft}40 1px, transparent 1px);
+          background-size: 24px 24px;
+        }
         #cy { width: 100%; height: 100%; }
-        /* A gentle fade-in animation for the graph */
-        #cy { animation: fadeIn 0.8s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        #cy-wrapper {
+          width: 100%; height: 100%;
+          box-shadow: inset 0 0 40px rgba(0,0,0,0.03);
+        }
     </style>
 </head>
 <body>
-    <div id="cy"></div>
+    <div id="cy-wrapper">
+      <div id="cy"></div>
+    </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var cy = cytoscape({
@@ -47,10 +59,11 @@ const createCytoscapeHtml = (elementsJson: string) => `
                         style: {
                             'label': 'data(label)',
                             'text-valign': 'center',
+                            'text-halign': 'center',
                             'color': 'data(textColor)',
-                            'font-size': '13px',
-                            'font-family': 'system-ui, -apple-system, sans-serif',
-                            'font-weight': 'bold',
+                            'font-size': '12px',
+                            'font-family': 'Inter, sans-serif',
+                            'font-weight': '600',
                             'background-color': 'data(color)',
                             'shape': 'data(shape)',
                             'border-width': 'data(borderWidth)',
@@ -60,58 +73,44 @@ const createCytoscapeHtml = (elementsJson: string) => `
                             'padding': '16px',
                             'text-wrap': 'wrap',
                             'text-max-width': '120px',
-                            'text-justification': 'center',
-                            'shadow-blur': 12,
-                            'shadow-color': '#0f172a',
-                            'shadow-opacity': 0.08,
-                            'shadow-offset-y': 4,
-                            'transition-property': 'background-color, border-color, shadow-opacity',
-                            'transition-duration': '0.3s'
+                            'transition-property': 'background-color, transform, border-width',
+                            'transition-duration': 0.2,
+                            'underlay-color': '#000000',
+                            'underlay-padding': '4px',
+                            'underlay-opacity': 0.1
                         }
                     },
                     {
-                        selector: 'node[shape="ellipse"]',
+                        selector: 'node:active',
                         style: {
-                            'padding': '20px',
-                            'font-size': '14px',
-                            'shadow-opacity': 0.15,
-                            'shadow-offset-y': 6,
-                            'shadow-blur': 16,
+                            'border-width': 3,
+                            'border-color': '${L.terracotta}',
+                            'underlay-opacity': 0.2,
+                            'underlay-padding': '6px'
                         }
                     },
                     {
                         selector: 'edge',
                         style: {
                             'width': 2,
-                            'line-color': '#CBD5E1',
-                            'target-arrow-color': '#CBD5E1',
-                            'target-arrow-shape': 'vee',
+                            'line-color': '#C4D4D1',
+                            'target-arrow-color': '#C4D4D1',
+                            'target-arrow-shape': 'triangle',
                             'curve-style': 'bezier',
                             'label': 'data(label)',
                             'font-size': '10px',
-                            'font-weight': '600',
-                            'font-family': 'system-ui, -apple-system, sans-serif',
+                            'font-family': 'Inter, sans-serif',
+                            'font-weight': '500',
+                            'text-rotation': 'autorotate',
                             'text-background-opacity': 1,
                             'text-background-color': '${L.background}',
-                            'text-background-shape': 'roundrectangle',
                             'text-background-padding': '4px',
+                            'text-background-shape': 'round-rectangle',
                             'text-border-opacity': 1,
                             'text-border-width': 1,
-                            'text-border-color': '#E2E8F0',
-                            'color': '#475569',
-                            'text-wrap': 'ellipsis',
-                            'text-max-width': '100px',
-                            'text-rotation': 'none', /* Keeps labels readable horizontally */
-                            'edge-text-rotation': 'none'
-                        }
-                    },
-                    {
-                        selector: 'edge[label="HAS_EXPERIENCE"], edge[label="HAS_GOAL"]',
-                        style: {
-                            'line-style': 'dashed',
-                            'line-dash-pattern': [4, 4],
-                            'line-color': '#94A3B8',
-                            'target-arrow-color': '#94A3B8'
+                            'text-border-color': '${L.border}',
+                            'color': '${L.navySoft}',
+                            'arrow-scale': 1.2
                         }
                     }
                 ],
@@ -119,26 +118,53 @@ const createCytoscapeHtml = (elementsJson: string) => `
                   name: 'cose',
                   animate: true,
                   animationDuration: 800,
-                  animationEasing: 'ease-out',
+                  animationEasing: 'ease-out-quint',
                   fit: true,           
-                  padding: 50,         
+                  padding: 40,         
                   componentSpacing: 100,
-                  nodeRepulsion: 40000,
-                  idealEdgeLength: 120,
-                  edgeElasticity: 60,
-                  nestingFactor: 1.2
+                  nodeRepulsion: 400000,
+                  nodeOverlap: 10,
+                  idealEdgeLength: 100,
+                  edgeElasticity: 100,
+                  nestingFactor: 5,
+                  gravity: 80,
+                  numIter: 1000
                 }
             });
 
-            // Interactive hover effects for modern feel
-            cy.on('tapstart', 'node', function(e) {
-                var node = e.target;
-                node.style('shadow-opacity', 0.25);
+            cy.on('tap', 'node', function(evt){
+              var node = evt.target;
+              cy.animate({
+                center: { eles: node },
+                zoom: 1.4,
+                duration: 400,
+                easing: 'ease-in-out-cubic'
+              });
+              if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(JSON.stringify({
+                  type: 'node_tap',
+                  nodeId: node.id(),
+                  nodeLabel: node.data('label')
+                }));
+              }
             });
-            cy.on('tapend', 'node', function(e) {
-                var node = e.target;
-                node.style('shadow-opacity', node.data('shape') === 'ellipse' ? 0.15 : 0.08);
+            
+            cy.on('tap', function(evt){
+              if(evt.target === cy){
+                cy.animate({
+                  fit: { padding: 40 },
+                  duration: 400,
+                  easing: 'ease-in-out-cubic'
+                });
+                if (window.ReactNativeWebView) {
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'bg_tap'
+                  }));
+                }
+              }
             });
+
+            window.cy = cy;
         });
     </script>
 </body>
@@ -157,6 +183,8 @@ export default function HistoryPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showGraph, setShowGraph] = useState(false);
+  const webViewRef = React.useRef<WebView>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   useEffect(() => {
     loadJourney();
@@ -175,6 +203,43 @@ export default function HistoryPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleWebViewMessage = async (event: any) => {
+    try {
+      const data = JSON.parse(event.nativeEvent.data);
+      if (data.type === 'node_tap') {
+        setSelectedNodeId(data.nodeId);
+      } else if (data.type === 'bg_tap') {
+        setSelectedNodeId(null);
+      } else if (data.type === 'export_result') {
+        const base64Data = data.data.replace(/^data:image\/png;base64,/, "");
+        const uri = FileSystem.cacheDirectory + 'my-journey-graph.png';
+        await FileSystem.writeAsStringAsync(uri, base64Data, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(uri, { UTI: 'public.png', mimeType: 'image/png', dialogTitle: 'Share My Journey Graph' });
+        } else {
+          Alert.alert("Sharing not available");
+        }
+      }
+    } catch (e) {
+      console.warn('Error parsing webview message', e);
+    }
+  };
+
+  const handleExportGraph = () => {
+    const injected = `
+      if (window.cy && window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'export_result',
+          data: window.cy.png({ bg: '#FAF9F6', full: true, scale: 2 })
+        }));
+      }
+      true;
+    `;
+    webViewRef.current?.injectJavaScript(injected);
   };
 
   const prepareGraphElements = () => {
@@ -211,6 +276,54 @@ export default function HistoryPage() {
     });
 
     return JSON.stringify(elements);
+  };
+
+  const renderBottomSheet = () => {
+    if (!selectedNodeId || !journey) return null;
+
+    let title = '';
+    let description = '';
+    let badgeText = '';
+
+    if (selectedNodeId.startsWith('g_')) {
+      const gId = selectedNodeId.replace('g_', '');
+      const goal = journey.goals.find(g => g.id === gId);
+      if (goal) {
+        title = goal.title;
+        description = goal.description;
+        badgeText = 'Goal';
+      }
+    } else if (selectedNodeId.startsWith('x_')) {
+      const xId = selectedNodeId.replace('x_', '');
+      const exp = journey.experiences.find(e => e.id === xId);
+      if (exp) {
+        title = exp.title;
+        description = exp.timelineSummary;
+        badgeText = 'Experience';
+      }
+    }
+
+    if (!title) return null;
+
+    return (
+      <View style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        backgroundColor: '#FFFFFF', padding: 24,
+        borderTopLeftRadius: 24, borderTopRightRadius: 24,
+        shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 10
+      }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <View style={{ backgroundColor: L.tealTint, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 16 }}>
+            <Text style={{ fontSize: 12, fontWeight: '600', color: L.teal }}>{badgeText}</Text>
+          </View>
+          <TouchableOpacity onPress={() => setSelectedNodeId(null)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Feather name="x" size={20} color={L.navySoft} />
+          </TouchableOpacity>
+        </View>
+        <Text style={{ fontSize: 18, fontWeight: '700', color: L.navy, marginBottom: 8 }}>{title}</Text>
+        <Text style={{ fontSize: 14, color: L.navySoft, lineHeight: 22 }}>{description}</Text>
+      </View>
+    );
   };
 
   if (isLoading) {
@@ -279,7 +392,7 @@ export default function HistoryPage() {
                 badgeText={goal.status}
                 description={goal.description}
                 topics={goal.topics || []}
-                subtopics={goal.subtopics || ['Microservices', 'Event-Driven']} // Falls back cleanly if array is empty
+                subtopics={goal.subtopics || ['Microservices', 'Event-Driven']}
                 duration={calculateDuration(goal.startDate, goal.endDate)}
               />
             ))}
@@ -341,24 +454,28 @@ export default function HistoryPage() {
       < Modal visible={showGraph} animationType="slide" presentationStyle="formSheet" >
         <View style={{ flex: 1, backgroundColor: L.background }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.surface }}>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: L.navy }}>Knowledge Graph Preview</Text>
-            <TouchableOpacity onPress={() => setShowGraph(false)} style={{ padding: 8, backgroundColor: L.surface, borderRadius: 20 }}>
-              <Feather name="x" size={20} color={L.navy} />
+            <TouchableOpacity onPress={() => { setShowGraph(false); setSelectedNodeId(null); }} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <Feather name="arrow-left" size={20} color={L.navy} />
+            </TouchableOpacity>
+            
+            <Text style={{ fontSize: 16, fontWeight: '600', color: L.navy, letterSpacing: 0.4 }}>My Visual Journey</Text>
+            
+            <TouchableOpacity onPress={handleExportGraph} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Feather name="download" size={16} color={L.teal} />
+              <Text style={{ fontSize: 14, fontWeight: '600', color: L.teal }}>Export</Text>
             </TouchableOpacity>
           </View>
-          {Platform.OS === 'web' ? (
-            <iframe
-              // @ts-ignore
-              srcDoc={createCytoscapeHtml(prepareGraphElements())}
-              style={{ flex: 1, width: '100%', height: '100%', border: 'none' }}
-            />
-          ) : (
+          <View style={{ flex: 1, backgroundColor: L.background }}>
             <WebView
+              ref={webViewRef}
               originWhitelist={['*']}
               source={{ html: createCytoscapeHtml(prepareGraphElements()) }}
-              style={{ flex: 1 }}
+              style={{ flex: 1, backgroundColor: 'transparent' }}
+              scrollEnabled={false}
+              onMessage={handleWebViewMessage}
             />
-          )}
+            {renderBottomSheet()}
+          </View>
         </View>
       </Modal >
 
