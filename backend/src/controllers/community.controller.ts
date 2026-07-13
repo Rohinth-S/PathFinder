@@ -74,13 +74,90 @@ export async function getJourneyController(
 ): Promise<void> {
   try {
     const { username } = req.params;
-    const journey = await getJourney(username);
+    
+    let userId = undefined;
+    const auth = (req as any).auth;
+    if (auth && auth.userId) {
+      userId = auth.userId;
+    }
+
+    const journey = await getJourney(username, userId);
 
     res.json(journey);
   } catch (error) {
     const message =
       error instanceof Error ? error.message : String(error);
 
+    res.status(500).json({ error: message });
+  }
+}
+
+export async function getFeedController(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    // Check for userId in the authenticated request (if using Clerk Middleware)
+    // We assume req.auth might be attached, or we pass userId as query param for simplicity
+    const authHeader = req.headers.authorization;
+    let userId = undefined;
+    
+    // In our backend, clerk auth attaches req.auth.userId but Express Request type might not have it unless extended.
+    // We'll safely check req.auth
+    const auth = (req as any).auth;
+    if (auth && auth.userId) {
+      userId = auth.userId;
+    }
+
+    const page = typeof req.query.page === "string" ? Number(req.query.page) : 1;
+    const limit = typeof req.query.limit === "string" ? Number(req.query.limit) : 20;
+
+    const { getFeed } = await import("../processors/community/getFeed.processor.js");
+    const feed = await getFeed(userId, page, limit);
+
+    res.json(feed);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    res.status(500).json({ error: message });
+  }
+}
+
+export async function upvoteExperienceController(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    const auth = (req as any).auth;
+    if (!auth || !auth.userId) {
+      res.status(401).json({ error: "Unauthorized. Must be logged in to upvote." });
+      return;
+    }
+    const userId = auth.userId as string;
+    const experienceId = req.params.id as string;
+
+    const { upvoteExperience } = await import("../processors/community/upvoteExperience.processor.js");
+    const result = await upvoteExperience(userId, experienceId);
+
+    res.json(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    res.status(500).json({ error: message });
+  }
+}
+
+export async function getGraphController(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    const limit = typeof req.query.limit === "string" ? Number(req.query.limit) : 20;
+
+    const { getGraph } = await import("../processors/community/getGraph.processor.js");
+    const graph = await getGraph(limit);
+
+    res.json(graph);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     res.status(500).json({ error: message });
   }
 }

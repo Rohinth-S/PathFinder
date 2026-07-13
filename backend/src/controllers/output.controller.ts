@@ -42,8 +42,11 @@ export async function translateController(
 
   try {
     const userId = req.userId;
-    const language = await getPreferredLanguage(userId);
-    const { aiInsights } = req.body;
+    const { aiInsights, language: bodyLang } = req.body;
+    let language = bodyLang;
+    if (!language) {
+      language = await getPreferredLanguage(userId).catch(() => "en");
+    }
     const translatedAiInsights = await translateAiInsights(aiInsights, language);
 
     res.json({ translatedAiInsights });
@@ -63,8 +66,11 @@ export async function speechController(
 
   try {
     const userId = req.userId;
-    const language = await getPreferredLanguage(userId);
-    const { aiInsights, speaker } = req.body;
+    const { aiInsights, speaker, language: bodyLang } = req.body;
+    let language = bodyLang;
+    if (!language) {
+      language = await getPreferredLanguage(userId).catch(() => "en");
+    }
     const audioBuffer = await generateSpeech({ aiInsights, language, speaker });
     res.setHeader("Content-Type", "audio/wav");
     res.setHeader("Content-Disposition", "inline; filename=speech.wav");

@@ -10,7 +10,9 @@ export async function syncUserController(
   try {
    const userId = req.userId;
 
+    console.log("Fetching user from Clerk for id:", userId);
     const user = await clerkClient.users.getUser(userId);
+    console.log("Successfully fetched user from Clerk");
     const email = user.primaryEmailAddress?.emailAddress;
     const imageUrl = user.imageUrl;
 
@@ -21,13 +23,14 @@ export async function syncUserController(
       return;
     }
 
+    console.log("Syncing user to Neo4j");
     const syncedUser = await syncUser(user.id,email,imageUrl);
+    console.log("Successfully synced user to Neo4j");
     res.json(syncedUser);
 
   } catch (error) {
-
+    console.error("Error in syncUserController:", error);
     const message = error instanceof Error? error.message : String(error);
     res.status(500).json({error: message});
-
   }
 }

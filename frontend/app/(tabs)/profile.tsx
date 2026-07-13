@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaVi
 import { useRouter } from 'expo-router';
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { syncUser, updateProfile, SyncedUser } from '../../api/auth.api';
-import { UI } from '../../constants/colors';
+import { L } from '../../constants/colors';
 import { Feather } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withSequence, FadeInDown, FadeInUp } from 'react-native-reanimated';
@@ -118,10 +118,10 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: UI.background }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color={UI.accent} />
-          <Text style={{ marginTop: 12, color: UI.fg40, fontSize: 13, fontFamily: 'Inter_400Regular' }}>Loading profile...</Text>
+          <ActivityIndicator size="large" color={L.terracotta} />
+          <Text style={{ marginTop: 12, color: L.navySoft, fontSize: 13, fontFamily: 'Inter_400Regular' }}>Loading profile...</Text>
         </View>
       </SafeAreaView>
     );
@@ -129,9 +129,9 @@ export default function ProfilePage() {
 
   if (error) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: UI.background }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-          <Text style={{ fontSize: 15, color: UI.fg50, textAlign: 'center', marginBottom: 16 }}>{error}</Text>
+          <Text style={{ fontSize: 15, color: L.navySoft, textAlign: 'center', marginBottom: 16 }}>{error}</Text>
           <GradientButton label="Retry" onPress={loadUserProfile} size="sm" />
         </View>
       </SafeAreaView>
@@ -139,13 +139,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: UI.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
       {/* Header */}
       <Animated.View entering={FadeInDown.duration(400).springify()} style={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 8 }}>
         <SectionLabel>Your Details</SectionLabel>
         <Text style={{
           fontFamily: 'InstrumentSerif_400Regular',
-          fontSize: 48, color: UI.foreground, marginTop: 4, letterSpacing: -1
+          fontSize: 48, color: L.navy, marginTop: 4, letterSpacing: -1
         }}>
           Profile
         </Text>
@@ -159,25 +159,25 @@ export default function ProfilePage() {
         <Animated.View entering={FadeInUp.delay(100).duration(400).springify()} style={{ alignItems: 'center', marginBottom: 40 }}>
           <View style={{
             width: 104, height: 104, borderRadius: 52,
-            backgroundColor: clerkUser?.hasImage ? UI.surface : UI.surfaceDim,
-            borderWidth: 1, borderColor: UI.border,
+            backgroundColor: clerkUser?.hasImage ? L.surface : L.tealTint,
+            borderWidth: 1, borderColor: L.border,
             alignItems: 'center', justifyContent: 'center',
             marginBottom: 16, overflow: 'hidden'
           }}>
             {clerkUser?.hasImage ? (
               <Image source={{ uri: clerkUser.imageUrl }} style={{ width: 104, height: 104 }} />
             ) : (
-              <Feather name="user" size={40} color={UI.fg40} />
+              <Feather name="user" size={40} color={L.navySoft} />
             )}
           </View>
-          <Text style={{ fontSize: 22, color: UI.foreground, fontFamily: 'Inter_700Bold', letterSpacing: -0.5 }}>
+          <Text style={{ fontSize: 22, color: L.navy, fontFamily: 'Inter_700Bold', letterSpacing: -0.5 }}>
             {displayName}
           </Text>
           
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12 }}>
-            <PillBadge label={`${reputationScore} REP`} color={UI.accent} bgColor={UI.accentSoft} />
+            <PillBadge label={`${reputationScore} REP`} color={L.terracotta} bgColor={L.terracottaTint} />
             {reputationScore > 0 && (
-              <PillBadge label="VERIFIED" color={UI.success} bgColor={UI.successTint} />
+              <PillBadge label="VERIFIED" color={L.teal} bgColor={L.tealTint} />
             )}
           </View>
         </Animated.View>
@@ -186,27 +186,27 @@ export default function ProfilePage() {
         <Animated.View entering={FadeInUp.delay(200).duration(400).springify()} style={{ marginBottom: 40, gap: 16 }}>
           {/* Username Field */}
           <View style={{
-            backgroundColor: UI.surface, borderRadius: 12, borderWidth: 1, borderColor: UI.border, padding: 20,
-            shadowColor: UI.foreground, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 8, elevation: 1
+            backgroundColor: L.surface, borderRadius: 12, borderWidth: 1, borderColor: L.border, padding: 20,
+            shadowColor: L.navy, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 8, elevation: 1
           }}>
             <SectionLabel style={{ marginBottom: 12 }}>USERNAME</SectionLabel>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <TextInput
-                style={{ fontSize: 16, color: UI.foreground, flex: 1, padding: 0, fontFamily: 'Inter_600SemiBold' }}
+                style={{ fontSize: 16, color: L.navy, flex: 1, padding: 0, fontFamily: 'Inter_600SemiBold' }}
                 value={username}
                 onChangeText={setUsername}
                 onBlur={handleSaveUsername}
                 onSubmitEditing={handleSaveUsername}
                 returnKeyType="done"
                 placeholder="Set Username"
-                placeholderTextColor={UI.fg40}
+                placeholderTextColor={L.navySoft}
               />
               <TouchableOpacity onPress={() => { Keyboard.dismiss(); handleSaveUsername(); }}>
                 <Animated.View style={usernameAnimStyle}>
                   {showSuccessTick === 'username' ? (
-                    <Feather name="check" size={20} color={UI.success} />
+                    <Feather name="check" size={20} color={L.teal} />
                   ) : (
-                    <Feather name="edit-2" size={16} color={UI.fg40} />
+                    <Feather name="edit-2" size={16} color={L.navySoft} />
                   )}
                 </Animated.View>
               </TouchableOpacity>
@@ -215,22 +215,22 @@ export default function ProfilePage() {
 
           {/* Language Field */}
           <View style={{
-            backgroundColor: UI.surface, borderRadius: 12, borderWidth: 1, borderColor: UI.border, padding: 20,
-            shadowColor: UI.foreground, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 8, elevation: 1
+            backgroundColor: L.surface, borderRadius: 12, borderWidth: 1, borderColor: L.border, padding: 20,
+            shadowColor: L.navy, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 8, elevation: 1
           }}>
             <SectionLabel style={{ marginBottom: 12 }}>LANGUAGE</SectionLabel>
             <TouchableOpacity 
               onPress={() => bottomSheetRef.current?.expand()}
               style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
             >
-              <Text style={{ fontSize: 16, color: UI.foreground, flex: 1, fontFamily: 'Inter_600SemiBold' }}>
+              <Text style={{ fontSize: 16, color: L.navy, flex: 1, fontFamily: 'Inter_600SemiBold' }}>
                 {LANGUAGES.find(l => l.code === languageCode)?.label || languageCode}
               </Text>
               <Animated.View style={languageAnimStyle}>
                 {showSuccessTick === 'language' ? (
-                  <Feather name="check" size={20} color={UI.success} />
+                  <Feather name="check" size={20} color={L.teal} />
                 ) : (
-                  <Feather name="chevron-down" size={20} color={UI.fg40} />
+                  <Feather name="chevron-down" size={20} color={L.navySoft} />
                 )}
               </Animated.View>
             </TouchableOpacity>
@@ -250,7 +250,7 @@ export default function ProfilePage() {
             onPress={handleSignOut}
             style={{ paddingVertical: 16, alignItems: 'center', marginTop: 12 }}
           >
-            <SectionLabel color={UI.accentEnd}>SIGN OUT</SectionLabel>
+            <SectionLabel color={L.terracotta}>SIGN OUT</SectionLabel>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
@@ -261,22 +261,22 @@ export default function ProfilePage() {
         index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose
-        backgroundStyle={{ backgroundColor: UI.surface }}
-        handleIndicatorStyle={{ width: 40, height: 4, backgroundColor: UI.border }}
+        backgroundStyle={{ backgroundColor: L.surface }}
+        handleIndicatorStyle={{ width: 40, height: 4, backgroundColor: L.border }}
       >
         <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 16 }}>
-          <Text style={{ fontSize: 20, color: UI.foreground, marginBottom: 16, fontFamily: 'InstrumentSerif_400Regular' }}>Select Language</Text>
+          <Text style={{ fontSize: 20, color: L.navy, marginBottom: 16, fontFamily: 'InstrumentSerif_400Regular' }}>Select Language</Text>
           
           <View style={{
             flexDirection: 'row', alignItems: 'center',
-            backgroundColor: UI.background, borderRadius: 12, paddingHorizontal: 12, marginBottom: 16,
-            borderWidth: 1, borderColor: UI.border
+            backgroundColor: L.background, borderRadius: 12, paddingHorizontal: 12, marginBottom: 16,
+            borderWidth: 1, borderColor: L.border
           }}>
-            <Feather name="search" size={18} color={UI.fg40} />
+            <Feather name="search" size={18} color={L.navySoft} />
             <BottomSheetTextInput
-              style={{ flex: 1, paddingVertical: 12, paddingHorizontal: 8, fontSize: 15, color: UI.foreground, fontFamily: 'Inter_400Regular' }}
+              style={{ flex: 1, paddingVertical: 12, paddingHorizontal: 8, fontSize: 15, color: L.navy, fontFamily: 'Inter_400Regular' }}
               placeholder="Search languages..."
-              placeholderTextColor={UI.fg40}
+              placeholderTextColor={L.navySoft}
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
@@ -293,15 +293,15 @@ export default function ProfilePage() {
                     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
                     paddingVertical: 16, paddingHorizontal: 16,
                     borderRadius: 8,
-                    backgroundColor: isSelected ? UI.surfaceDim : 'transparent',
+                    backgroundColor: isSelected ? L.tealTint : 'transparent',
                     marginBottom: 4
                   }}
                 >
-                  <Text style={{ fontSize: 15, fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular', color: isSelected ? UI.foreground : UI.fg80 }}>
+                  <Text style={{ fontSize: 15, fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular', color: isSelected ? L.navy : L.navySoft }}>
                     {lang.label}
                   </Text>
                   {isSelected && (
-                    <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: UI.foreground, alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: L.navy, alignItems: 'center', justifyContent: 'center' }}>
                       <Feather name="check" size={14} color="#FFFFFF" />
                     </View>
                   )}

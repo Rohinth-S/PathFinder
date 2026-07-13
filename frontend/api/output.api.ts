@@ -15,7 +15,7 @@ export async function translateInsights(
   language: string
 ): Promise<TranslateResponse> {
   return apiFetch<TranslateResponse>(
-    "/translate",
+    "/output/translate",
     {
       method: "POST",
       body: JSON.stringify({ aiInsights, language }),
@@ -31,7 +31,7 @@ export async function generateSpeechUri(
   aiInsights: any,
   language: string
 ): Promise<string> {
-  const response = await fetch(`${API_BASE_URL}/speech`, {
+  const response = await fetch(`${API_BASE_URL}/output/speech`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -44,19 +44,12 @@ export async function generateSpeechUri(
     throw new Error("Failed to generate speech");
   }
 
-  // We need to read the audio blob as base64 and save it to a local file to play it with expo-av
+  // We need to read the audio blob as base64 and return a data URI for expo-av
   const blob = await response.blob();
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        const base64Data = (reader.result as string).split(",")[1];
-        const file = new File(Paths.document, "speech.wav");
-        await file.write(base64Data, { encoding: "base64" });
-        resolve(file.uri);
-      } catch (err) {
-        reject(err);
-      }
+    reader.onload = () => {
+      resolve(reader.result as string); // reader.result is already a data URI string
     };
     reader.onerror = reject;
     reader.readAsDataURL(blob);
