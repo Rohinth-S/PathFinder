@@ -182,6 +182,7 @@ export async function searchCommunityUsers(
 
       RETURN
         u.username AS username,
+        u.imageUrl AS imageUrl,
         u.summary AS summary,
         u.expertiseAreas AS expertiseAreas,
         u.reputationScore AS reputationScore,
@@ -210,6 +211,7 @@ export async function searchCommunityUsers(
 
     return result.records.map((record) => ({
       username: record.get("username"),
+      imageUrl: record.get("imageUrl"),
       summary: record.get("summary"),
       expertiseAreas: record.get("expertiseAreas"),
       reputationScore: record.get("reputationScore"),
@@ -236,7 +238,8 @@ export async function getCommunityJourney(
     const userResult = await session.run(
       `
       MATCH (u:User {username: $username})
-      RETURN u.username AS username
+      RETURN u.username AS username,
+      u.imageUrl AS imageUrl
       `,
       { username }
     );
@@ -244,6 +247,12 @@ export async function getCommunityJourney(
     if (userResult.records.length === 0) {
       throw new Error("User not found.");
     }
+    const record = userResult.records[0];
+    if (!record) {
+      throw new Error("User not found.");
+    }
+    const usernameValue = record.get("username") as string;
+    const imageUrl = record.get("imageUrl") as string | null;
 
     const goalsResult = await session.run(
       `
@@ -354,8 +363,8 @@ export async function getCommunityJourney(
     ) satisfies JourneyTransition[];
 
     return {
-      username,
-
+      username: usernameValue,
+      imageUrl,
       statistics: {
         goals: goals.length,
         experiences: experiences.length,

@@ -7,6 +7,7 @@ export interface JourneyExperience {
 
 export interface RetrievedJourney {
   username: string;
+  imageUrl: string | null;
   summary: string;
   expertiseAreas: string[];
   reputationScore: number;
@@ -31,6 +32,7 @@ export async function retrieveJourneys(
 
       RETURN
         u.username AS username,
+        u.imageUrl AS imageUrl,
         u.summary AS summary,
         u.expertiseAreas AS expertiseAreas,
         u.reputationScore AS reputationScore,
@@ -43,6 +45,7 @@ export async function retrieveJourneys(
 
     return result.records.map((record) => ({
       username: record.get("username") as string,
+      imageUrl: (record.get("imageUrl") as string | null) ?? null,
 
       summary:
         (record.get("summary") as string) ?? "",

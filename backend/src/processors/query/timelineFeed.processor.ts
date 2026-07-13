@@ -7,6 +7,7 @@ import type { JourneyGoal } from "../../types/journey/Journey.types.js";
 
 export interface RelevantJourney {
   username: string;
+  imageUrl: string | null;
   summary: string;
   expertiseAreas: string[];
   expandedDetails: {
@@ -97,6 +98,7 @@ export function buildTimelineFeed(
 
     return {
       username: journey.username,
+      imageUrl: journey.imageUrl,
       summary: journey.summary,
       expertiseAreas:
         journey.expertiseAreas,
