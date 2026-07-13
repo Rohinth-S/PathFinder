@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { startJourney } from "../processors/journey/startJourney.processor.js";
 import { submitGoal } from "../processors/journey/submitGoal.processor.js";
 import { continueJourney } from "../processors/journey/continueJourney.processor.js";
+import type { SubmitJourney } from "../processors/journey/journeySchema.js";
 import { submitJourney } from "../processors/journey/submitJourney.processor.js";
 
 export async function startJourneyController(
@@ -71,10 +72,7 @@ export async function submitGoalController(
       return;
     }
     const createdGoal = await submitGoal(req.userId, goal);
-    res.json({
-      success: true,
-      goal: createdGoal,
-    });
+    res.json({success: true,goal: createdGoal});
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     res.status(500).json({ error: message });
@@ -93,41 +91,39 @@ export async function submitJourneyController(
       });
       return;
     }
-
-    const journeyPayload = JSON.parse(req.body.journey);
-    const { conversationId, experiences } = journeyPayload;
+    if (!req.body.journey) {
+      res.status(400).json({
+        error: "journey is required",
+      });
+      return;
+    }
+    const journeyPayload = JSON.parse(req.body.journey) as SubmitJourney & { conversationId: string };
+    const { conversationId } = journeyPayload;
     if (!conversationId) {
       res.status(400).json({
         error: "Missing required parameter: conversationId",
       });
       return;
     }
-    for (const experience of experiences) {
-      if (!experience.proofs) {
-        continue;
-      }
-      for (const proof of experience.proofs) {
-        if (
-          proof.sourceType === "github" ||
-          proof.sourceType === "link"
-        ) {
-          continue;
-        }
-        const uploadedFile = files.find(
-          (file) => file.fieldname === proof.id
-        );
-        if (!uploadedFile) {
-          throw new Error(
-            `Missing uploaded file for proof ${proof.id}`
-          );
-        }
-        proof.url = uploadedFile.path;
-      }
+    const proofFiles = new Map<string, Express.Multer.File>();
+
+    for (const file of (req.files as Express.Multer.File[]) ?? []) {
+      proofFiles.set(file.fieldname, file);
     }
-    const result = await submitJourney(userId, conversationId, journeyPayload);
-    res.json({ success: true, ...result, });
+    
+    const result = await submitJourney(userId,conversationId, journeyPayload,proofFiles);
+    res.json({
+      success: true,
+      ...result,
+    });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    res.status(500).json({ error: message });
+    const message =
+      error instanceof Error
+        ? error.message
+        : String(error);
+
+    res.status(500).json({
+      error: message,
+    });
   }
 }

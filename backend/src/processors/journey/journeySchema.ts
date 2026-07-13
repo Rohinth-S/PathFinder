@@ -251,3 +251,4 @@ export type JourneyTransition = z.infer<typeof journeyTransitionSchema>;
 export type SubmitJourney = z.infer<typeof submitJourneySchema>;
 export type JourneyJson = z.infer<typeof journeyJsonSchema>;
 export type SubmitProof = z.infer<typeof submitProofSchema>;
+export type SubmitExperience = z.infer<typeof submitExperienceSchema>;
