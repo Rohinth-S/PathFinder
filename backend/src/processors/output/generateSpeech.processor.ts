@@ -21,11 +21,13 @@ export async function generateSpeech(
     content = await translateAiInsights(aiInsights, language);
   }
 
-  const speechText = [
+  const speechParts = [
     content.directAnswer,
-    ...content.keyPoints,
+    ...(Array.isArray(content.keyPoints) ? content.keyPoints : []),
     content.actionableTakeaway,
-  ].join("\n\n");
+  ].filter(Boolean);
+
+  const speechText = speechParts.join("\n\n").slice(0, 2400);
 
   return sarvamProvider.textToSpeech(
     speechText,

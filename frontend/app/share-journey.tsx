@@ -163,7 +163,7 @@ export default function ShareJourneyPage() {
       }
     }
     initSession();
-  }, [getToken]);
+  }, []);
 
   const sendMessage = async () => {
     if (!inputText.trim() || !conversationId) return;
