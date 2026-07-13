@@ -32,4 +32,5 @@ jobs:
         working-directory: frontend
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas update --branch production --message "Auto-update: ${{ github.event.head_commit.message }} [${{ github.sha }}]"
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: eas update --branch production --message "Auto-update: $COMMIT_MSG [${{ github.sha }}]"
