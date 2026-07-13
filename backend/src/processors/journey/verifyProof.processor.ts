@@ -293,7 +293,7 @@ export async function verifyProof(
           url: cloudinaryUrl,
           status: "rejected",
           verifiedAt: null,
-          reason: `Failed to retrieve PDF file: ${err.message}`,
+          reason: `Failed to retrieve PDF file: ${message}`,
         };
       }
 
@@ -318,7 +318,7 @@ export async function verifyProof(
           url: cloudinaryUrl,
           status: "rejected",
           verifiedAt: null,
-          reason: `Failed to parse PDF content: ${err.message}`,
+          reason: `Failed to parse PDF content: ${message}`,
         };
       }
 
@@ -339,7 +339,7 @@ export async function verifyProof(
           url: cloudinaryUrl,
           status: "rejected",
           verifiedAt: null,
-          reason: `Failed to retrieve image file: ${err.message}`,
+          reason: `Failed to retrieve image file: ${message}`,
         };
       }
 
@@ -417,7 +417,11 @@ export async function verifyProof(
       throw new Error(`Gemini response failed schema validation: ${validated.error.message}`);
     }
 
-    return validated.data;
+    return {
+      ...validated.data,
+      verifiedAt: validated.data.verifiedAt ?? null,
+      reason: validated.data.reason ?? null,
+    };
 
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
@@ -427,7 +431,7 @@ export async function verifyProof(
       url: cloudinaryUrl,
       status: "rejected",
       verifiedAt: null,
-      reason: `Verification failed during analysis: ${err.message}`,
+      reason: `Verification failed during analysis: ${message}`,
     };
   }
 }
