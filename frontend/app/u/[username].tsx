@@ -172,7 +172,7 @@ const createCytoscapeHtml = (elementsJson: string) => `
 
 export default function PublicProfilePage() {
   const router = useRouter();
-  const { username } = useLocalSearchParams<{ username: string }>();
+  const { username, fromQuery, imageUrl, expandedDetails } = useLocalSearchParams<{ username: string; fromQuery?: string; imageUrl?: string; expandedDetails?: string; }>();
 
   const [journey, setJourney] = useState<CommunityJourney | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -181,11 +181,37 @@ export default function PublicProfilePage() {
   const webViewRef = React.useRef<WebView>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
+  // Unified routing lifecycle with precise logs and structural isolation
   useEffect(() => {
+
     if (username) {
-      fetchJourney();
+      if (fromQuery === 'true' && expandedDetails) {
+        try {
+          const parsedDetails = JSON.parse(expandedDetails);
+
+          setJourney({
+            username: username,
+            imageUrl: imageUrl || null,
+            statistics: {
+              goals: parsedDetails.goals?.length || 0,
+              experiences: parsedDetails.experiences?.length || 0,
+              transitions: parsedDetails.transitions?.length || 0,
+            },
+            goals: parsedDetails.goals || [],
+            experiences: parsedDetails.experiences || [],
+            transitions: parsedDetails.transitions || [],
+          });
+          setIsLoading(false);
+        } catch (err) {
+          fetchJourney();
+        }
+      } else {
+        fetchJourney();
+      }
+    } else {
+      console.warn("⚠️ No 'username' parameter is present.");
     }
-  }, [username]);
+  }, [username, fromQuery, imageUrl, expandedDetails]);
 
   const fetchJourney = async () => {
     try {
@@ -203,7 +229,7 @@ export default function PublicProfilePage() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Check out ${username || 'this user'}'s professional journey on PathFinder! https://path-finder-murex-six.vercel.app/u/${username || 'user'}`,
+        message: `Check out ${username || 'this user'}'s professional journey on PathFinder! https://pathfinder.app/u/${username || 'user'}`,
       });
     } catch (error: any) {
       console.warn(error.message);
@@ -276,9 +302,19 @@ export default function PublicProfilePage() {
     });
 
     // Transitions
-    journey.transitions.forEach((t, idx) => {
-      elements.push({ data: { id: 't_' + idx, source: 'x_' + t.fromExperienceId, target: 'x_' + t.toExperienceId, label: t.decisionLabel } });
-    });
+    const validExperienceIds = new Set(journey.experiences.map(exp => exp.id));
+    journey.transitions.filter(
+      t => validExperienceIds.has(t.fromExperienceId) && validExperienceIds.has(t.toExperienceId))
+      .forEach((t, idx) => {
+        elements.push({
+          data: {
+            id: `t_${idx}`,
+            source: `x_${t.fromExperienceId}`,
+            target: `x_${t.toExperienceId}`,
+            label: t.decisionLabel,
+          },
+        });
+      });
 
     return JSON.stringify(elements);
   };
@@ -362,9 +398,8 @@ export default function PublicProfilePage() {
         >
           <Feather name="arrow-left" size={20} color={L.navy} />
         </TouchableOpacity>
-        
         <Text style={{ fontSize: 16, fontWeight: '600', color: L.navy, letterSpacing: 0.4 }}>Public Profile</Text>
-        
+
         <TouchableOpacity onPress={() => setShowGraph(true)} style={{ backgroundColor: L.tealTint, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}>
           <Feather name="git-merge" size={14} color={L.teal} style={{ marginRight: 6 }} />
           <Text style={{ fontSize: 12, fontWeight: '700', color: L.teal }}>Graph</Text>
@@ -387,7 +422,7 @@ export default function PublicProfilePage() {
           <View>
             <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>@{journey.username}</Text>
             <Text style={{ fontSize: 12, fontWeight: '500', color: L.teal, marginTop: 4 }}>
-              {journey.statistics.goals} Goals • {journey.statistics.experiences} Experiences
+              {journey.statistics?.goals || 0} Goals • {journey.statistics?.experiences || 0} Experiences
             </Text>
           </View>
         </View>

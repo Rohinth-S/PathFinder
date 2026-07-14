@@ -302,15 +302,7 @@ export function RippleMicBadge({ label }: RippleMicBadgeProps) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <View style={{ width: 84, height: 84, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              width: 56,
-              height: 56,
-              borderRadius: 28,
-              backgroundColor: 'rgba(53, 108, 101, 0.10)',
-            },
+        <Animated.View style={[{ position: 'absolute', width: 56, height: 56, borderRadius: 28, backgroundColor: '#1E293B'},
             rippleStyleB,
           ]}
         />
@@ -321,16 +313,16 @@ export function RippleMicBadge({ label }: RippleMicBadgeProps) {
               width: 50,
               height: 50,
               borderRadius: 25,
-              backgroundColor: 'rgba(53, 108, 101, 0.18)',
+              backgroundColor: '#1E293B',
             },
             rippleStyleA,
           ]}
         />
-        <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: UI.accent, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center' }}>
           <MaterialCommunityIcons name="microphone" size={16} color="#FFFFFF" />
         </View>
       </View>
-        <Text style={{ color: UI.accent, fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', marginLeft: -2 }}>{label}</Text>
+        <Text style={{ color: '#1E293B', fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', marginLeft: -2 }}>{label}</Text>
     </View>
   );
 }
