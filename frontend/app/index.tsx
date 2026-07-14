@@ -47,7 +47,7 @@ function LandingPageContent() {
   });
 
   const animatedBgStyle = useAnimatedStyle(() => {
-    return { backgroundColor: UI.background, flex: 1 };
+    return { backgroundColor: UI.surfaceInverse, flex: 1 };
   });
 
   useEffect(() => {
@@ -79,7 +79,7 @@ function LandingPageContent() {
   return (
     <Animated.View style={animatedBgStyle}>
       <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar style="dark" />
+        <StatusBar style="light" />
         <Animated.ScrollView
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
