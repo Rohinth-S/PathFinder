@@ -66,7 +66,6 @@
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
-        "listUnknownPackages": false,
         "exclude": [
           "expo-av",
           "@solana-mobile/mobile-wallet-adapter-protocol"
