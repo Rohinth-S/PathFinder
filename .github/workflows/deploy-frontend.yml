@@ -33,4 +33,4 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           COMMIT_MSG: ${{ github.event.head_commit.message }}
-        run: eas update --branch production --message "Auto-update: $COMMIT_MSG [${{ github.sha }}]"
+        run: 'eas update --branch production --message "Auto-update: $COMMIT_MSG [${{ github.sha }}]"'
