@@ -8,8 +8,6 @@ import { Audio } from 'expo-av';
 import { useAuth } from '@clerk/clerk-expo';
 import { submitQuery } from '../../api/query.api';
 import { L } from '../../constants/colors';
-import { SectionLabel } from '../../components/ui/SectionLabel';
-import { GradientButton } from '../../components/ui/GradientButton';
 import Animated, {
   useSharedValue, useAnimatedStyle, withSpring, withRepeat, withSequence, withTiming,
   FadeInDown, FadeInUp,
@@ -17,10 +15,10 @@ import Animated, {
 import { Feather } from '@expo/vector-icons';
 
 const SUGGESTED_QUESTIONS = [
-  "Show me the exact steps service-based company developers took to prepare for system design rounds at product tech companies, and what projects they built to prove their skills.",
-  "How did technical founders and platform engineers handle sudden database locks or server overloads during a high-traffic live launch, and what were their technical fixes?",
-  "What specific actions or side-projects did internal corporate professionals use to convince their leadership teams to transition them out of non-tech or reporting roles into Product Management?",
-  "What deep technical skills and browser rendering concepts did self-taught developers focus on to compete successfully against elite college graduates in frontend product interviews?",
+  "Instead of building standard clone apps or simple layout designs, what unique open-source developer utilities and tracking dashboards have early-career engineers built to prove their low-level coding skills off-campus?",
+  "When scaling data delivery tiers, what specific automated build configurations, non-blocking queue setups, and multi-platform compilation rules were implemented to ensure fast execution speeds?",
+  "How have self-taught developers transformed their professional applications from generic, blind messaging into data-driven technical consultation notes that win direct technical interviews?",
+  "What core algorithmic strategies, bit manipulations, and custom array allocation frameworks do developers rely on when they need to process dense, multi-layered data rows without creating system memory drops?",
   "How did self-funded or bootstrapped founders scale their SaaS or edtech platforms past the 50 LPA milestone without spending heavy capital on traditional ad agencies?",
   "Once a software engineer moves past basic application frameworks and masters low-level infrastructure scaling, what complex systems-level goals do they typically target next?"
 ];

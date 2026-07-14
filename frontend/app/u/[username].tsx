@@ -172,7 +172,7 @@ const createCytoscapeHtml = (elementsJson: string) => `
 
 export default function PublicProfilePage() {
   const router = useRouter();
-  const { username } = useLocalSearchParams<{ username: string }>();
+  const { username, fromQuery, imageUrl, expandedDetails } = useLocalSearchParams<{ username: string; fromQuery?: string; imageUrl?: string; expandedDetails?: string; }>();
 
   const [journey, setJourney] = useState<CommunityJourney | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -181,24 +181,60 @@ export default function PublicProfilePage() {
   const webViewRef = React.useRef<WebView>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (username) {
+  // Unified routing lifecycle with precise logs and structural isolation
+useEffect(() => {
+  console.log("🔄 PublicProfilePage navigation lifecycle triggered.");
+  console.log("📋 Current Router Parameters:", { username, fromQuery, hasImageUrl: !!imageUrl, hasExpandedDetails: !!expandedDetails });
+
+  if (username) {
+    if (fromQuery === 'true' && expandedDetails) {
+      try {
+        console.log("⚡ Found cached query parameters. Attempting to parse local context payload...");
+        const parsedDetails = JSON.parse(expandedDetails);
+        
+        setJourney({
+          username: username,
+          imageUrl: imageUrl || null,
+          statistics: {
+            goals: parsedDetails.goals?.length || 0,
+            experiences: parsedDetails.experiences?.length || 0,
+            transitions: parsedDetails.transitions?.length || 0,
+          },
+          goals: parsedDetails.goals || [],
+          experiences: parsedDetails.experiences || [],
+          transitions: parsedDetails.transitions || [],
+        });
+        
+        console.log("✅ Local journey profile successfully initialized from parameters. Skipping API request entirely.");
+        setIsLoading(false);
+      } catch (err) {
+        console.error("❌ Failed to parse local query journey details. Falling back to backend network request:", err);
+        fetchJourney();
+      }
+    } else {
+      console.log("🌐 No cached query context found or 'fromQuery' is false. Proceeding to fetch profile via live community route API...");
       fetchJourney();
     }
-  }, [username]);
+  } else {
+    console.warn("⚠️ Lifecycle checked, but no 'username' parameter is present yet.");
+  }
+}, [username, fromQuery, imageUrl, expandedDetails]);
 
-  const fetchJourney = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const data = await getCommunityJourney(username!);
-      setJourney(data);
-    } catch (e: any) {
-      setError(e.message || "Failed to load profile");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const fetchJourney = async () => {
+  try {
+    console.log(`📡 [API Call] Requesting getCommunityJourney data for user: @${username}`);
+    setIsLoading(true);
+    setError(null);
+    const data = await getCommunityJourney(username!);
+    console.log("🎯 [API Call Successful] Remote payload parsed successfully.");
+    setJourney(data);
+  } catch (e: any) {
+    console.error("❌ [API Call Failed] Error fetching journey profile from network:", e);
+    setError(e.message || "Failed to load profile");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleShare = async () => {
     try {
@@ -362,9 +398,8 @@ export default function PublicProfilePage() {
         >
           <Feather name="arrow-left" size={20} color={L.navy} />
         </TouchableOpacity>
-        
         <Text style={{ fontSize: 16, fontWeight: '600', color: L.navy, letterSpacing: 0.4 }}>Public Profile</Text>
-        
+
         <TouchableOpacity onPress={() => setShowGraph(true)} style={{ backgroundColor: L.tealTint, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}>
           <Feather name="git-merge" size={14} color={L.teal} style={{ marginRight: 6 }} />
           <Text style={{ fontSize: 12, fontWeight: '700', color: L.teal }}>Graph</Text>
@@ -387,7 +422,7 @@ export default function PublicProfilePage() {
           <View>
             <Text style={{ fontSize: 16, fontWeight: '500', color: L.navy }}>@{journey.username}</Text>
             <Text style={{ fontSize: 12, fontWeight: '500', color: L.teal, marginTop: 4 }}>
-              {journey.statistics.goals} Goals • {journey.statistics.experiences} Experiences
+              {journey.statistics?.goals || 0} Goals • {journey.statistics?.experiences || 0} Experiences
             </Text>
           </View>
         </View>
