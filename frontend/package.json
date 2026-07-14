@@ -62,5 +62,15 @@
     "node": ">=22.0.0",
     "npm": ">=10.0.0"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "expo-av",
+          "@solana-mobile/mobile-wallet-adapter-protocol"
+        ]
+      }
+    }
+  }
 }
