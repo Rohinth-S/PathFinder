@@ -31,15 +31,15 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "7e31f547-e555-4bfc-b1b2-12da59229c9d"
+        "projectId": "e8aa8139-ab59-40cb-a743-0833582bf471"
       }
     },
-    "owner": "starboyrohinths-team",
+    "owner": "starboyrohinth",
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/7e31f547-e555-4bfc-b1b2-12da59229c9d"
+      "url": "https://u.expo.dev/e8aa8139-ab59-40cb-a743-0833582bf471"
     }
   }
 }

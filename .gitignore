@@ -1,6 +1,7 @@
-node_modules
+﻿node_modules
 .expo/
 .claude/
 CLAUDE.md
 AGENTS.md
 index.ts
+frontend/package-lock.json
