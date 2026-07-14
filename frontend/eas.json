@@ -14,13 +14,15 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_BASE_URL": "https://pathfinder-f7zc.onrender.com/api"
+        "EXPO_PUBLIC_API_BASE_URL": "https://pathfinder-f7zc.onrender.com/api",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_bmF0aW9uYWwtc2F0eXItOTguY2xlcmsuYWNjb3VudHMuZGV2JA"
       },
       "channel": "preview"
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_API_BASE_URL": "https://pathfinder-f7zc.onrender.com/api"
+        "EXPO_PUBLIC_API_BASE_URL": "https://pathfinder-f7zc.onrender.com/api",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_bmF0aW9uYWwtc2F0eXItOTguY2xlcmsuYWNjb3VudHMuZGV2JA"
       },
       "channel": "production",
       "android": {
