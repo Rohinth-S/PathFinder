@@ -229,7 +229,7 @@ export default function PublicProfilePage() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Check out ${username || 'this user'}'s professional journey on PathFinder! https://pathfinder.app/u/${username || 'user'}`,
+        message: `Check out ${username || 'this user'}'s professional journey on PathFinder! https://path-finder-murex-six.vercel.app/u/${username || 'user'}`,
       });
     } catch (error: any) {
       console.warn(error.message);
