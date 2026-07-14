@@ -508,9 +508,9 @@ export default function HistoryPage() {
             <TouchableOpacity onPress={() => { setShowGraph(false); setSelectedNodeId(null); }} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <Feather name="arrow-left" size={20} color={L.navy} />
             </TouchableOpacity>
-            
+
             <Text style={{ fontSize: 16, fontWeight: '600', color: L.navy, letterSpacing: 0.4 }}>My Visual Journey</Text>
-            
+
             <TouchableOpacity onPress={handleExportGraph} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Feather name="download" size={16} color={L.teal} />
               <Text style={{ fontSize: 14, fontWeight: '600', color: L.teal }}>Export</Text>
@@ -520,8 +520,14 @@ export default function HistoryPage() {
             {Platform.OS === 'web' ? (
               <iframe
                 id="cy-iframe"
+                // @ts-ignore
                 srcDoc={createCytoscapeHtml(prepareGraphElements())}
-                style={{ width: '100%', height: '100%', border: 'none' }}
+                style={{
+                  flex: 1,
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                }}
               />
             ) : (
               <WebView
