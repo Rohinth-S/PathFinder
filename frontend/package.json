@@ -58,7 +58,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build": "expo export -p web"
+    "build": "expo export -p web",
+    "eas-build-pre-install": "npm install --package-lock-only"
   },
   "engines": {
     "node": ">=22.0.0",
