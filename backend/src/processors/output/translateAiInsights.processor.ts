@@ -10,13 +10,6 @@ export async function translateAiInsights(
   aiInsights: AiInsights,
   targetLanguage: string
 ): Promise<TranslatedAiInsights> {
-  if (targetLanguage === "en-IN" || targetLanguage === "en") {
-    return {
-      directAnswer: aiInsights.directAnswer || "",
-      keyPoints: aiInsights.keyPoints || [],
-      actionableTakeaway: aiInsights.actionableTakeaway || ""
-    };
-  }
 
   const directAnswerPromise = aiInsights.directAnswer
     ? sarvamProvider.translate(aiInsights.directAnswer, targetLanguage, "en-IN")

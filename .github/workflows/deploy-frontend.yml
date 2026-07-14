@@ -26,7 +26,7 @@ jobs:
 
       - name: Install Frontend Dependencies
         working-directory: frontend
-        run: npm install
+        run: npm ci
 
       - name: Publish OTA Update to production
         working-directory: frontend
