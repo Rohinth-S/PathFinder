@@ -247,7 +247,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }}>
-                @{node.authorUsername}
+                {node.authorUsername ? `@${node.authorUsername}` : 'Explorer'}
               </Text>
             </View>
           </TouchableOpacity>
