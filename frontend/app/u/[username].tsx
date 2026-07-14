@@ -182,59 +182,49 @@ export default function PublicProfilePage() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   // Unified routing lifecycle with precise logs and structural isolation
-useEffect(() => {
-  console.log("🔄 PublicProfilePage navigation lifecycle triggered.");
-  console.log("📋 Current Router Parameters:", { username, fromQuery, hasImageUrl: !!imageUrl, hasExpandedDetails: !!expandedDetails });
+  useEffect(() => {
 
-  if (username) {
-    if (fromQuery === 'true' && expandedDetails) {
-      try {
-        console.log("⚡ Found cached query parameters. Attempting to parse local context payload...");
-        const parsedDetails = JSON.parse(expandedDetails);
-        
-        setJourney({
-          username: username,
-          imageUrl: imageUrl || null,
-          statistics: {
-            goals: parsedDetails.goals?.length || 0,
-            experiences: parsedDetails.experiences?.length || 0,
-            transitions: parsedDetails.transitions?.length || 0,
-          },
-          goals: parsedDetails.goals || [],
-          experiences: parsedDetails.experiences || [],
-          transitions: parsedDetails.transitions || [],
-        });
-        
-        console.log("✅ Local journey profile successfully initialized from parameters. Skipping API request entirely.");
-        setIsLoading(false);
-      } catch (err) {
-        console.error("❌ Failed to parse local query journey details. Falling back to backend network request:", err);
+    if (username) {
+      if (fromQuery === 'true' && expandedDetails) {
+        try {
+          const parsedDetails = JSON.parse(expandedDetails);
+
+          setJourney({
+            username: username,
+            imageUrl: imageUrl || null,
+            statistics: {
+              goals: parsedDetails.goals?.length || 0,
+              experiences: parsedDetails.experiences?.length || 0,
+              transitions: parsedDetails.transitions?.length || 0,
+            },
+            goals: parsedDetails.goals || [],
+            experiences: parsedDetails.experiences || [],
+            transitions: parsedDetails.transitions || [],
+          });
+          setIsLoading(false);
+        } catch (err) {
+          fetchJourney();
+        }
+      } else {
         fetchJourney();
       }
     } else {
-      console.log("🌐 No cached query context found or 'fromQuery' is false. Proceeding to fetch profile via live community route API...");
-      fetchJourney();
+      console.warn("⚠️ No 'username' parameter is present.");
     }
-  } else {
-    console.warn("⚠️ Lifecycle checked, but no 'username' parameter is present yet.");
-  }
-}, [username, fromQuery, imageUrl, expandedDetails]);
+  }, [username, fromQuery, imageUrl, expandedDetails]);
 
-const fetchJourney = async () => {
-  try {
-    console.log(`📡 [API Call] Requesting getCommunityJourney data for user: @${username}`);
-    setIsLoading(true);
-    setError(null);
-    const data = await getCommunityJourney(username!);
-    console.log("🎯 [API Call Successful] Remote payload parsed successfully.");
-    setJourney(data);
-  } catch (e: any) {
-    console.error("❌ [API Call Failed] Error fetching journey profile from network:", e);
-    setError(e.message || "Failed to load profile");
-  } finally {
-    setIsLoading(false);
-  }
-};
+  const fetchJourney = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getCommunityJourney(username!);
+      setJourney(data);
+    } catch (e: any) {
+      setError(e.message || "Failed to load profile");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -312,9 +302,19 @@ const fetchJourney = async () => {
     });
 
     // Transitions
-    journey.transitions.forEach((t, idx) => {
-      elements.push({ data: { id: 't_' + idx, source: 'x_' + t.fromExperienceId, target: 'x_' + t.toExperienceId, label: t.decisionLabel } });
-    });
+    const validExperienceIds = new Set(journey.experiences.map(exp => exp.id));
+    journey.transitions.filter(
+      t => validExperienceIds.has(t.fromExperienceId) && validExperienceIds.has(t.toExperienceId))
+      .forEach((t, idx) => {
+        elements.push({
+          data: {
+            id: `t_${idx}`,
+            source: `x_${t.fromExperienceId}`,
+            target: `x_${t.toExperienceId}`,
+            label: t.decisionLabel,
+          },
+        });
+      });
 
     return JSON.stringify(elements);
   };

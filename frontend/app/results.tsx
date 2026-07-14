@@ -207,12 +207,6 @@ console.log(
   const queryText = data.structuredQuery?.semanticQuery || data.structuredQuery?.queryType || 'Search Results';
 
   const { journeyStatistics: stats, aiInsights, timelineFeed, commonPatterns } = data.aggregatedContext;
-  console.log("TimelineFeed:", timelineFeed);
-console.log("First user:", timelineFeed?.[0]);
-console.log(
-  "Expanded details:",
-  timelineFeed?.[0]?.expandedDetails
-);
   const topDecisions = commonPatterns?.slice(1, 4) || [];
   const totalExperiences = timelineFeed?.reduce((acc, user) => acc + (user.expandedDetails?.experiences?.length || 0), 0) || 186;
 
@@ -238,19 +232,19 @@ console.log(
 
   const renderQuestionCard = () => (
     <Animated.View entering={FadeInDown.delay(100).springify().damping(20)} style={{ backgroundColor: UI.tealTint, borderRadius: 16, padding: 24, marginBottom: 16 }}>
-      <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 24, color: UI.foreground, lineHeight: 32 }}>{queryText}</Text>
+      <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 18, color: UI.foreground, lineHeight: 24 }}>{queryText}</Text>
     </Animated.View>
   );
 
   const renderStatsCard = () => (
     <Animated.View entering={FadeInDown.delay(200).springify().damping(20)} style={{ backgroundColor: UI.tealTint, borderRadius: 16, padding: 24, marginBottom: 32, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
       <View style={{ alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'Manrope_500Medium', fontSize: 36, color: UI.teal }}>{stats?.usersAnalyzed || 24}</Text>
+        <Text style={{ fontFamily: 'Manrope_500Medium', fontSize: 24, color: UI.teal }}>{stats?.usersAnalyzed || 24}</Text>
         <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 10, letterSpacing: 1, color: UI.teal, opacity: 0.8, marginTop: 4 }}>VERIFIED USERS</Text>
       </View>
       <View style={{ width: 1, height: 40, backgroundColor: 'rgba(62, 107, 102, 0.2)' }} />
       <View style={{ alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'Manrope_500Medium', fontSize: 36, color: UI.teal }}>{totalExperiences}</Text>
+        <Text style={{ fontFamily: 'Manrope_500Medium', fontSize: 24, color: UI.teal }}>{totalExperiences}</Text>
         <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 10, letterSpacing: 1, color: UI.teal, opacity: 0.8, marginTop: 4 }}>EXPERIENCES</Text>
       </View>
     </Animated.View>
