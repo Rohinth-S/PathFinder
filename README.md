@@ -1,4 +1,4 @@
-# PathFinder: Trajectory Mapping & Verification Engine
+# PathFinder: Search Engine for human experiences
 
 PathFinder makes complete human experiences searchable.
 
@@ -9,6 +9,14 @@ Q&A sites answer **"What do people think?"**
 PathFinder answers **"What *actually* happened to people like me?"**
 
 By structuring raw human experience into a verifiable, queryable **Life Graph**, PathFinder enables developers, founders, and students to trace causality, isolate transition patterns, review proof-backed achievements, and query collective human outcomes using first-principles reasoning.
+
+---
+
+## ✦ Live Pitch & Deliverables
+
+* 🎬 **Demo Video (YouTube)**: [Watch the PathFinder Pitch & Walkthrough](https://www.youtube.com/watch?v=cFn0jj-MVC8)
+* 📊 **PPT Presentation**: [View Pitch Deck](https://drive.google.com/file/d/1AobVEavMoAPnOungrUzjAT7i7eKRK1ei/view)
+* 📝 **Product Blog Post**: [Read on Hashnode/Medium](https://dev.to/mithulcrafts/what-if-we-could-search-human-experiences-instead-of-opinions-33nb)
 
 ---
 
@@ -25,7 +33,7 @@ When they search for guidance, they encounter fragmented networks:
 ### The PathFinder Paradigm
 PathFinder structures raw narrative into a highly connected **Life Graph** consisting of nodes representing `Education`, `Job`, `Decision`, `Failure`, `Startup`, and `Achievement`. Each node exposes the deep context, raw challenges faced, immediate outcomes, and emotional checkpoints. 
 
-PathFinder doesn't index standalone posts or opinions; it index **causal connections and entire trajectories**.
+PathFinder doesn't index standalone posts or opinions; it indexes **causal connections and entire trajectories**.
 
 ```mermaid
 graph TD
@@ -64,6 +72,28 @@ PathFinder’s core is built using a highly synergistic stack. Sponsor technolog
 * **Purpose**: Interactive Flowcharts & Cross-Platform Experience Visualization
 * **Integration**: Single TypeScript codebase compiling to Web, iOS, and Android. Integrates a custom Web-fallback alert layer to handle native modal behaviors on the web.
 * **Engineering Rationale**: Users need to review their graphs on the fly. Expo allows us to construct a responsive, rich visual canvas using Cytoscape inside webviews, bridging native haptics (`expo-haptics`) and sharing protocols (`expo-sharing`) cleanly with standard web targets.
+
+---
+
+## ✦ Market Opportunity & Future Scope
+
+### The Verified Pedigree Market (B2B Recruiting & Talent Acquisition)
+Traditional background screening is a slow, centralized, and expensive process. Resumes are highly falsified and LinkedIn profiles are unchecked. PathFinder disrupts this $20B recruitment and background verification market by introducing:
+* **The "Proof-of-Experience" Graph**: Instead of static CV text, candidates present a Neo4j trajectory with verified evidence (e.g. proof-backed outcomes, github logs, verified certifications).
+* **Targeted Predictive Hiring**: Companies query exact transition pathways (e.g., *"Show me engineers who have successfully migrated legacy architectures to microservices inside startups"*), matching candidates based on real verified outcomes rather than vanity college credentials.
+
+### Future Product Roadmap
+1. **AI Pathway Simulation**: Allow users to model future choices (e.g., *"If I pursue a Master's abroad vs. bootstrapping a SaaS, what does the graph suggest my likelihood of reaching 50 LPA is, based on historical user nodes?"*).
+2. **Decentralized Verification Protocol**: Move verification certificates and proof logs onto decentralized chains to issue cryptographically signed, immutable career milestone achievements.
+3. **Automated Mentorship Matching**: Connect users whose current *Goal* matches the exact *Achievement* node of a senior verified user in the same career vector.
+
+---
+
+## ✦ Bonus Tasks & Requirements
+
+- [✅] **All team members followed official social channels and submitted the form** (mandatory)
+- [✅] **Bonus Task 1** – Shared our hackathon badges and filed the form (2 points)
+- [✅] **Bonus Task 2** – Write a blog (3 points)
 
 ---
 
