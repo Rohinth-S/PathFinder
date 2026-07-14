@@ -1,9 +1,5 @@
 import { EmotionLabel, NodeType } from '../types/schema';
 
-// ═══════════════════════════════════════════════════════
-//  New UI Design System (runanywhere.ai-inspired)
-//  Use `UI` for all new screens and revamped components.
-// ═══════════════════════════════════════════════════════
 
 export const UI = {
   //  Backgrounds 
@@ -70,7 +66,7 @@ export const BRAND_COLORS = {
   indigoLight: '#818CF8',
 };
 
-// Landing page design system (DESIGN.md) — kept for backward compat
+// Landing page design system
 export const L = {
   background:     '#FAF9F6',
   surface:        '#FFFFFF',
@@ -82,7 +78,8 @@ export const L = {
   terracottaTint: '#F5E4DD',
   sand:           '#D9C9A8',
   border:         '#EAE7E0',
-  gray:           '#4A5568'
+  gray:           '#4A5568',
+  lightGray:      '#A0AEC0',
 };
 
 export const EMOTION_COLORS: Record<string, { bg: string; text: string }> = {
