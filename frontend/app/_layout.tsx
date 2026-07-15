@@ -28,7 +28,9 @@ const tokenCache = {
       return item;
     } catch (error) {
       console.warn("SecureStore get item error: ", error);
-      await SecureStore.deleteItemAsync(key);
+      try {
+        await SecureStore.deleteItemAsync(key);
+      } catch (e) {}
       return null;
     }
   },
