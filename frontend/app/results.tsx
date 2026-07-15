@@ -5,7 +5,7 @@ import {
   Image
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Audio } from 'expo-av';
+import { useAudioPlayer } from "expo-audio";
 import { useAuth } from '@clerk/clerk-expo';
 import { syncUser } from '../api/auth.api';
 import { translateInsights, generateSpeechUri } from '../api/output.api';
@@ -80,13 +80,14 @@ export default function ResultsPage() {
     keyPoints: string[];
     actionableTakeaway: string;
   } | null>(null);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const player = useAudioPlayer();
   const [preferredLang, setPreferredLang] = useState('hi-IN');
   const [followUpQuery, setFollowUpQuery] = useState('');
   const [isSubmittingFollowUp, setIsSubmittingFollowUp] = useState(false);
   const [expandedInsight, setExpandedInsight] = useState(true);
 
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+  const [currentAudioUri, setCurrentAudioUri] = useState<string | null>(null);
   const [playbackPosition, setPlaybackPosition] = useState(0);
   const [playbackDuration, setPlaybackDuration] = useState(0);
   const [playbackProgress, setPlaybackProgress] = useState(0);
@@ -99,41 +100,52 @@ export default function ResultsPage() {
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!player) return;
+      const current = player.currentTime ?? 0;
+      const duration = player.duration ?? 0;
+      setPlaybackPosition(current * 1000);
+      setPlaybackDuration(duration * 1000);
+      if (duration > 0) {
+        setPlaybackProgress(current / duration);
+      }
+      if (!player.playing && isPlaying) {
+        setIsPlaying(false);
+      }
+    }, 250);
+    return () => clearInterval(interval);
+  }, [player, isPlaying]);
+
+  useEffect(() => {
+    player.pause();
+
+    setCurrentAudioUri(null);
+    setIsPlaying(false);
+
+    setPlaybackPosition(0);
+    setPlaybackDuration(0);
+    setPlaybackProgress(0);
+  }, [params.payload]);
+
   const handlePlayPauseAudio = async (aiInsights: any) => {
     try {
-      if (sound) {
-        if (isPlaying) {
-          await sound.pauseAsync();
-        } else {
-          await sound.playAsync();
-        }
+      if (isPlaying) {
+        player.pause();
+        setIsPlaying(false);
         return;
       }
-
-      setIsGeneratingAudio(true);
-      const token = await getToken();
-      if (!token) throw new Error("No token");
-      const uri = await generateSpeechUri(token, aiInsights, preferredLang);
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri },
-        { shouldPlay: true },
-        (status) => {
-          if (status.isLoaded) {
-            setPlaybackPosition(status.positionMillis);
-            setPlaybackDuration(status.durationMillis || 0);
-            if (status.durationMillis && status.durationMillis > 0) {
-              setPlaybackProgress(status.positionMillis / status.durationMillis);
-            }
-            setIsPlaying(status.isPlaying);
-            if (status.didJustFinish) {
-              setIsPlaying(false);
-              setPlaybackPosition(0);
-              setPlaybackProgress(0);
-            }
-          }
-        }
-      );
-      setSound(newSound);
+      let uri = currentAudioUri;
+      if (!uri) {
+        setIsGeneratingAudio(true);
+        const token = await getToken();
+        if (!token) throw new Error("No token");
+        uri = await generateSpeechUri(token, aiInsights, preferredLang);
+        setCurrentAudioUri(uri);
+        player.replace({ uri });
+      }
+      player.play();
+      setIsPlaying(true);
     } catch (err) {
       console.warn(err);
     } finally {
@@ -151,13 +163,6 @@ export default function ResultsPage() {
           aggregatedContext: raw.aggregatedContext,
         };
       }
-      console.log("RAW TIMELINE FEED");
-console.log(
-  raw.aggregatedContext.timelineFeed?.map((j: any) => ({
-    username: j.username,
-    expandedDetails: j.expandedDetails,
-  }))
-);
     }
   } catch {
     // Ignore parsing errors
@@ -434,18 +439,29 @@ console.log(
                   height: 44,
                   borderRadius: 22,
                   backgroundColor: L.tealTint,
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
                 disabled={isGeneratingAudio}
                 onPress={() => handlePlayPauseAudio(aiInsights)}
               >
                 {isGeneratingAudio ? (
-                  <ActivityIndicator color={L.teal} size="small" />
+                  <ActivityIndicator
+                    color={L.teal}
+                    size="small"
+                  />
                 ) : isPlaying ? (
-                  <Feather name="pause" size={20} color={L.teal} />
+                  <Feather
+                    name="pause"
+                    size={20}
+                    color={L.teal}
+                  />
                 ) : (
-                  <Feather name="play" size={20} color={L.teal} />
+                  <Feather
+                    name="play"
+                    size={20}
+                    color={L.teal}
+                  />
                 )}
               </TouchableOpacity>
 
