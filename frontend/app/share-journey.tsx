@@ -61,6 +61,7 @@ export default function ShareJourneyPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSentMessage, setHasSentMessage] = useState(false);
   
   const [journeyDraft, setJourneyDraft] = useState<any>(null);
   const [editableExperiences, setEditableExperiences] = useState<any[]>([]);
@@ -75,7 +76,7 @@ export default function ShareJourneyPage() {
   const [tempProofUrl, setTempProofUrl] = useState('');
 
   const handleCreateGoal = async () => {
-    if (!newGoalTitle.trim()) return;
+    if (!newGoalTitle.trim() || !newGoalDesc.trim()) return;
     setIsCreatingGoal(true);
     try {
       const token = await getToken();
@@ -228,8 +229,9 @@ export default function ShareJourneyPage() {
         setMessages(prev => [...prev, {
           id: Date.now().toString(),
           sender: 'ai',
-          text: "Got it! I've updated your journey draft. Keep telling me more, or switch to the Form view when you're ready to review."
+          text: "Got it! I've updated your journey draft. Switch to the Form view when you're ready to review."
         }]);
+        setHasSentMessage(true);
         setActiveTab('form');
       } else {
         throw new Error("Failed to process message");
@@ -368,7 +370,7 @@ export default function ShareJourneyPage() {
           />
           <TextInput
             style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', color: '#0F172A', borderRadius: 12, padding: 12, marginBottom: 12, minHeight: 60, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
-            placeholder="Description (Optional)"
+            placeholder="Description"
             placeholderTextColor="#94A3B8"
             value={newGoalDesc}
             onChangeText={setNewGoalDesc}
@@ -377,8 +379,8 @@ export default function ShareJourneyPage() {
           />
           <TouchableOpacity 
             onPress={handleCreateGoal}
-            disabled={isCreatingGoal || !newGoalTitle.trim()}
-            style={{ backgroundColor: UI.accent, paddingVertical: 12, borderRadius: 12, alignItems: 'center', opacity: (!newGoalTitle.trim() || isCreatingGoal) ? 0.5 : 1 }}
+            disabled={isCreatingGoal || !newGoalTitle.trim() || !newGoalDesc.trim()}
+            style={{ backgroundColor: UI.accent, paddingVertical: 12, borderRadius: 12, alignItems: 'center', opacity: (!newGoalTitle.trim() || !newGoalDesc.trim() || isCreatingGoal) ? 0.5 : 1 }}
           >
             {isCreatingGoal ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={{ color: '#FFF', fontFamily: 'Inter_600SemiBold' }}>Add Goal</Text>}
           </TouchableOpacity>
@@ -694,43 +696,10 @@ export default function ShareJourneyPage() {
             <Feather name="arrow-left" size={24} color="#0F172A" />
           </TouchableOpacity>
           
-          <View style={{ 
-            flexDirection: 'row', 
-            backgroundColor: '#EAE7E0', 
-            borderRadius: 20, 
-            padding: 4 
-          }}>
-            <TouchableOpacity 
-              onPress={() => setActiveTab('chat')}
-              style={{
-                flexDirection: 'row', alignItems: 'center', gap: 6,
-                paddingVertical: 8, paddingHorizontal: 16,
-                borderRadius: 16,
-                backgroundColor: activeTab === 'chat' ? '#FFFFFF' : 'transparent',
-              }}
-            >
-              <Feather name="message-circle" size={16} color={activeTab === 'chat' ? '#0F172A' : '#4A5568'} />
-              <Text style={{ color: activeTab === 'chat' ? '#0F172A' : '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 14 }}>
-                Chat
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              onPress={() => setActiveTab('form')}
-              style={{
-                flexDirection: 'row', alignItems: 'center', gap: 6,
-                paddingVertical: 8, paddingHorizontal: 16,
-                borderRadius: 16,
-                backgroundColor: activeTab === 'form' ? '#FFFFFF' : 'transparent',
-              }}
-            >
-              <Feather name="file-text" size={16} color={activeTab === 'form' ? '#0F172A' : '#4A5568'} />
-              <Text style={{ color: activeTab === 'form' ? '#0F172A' : '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 14 }}>
-                Form
-              </Text>
-              {journeyDraft?.experiences?.length > 0 && (
-                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: UI.accent, position: 'absolute', top: 6, right: 10 }} />
-              )}
-            </TouchableOpacity>
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ color: '#0F172A', fontFamily: 'Inter_600SemiBold', fontSize: 16 }}>
+              {activeTab === 'chat' ? 'Share Experience' : 'Review Journey'}
+            </Text>
           </View>
           
           <View style={{ width: 40 }} />
@@ -802,7 +771,7 @@ export default function ShareJourneyPage() {
                       value={inputText}
                       onChangeText={setInputText}
                       multiline
-                      editable={!isLoading}
+                      editable={!isLoading && !hasSentMessage}
                     />
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 12 }}>
                       <TouchableOpacity
@@ -812,7 +781,7 @@ export default function ShareJourneyPage() {
                           justifyContent: 'center', alignItems: 'center'
                         }}
                         onPress={sendMessage}
-                        disabled={isLoading || !inputText.trim()}
+                        disabled={isLoading || !inputText.trim() || hasSentMessage}
                       >
                         <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : '#94A3B8'} />
                       </TouchableOpacity>
@@ -861,7 +830,7 @@ export default function ShareJourneyPage() {
                       value={inputText}
                       onChangeText={setInputText}
                       multiline
-                      editable={!isLoading}
+                      editable={!isLoading && !hasSentMessage}
                     />
                     <TouchableOpacity
                       style={{
@@ -870,7 +839,7 @@ export default function ShareJourneyPage() {
                         justifyContent: 'center', alignItems: 'center'
                       }}
                       onPress={sendMessage}
-                      disabled={isLoading || !inputText.trim()}
+                      disabled={isLoading || !inputText.trim() || hasSentMessage}
                     >
                       <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : '#94A3B8'} />
                     </TouchableOpacity>
