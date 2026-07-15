@@ -76,7 +76,7 @@ export default function ShareJourneyPage() {
   const [tempProofUrl, setTempProofUrl] = useState('');
 
   const handleCreateGoal = async () => {
-    if (!newGoalTitle.trim()) return;
+    if (!newGoalTitle.trim() || !newGoalDesc.trim()) return;
     setIsCreatingGoal(true);
     try {
       const token = await getToken();
@@ -370,7 +370,7 @@ export default function ShareJourneyPage() {
           />
           <TextInput
             style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', color: '#0F172A', borderRadius: 12, padding: 12, marginBottom: 12, minHeight: 60, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
-            placeholder="Description (Optional)"
+            placeholder="Description"
             placeholderTextColor="#94A3B8"
             value={newGoalDesc}
             onChangeText={setNewGoalDesc}
@@ -379,8 +379,8 @@ export default function ShareJourneyPage() {
           />
           <TouchableOpacity 
             onPress={handleCreateGoal}
-            disabled={isCreatingGoal || !newGoalTitle.trim()}
-            style={{ backgroundColor: UI.accent, paddingVertical: 12, borderRadius: 12, alignItems: 'center', opacity: (!newGoalTitle.trim() || isCreatingGoal) ? 0.5 : 1 }}
+            disabled={isCreatingGoal || !newGoalTitle.trim() || !newGoalDesc.trim()}
+            style={{ backgroundColor: UI.accent, paddingVertical: 12, borderRadius: 12, alignItems: 'center', opacity: (!newGoalTitle.trim() || !newGoalDesc.trim() || isCreatingGoal) ? 0.5 : 1 }}
           >
             {isCreatingGoal ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={{ color: '#FFF', fontFamily: 'Inter_600SemiBold' }}>Add Goal</Text>}
           </TouchableOpacity>
