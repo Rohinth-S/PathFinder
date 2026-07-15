@@ -69,13 +69,7 @@ export default function QueryPage() {
     opacity: pulseOpacity.value,
   }));
 
-  useEffect(() => {
-  return () => {
-    if (recorder.isRecording) {
-      recorder.stop().catch(() => {});
-    }
-  };
-}, []);
+
 
   /* ── Audio Recording ──────────────────────────────── */
 
