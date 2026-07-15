@@ -45,4 +45,6 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           COMMIT_MSG: ${{ github.event.head_commit.message }}
-        run: 'eas update --branch ${{ steps.channel.outputs.branch }} --profile ${{ steps.channel.outputs.branch }} --message "Auto-update: $COMMIT_MSG [${{ github.sha }}]"'
+          EXPO_PUBLIC_API_BASE_URL: "https://pathfinder-f7zc.onrender.com/api"
+          EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_bmF0aW9uYWwtc2F0eXItOTguY2xlcmsuYWNjb3VudHMuZGV2JA"
+        run: 'eas update --branch ${{ steps.channel.outputs.branch }} --message "Auto-update: $COMMIT_MSG [${{ github.sha }}]"'
