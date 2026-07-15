@@ -45,4 +45,4 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           COMMIT_MSG: ${{ github.event.head_commit.message }}
-        run: 'eas update --branch ${{ steps.channel.outputs.branch }} --message "Auto-update: $COMMIT_MSG [${{ github.sha }}]"'
+        run: 'eas update --branch ${{ steps.channel.outputs.branch }} --profile ${{ steps.channel.outputs.branch }} --message "Auto-update: $COMMIT_MSG [${{ github.sha }}]"'
