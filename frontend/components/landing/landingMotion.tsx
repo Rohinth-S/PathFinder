@@ -257,7 +257,7 @@ export function RippleMicBadge({ label }: RippleMicBadgeProps) {
   useEffect(() => {
     rippleScaleA.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 0 }),
+        withTiming(1, { duration: 16 }),
         withTiming(2.1, { duration: 1200, easing: Easing.out(Easing.cubic) }),
       ),
       -1,
@@ -265,7 +265,7 @@ export function RippleMicBadge({ label }: RippleMicBadgeProps) {
     );
     rippleOpacityA.value = withRepeat(
       withSequence(
-        withTiming(0.34, { duration: 0 }),
+        withTiming(0.34, { duration: 16 }),
         withTiming(0, { duration: 1200, easing: Easing.out(Easing.cubic) }),
       ),
       -1,
@@ -273,7 +273,7 @@ export function RippleMicBadge({ label }: RippleMicBadgeProps) {
     );
     rippleScaleB.value = withRepeat(
       withSequence(
-        withTiming(1.05, { duration: 0 }),
+        withTiming(1.05, { duration: 16 }),
         withTiming(2.35, { duration: 1200, easing: Easing.out(Easing.cubic) }),
       ),
       -1,
@@ -281,7 +281,7 @@ export function RippleMicBadge({ label }: RippleMicBadgeProps) {
     );
     rippleOpacityB.value = withRepeat(
       withSequence(
-        withTiming(0.22, { duration: 0 }),
+        withTiming(0.22, { duration: 16 }),
         withTiming(0, { duration: 1200, easing: Easing.out(Easing.cubic) }),
       ),
       -1,
