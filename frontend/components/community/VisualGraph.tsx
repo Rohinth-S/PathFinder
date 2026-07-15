@@ -121,10 +121,24 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   };
 
   const drawCurve = (x1: number, y1: number, x2: number, y2: number) => {
-    const cp1x = x1 + (x2 - x1) / 2;
-    const cp1y = y1;
-    const cp2x = x1 + (x2 - x1) / 2;
-    const cp2y = y2;
+    const dx = x2 - x1;
+    let cp1x = x1 + dx / 2;
+    let cp1y = y1;
+    let cp2x = x1 + dx / 2;
+    let cp2y = y2;
+    
+    if (Math.abs(dx) > 200) {
+      const isTop1 = y1 < 140;
+      const isTop2 = y2 < 140;
+      if (isTop1 && isTop2) {
+        cp1y -= 60;
+        cp2y -= 60;
+      } else if (!isTop1 && !isTop2) {
+        cp1y += 60;
+        cp2y += 60;
+      }
+    }
+    
     return `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
   };
 
@@ -142,7 +156,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               markerHeight="5"
               orient="auto"
             >
-              <Path d="M 0 0 L 10 5 L 0 10 z" fill={L.teal} opacity={0.6} />
+              <Path d="M 0 0 L 10 5 L 0 10 z" fill={L.teal} opacity={0.3} />
             </Marker>
           </Defs>
 
@@ -157,7 +171,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
                 <Path
                   d={drawCurve(startX, edge.from.y, endX, edge.to.y)}
                   stroke={L.teal}
-                  strokeOpacity={0.4}
+                  strokeOpacity={0.15}
                   strokeWidth="2"
                   fill="none"
                   markerEnd="url(#arrow)"
@@ -177,14 +191,15 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               left: node.x - 75,
               top: node.y - 32,
               width: 150,
-              height: 64,
+              minHeight: 64,
               backgroundColor: '#FFFFFF',
               borderRadius: 16,
               borderWidth: 1,
               borderColor: 'rgba(62, 107, 102, 0.1)',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: 10,
+              paddingHorizontal: 8,
+              paddingVertical: 10,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.05,
@@ -196,7 +211,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               {node.title}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }}>
+              <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
                 {node.authorUsername ? `@${node.authorUsername}` : 'Explorer'}
               </Text>
             </View>
