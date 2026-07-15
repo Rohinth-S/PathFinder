@@ -696,43 +696,10 @@ export default function ShareJourneyPage() {
             <Feather name="arrow-left" size={24} color="#0F172A" />
           </TouchableOpacity>
           
-          <View style={{ 
-            flexDirection: 'row', 
-            backgroundColor: '#EAE7E0', 
-            borderRadius: 20, 
-            padding: 4 
-          }}>
-            <TouchableOpacity 
-              onPress={() => setActiveTab('chat')}
-              style={{
-                flexDirection: 'row', alignItems: 'center', gap: 6,
-                paddingVertical: 8, paddingHorizontal: 16,
-                borderRadius: 16,
-                backgroundColor: activeTab === 'chat' ? '#FFFFFF' : 'transparent',
-              }}
-            >
-              <Feather name="message-circle" size={16} color={activeTab === 'chat' ? '#0F172A' : '#4A5568'} />
-              <Text style={{ color: activeTab === 'chat' ? '#0F172A' : '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 14 }}>
-                Chat
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              onPress={() => setActiveTab('form')}
-              style={{
-                flexDirection: 'row', alignItems: 'center', gap: 6,
-                paddingVertical: 8, paddingHorizontal: 16,
-                borderRadius: 16,
-                backgroundColor: activeTab === 'form' ? '#FFFFFF' : 'transparent',
-              }}
-            >
-              <Feather name="file-text" size={16} color={activeTab === 'form' ? '#0F172A' : '#4A5568'} />
-              <Text style={{ color: activeTab === 'form' ? '#0F172A' : '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 14 }}>
-                Form
-              </Text>
-              {journeyDraft?.experiences?.length > 0 && (
-                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: UI.accent, position: 'absolute', top: 6, right: 10 }} />
-              )}
-            </TouchableOpacity>
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ color: '#0F172A', fontFamily: 'Inter_600SemiBold', fontSize: 16 }}>
+              {activeTab === 'chat' ? 'Share Experience' : 'Review Journey'}
+            </Text>
           </View>
           
           <View style={{ width: 40 }} />
