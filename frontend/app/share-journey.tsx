@@ -61,6 +61,7 @@ export default function ShareJourneyPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSentMessage, setHasSentMessage] = useState(false);
   
   const [journeyDraft, setJourneyDraft] = useState<any>(null);
   const [editableExperiences, setEditableExperiences] = useState<any[]>([]);
@@ -228,8 +229,9 @@ export default function ShareJourneyPage() {
         setMessages(prev => [...prev, {
           id: Date.now().toString(),
           sender: 'ai',
-          text: "Got it! I've updated your journey draft. Keep telling me more, or switch to the Form view when you're ready to review."
+          text: "Got it! I've updated your journey draft. Switch to the Form view when you're ready to review."
         }]);
+        setHasSentMessage(true);
         setActiveTab('form');
       } else {
         throw new Error("Failed to process message");
@@ -802,7 +804,7 @@ export default function ShareJourneyPage() {
                       value={inputText}
                       onChangeText={setInputText}
                       multiline
-                      editable={!isLoading}
+                      editable={!isLoading && !hasSentMessage}
                     />
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 12 }}>
                       <TouchableOpacity
@@ -812,7 +814,7 @@ export default function ShareJourneyPage() {
                           justifyContent: 'center', alignItems: 'center'
                         }}
                         onPress={sendMessage}
-                        disabled={isLoading || !inputText.trim()}
+                        disabled={isLoading || !inputText.trim() || hasSentMessage}
                       >
                         <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : '#94A3B8'} />
                       </TouchableOpacity>
@@ -861,7 +863,7 @@ export default function ShareJourneyPage() {
                       value={inputText}
                       onChangeText={setInputText}
                       multiline
-                      editable={!isLoading}
+                      editable={!isLoading && !hasSentMessage}
                     />
                     <TouchableOpacity
                       style={{
@@ -870,7 +872,7 @@ export default function ShareJourneyPage() {
                         justifyContent: 'center', alignItems: 'center'
                       }}
                       onPress={sendMessage}
-                      disabled={isLoading || !inputText.trim()}
+                      disabled={isLoading || !inputText.trim() || hasSentMessage}
                     >
                       <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : '#94A3B8'} />
                     </TouchableOpacity>
