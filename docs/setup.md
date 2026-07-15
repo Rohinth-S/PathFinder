@@ -61,12 +61,18 @@ CORS_ORIGINS=http://localhost:8081,http://localhost:19006
 ```
 
 ### Seed and Run
-1. **Migrate Neo4j Schema & Seed**:
-   Run database seed scripts to populate initial user nodes, standard topics, and career path examples:
+1. **Apply Neo4j Schema**
+   Create all required constraints, indexes, and vector indexes before seeding the database:
    ```bash
-   npm run upload-seeds
+   npm run migrate
    ```
-2. **Start Dev Server**:
+   2. **Upload Initial Journey Data**
+   Import a journey dataset from the `db/journeys/` directory:
+    ```bash
+   npm run upload-seeds <journey-file>
+   ```
+   Run the command again with a different filename to import additional journey datasets.
+3. **Start Dev Server**:
    ```bash
    npm run dev
    ```
