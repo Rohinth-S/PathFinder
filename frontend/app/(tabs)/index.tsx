@@ -4,7 +4,7 @@ import {
   Alert, ActivityIndicator, Platform, ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Audio } from 'expo-av';
+import {AudioModule,RecordingPresets,setAudioModeAsync,useAudioRecorder} from "expo-audio";
 import { useAuth } from '@clerk/clerk-expo';
 import { submitQuery } from '../../api/query.api';
 import { L } from '../../constants/colors';
@@ -29,7 +29,7 @@ export default function QueryPage() {
   const [query, setQuery] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const [isFocused, setIsFocused] = useState(false);
 
   const displayAlert = (title: string, message: string) => {
@@ -69,54 +69,57 @@ export default function QueryPage() {
     opacity: pulseOpacity.value,
   }));
 
+  useEffect(() => {
+  return () => {
+    if (recorder.isRecording) {
+      recorder.stop().catch(() => {});
+    }
+  };
+}, []);
+
   /* ── Audio Recording ──────────────────────────────── */
 
-  async function startRecording() {
-    try {
-      const permission = await Audio.requestPermissionsAsync();
-      if (permission.status !== 'granted') {
-        displayAlert('Permission Denied', 'Please grant microphone access to use voice search.');
-        return;
-      }
-
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-
-      const { recording: rec } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
+async function startRecording() {
+  try {
+    const permission =
+      await AudioModule.requestRecordingPermissionsAsync();
+    if (!permission.granted) {
+      displayAlert(
+        "Permission Denied",
+        "Please grant microphone access to use voice search."
       );
-      setRecording(rec);
-      setIsRecording(true);
-    } catch (err) {
-      console.warn('Failed to start recording', err);
-      displayAlert('Recording Error', 'Failed to start recording. Please try again.');
-      setIsRecording(false);
-    }
-  }
-
-  async function stopRecording() {
-    setIsRecording(false);
-
-    if (!recording) {
       return;
     }
-
-    try {
-      await recording.stopAndUnloadAsync();
-      await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
-      const uri = recording.getURI();
-      setRecording(null);
-
-      if (uri) {
-        handleSubmit(null, uri);
-      }
-    } catch (error) {
-      console.warn('Failed to stop recording', error);
-      setRecording(null);
-    }
+    await setAudioModeAsync({
+      allowsRecording: true,
+      playsInSilentMode: true,
+    });
+    await recorder.prepareToRecordAsync();
+    await recorder.record();
+    setIsRecording(true);
+  } catch (err) {
+    console.warn("Failed to start recording", err);
+    displayAlert("Recording Error", "Failed to start recording. Please try again.");
+    setIsRecording(false);
   }
+}
+
+  async function stopRecording() {
+  setIsRecording(false);
+
+  try {
+    await recorder.stop();
+    await setAudioModeAsync({
+      allowsRecording: false,
+    });
+    const uri = recorder.uri;
+    if (uri) {
+      await handleSubmit(null, uri);
+    }
+  } catch (error) {
+    console.warn("Failed to stop recording", error);
+  }
+}
 
   /* ── Submit Handler ───────────────────────────────── */
 
