@@ -59,7 +59,7 @@ function LandingPageContent() {
       try {
         const user = await initializeUser(token);
         if (user.username) {
-          router.replace("/(tabs)");
+          router.replace("/(tabs)/ask");
         } else {
           router.replace("/(tabs)/profile");
         }
