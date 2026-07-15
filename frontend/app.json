@@ -51,15 +51,15 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "a9308a49-cc35-4e0e-934b-352bc38738bf"
+        "projectId": "e8aa8139-ab59-40cb-a743-0833582bf471"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "owner": "rohii24",
+    "owner": "starboyrohinth",
     "updates": {
-      "url": "https://u.expo.dev/a9308a49-cc35-4e0e-934b-352bc38738bf"
+      "url": "https://u.expo.dev/e8aa8139-ab59-40cb-a743-0833582bf471"
     }
   }
 }

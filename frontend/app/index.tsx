@@ -55,11 +55,17 @@ function LandingPageContent() {
       if (!isSignedIn) return;
       const token = await getToken();
       if (!token) return;  
-      const user = await initializeUser(token);
-      if (user.username) {
-        router.replace("/(tabs)");
-      } else {
-        router.replace("/(tabs)/profile");
+      
+      try {
+        const user = await initializeUser(token);
+        if (user.username) {
+          router.replace("/(tabs)");
+        } else {
+          router.replace("/(tabs)/profile");
+        }
+      } catch (err) {
+        console.warn("Failed to initialize user on startup:", err);
+        // Do not crash the app, allow the user to stay on the landing page or manually proceed
       }
     }
     initialize();
