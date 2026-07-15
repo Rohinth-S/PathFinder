@@ -40,9 +40,8 @@ type HeroProps = {
 
 export function HeroSection({ onPressGoogle }: HeroProps) {
   const { height } = useWindowDimensions();
-  // On web, '100dvh' perfectly fits mobile browsers accounting for address bars, 
-  // while on native, `height` gives the exact window height.
-  const minHeight = Platform.OS === 'web' ? '100dvh' : height;
+  // Use exact window height for all platforms to guarantee full screen fit.
+  const minHeight = height;
 
   return (
     <SectionReveal style={{ minHeight, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 80, backgroundColor: LegacyUI.surfaceInverse }}>
