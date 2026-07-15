@@ -128,8 +128,8 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     let cp2y = y1 + dy / 2;
     
     if (Math.abs(dy) > 200) {
-      const isLeft1 = x1 < calculatedWidth / 2;
-      const isLeft2 = x2 < calculatedWidth / 2;
+      const isLeft1 = x1 < width / 2;
+      const isLeft2 = x2 < width / 2;
       if (isLeft1 && isLeft2) {
         cp1x -= 60;
         cp2x -= 60;
