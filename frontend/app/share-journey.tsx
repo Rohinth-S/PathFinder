@@ -50,21 +50,7 @@ export default function ShareJourneyPage() {
     }
   };
 
-  const displayProofChoice = (index: number) => {
-    if (Platform.OS === 'web') {
-      const choice = window.prompt("Choose proof type:\n1. URL Link\n2. Upload Photo\n3. Upload Document\nType 1, 2, or 3:");
-      if (choice === '1') handleAddProofUrl(index);
-      else if (choice === '2') handleAddProofPhoto(index);
-      else if (choice === '3') handleAddProofDocument(index);
-    } else {
-      Alert.alert("Add Proof", "Choose proof type", [
-        { text: "URL Link", onPress: () => handleAddProofUrl(index) },
-        { text: "Upload Photo", onPress: () => handleAddProofPhoto(index) },
-        { text: "Upload Document", onPress: () => handleAddProofDocument(index) },
-        { text: "Cancel", style: "cancel" }
-      ]);
-    }
-  };
+
   
   const [activeTab, setActiveTab] = useState<'chat' | 'form'>('chat');
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -610,9 +596,9 @@ export default function ShareJourneyPage() {
                 <View style={{ gap: 8, marginBottom: 12 }}>
                   {exp.proofs.map((proof: any, pIdx: number) => (
                     <View key={pIdx} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 8, padding: 10, borderWidth: 1, borderColor: '#E2E8F0' }}>
-                      <Feather name={proof.sourceType === 'url' ? 'link' : 'file'} size={16} color={UI.accent} style={{ marginRight: 8 }} />
+                      <Feather name={(proof.sourceType === 'link' || proof.sourceType === 'github') ? 'link' : 'file'} size={16} color={UI.accent} style={{ marginRight: 8 }} />
                       <Text style={{ color: '#0F172A', flex: 1 }} numberOfLines={1}>
-                        {proof.sourceType === 'url' ? proof.url : 'Uploaded File'}
+                        {(proof.sourceType === 'link' || proof.sourceType === 'github') ? proof.url : (proof.filename || 'Uploaded File')}
                       </Text>
                       <TouchableOpacity onPress={() => handleRemoveProof(index, pIdx)}>
                         <Feather name="trash-2" size={16} color="#ef4444" />
@@ -622,15 +608,31 @@ export default function ShareJourneyPage() {
                 </View>
               )}
 
-              <TouchableOpacity 
-                onPress={() => {
-                  displayProofChoice(index);
-                }}
-                style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start', borderWidth: 1, borderColor: '#E2E8F0' }}
-              >
-                <Feather name="plus" size={16} color={UI.accent} style={{ marginRight: 6 }} />
-                <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium' }}>Add Proof</Text>
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                <TouchableOpacity 
+                  onPress={() => handleAddProofUrl(index)}
+                  style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0' }}
+                >
+                  <Feather name="link" size={16} color={UI.accent} style={{ marginRight: 6 }} />
+                  <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium' }}>Add Link</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  onPress={() => handleAddProofPhoto(index)}
+                  style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0' }}
+                >
+                  <Feather name="image" size={16} color={UI.accent} style={{ marginRight: 6 }} />
+                  <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium' }}>Add Photo</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  onPress={() => handleAddProofDocument(index)}
+                  style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0' }}
+                >
+                  <Feather name="file-text" size={16} color={UI.accent} style={{ marginRight: 6 }} />
+                  <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium' }}>Add Doc</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </Animated.View>
         ))}
@@ -885,7 +887,7 @@ export default function ShareJourneyPage() {
       {/* Proof URL Modal */}
       <Modal visible={proofUrlPrompt.visible} transparent animationType="fade">
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-          <View style={{ backgroundColor: '#2D3748', width: '100%', borderRadius: 16, padding: 20 }}>
+          <View style={{ backgroundColor: '#2D3748', width: '100%', maxWidth: 400, borderRadius: 16, padding: 20 }}>
             <Text style={{ color: '#FFFFFF', fontSize: 18, fontFamily: 'Inter_600SemiBold', marginBottom: 12 }}>Enter Proof URL</Text>
             <TextInput
               style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFFFFF', borderRadius: 8, padding: 12, marginBottom: 16 }}

@@ -12,7 +12,10 @@ import Animated, {
 import { UI } from '../../constants/colors';
 import {
   getTopics, getSubtopics, searchCommunity, SearchCommunityUser,
+  getGlobalFeed, FeedExperience, getCommunityGraph, CommunityGraph
 } from '../../api/community.api';
+import { useAuth } from '@clerk/clerk-expo';
+import { VisualGraph } from '../../components/community/VisualGraph';
 import { SectionLabel, PillBadge } from '../../components/ui/SectionLabel';
 import { DotDivider } from '../../components/ui/DotDivider';
 
@@ -313,12 +316,103 @@ function SkeletonCard() {
   );
 }
 
+function FeedCard({ 
+  experience, 
+  onViewJourney
+}: { 
+  experience: FeedExperience; 
+  onViewJourney: () => void;
+}) {
+  const initial = (experience.authorUsername || '?')[0].toUpperCase();
+
+  return (
+    <View style={{
+      backgroundColor: UI.surface,
+      borderRadius: 24,
+      padding: 20, borderColor: UI.fg08, borderWidth: 1,
+      paddingHorizontal: 20, paddingVertical: 20, marginBottom: 16,
+    }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <TouchableOpacity onPress={onViewJourney} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+          <View style={{
+            width: 46, height: 46, borderRadius: 23, backgroundColor: UI.accentTint,
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Text style={{ fontSize: 18, color: UI.accent, fontFamily: 'Inter_700Bold' }}>{initial}</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={{ fontSize: 16, color: UI.foreground, fontFamily: 'Inter_700Bold' }}>@{experience.authorUsername || 'unknown'}</Text>
+              {experience.isVerified && (
+                <Feather name="check-circle" size={14} color={UI.accent} />
+              )}
+            </View>
+            {experience.authorSummary ? (
+              <Text style={{ fontSize: 13, color: UI.fg80, fontFamily: 'Inter_500Medium', marginTop: 2, paddingRight: 8 }} numberOfLines={2}>
+                {experience.authorSummary}
+              </Text>
+            ) : null}
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ marginBottom: 16 }}>
+        <Text style={{ fontSize: 22, color: UI.foreground, fontFamily: 'InstrumentSerif_400Regular', marginBottom: 8 }}>
+          {experience.title}
+        </Text>
+        <Text
+          style={{ fontSize: 15, color: UI.fg80, lineHeight: 24, fontFamily: 'Inter_400Regular' }}
+        >
+          {experience.context}
+        </Text>
+      </View>
+
+      {experience.outcome && (
+        <View style={{ marginBottom: 16, padding: 14, backgroundColor: UI.surfaceDim, borderRadius: 12, borderWidth: 1, borderColor: UI.fg08 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+            <Feather name="award" size={14} color={UI.accent} />
+            <Text style={{ fontSize: 12, color: UI.accent, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 0.5 }}>Outcome</Text>
+          </View>
+          <Text style={{ fontSize: 14, color: UI.foreground, fontFamily: 'Inter_500Medium', lineHeight: 22 }}>
+            {experience.outcome}
+          </Text>
+        </View>
+      )}
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginTop: 8, paddingTop: 16, borderTopWidth: 1, borderTopColor: UI.fg08 }}>
+        <TouchableOpacity
+          onPress={onViewJourney}
+          activeOpacity={0.7}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
+        >
+          <Text style={{ fontSize: 13, color: UI.accent, fontFamily: 'Inter_600SemiBold' }}>
+            Full Journey
+          </Text>
+          <Feather name="arrow-right" size={16} color={UI.accent} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+function FeedSkeletonCard() {
+  return (
+    <View style={{
+      backgroundColor: UI.accentTint, borderRadius: 20, height: 240, marginBottom: 16,
+      opacity: 0.5,
+    }} />
+  );
+}
+
 // ═══════════════════════════════════════════════════════
 //  Main Community Page
 // ═══════════════════════════════════════════════════════
 
 export default function CommunityPage() {
   const router = useRouter();
+  const { getToken } = useAuth();
+  const [feed, setFeed] = useState<FeedExperience[]>([]);
+  const [graph, setGraph] = useState<CommunityGraph | null>(null);
 
   const [topics, setTopics] = useState<string[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
@@ -331,6 +425,31 @@ export default function CommunityPage() {
 
   const [topicPickerVisible, setTopicPickerVisible] = useState(false);
   const [subtopicPickerVisible, setSubtopicPickerVisible] = useState(false);
+
+  const fetchFeed = async () => {
+    setIsLoading(true);
+    try {
+      const token = await getToken() || undefined;
+      const [feedData, graphData] = await Promise.all([
+        getGlobalFeed(token, 1, 30),
+        getCommunityGraph()
+      ]);
+      setFeed(feedData);
+      setGraph(graphData);
+    } catch (e: any) {
+      console.warn('Failed to fetch feed:', e);
+      setFeed([]);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedTopic) {
+      fetchFeed();
+    }
+  }, [selectedTopic]);
 
   // Fetch topics on mount
   useEffect(() => {
@@ -390,10 +509,14 @@ export default function CommunityPage() {
 
   const onRefresh = useCallback(() => {
     setIsRefreshing(true);
-    fetchUsers();
-    if (selectedTopic) fetchSubtopics(selectedTopic);
-    else fetchTopics();
-  }, [selectedTopic]);
+    if (selectedTopic) {
+      fetchUsers();
+      fetchSubtopics(selectedTopic);
+    } else {
+      fetchFeed();
+      fetchTopics();
+    }
+  }, [selectedTopic, getToken]);
 
   const handleTopicSelect = (topic: string) => {
     if (selectedTopic === topic) {
@@ -419,6 +542,15 @@ export default function CommunityPage() {
       <UserCard
         user={item}
         onViewJourney={() => router.push(`/u/${item.username || 'user'}`)}
+      />
+    </Animated.View>
+  ), [router]);
+
+  const renderFeedCard = useCallback(({ item, index }: { item: FeedExperience; index: number }) => (
+    <Animated.View entering={FadeInDown.delay(index * 60).springify().damping(20)}>
+      <FeedCard
+        experience={item}
+        onViewJourney={() => router.push(`/u/${item.authorUsername || 'unknown'}`)}
       />
     </Animated.View>
   ), [router]);
@@ -483,31 +615,77 @@ export default function CommunityPage() {
       {/* Content */}
       {isLoading && !isRefreshing ? (
         <View style={{ paddingHorizontal: 24, paddingTop: 8 }}>
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
+          {isSearchEnabled ? (
+            <><SkeletonCard /><SkeletonCard /><SkeletonCard /></>
+          ) : (
+            <><FeedSkeletonCard /><FeedSkeletonCard /><FeedSkeletonCard /></>
+          )}
         </View>
-      ) : users.length === 0 ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingBottom: 80 }}>
-          <Text style={{ fontSize: 48, marginBottom: 16 }}>🌱</Text>
-          <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
-            No journeys match yet
-          </Text>
-          <Text style={{ fontSize: 14, color: UI.fg50, textAlign: 'center', fontFamily: 'Inter_400Regular' }}>
-            Try exploring a different topic or subtopic.
-          </Text>
-        </View>
+      ) : isSearchEnabled ? (
+        users.length === 0 ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingBottom: 80 }}>
+            <Text style={{ fontSize: 48, marginBottom: 16 }}>🌱</Text>
+            <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
+              No journeys match yet
+            </Text>
+            <Text style={{ fontSize: 14, color: UI.fg50, textAlign: 'center', fontFamily: 'Inter_400Regular' }}>
+              Try exploring a different topic or subtopic.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={users}
+            keyExtractor={(item, index) => item.username || `user-${index}`}
+            renderItem={renderUserCard}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={UI.accent} />
+            }
+          />
+        )
       ) : (
-        <FlatList
-          data={users}
-          keyExtractor={(item, index) => item.username || `user-${index}`}
-          renderItem={renderUserCard}
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={UI.accent} />
-          }
-        />
+        feed.length === 0 ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingBottom: 80 }}>
+            <Feather name="wind" size={48} color={UI.fg50} style={{ marginBottom: 16 }} />
+            <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
+              It's quiet here
+            </Text>
+            <Text style={{ fontSize: 14, color: UI.fg50, textAlign: 'center', fontFamily: 'Inter_400Regular' }}>
+              No experiences have been shared yet. Be the first!
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={feed}
+            keyExtractor={(item) => item.id}
+            ListHeaderComponent={
+              graph && graph.nodes.length > 0 ? (
+                <Animated.View entering={FadeInDown.springify().damping(20)}>
+                  <Text style={{
+                    fontFamily: 'InstrumentSerif_400Regular',
+                    fontSize: 24, color: UI.foreground, marginBottom: 4, marginTop: 8
+                  }}>
+                    Trending Paths
+                  </Text>
+                  <VisualGraph nodes={graph.nodes} edges={graph.edges} />
+                  <Text style={{
+                    fontFamily: 'InstrumentSerif_400Regular',
+                    fontSize: 24, color: UI.foreground, marginBottom: 16, marginTop: 16
+                  }}>
+                    Recent Experiences
+                  </Text>
+                </Animated.View>
+              ) : null
+            }
+            renderItem={renderFeedCard}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={UI.accent} />
+            }
+          />
+        )
       )}
 
       {/* Bottom sheet pickers */}
