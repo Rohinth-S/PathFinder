@@ -23,7 +23,7 @@ By structuring raw human experience into a verifiable, queryable **Life Graph**,
 ## ✦ The Vision & Problem Space
 
 ### The Contextual Deficit
-Every year, thousands of individuals attempt complex life changes: transitioning from service-based agencies to product engineering, scaling bootstrapped startups past 50 LPA, dropping out of college to build, or breaking into elite research tracks.
+Every year, thousands of individuals attempt complex life changes: transitioning from service-based agencies to product engineering, scaling bootstrapped startups, dropping out of college to build, or breaking into elite research tracks.
 
 When they search for guidance, they encounter fragmented networks:
 * **LinkedIn**: A self-promotional, high-level highlight reel that hides setbacks, context, and structural failures.
@@ -35,14 +35,83 @@ PathFinder structures raw narrative into a highly connected **Life Graph** consi
 
 PathFinder doesn't index standalone posts or opinions; it indexes **causal connections and entire trajectories**.
 
+<h2 align="center">Onboarding Architecture</h3>
+
 ```mermaid
 graph TD
-    User([User Narrative]) -->|Voice / Text| InputLayer[Ingestion Engine]
-    InputLayer -->|AI Extraction Pipeline| Neo4j[(Neo4j Graph Database)]
-    Neo4j -->|Verifiable Node Timelines| GraphViewer[Interactive Life Graph UI]
-    
-    Query[User Query] -->|Embedding Search + Cypher| GraphEngine[PathFinder Retrieval]
-    GraphEngine -->|Traversed Context + Proofs| Verdict[Context-Aware Verified Output]
+    User([User Query])
+    -->|Voice / Text| QueryParser[Intent Understanding & Embedding Generation]
+
+QueryParser
+    -->|Hybrid GraphRAG Retrieval| Neo4j[(Neo4j AuraDB)]
+
+Neo4j
+    -->|Cypher Queries| Traversal[Multi-hop Graph Traversal]
+
+Neo4j
+    -->|Vector Index| Semantic[Semantic Similarity Search]
+
+Neo4j
+    -->|Relationship Expansion| Neighborhood[Neighborhood Expansion]
+
+Traversal --> Context[Connected Journey Subgraph]
+Semantic --> Context
+Neighborhood --> Context
+
+Context
+    -->|Grounded AI Reasoning| Intelligence[Decision Intelligence]
+
+Intelligence
+    --> Journeys[Relevant Career Journeys]
+
+Intelligence
+    --> Patterns[Common Decision Patterns]
+
+Intelligence
+    --> Insights[Personalized AI Insights]
+
+Journeys --> Response[Response Generation]
+Patterns --> Response
+Insights --> Response
+
+Response
+    --> Output[Text / Speech<br/>Preferred Language]
+```
+
+<h2 align="center">Query Architecture</h2>
+
+
+```mermaid
+graph TD
+
+User([User Chat])
+
+User
+    -->|Natural Language Conversation| Chat[AI Conversation Interface]
+
+Chat
+    -->|LLM Extraction & Structured Parsing| Extraction[Journey Information Extraction]
+
+Extraction
+    -->|Goals • Experiences • Skills • Timeline • Decisions| Draft[Auto-Generated Journey Draft]
+
+Draft
+    -->|User Review & Corrections| Forms[Editable Goal & Experience Forms]
+
+Forms
+    -->|GitHub • PDF • Image Proof Submission| Verify[AI Proof Verification]
+
+Verify
+    -->|Verified Experiences & Metadata| GraphBuilder[Graph Construction Engine]
+
+GraphBuilder
+    -->|Create Nodes, Relationships & Timeline| Neo4j[(Neo4j AuraDB)]
+
+Neo4j
+    -->|Users • Goals • Experiences • Skills • Proofs • Decisions| Journey[Connected Career Knowledge Graph]
+
+Journey
+    -->|Visual Graph & Timeline| GraphViewer[Interactive Journey Explorer]
 ```
 
 ---
@@ -53,7 +122,7 @@ PathFinder’s core is built using a highly synergistic stack. Sponsor technolog
 
 ### 1. Graph Database & Retrieval: Neo4j
 * **Purpose**: Trajectory Topology & Causal Querying
-* **Integration**: All life events are stored as `(:User)-[:HAS_EXPERIENCE]->(:Experience)-[:LEADS_TO]->(:Experience)`.
+* **Integration**: Every journey is modeled as a connected knowledge graph where **Users, Goals, Experiences, Skills, Decisions, Proofs, and Outcomes** are represented as nodes connected through relationships such as `HAS_EXPERIENCE`, `BUILT_SKILL`, `TRANSITION`, `HAS_PROOF`, and `PURSUED_GOAL`. Neo4j powers multi-hop graph traversal, neighborhood expansion, relationship discovery, full-text search, vector search, and GraphRAG retrieval to identify similar career trajectories and decision patterns.
 * **Engineering Rationale**: Human journeys are linear over time but branch out causally through decisions. Modeling decisions, pivots, and transitions as database nodes and relationships allows us to traverse pathways with sub-millisecond execution times. Using traditional relational tables or document databases would require recursive, expensive self-joins to find transition patterns.
 
 ### 2. Audio Processing: Sarvam AI
@@ -65,7 +134,7 @@ PathFinder’s core is built using a highly synergistic stack. Sponsor technolog
 * **Purpose**: Structured Information Extraction, Duplicate Prevention, and Workflow Orchestration
 * **Integration**:
   * **Gemini (gemini-3.1-flash-lite)** acts as our structured extractor. It parses raw transcripts into strict schemas for Neo4j import.
-  * **Upstash Redis** manages rate limits and caches expensive LLM queries.
+  * **Upstash Redis** stores onboarding conversation sessions, maintains conversational context across multiple interactions, and caches expensive LLM responses to reduce latency and API usage.
 * **Engineering Rationale**: Parsing irregular, conversational human speech into structured JSON is highly complex. Gemini’s native JSON Schema support allows us to extract dates in standard `MM YYYY` formats, categorize emotion labels, and isolate outcomes. Upstash Redis ensures high-performance session state mapping.
 
 ### 4. Cross-Platform UI: Expo (React Native)

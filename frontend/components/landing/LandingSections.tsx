@@ -444,12 +444,12 @@ function GraphMotif() {
     pivot: '#5B7B6A',   // Sage green — earthy, calming
     entry: '#D4917A',   // Warm coral-peach — complements terracotta
     insight: '#C4A265',   // Golden amber — warm, luminous
-    growth: '#7BAF96',   // Eucalyptus green — fresh, alive
-    dotBorder: '#FAF0EA',   // Warm off-white borders on nodes
-    linePivot: '#8BA89A',   // Muted sage for connector
-    lineEntry: '#D4917A',   // Coral connector
-    lineInsight: '#D4C19B',   // Sandy connector
-    lineGrowth: '#8BB8A2',   // Green connector
+    growth: '#7B9B82',    // Eucalyptus green — growth and nature
+    dotBorder: '#E6D3C8', // Border for dots
+    linePivot: 'rgba(91, 123, 106, 0.4)',
+    lineEntry: 'rgba(212, 145, 122, 0.4)',
+    lineInsight: 'rgba(196, 162, 101, 0.4)',
+    lineGrowth: 'rgba(123, 155, 130, 0.4)',
     labelDark: '#5A4535',   // Warm dark brown for labels
   };
 
