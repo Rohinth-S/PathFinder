@@ -82,16 +82,16 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     });
 
     const screenWidth = Dimensions.get('window').width - 32;
+    const Y_SPACING = 140;
+    const padding = 60;
+    const calculatedHeight = Math.max(280, sortedNodeIds.length * Y_SPACING + padding * 2);
     const calculatedWidth = screenWidth;
-    const Y_SPACING = 110;
-    const padding = 40;
-    const calculatedHeight = sortedNodeIds.length * Y_SPACING + padding * 2;
     const X_OFFSET = 60;
 
     sortedNodeIds.forEach((id, index) => {
       const pNode = nodeMap.get(id)!;
-      pNode.y = padding + index * Y_SPACING + 32; // center offset
-      pNode.x = (screenWidth / 2) + (index % 2 === 0 ? -X_OFFSET : X_OFFSET);
+      pNode.y = padding + index * Y_SPACING; // y position
+      pNode.x = (calculatedWidth / 2) + (index % 2 === 0 ? -X_OFFSET : X_OFFSET);
     });
 
     const validEdges = edges.filter(e => nodeMap.has(e.fromId) && nodeMap.has(e.toId));
@@ -121,16 +121,30 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   };
 
   const drawCurve = (x1: number, y1: number, x2: number, y2: number) => {
-    const cp1x = x1;
-    const cp1y = y1 + (y2 - y1) / 2;
-    const cp2x = x2;
-    const cp2y = y1 + (y2 - y1) / 2;
+    const dy = y2 - y1;
+    let cp1x = x1;
+    let cp1y = y1 + dy / 2;
+    let cp2x = x2;
+    let cp2y = y1 + dy / 2;
+    
+    if (Math.abs(dy) > 200) {
+      const isLeft1 = x1 < width / 2;
+      const isLeft2 = x2 < width / 2;
+      if (isLeft1 && isLeft2) {
+        cp1x -= 60;
+        cp2x -= 60;
+      } else if (!isLeft1 && !isLeft2) {
+        cp1x += 60;
+        cp2x += 60;
+      }
+    }
+    
     return `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
   };
 
   return (
     <View style={{ marginVertical: 16 }}>
-      <View style={{ backgroundColor: '#FDFCF9', borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: '#EAE7E0', width: '100%', height }}>
+      <View style={{ backgroundColor: '#FDFCF9', borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: '#EAE7E0', width: '100%', height: height }}>
         <Svg width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
           <Defs>
             <Marker
@@ -140,15 +154,13 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               refY="10"
               markerWidth="5"
               markerHeight="5"
-              orient="auto-start-reverse"
+              orient="auto"
             >
-              <Path d="M 0 0 L 10 0 L 5 10 z" fill={L.teal} opacity={0.6} />
+              <Path d="M 0 0 L 10 0 L 5 10 z" fill={L.teal} opacity={0.3} />
             </Marker>
           </Defs>
 
           {positionedEdges.map((edge, i) => {
-            const midX = (edge.from.x + edge.to.x) / 2;
-            const midY = (edge.from.y + edge.to.y) / 2;
             const startY = edge.from.y + 32;
             const endY = edge.to.y - 32;
             
@@ -157,34 +169,11 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
                 <Path
                   d={drawCurve(edge.from.x, startY, edge.to.x, endY)}
                   stroke={L.teal}
-                  strokeOpacity={0.4}
+                  strokeOpacity={0.15}
                   strokeWidth="2"
                   fill="none"
                   markerEnd="url(#arrow)"
                 />
-                {edge.label && (
-                  <View style={{
-                    position: 'absolute',
-                    left: midX - 50,
-                    top: midY - 12,
-                    width: 100,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: 'rgba(253, 252, 249, 0.8)',
-                    borderRadius: 12,
-                    paddingHorizontal: 8,
-                    paddingVertical: 2
-                  }}>
-                    <Text style={{
-                      color: L.navySoft,
-                      fontSize: 10,
-                      textAlign: 'center',
-                      fontFamily: 'Inter_600SemiBold'
-                    }}>
-                      {edge.label}
-                    </Text>
-                  </View>
-                )}
               </G>
             );
           })}
@@ -200,14 +189,15 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               left: node.x - 75,
               top: node.y - 32,
               width: 150,
-              height: 64,
+              minHeight: 64,
               backgroundColor: '#FFFFFF',
               borderRadius: 16,
               borderWidth: 1,
               borderColor: 'rgba(62, 107, 102, 0.1)',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: 10,
+              paddingHorizontal: 8,
+              paddingVertical: 10,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.05,
@@ -219,7 +209,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               {node.title}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }}>
+              <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
                 {node.authorUsername ? `@${node.authorUsername}` : 'Explorer'}
               </Text>
             </View>
