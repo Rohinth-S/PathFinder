@@ -82,16 +82,16 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     });
 
     const screenWidth = Dimensions.get('window').width - 32;
-    const X_SPACING = 180;
-    const padding = 80;
-    const calculatedWidth = Math.max(screenWidth, sortedNodeIds.length * X_SPACING + padding * 2);
-    const calculatedHeight = 280;
-    const Y_OFFSET = 60;
+    const Y_SPACING = 140;
+    const padding = 60;
+    const calculatedHeight = Math.max(280, sortedNodeIds.length * Y_SPACING + padding * 2);
+    const calculatedWidth = screenWidth;
+    const X_OFFSET = 60;
 
     sortedNodeIds.forEach((id, index) => {
       const pNode = nodeMap.get(id)!;
-      pNode.x = padding + index * X_SPACING; // x position
-      pNode.y = (calculatedHeight / 2) + (index % 2 === 0 ? -Y_OFFSET : Y_OFFSET);
+      pNode.y = padding + index * Y_SPACING; // y position
+      pNode.x = (calculatedWidth / 2) + (index % 2 === 0 ? -X_OFFSET : X_OFFSET);
     });
 
     const validEdges = edges.filter(e => nodeMap.has(e.fromId) && nodeMap.has(e.toId));
@@ -121,21 +121,21 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   };
 
   const drawCurve = (x1: number, y1: number, x2: number, y2: number) => {
-    const dx = x2 - x1;
-    let cp1x = x1 + dx / 2;
-    let cp1y = y1;
-    let cp2x = x1 + dx / 2;
-    let cp2y = y2;
+    const dy = y2 - y1;
+    let cp1x = x1;
+    let cp1y = y1 + dy / 2;
+    let cp2x = x2;
+    let cp2y = y1 + dy / 2;
     
-    if (Math.abs(dx) > 200) {
-      const isTop1 = y1 < 140;
-      const isTop2 = y2 < 140;
-      if (isTop1 && isTop2) {
-        cp1y -= 60;
-        cp2y -= 60;
-      } else if (!isTop1 && !isTop2) {
-        cp1y += 60;
-        cp2y += 60;
+    if (Math.abs(dy) > 200) {
+      const isLeft1 = x1 < calculatedWidth / 2;
+      const isLeft2 = x2 < calculatedWidth / 2;
+      if (isLeft1 && isLeft2) {
+        cp1x -= 60;
+        cp2x -= 60;
+      } else if (!isLeft1 && !isLeft2) {
+        cp1x += 60;
+        cp2x += 60;
       }
     }
     
@@ -143,33 +143,31 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   };
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 16 }}>
-      <View style={{ backgroundColor: '#FDFCF9', borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: '#EAE7E0', width: width, height: height }}>
+    <View style={{ marginVertical: 16 }}>
+      <View style={{ backgroundColor: '#FDFCF9', borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: '#EAE7E0', width: '100%', height: height }}>
         <Svg width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
           <Defs>
             <Marker
               id="arrow"
               viewBox="0 0 10 10"
-              refX="10"
-              refY="5"
+              refX="5"
+              refY="10"
               markerWidth="5"
               markerHeight="5"
               orient="auto"
             >
-              <Path d="M 0 0 L 10 5 L 0 10 z" fill={L.teal} opacity={0.3} />
+              <Path d="M 0 0 L 10 0 L 5 10 z" fill={L.teal} opacity={0.3} />
             </Marker>
           </Defs>
 
           {positionedEdges.map((edge, i) => {
-            const midX = (edge.from.x + edge.to.x) / 2;
-            const midY = (edge.from.y + edge.to.y) / 2;
-            const startX = edge.from.x + 75;
-            const endX = edge.to.x - 75;
+            const startY = edge.from.y + 32;
+            const endY = edge.to.y - 32;
             
             return (
               <G key={`edge-${i}`}>
                 <Path
-                  d={drawCurve(startX, edge.from.y, endX, edge.to.y)}
+                  d={drawCurve(edge.from.x, startY, edge.to.x, endY)}
                   stroke={L.teal}
                   strokeOpacity={0.15}
                   strokeWidth="2"
@@ -218,7 +216,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
           </TouchableOpacity>
         ))}
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
