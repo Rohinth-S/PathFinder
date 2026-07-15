@@ -16,7 +16,7 @@ By structuring raw human experience into a verifiable, queryable **Life Graph**,
 
 * 🎬 **Demo Video (YouTube)**: [Watch the PathFinder Pitch & Walkthrough](https://www.youtube.com/watch?v=cFn0jj-MVC8)
 * 📊 **PPT Presentation**: [View Pitch Deck](https://drive.google.com/file/d/1AobVEavMoAPnOungrUzjAT7i7eKRK1ei/view)
-* 📝 **Product Blog Post**: [Read on Hashnode/Medium](https://dev.to/mithulcrafts/what-if-we-could-search-human-experiences-instead-of-opinions-33nb)
+* 📝 **Product Blog Post**: [Read on dev.to](https://dev.to/mithulcrafts/what-if-we-could-search-human-experiences-instead-of-opinions-33nb)
 
 ---
 
