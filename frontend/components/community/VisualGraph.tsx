@@ -162,29 +162,6 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
                   fill="none"
                   markerEnd="url(#arrow)"
                 />
-                {edge.label && (
-                  <View style={{
-                    position: 'absolute',
-                    left: midX - 50,
-                    top: midY - 12,
-                    width: 100,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: 'rgba(253, 252, 249, 0.8)',
-                    borderRadius: 12,
-                    paddingHorizontal: 8,
-                    paddingVertical: 2
-                  }}>
-                    <Text style={{
-                      color: L.navySoft,
-                      fontSize: 10,
-                      textAlign: 'center',
-                      fontFamily: 'Inter_600SemiBold'
-                    }}>
-                      {edge.label}
-                    </Text>
-                  </View>
-                )}
               </G>
             );
           })}
