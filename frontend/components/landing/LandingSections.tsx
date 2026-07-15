@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, Linking, useWindowDimensions, Platform } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons, Feather } from '@expo/vector-icons';
 import Animated, {
   Easing,
@@ -39,8 +39,12 @@ type HeroProps = {
 };
 
 export function HeroSection({ onPressGoogle }: HeroProps) {
+  const { height } = useWindowDimensions();
+  // Use exact window height for all platforms to guarantee full screen fit.
+  const minHeight = height;
+
   return (
-    <SectionReveal style={{ minHeight: 700, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 80, backgroundColor: LegacyUI.surfaceInverse }}>
+    <SectionReveal style={{ minHeight, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 80, backgroundColor: LegacyUI.surfaceInverse }}>
 
       {/* Logo mark */}
       <StaggerItem index={0}>

@@ -46,21 +46,34 @@
   "devDependencies": {
     "@types/react": "~19.2.2",
     "babel-preset-expo": "^56.0.15",
+    "bufferutil": "^4.1.0",
     "connect": "^3.7.0",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^3.4.19",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "utf-8-validate": "^6.0.6"
   },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build": "expo export -p web"
+    "build": "expo export -p web",
+    "eas-build-pre-install": "npm install --package-lock-only"
   },
   "engines": {
     "node": ">=22.0.0",
     "npm": ">=10.0.0"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "expo-av",
+          "@solana-mobile/mobile-wallet-adapter-protocol"
+        ]
+      }
+    }
+  }
 }

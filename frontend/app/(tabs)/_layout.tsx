@@ -84,6 +84,24 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="community"
+        options={{
+          title: 'Community',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{ alignItems: 'center' }}>
+              {focused && (
+                <View style={{
+                  width: 20, height: 3, borderRadius: 1.5,
+                  backgroundColor: L.teal,
+                  position: 'absolute', top: -8,
+                }} />
+              )}
+              <Feather name="users" size={22} color={color} />
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
