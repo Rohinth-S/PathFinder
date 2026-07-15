@@ -13,7 +13,7 @@ import { useEffect, useCallback } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent splash from auto-hiding until fonts are ready
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(console.warn);
 
 // Token cache implementation for secure storage of session tokens
 const tokenCache = {
@@ -67,7 +67,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync().catch(console.warn);
     }
   }, [fontsLoaded]);
 
