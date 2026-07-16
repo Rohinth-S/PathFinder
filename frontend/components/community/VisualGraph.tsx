@@ -143,8 +143,10 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     return `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
   };
 
+  const screenHeight = Dimensions.get('window').height;
+
   return (
-    <View style={{ marginVertical: 16, borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: '#EAE7E0', height: 340 }}>
+    <View style={{ marginVertical: 16, borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: '#EAE7E0', height: screenHeight * 0.75 }}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={true}
