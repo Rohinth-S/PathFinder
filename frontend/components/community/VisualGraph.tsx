@@ -22,6 +22,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   const [scale, setScale] = useState(0.6);
   const baseScale = useRef(0.6);
   const scrollViewRef = useRef(null);
+  const screenWidth = Dimensions.get('window').width;
 
   const handleZoomIn = () => {
     const newScale = Math.min(scale + 0.5, 2.5);
@@ -192,9 +193,23 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     return `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
   };
 
+  const drawSelfLoop = (x: number, y: number) => {
+    const cardTopLeftX = x - 90;
+    const cardTopLeftY = y - 32;
+    const startX = cardTopLeftX + 45;
+    const startY = cardTopLeftY;
+    const cp1x = startX - 25;
+    const cp1y = startY - 40;
+    const cp2x = startX + 25;
+    const cp2y = startY - 40;
+    const endX = startX + 25;
+    const endY = startY;
+    return `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`;
+  };
+
   return (
     <PinchGestureHandler onGestureEvent={onPinchEvent} onHandlerStateChange={onPinchStateChange} simultaneousHandlers={scrollViewRef}>
-      <View style={{ marginVertical: 16, height: height * scale, width: Dimensions.get('window').width }}>
+      <View style={{ marginVertical: 16, height: height * scale, width: screenWidth, overflow: 'visible' }}>
         <GHScrollView 
           ref={scrollViewRef}
           horizontal 
@@ -202,6 +217,9 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
           maximumZoomScale={2.5}
           minimumZoomScale={0.4}
           contentContainerStyle={{ width: width * scale, height: height * scale }}
+          nestedScrollEnabled={true}
+          decelerationRate="fast"
+          scrollEventThrottle={16}
         >
           <View style={{ 
             backgroundColor: '#FDFCF9', 
@@ -227,6 +245,21 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
 
           {/* Draw Edges */}
           {positionedEdges.map((edge, i) => {
+            if (edge.fromId === edge.toId) {
+              return (
+                <G key={`edge-${i}`}>
+                  <Path
+                    d={drawSelfLoop(edge.from.x, edge.from.y)}
+                    stroke={L.teal}
+                    strokeOpacity={0.4}
+                    strokeWidth="2"
+                    fill="none"
+                    markerEnd="url(#arrow)"
+                  />
+                </G>
+              );
+            }
+
             const midX = (edge.from.x + edge.to.x) / 2;
             const midY = (edge.from.y + edge.to.y) / 2;
             const startX = edge.from.x + 90;

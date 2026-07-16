@@ -144,10 +144,10 @@ export default function ProfilePage() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
       {/* Header */}
-      <Animated.View entering={FadeInDown.duration(400).springify()} style={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 8 }}>
+      <Animated.View entering={FadeInDown.duration(400).springify()} style={{ paddingHorizontal: 24, paddingTop: 48, paddingBottom: 8 }}>
         <SectionLabel>Your Details</SectionLabel>
         <Text style={{
-          fontFamily: 'Monospace_500Medium', fontSize: 48, letterSpacing: -1
+          fontFamily: 'Monospace_500Medium', fontSize: 30, letterSpacing: -1
         }}>
           Profile
         </Text>
