@@ -168,7 +168,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               refY="5"
               markerWidth="5"
               markerHeight="5"
-              orient="auto-start-reverse"
+              orient="auto"
             >
               <Path d="M 0 0 L 10 5 L 0 10 z" fill={L.teal} opacity={0.6} />
             </Marker>
