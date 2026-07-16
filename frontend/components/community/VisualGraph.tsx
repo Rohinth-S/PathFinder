@@ -79,49 +79,60 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       }
     });
 
-    const maxLayer = Math.max(...Array.from(layers.values()));
-
-    // Count nodes per layer to calculate vertical spacing
-    const nodesPerLayer = new Map<number, string[]>();
-    for (let i = 0; i <= maxLayer; i++) {
-      nodesPerLayer.set(i, []);
+    const maxLayerOriginal = Math.max(0, ...Array.from(layers.values()));
+    
+    const nodesPerLayerOriginal = new Map<number, string[]>();
+    for (let i = 0; i <= maxLayerOriginal; i++) {
+      nodesPerLayerOriginal.set(i, []);
     }
-
+    
     Array.from(layers.entries()).forEach(([id, layer]) => {
-      nodesPerLayer.get(layer)!.push(id);
+      nodesPerLayerOriginal.get(layer)!.push(id);
     });
+
+    // CRITICAL: Limit nodes per vertical layer to prevent Android Canvas OOM crash
+    const MAX_NODES_PER_LAYER = 6;
+    const balancedLayers: string[][] = [];
+    
+    for (let i = 0; i <= maxLayerOriginal; i++) {
+      const arr = nodesPerLayerOriginal.get(i) || [];
+      if (arr.length === 0 && balancedLayers.length > 0) {
+        balancedLayers.push([]);
+        continue;
+      }
+      for (let j = 0; j < arr.length; j += MAX_NODES_PER_LAYER) {
+        balancedLayers.push(arr.slice(j, j + MAX_NODES_PER_LAYER));
+      }
+    }
 
     const X_SPACING = 340;
     const Y_SPACING = 220;
     const padding = 80;
 
+    const actualMaxLayer = Math.max(0, balancedLayers.length - 1);
+    
     let maxNodesInOneLayer = 0;
-    for (let i = 0; i <= maxLayer; i++) {
-      maxNodesInOneLayer = Math.max(maxNodesInOneLayer, nodesPerLayer.get(i)!.length);
-    }
+    balancedLayers.forEach(layerNodes => {
+      maxNodesInOneLayer = Math.max(maxNodesInOneLayer, layerNodes.length);
+    });
 
     const calculatedHeight = Math.max(300, maxNodesInOneLayer * Y_SPACING + padding * 2);
-    const calculatedWidth = maxLayer * X_SPACING + padding * 2 + 150; // extra padding for last node
+    const calculatedWidth = actualMaxLayer * X_SPACING + padding * 2 + 150; 
 
     // Position nodes
-    for (let i = 0; i <= maxLayer; i++) {
-      const layerNodes = nodesPerLayer.get(i)!;
+    balancedLayers.forEach((layerNodes, i) => {
       layerNodes.forEach((id, index) => {
         const pNode = nodeMap.get(id)!;
         pNode.x = padding + i * X_SPACING + 75; // center offset
-
-        // Center vertically based on how many nodes in this layer
+        
         const layerHeight = layerNodes.length * Y_SPACING;
         const startY = (calculatedHeight - layerHeight) / 2 + Y_SPACING / 2;
         pNode.y = startY + index * Y_SPACING;
       });
-    }
+    });
 
     // Filter out edges with missing nodes
     const validEdges = edges.filter(e => nodeMap.has(e.fromId) && nodeMap.has(e.toId));
-
-    const MAX_CANVAS_WIDTH = 6000;
-    const MAX_CANVAS_HEIGHT = 2500;
 
     return {
       positionedNodes: Array.from(nodeMap.values()),
@@ -130,8 +141,8 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
         from: nodeMap.get(e.fromId)!,
         to: nodeMap.get(e.toId)!
       })),
-      width: Math.min(Math.max(Dimensions.get('window').width, calculatedWidth), MAX_CANVAS_WIDTH),
-      height: Math.min(calculatedHeight, MAX_CANVAS_HEIGHT)
+      width: Math.max(Dimensions.get('window').width, calculatedWidth),
+      height: calculatedHeight
     };
   }, [nodes, edges]);
 
