@@ -5,7 +5,20 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { initializeUser } from '@/services/auth.service';
 import Animated, { useAnimatedScrollHandler, useAnimatedStyle, interpolateColor } from 'react-native-reanimated';
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
 import { UI } from '../constants/colors';
+
+WebBrowser.maybeCompleteAuthSession();
+
+export const useWarmUpBrowser = () => {
+  useEffect(() => {
+    void WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+};
 import { LandingViewportProvider, useLandingViewport } from '../components/landing/landingMotion';
 import {
   HeroSection,
@@ -31,8 +44,9 @@ export default function LandingPage() {
 }
 
 function LandingPageContent() {
+  useWarmUpBrowser();
   const router = useRouter();
-  const { isSignedIn, getToken } = useAuth();
+  const { isLoaded, isSignedIn, getToken } = useAuth();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const { scrollY, viewportHeight, scrollDirection } = useLandingViewport();
   
@@ -47,27 +61,30 @@ function LandingPageContent() {
   });
 
   const animatedBgStyle = useAnimatedStyle(() => {
-    return { backgroundColor: UI.background, flex: 1 };
+    return { backgroundColor: UI.surfaceInverse, flex: 1 };
   });
 
   useEffect(() => {
-    async function initialize() {
-      if (!isSignedIn) return;
-      const token = await getToken();
-      if (!token) return;  
-      const user = await initializeUser(token);
-      if (user.username) {
-        router.replace("/(tabs)");
-      } else {
-        router.replace("/(tabs)/profile");
-      }
+  if (!isLoaded) return;
+  async function initialize() {
+    if (!isSignedIn) return;
+    const token = await getToken();
+    if (!token) return;
+    const user = await initializeUser(token);
+    if (user.username) {
+      router.replace("/(tabs)/ask");
+    } else {
+      router.replace("/(tabs)/profile");
     }
-    initialize();
-  }, [isSignedIn, getToken, router]);
+  }
+  initialize();
+}, [isLoaded, isSignedIn]);
 
   const onPressGoogle = async () => {
     try {
-      const { createdSessionId, setActive } = await startOAuthFlow();
+      const { createdSessionId, setActive } = await startOAuthFlow({
+        redirectUrl: Linking.createURL('/(tabs)/ask')
+      });
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
       }
@@ -79,7 +96,7 @@ function LandingPageContent() {
   return (
     <Animated.View style={animatedBgStyle}>
       <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar style="dark" />
+        <StatusBar style="light" />
         <Animated.ScrollView
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}

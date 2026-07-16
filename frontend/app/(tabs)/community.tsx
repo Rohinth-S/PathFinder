@@ -12,7 +12,10 @@ import Animated, {
 import { UI } from '../../constants/colors';
 import {
   getTopics, getSubtopics, searchCommunity, SearchCommunityUser,
+  getCommunityGraph, CommunityGraph
 } from '../../api/community.api';
+import { useAuth } from '@clerk/clerk-expo';
+import { VisualGraph } from '../../components/community/VisualGraph';
 import { SectionLabel, PillBadge } from '../../components/ui/SectionLabel';
 import { DotDivider } from '../../components/ui/DotDivider';
 
@@ -242,7 +245,9 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
       {matchingGoals.length > 0 && (
         <View style={{ marginBottom: 16 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <SectionLabel>GOALS MATCHING YOUR SEARCH</SectionLabel>
+            <View style={{ flex: 1, paddingRight: 8 }}>
+              <SectionLabel style={{ flexShrink: 1 }}>GOALS MATCHING YOUR SEARCH</SectionLabel>
+            </View>
             <View style={{
               paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6,
               backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -313,12 +318,16 @@ function SkeletonCard() {
   );
 }
 
+
+
 // ═══════════════════════════════════════════════════════
 //  Main Community Page
 // ═══════════════════════════════════════════════════════
 
 export default function CommunityPage() {
   const router = useRouter();
+  const { getToken } = useAuth();
+  const [graph, setGraph] = useState<CommunityGraph | null>(null);
 
   const [topics, setTopics] = useState<string[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
@@ -331,6 +340,35 @@ export default function CommunityPage() {
 
   const [topicPickerVisible, setTopicPickerVisible] = useState(false);
   const [subtopicPickerVisible, setSubtopicPickerVisible] = useState(false);
+  const [graphExpanded, setGraphExpanded] = useState(true);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [usersData, graphData] = await Promise.all([
+        searchCommunity({
+          topic: selectedTopic || undefined,
+          subtopic: selectedSubtopic || undefined,
+          limit: 50,
+        }),
+        !selectedTopic ? getCommunityGraph() : Promise.resolve(null)
+      ]);
+      setUsers(usersData);
+      if (!selectedTopic && graphData) {
+        setGraph(graphData);
+      }
+    } catch (e: any) {
+      console.warn('Failed to fetch data:', e);
+      setUsers([]);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [selectedTopic, selectedSubtopic]);
 
   // Fetch topics on mount
   useEffect(() => {
@@ -347,9 +385,12 @@ export default function CommunityPage() {
     }
   }, [selectedTopic]);
 
-  // Auto-search on filter change
   useEffect(() => {
-    fetchUsers();
+    if (selectedTopic || selectedSubtopic) {
+      setGraphExpanded(false);
+    } else {
+      setGraphExpanded(true);
+    }
   }, [selectedTopic, selectedSubtopic]);
 
   const fetchTopics = async () => {
@@ -370,30 +411,15 @@ export default function CommunityPage() {
     }
   };
 
-  const fetchUsers = async () => {
-    setIsLoading(true);
-    try {
-      const data = await searchCommunity({
-        topic: selectedTopic || undefined,
-        subtopic: selectedSubtopic || undefined,
-        limit: 50,
-      });
-      setUsers(data);
-    } catch (e: any) {
-      console.warn('Failed to fetch users:', e);
-      setUsers([]);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  };
-
   const onRefresh = useCallback(() => {
     setIsRefreshing(true);
-    fetchUsers();
-    if (selectedTopic) fetchSubtopics(selectedTopic);
-    else fetchTopics();
-  }, [selectedTopic]);
+    fetchData();
+    if (selectedTopic) {
+      fetchSubtopics(selectedTopic);
+    } else {
+      fetchTopics();
+    }
+  }, [selectedTopic, selectedSubtopic, getToken]);
 
   const handleTopicSelect = (topic: string) => {
     if (selectedTopic === topic) {
@@ -411,7 +437,7 @@ export default function CommunityPage() {
   };
 
   const handleSearch = () => {
-    fetchUsers();
+    fetchData();
   };
 
   const renderUserCard = useCallback(({ item, index }: { item: SearchCommunityUser; index: number }) => (
@@ -430,7 +456,7 @@ export default function CommunityPage() {
       {/* Header */}
       <View style={{ paddingHorizontal: 24, paddingTop: 56, paddingBottom: 8 }}>
         <Text style={{
-          fontFamily: 'InstrumentSerif_400Regular',
+          fontFamily: 'Monospace_500Medium',
           fontSize: 32, color: UI.foreground, marginBottom: 4,
         }}>
           Community
@@ -483,31 +509,79 @@ export default function CommunityPage() {
       {/* Content */}
       {isLoading && !isRefreshing ? (
         <View style={{ paddingHorizontal: 24, paddingTop: 8 }}>
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-        </View>
-      ) : users.length === 0 ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingBottom: 80 }}>
-          <Text style={{ fontSize: 48, marginBottom: 16 }}>🌱</Text>
-          <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
-            No journeys match yet
-          </Text>
-          <Text style={{ fontSize: 14, color: UI.fg50, textAlign: 'center', fontFamily: 'Inter_400Regular' }}>
-            Try exploring a different topic or subtopic.
-          </Text>
+          <SkeletonCard /><SkeletonCard /><SkeletonCard />
         </View>
       ) : (
-        <FlatList
-          data={users}
-          keyExtractor={(item, index) => item.username || `user-${index}`}
-          renderItem={renderUserCard}
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={UI.accent} />
-          }
-        />
+        users.length === 0 ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingBottom: 80 }}>
+            <Text style={{ fontSize: 48, marginBottom: 16 }}>🌱</Text>
+            <Text style={{ fontFamily: 'Monospace_500Medium', fontSize: 28, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
+              {isSearchEnabled ? "No journeys match yet" : "It's quiet here"}
+            </Text>
+            <Text style={{ fontSize: 14, color: UI.fg50, textAlign: 'center', fontFamily: 'Inter_400Regular' }}>
+              {isSearchEnabled ? "Try exploring a different topic or subtopic." : "No journeys have been shared yet. Be the first!"}
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={users}
+            keyExtractor={(item, index) => item.username || `user-${index}`}
+            ListHeaderComponent={
+              graph && graph.nodes.length > 0 ? (
+                <Animated.View entering={FadeInDown.springify().damping(20)}>
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => setGraphExpanded(prev => !prev)}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginTop: 8,
+                      marginBottom: graphExpanded ? 12 : 20,
+                    }}>
+                    <Text
+                      style={{
+                        fontFamily: 'Monospace_500Medium',
+                        fontSize: 28,
+                        color: UI.foreground,
+                      }}>
+                      Trending Paths
+                    </Text>
+                    <Feather
+                      name={graphExpanded ? "chevron-up" : "chevron-down"}
+                      size={22}
+                      color={UI.fg80}
+                    />
+                  </TouchableOpacity>
+                  {graphExpanded && !selectedTopic && (
+                    <Animated.View entering={FadeInDown.springify()}>
+                      <VisualGraph
+                        nodes={graph.nodes}
+                        edges={graph.edges}
+                      />
+                    </Animated.View>
+                  )}
+                  <Text
+                    style={{
+                      fontFamily: 'Monospace_500Medium',
+                      fontSize: 28,
+                      color: UI.foreground,
+                      marginTop: 24,
+                      marginBottom: 16,
+                    }} >
+                    Recommended Journeys
+                  </Text>
+                </Animated.View>
+              ) : null
+            }
+            renderItem={renderUserCard}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={UI.accent} />
+            }
+          />
+        )
       )}
 
       {/* Bottom sheet pickers */}

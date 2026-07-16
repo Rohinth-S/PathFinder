@@ -97,17 +97,21 @@ PathFinder executes a hybrid traversal pipeline:
 
 ## ✦ Technology Rationale & Trade-offs
 
-### Neo4j
-* **Why chosen**: Causal path traversal. Querying deep degrees of relationship (e.g. finding 3rd-degree transitions) requires complex joins in SQL, which degrade performance. Neo4j's index-free adjacency traverses these in constant time.
-* **Trade-off**: Requires running and maintaining a separate graph database cluster. We mitigated this by utilizing Neo4j Aura Serverless.
+### Neo4j AuraDB
+* **Why chosen**: PathFinder is fundamentally a graph problem. Users, goals, experiences, skills, proofs, and transitions are highly interconnected, making graph-native traversal ideal for GraphRAG, multi-hop exploration, neighborhood expansion, and decision-path reconstruction. AuraDB also provides vector indexes alongside Cypher, allowing us to combine semantic search with relationship traversal in a single database.
+* **Trade-off**: Graph modeling required significantly more upfront schema design than a relational database. We invested time defining node types, relationship semantics, constraints, and indexes, but this simplified retrieval logic and made complex traversals much more natural.
+
+### Expo & React Native
+* **Why chosen**: Expo enabled rapid cross-platform development with a single TypeScript codebase while providing authentication, file uploads, routing, and build tooling out of the box.
+* **Trade-off**: Some native features required additional Expo modules and configuration instead of working out of the box. We balanced development speed with Expo's managed ecosystem to keep the application fully cross-platform.
 
 ### Sarvam AI
 * **Why chosen**: India-first speech translation. Standard STT engines fail on code-mixed languages (Hinglish, Telglish) or regional dialects. Sarvam AI handles local dialects natively.
 * **Trade-off**: Higher latency compared to OpenAI Whisper. We resolved this by introducing asynchronous Upstash Workflows for processing large files.
 
 ### Upstash Redis
-* **Why chosen**: Serverless database connection limits. Serverless environments scale up fast, which can exhaust connection pools on traditional Redis clusters. Upstash handles pooling natively over HTTP.
-* **Trade-off**: HTTP requests introduce slightly more latency (2-5ms) than persistent TCP connections. However, this is negligible for our ingestion/caching layer.
+* **Why chosen**: During onboarding, conversations span multiple interactions before a journey is submitted. Upstash Redis stores onboarding sessions, maintains conversational context, and caches expensive AI responses, enabling fast retrieval without repeatedly invoking the LLM.
+* **Trade-off**: Cached conversation state introduces expiration and synchronization challenges if users leave onboarding midway. We mitigated this by treating Redis as temporary session storage while persisting only validated journeys to Neo4j.
 
 ### Gemini 3.1 Flash-Lite
 * **Why chosen**: Schema enforcement and low cost. Gemini's support for native structured schema definitions ensures Zod compliance without complex retry loops.

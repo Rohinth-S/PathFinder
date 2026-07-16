@@ -1,3 +1,4 @@
+import "react-native-reanimated";
 import "../global.css";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
@@ -12,7 +13,7 @@ import { useEffect, useCallback } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent splash from auto-hiding until fonts are ready
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(console.warn);
 
 // Token cache implementation for secure storage of session tokens
 const tokenCache = {
@@ -27,7 +28,9 @@ const tokenCache = {
       return item;
     } catch (error) {
       console.warn("SecureStore get item error: ", error);
-      await SecureStore.deleteItemAsync(key);
+      try {
+        await SecureStore.deleteItemAsync(key);
+      } catch (e) {}
       return null;
     }
   },
@@ -64,7 +67,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync().catch(console.warn);
     }
   }, [fontsLoaded]);
 

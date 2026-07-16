@@ -4,14 +4,15 @@ on:
   push:
     branches:
       - main
+      - frontend
     paths:
       - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
 
 jobs:
-  deploy:
-    name: Publish Expo Update
+  update:
+    name: Publish Expo OTA Update
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -19,18 +20,31 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
       - name: Install Frontend Dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm install
 
-      - name: Publish OTA Update to production
+      - name: Determine update channel
+        id: channel
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "branch=production" >> $GITHUB_OUTPUT
+          else
+            echo "branch=preview" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish OTA Update
         working-directory: frontend
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           COMMIT_MSG: ${{ github.event.head_commit.message }}
-        run: 'eas update --branch production --message "Auto-update: $COMMIT_MSG [${{ github.sha }}]"'
+          EXPO_PUBLIC_API_BASE_URL: "https://pathfinder-f7zc.onrender.com/api"
+          EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_bmF0aW9uYWwtc2F0eXItOTguY2xlcmsuYWNjb3VudHMuZGV2JA"
+        run: 'eas update --branch ${{ steps.channel.outputs.branch }} --message "Auto-update: $COMMIT_MSG [${{ github.sha }}]"'
