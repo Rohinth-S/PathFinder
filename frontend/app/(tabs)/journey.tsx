@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform, Image, Alert
+  Modal, ActivityIndicator, LayoutAnimation, UIManager, Platform, Image, Alert, Dimensions
 } from 'react-native';
+
+// Calculate responsive node dimensions based on screen width
+const { width: screenWidth } = Dimensions.get('window');
+const nodeWidth = Math.max(140, Math.min(185, Math.round(screenWidth * 0.44)));
+const nodeHeight = Math.round(nodeWidth * 0.52);
+const maxTextWidth = Math.round(nodeWidth - 40); // 20px padding on each side prevents rounded corner clipping
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { getUserJourney, UserJourneyResponse } from '../../api/journey.api';
@@ -62,16 +68,16 @@ const createCytoscapeHtml = (elementsJson: string) => `
                             'text-halign': 'center',
                             'color': 'data(textColor)',
                             'font-size': '12px',
-                            'font-family': 'Inter, sans-serif',
+                            'font-family': 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                             'font-weight': '600',
                             'background-color': 'data(color)',
                             'shape': 'data(shape)',
                             'border-width': 'data(borderWidth)',
                             'border-color': 'data(borderColor)',
-                            'width': '160px',
-                            'height': '80px',
+                            'width': '${nodeWidth}px',
+                            'height': '${nodeHeight}px',
                             'text-wrap': 'wrap',
-                            'text-max-width': '130px',
+                            'text-max-width': '${maxTextWidth}px',
                             'text-valign': 'center',
                             'text-halign': 'center',
                             'padding': '0px',

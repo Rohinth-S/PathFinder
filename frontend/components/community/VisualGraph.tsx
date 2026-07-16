@@ -19,8 +19,8 @@ interface PositionedNode extends GraphNode {
 
 export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   const router = useRouter();
-  const [scale, setScale] = useState(0.6);
-  const baseScale = useRef(0.6);
+  const [scale, setScale] = useState(0.4);
+  const baseScale = useRef(0.4);
   const scrollViewRef = useRef(null);
   const screenWidth = Dimensions.get('window').width;
 
