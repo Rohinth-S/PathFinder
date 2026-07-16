@@ -5,7 +5,20 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { initializeUser } from '@/services/auth.service';
 import Animated, { useAnimatedScrollHandler, useAnimatedStyle, interpolateColor } from 'react-native-reanimated';
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
 import { UI } from '../constants/colors';
+
+WebBrowser.maybeCompleteAuthSession();
+
+export const useWarmUpBrowser = () => {
+  useEffect(() => {
+    void WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+};
 import { LandingViewportProvider, useLandingViewport } from '../components/landing/landingMotion';
 import {
   HeroSection,
@@ -31,6 +44,7 @@ export default function LandingPage() {
 }
 
 function LandingPageContent() {
+  useWarmUpBrowser();
   const router = useRouter();
   const { isSignedIn, getToken } = useAuth();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
@@ -73,7 +87,9 @@ function LandingPageContent() {
 
   const onPressGoogle = async () => {
     try {
-      const { createdSessionId, setActive } = await startOAuthFlow();
+      const { createdSessionId, setActive } = await startOAuthFlow({
+        redirectUrl: Linking.createURL('/(tabs)/ask')
+      });
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
       }
