@@ -32,7 +32,7 @@ export default function LandingPage() {
 
 function LandingPageContent() {
   const router = useRouter();
-  const { isSignedIn, getToken } = useAuth();
+  const { isLoaded, isSignedIn, getToken } = useAuth();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const { scrollY, viewportHeight, scrollDirection } = useLandingViewport();
   
@@ -51,25 +51,20 @@ function LandingPageContent() {
   });
 
   useEffect(() => {
-    async function initialize() {
-      if (!isSignedIn) return;
-      const token = await getToken();
-      if (!token) return;  
-      
-      try {
-        const user = await initializeUser(token);
-        if (user.username) {
-          router.replace("/(tabs)/ask");
-        } else {
-          router.replace("/(tabs)/profile");
-        }
-      } catch (err) {
-        console.warn("Failed to initialize user on startup:", err);
-        // Do not crash the app, allow the user to stay on the landing page or manually proceed
-      }
+  if (!isLoaded) return;
+  async function initialize() {
+    if (!isSignedIn) return;
+    const token = await getToken();
+    if (!token) return;
+    const user = await initializeUser(token);
+    if (user.username) {
+      router.replace("/(tabs)/ask");
+    } else {
+      router.replace("/(tabs)/profile");
     }
-    initialize();
-  }, [isSignedIn, getToken, router]);
+  }
+  initialize();
+}, [isLoaded, isSignedIn]);
 
   const onPressGoogle = async () => {
     try {

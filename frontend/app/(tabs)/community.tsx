@@ -338,6 +338,7 @@ export default function CommunityPage() {
 
   const [topicPickerVisible, setTopicPickerVisible] = useState(false);
   const [subtopicPickerVisible, setSubtopicPickerVisible] = useState(false);
+  const [graphExpanded, setGraphExpanded] = useState(true);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -381,6 +382,14 @@ export default function CommunityPage() {
       setSelectedSubtopic(null);
     }
   }, [selectedTopic]);
+
+  useEffect(() => {
+    if (selectedTopic || selectedSubtopic) {
+      setGraphExpanded(false);
+    } else {
+      setGraphExpanded(true);
+    }
+  }, [selectedTopic, selectedSubtopic]);
 
   const fetchTopics = async () => {
     try {
@@ -445,7 +454,7 @@ export default function CommunityPage() {
       {/* Header */}
       <View style={{ paddingHorizontal: 24, paddingTop: 56, paddingBottom: 8 }}>
         <Text style={{
-          fontFamily: 'InstrumentSerif_400Regular',
+          fontFamily: 'Monospace_500Medium',
           fontSize: 32, color: UI.foreground, marginBottom: 4,
         }}>
           Community
@@ -504,7 +513,7 @@ export default function CommunityPage() {
         users.length === 0 ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingBottom: 80 }}>
             <Text style={{ fontSize: 48, marginBottom: 16 }}>🌱</Text>
-            <Text style={{ fontFamily: 'InstrumentSerif_400Regular', fontSize: 24, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
+            <Text style={{ fontFamily: 'Monospace_500Medium', fontSize: 28, color: UI.foreground, textAlign: 'center', marginBottom: 8 }}>
               {isSearchEnabled ? "No journeys match yet" : "It's quiet here"}
             </Text>
             <Text style={{ fontSize: 14, color: UI.fg50, textAlign: 'center', fontFamily: 'Inter_400Regular' }}>
@@ -516,20 +525,49 @@ export default function CommunityPage() {
             data={users}
             keyExtractor={(item, index) => item.username || `user-${index}`}
             ListHeaderComponent={
-              !isSearchEnabled && graph && graph.nodes.length > 0 ? (
+              graph && graph.nodes.length > 0 ? (
                 <Animated.View entering={FadeInDown.springify().damping(20)}>
-                  <Text style={{
-                    fontFamily: 'InstrumentSerif_400Regular',
-                    fontSize: 24, color: UI.foreground, marginBottom: 4, marginTop: 8
-                  }}>
-                    Trending Paths
-                  </Text>
-                  <VisualGraph nodes={graph.nodes} edges={graph.edges} />
-                  <Text style={{
-                    fontFamily: 'InstrumentSerif_400Regular',
-                    fontSize: 24, color: UI.foreground, marginBottom: 16, marginTop: 16
-                  }}>
-                    Recent Journeys
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => setGraphExpanded(prev => !prev)}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginTop: 8,
+                      marginBottom: graphExpanded ? 12 : 20,
+                    }}>
+                    <Text
+                      style={{
+                        fontFamily: 'Monospace_500Medium',
+                        fontSize: 28,
+                        color: UI.foreground,
+                      }}>
+                      Trending Paths
+                    </Text>
+                    <Feather
+                      name={graphExpanded ? "chevron-up" : "chevron-down"}
+                      size={22}
+                      color={UI.fg80}
+                    />
+                  </TouchableOpacity>
+                  {graphExpanded && !selectedTopic && (
+                    <Animated.View entering={FadeInDown.springify()}>
+                      <VisualGraph
+                        nodes={graph.nodes}
+                        edges={graph.edges}
+                      />
+                    </Animated.View>
+                  )}
+                  <Text
+                    style={{
+                      fontFamily: 'Monospace_500Medium',
+                      fontSize: 28,
+                      color: UI.foreground,
+                      marginTop: 24,
+                      marginBottom: 16,
+                    }} >
+                    Recommended Journeys
                   </Text>
                 </Animated.View>
               ) : null

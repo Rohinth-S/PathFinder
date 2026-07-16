@@ -104,7 +104,6 @@ export default function ProfilePage() {
 
   const handleSignOut = async () => {
     await signOut();
-    router.replace('/');
   };
 
   const usernameAnimStyle = useAnimatedStyle(() => ({ transform: [{ scale: usernameScale.value }] }));
