@@ -1,8 +1,7 @@
-import React, { useMemo, useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, Pressable } from 'react-native';
-import { PinchGestureHandler, State, ScrollView as GHScrollView } from 'react-native-gesture-handler';
-import { Feather } from '@expo/vector-icons';
-import Svg, { Circle, Line, Text as SvgText, Defs, Marker, Path, G } from 'react-native-svg';
+import React, { useMemo, useRef } from 'react';
+import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
+import Svg, { Marker, Path, G, Defs } from 'react-native-svg';
 import { GraphNode, GraphEdge } from '../../api/community.api';
 import { L } from '../../constants/colors';
 import { useRouter } from 'expo-router';
@@ -19,30 +18,8 @@ interface PositionedNode extends GraphNode {
 
 export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   const router = useRouter();
-  const [scale, setScale] = useState(1.0);
-  const baseScale = useRef(0.6);
   const scrollViewRef = useRef(null);
-
-  const handleZoomIn = () => {
-    const newScale = Math.min(scale + 0.2, 2.5);
-    setScale(newScale);
-    baseScale.current = newScale;
-  };
-  const handleZoomOut = () => {
-    const newScale = Math.max(scale - 0.2, 0.4);
-    setScale(newScale);
-    baseScale.current = newScale;
-  };
-
-  const onPinchEvent = (event: any) => {
-    setScale(Math.max(0.4, Math.min(baseScale.current * event.nativeEvent.scale, 2.5)));
-  };
-
-  const onPinchStateChange = (event: any) => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      baseScale.current = scale;
-    }
-  };
+  const screenWidth = Dimensions.get('window').width;
 
   const { positionedNodes, positionedEdges, width, height } = useMemo(() => {
     if (nodes.length === 0) return { positionedNodes: [], positionedEdges: [], width: 0, height: 0 };
@@ -50,7 +27,6 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     const nodeMap = new Map<string, PositionedNode>();
     nodes.forEach(n => nodeMap.set(n.id, { ...n, x: 0, y: 0 }));
 
-    // Calculate layers (very naive topological sort / distance from sources)
     const layers = new Map<string, number>();
     const inDegrees = new Map<string, number>();
     const adj = new Map<string, string[]>();
@@ -69,16 +45,13 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       }
     });
 
-    // Assign layers
-    let currentLayer = 0;
     let queue = nodes.filter(n => inDegrees.get(n.id) === 0).map(n => n.id);
-
-    // Fallback if there are cycles and no sources
     if (queue.length === 0 && nodes.length > 0) {
       queue = [nodes[0].id];
     }
 
     const visited = new Set<string>();
+    let currentLayer = 0;
 
     while (queue.length > 0) {
       const nextQueue: string[] = [];
@@ -96,7 +69,6 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       currentLayer++;
     }
 
-    // Any unvisited nodes (disconnected components or cyclic) spread across 3 layers to prevent extreme vertical height
     let unvisitedIndex = 0;
     nodes.forEach(n => {
       if (!visited.has(n.id)) {
@@ -106,7 +78,6 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     });
 
     const maxLayerOriginal = Math.max(0, ...Array.from(layers.values()));
-
     const nodesPerLayerOriginal = new Map<number, string[]>();
     for (let i = 0; i <= maxLayerOriginal; i++) {
       nodesPerLayerOriginal.set(i, []);
@@ -116,8 +87,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       nodesPerLayerOriginal.get(layer)!.push(id);
     });
 
-    // CRITICAL: Limit nodes per vertical layer to prevent Android Canvas OOM crash
-    const MAX_NODES_PER_LAYER = 6;
+    const MAX_NODES_PER_LAYER = 5;
     const balancedLayers: string[][] = [];
 
     for (let i = 0; i <= maxLayerOriginal; i++) {
@@ -131,25 +101,27 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       }
     }
 
-    const X_SPACING = 280;
-    const Y_SPACING = 200;
-    const padding = 80;
+    // ── SUPER COMPACT MEASUREMENTS FOR EXCELLENT MOBILE FITTING ──
+    const CARD_WIDTH = 135;
+    const X_SPACING = 165; // Highly packed columns
+    const Y_SPACING = 80;  // Clean, tight vertical rows
+    const paddingLeftRight = 16;
+    const paddingTopBottom = 20;
 
     const actualMaxLayer = Math.max(0, balancedLayers.length - 1);
-
     let maxNodesInOneLayer = 0;
     balancedLayers.forEach(layerNodes => {
       maxNodesInOneLayer = Math.max(maxNodesInOneLayer, layerNodes.length);
     });
 
-    const calculatedHeight = Math.max(300, maxNodesInOneLayer * Y_SPACING + padding * 2);
-    const calculatedWidth = actualMaxLayer * X_SPACING + padding * 2 + 150;
+    // Perfect structural canvas height bounds based on item size
+    const calculatedHeight = Math.max(280, maxNodesInOneLayer * Y_SPACING + paddingTopBottom * 2);
+    const calculatedWidth = actualMaxLayer * X_SPACING + paddingLeftRight * 2 + CARD_WIDTH + 10;
 
-    // Position nodes
     balancedLayers.forEach((layerNodes, i) => {
       layerNodes.forEach((id, index) => {
         const pNode = nodeMap.get(id)!;
-        pNode.x = padding + i * X_SPACING + 75; // center offset
+        pNode.x = paddingLeftRight + i * X_SPACING + (CARD_WIDTH / 2);
 
         const layerHeight = layerNodes.length * Y_SPACING;
         const startY = (calculatedHeight - layerHeight) / 2 + Y_SPACING / 2;
@@ -157,7 +129,6 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       });
     });
 
-    // Filter out edges with missing nodes
     const validEdges = edges.filter(e => nodeMap.has(e.fromId) && nodeMap.has(e.toId));
 
     return {
@@ -167,15 +138,15 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
         from: nodeMap.get(e.fromId)!,
         to: nodeMap.get(e.toId)!
       })),
-      width: Math.max(Dimensions.get('window').width, calculatedWidth),
+      width: calculatedWidth,
       height: calculatedHeight
     };
   }, [nodes, edges]);
 
   if (nodes.length === 0) {
     return (
-      <View style={{ padding: 20, alignItems: 'center', backgroundColor: L.surface, borderRadius: 16, marginHorizontal: 16 }}>
-        <Text style={{ color: L.navySoft, fontFamily: 'Inter_400Regular' }}>No trending paths found.</Text>
+      <View style={{ padding: 16, alignItems: 'center', backgroundColor: L.surface, borderRadius: 12, marginHorizontal: 16 }}>
+        <Text style={{ color: L.navySoft, fontFamily: 'Inter_400Regular', fontSize: 13 }}>No trending paths found.</Text>
       </View>
     );
   }
@@ -193,128 +164,75 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   };
 
   return (
-    <PinchGestureHandler onGestureEvent={onPinchEvent} onHandlerStateChange={onPinchStateChange} simultaneousHandlers={scrollViewRef}>
-      <View style={{ marginVertical: 16, height: height * scale, width: Dimensions.get('window').width }}>
-        <GHScrollView
-          ref={scrollViewRef}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          maximumZoomScale={2.5}
-          minimumZoomScale={0.4}
-          contentContainerStyle={{ width: width, height: height }}
-        >
-            <View style={{backgroundColor: '#FDFCF9', width,height:height*scale}}>
-              <Svg width={width} height={height*scale} style={{ position: 'absolute', top: 0, left: 0 }}>
-                <Defs>
-                  <Marker
-                    id="arrow"
-                    viewBox="0 0 10 10"
-                    refX="10"
-                    refY="5"
-                    markerWidth="5"
-                    markerHeight="5"
-                    orient="auto"
-                  >
-                    <Path d="M 0 0 L 10 5 L 0 10 z" fill={L.teal} opacity={0.6} />
-                  </Marker>
-                </Defs>
+    <View style={{ marginVertical: 4, height: height, width: '100%', overflow: 'hidden' }}>
+      <GHScrollView
+        ref={scrollViewRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ width: Math.max(screenWidth, width), height: height }}
+        decelerationRate="fast"
+      >
+        <View style={{ backgroundColor: '#FDFCF9', width: width, height: height }}>
+          <Svg width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
+            <Defs>
+              <Marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+                <Path d="M 0 1 L 9 5 L 0 9 z" fill="#94A3B8" opacity={0.7} />
+              </Marker>
+            </Defs>
 
-                {/* Draw Edges */}
-                {positionedEdges.map((edge, i) => {
-                  const midX = (edge.from.x + edge.to.x) / 2;
-                  const midY = (edge.from.y + edge.to.y) / 2;
-                  const startX = edge.from.x + 90;
-                  const endX = edge.to.x - 90;
+            {positionedEdges.map((edge, i) => {
+              const startX = edge.from.x + 67; // Connects accurately from right side edge of card
+              const endX = edge.to.x - 67;   // Connects accurately into left side edge of card
+              return (
+                <G key={`edge-${i}`}>
+                  <Path
+                    d={drawCurve(startX, edge.from.y, endX, edge.to.y)}
+                    stroke={L.teal}
+                    strokeOpacity={0.4}
+                    strokeWidth="1.2"
+                    fill="none"
+                    markerEnd="url(#arrow)"
+                  />
+                </G>
+              );
+            })}
+          </Svg>
 
-                  return (
-                    <G key={`edge-${i}`}>
-                      <Path
-                        d={drawCurve(startX, edge.from.y, endX, edge.to.y)}
-                        stroke={L.teal}
-                        strokeOpacity={0.4}
-                        strokeWidth="2"
-                        fill="none"
-                        markerEnd="url(#arrow)"
-                      />
-                    </G>
-                  );
-                })}
-              </Svg>
-
-              {/* Node Overlays for interaction and text */}
-              {positionedNodes.map(node => (
-                <TouchableOpacity
-                  key={node.id}
-                  onPress={() => handleNodePress(node.authorUsername)}
-                  activeOpacity={0.8}
-                  style={{
-                    position: 'absolute',
-                    left: node.x - 90,
-                    top: node.y - 32,
-                    width: 180,
-                    minHeight: 74,
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: 'rgba(62, 107, 102, 0.1)',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingHorizontal: 12,
-                    paddingVertical: 10,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 10,
-                    elevation: 4,
-                  }}
-                >
-                  <Text style={{ color: L.navy, fontSize: 13, fontFamily: 'Inter_600SemiBold', textAlign: 'center', marginBottom: 4 }} numberOfLines={2}>
-                    {node.title}
-                  </Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }} numberOfLines={1} ellipsizeMode="tail">
-                      {node.authorUsername ? `@${node.authorUsername}` : 'Explorer'}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-        </GHScrollView>
-
-        {/* Floating Zoom Controls */}
-        <View style={{
-          position: 'absolute',
-          bottom: 16,
-          right: 32,
-          flexDirection: 'row',
-          backgroundColor: '#FFFFFF',
-          borderRadius: 24,
-          padding: 4,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 12,
-          elevation: 6,
-          borderWidth: 1,
-          borderColor: 'rgba(62, 107, 102, 0.1)',
-        }}>
-          <Pressable
-            onPress={handleZoomOut}
-            style={{ padding: 10, opacity: scale <= 0.4 ? 0.3 : 1 }}
-            disabled={scale <= 0.4}
-          >
-            <Feather name="zoom-out" size={20} color={L.navy} />
-          </Pressable>
-          <View style={{ width: 1, backgroundColor: 'rgba(62, 107, 102, 0.1)', marginVertical: 8 }} />
-          <Pressable
-            onPress={handleZoomIn}
-            style={{ padding: 10, opacity: scale >= 2.5 ? 0.3 : 1 }}
-            disabled={scale >= 2.5}
-          >
-            <Feather name="zoom-in" size={20} color={L.navy} />
-          </Pressable>
+          {positionedNodes.map(node => (
+            <TouchableOpacity
+              key={node.id}
+              onPress={() => handleNodePress(node.authorUsername)}
+              activeOpacity={0.85}
+              style={{
+                position: 'absolute',
+                left: node.x - 67.5, // 135 Card Width / 2
+                top: node.y - 27.5,  // 55 Card Height / 2
+                width: 135,
+                height: 55,
+                backgroundColor: '#FFFFFF',
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: '#E2E8F0',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                paddingHorizontal: 10,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.03,
+                shadowRadius: 2,
+                elevation: 1.5,
+              }}
+            >
+              <Text style={{ color: L.navy, fontSize: 10, fontFamily: 'Inter_600SemiBold', textAlign: 'left', marginBottom: 1, lineHeight: 13 }} numberOfLines={2}>
+                {node.title}
+              </Text>
+              <Text style={{ color:L.teal, fontSize: 8, fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
+                {node.authorUsername ? `@${node.authorUsername}` : '@explorer'}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
-      </View>
-    </PinchGestureHandler>
+      </GHScrollView>
+    </View>
   );
 }
