@@ -35,6 +35,7 @@ export async function submitQuery(
       body: formData,
     });
   } else if (searchText) {
+    console.log(`[API] Submitting query to ${API_BASE_URL}/query`, searchText);
     response = await fetch(`${API_BASE_URL}/query`, {
       method: "POST",
       headers: {
