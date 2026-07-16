@@ -551,19 +551,12 @@ export default function CommunityPage() {
                       color={UI.fg80}
                     />
                   </TouchableOpacity>
-                  {graphExpanded && !selectedTopic && (
+                  {graphExpanded && graph && graph.nodes.length > 0 && (
                     <Animated.View entering={FadeInDown.springify()}>
-                      <ScrollView
-                        horizontal
-                        nestedScrollEnabled
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ paddingRight: 24 }}
-                      >
-                        <VisualGraph
-                          nodes={graph.nodes}
-                          edges={graph.edges}
-                        />
-                      </ScrollView>
+                      <VisualGraph
+                        nodes={graph.nodes}
+                        edges={graph.edges}
+                      />
                     </Animated.View>
                   )}
                   <Text
