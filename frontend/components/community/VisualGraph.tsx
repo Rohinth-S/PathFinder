@@ -89,9 +89,9 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       nodesPerLayer.get(layer)!.push(id);
     });
 
-    const X_SPACING = 200;
-    const Y_SPACING = 100;
-    const padding = 50;
+    const X_SPACING = 340;
+    const Y_SPACING = 220;
+    const padding = 80;
 
     let maxNodesInOneLayer = 0;
     for (let i = 0; i <= maxLayer; i++) {
