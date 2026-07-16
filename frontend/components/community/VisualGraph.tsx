@@ -19,17 +19,17 @@ interface PositionedNode extends GraphNode {
 
 export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   const router = useRouter();
-  const [scale, setScale] = useState(0.8);
-  const baseScale = useRef(0.8);
+  const [scale, setScale] = useState(0.5);
+  const baseScale = useRef(0.5);
   const scrollViewRef = useRef(null);
 
   const handleZoomIn = () => {
-    const newScale = Math.min(scale + 0.5, 2.5);
+    const newScale = Math.min(scale + 0.15, 2.5);
     setScale(newScale);
     baseScale.current = newScale;
   };
   const handleZoomOut = () => {
-    const newScale = Math.max(scale - 0.5, 0.4);
+    const newScale = Math.max(scale - 0.15, 0.4);
     setScale(newScale);
     baseScale.current = newScale;
   };
