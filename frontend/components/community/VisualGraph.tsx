@@ -18,6 +18,9 @@ interface PositionedNode extends GraphNode {
 export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   const router = useRouter();
 
+  // Simple layout: arrange nodes in a left-to-right force-like layout
+  // To avoid complex d3-force in RN, we'll use a deterministic layered layout.
+  // We'll calculate indegree and outdegree to assign layers.
   const { positionedNodes, positionedEdges, width, height } = useMemo(() => {
     if (nodes.length === 0) return { positionedNodes: [], positionedEdges: [], width: 0, height: 0 };
 
@@ -43,9 +46,11 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       }
     });
 
+    // Assign layers
     let currentLayer = 0;
     let queue = nodes.filter(n => inDegrees.get(n.id) === 0).map(n => n.id);
     
+    // Fallback if there are cycles and no sources
     if (queue.length === 0 && nodes.length > 0) {
       queue = [nodes[0].id];
     }
@@ -68,38 +73,56 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       currentLayer++;
     }
 
+    // Any unvisited nodes (disconnected components or cyclic) just get assigned to random layers
     nodes.forEach(n => {
       if (!visited.has(n.id)) {
         layers.set(n.id, Math.floor(Math.random() * currentLayer));
       }
     });
 
-    // Sort nodes to form a single vertical list based on layer
-    const sortedNodeIds = nodes.map(n => n.id).sort((a, b) => {
-      const layerA = layers.get(a) || 0;
-      const layerB = layers.get(b) || 0;
-      return layerA - layerB;
-    });
-
-    const screenWidth = Dimensions.get('window').width - 32;
-    const X_SPACING = 180;
-    const padding = 80;
-    let calculatedWidth = Math.max(screenWidth, sortedNodeIds.length * X_SPACING + padding * 2);
+    const maxLayer = Math.max(...Array.from(layers.values()));
     
-    // Safety fallback: if canvas is dangerously large, limit to a safe cap to avoid Android crash
-    const MAX_CANVAS_WIDTH = 8000;
-    calculatedWidth = Math.min(calculatedWidth, MAX_CANVAS_WIDTH);
-
-    const calculatedHeight = 280;
-    const Y_OFFSET = 60;
-
-    sortedNodeIds.forEach((id, index) => {
-      const pNode = nodeMap.get(id)!;
-      pNode.x = padding + index * X_SPACING; // x position
-      pNode.y = (calculatedHeight / 2) + (index % 2 === 0 ? -Y_OFFSET : Y_OFFSET);
+    // Count nodes per layer to calculate vertical spacing
+    const nodesPerLayer = new Map<number, string[]>();
+    for (let i = 0; i <= maxLayer; i++) {
+      nodesPerLayer.set(i, []);
+    }
+    
+    Array.from(layers.entries()).forEach(([id, layer]) => {
+      nodesPerLayer.get(layer)!.push(id);
     });
 
+    const X_SPACING = 200;
+    const Y_SPACING = 100;
+    const padding = 50;
+
+    let maxNodesInOneLayer = 0;
+    for (let i = 0; i <= maxLayer; i++) {
+      maxNodesInOneLayer = Math.max(maxNodesInOneLayer, nodesPerLayer.get(i)!.length);
+    }
+
+    const calculatedHeight = Math.max(300, maxNodesInOneLayer * Y_SPACING + padding * 2);
+    const calculatedWidth = maxLayer * X_SPACING + padding * 2 + 150; // extra padding for last node
+
+    // Position nodes
+    for (let i = 0; i <= maxLayer; i++) {
+      const layerNodes = nodesPerLayer.get(i)!;
+      layerNodes.forEach((id, index) => {
+        const pNode = nodeMap.get(id)!;
+        pNode.x = padding + i * X_SPACING + 75; // center offset
+        
+        // Center vertically based on how many nodes in this layer
+        const layerHeight = layerNodes.length * Y_SPACING;
+        const startY = (calculatedHeight - layerHeight) / 2 + Y_SPACING / 2;
+        pNode.y = startY + index * Y_SPACING;
+      });
+    }
+
+    // Filter out edges with missing nodes
     const validEdges = edges.filter(e => nodeMap.has(e.fromId) && nodeMap.has(e.toId));
+
+    const MAX_CANVAS_WIDTH = 8000;
+    const MAX_CANVAS_HEIGHT = 8000;
 
     return {
       positionedNodes: Array.from(nodeMap.values()),
@@ -108,14 +131,14 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
         from: nodeMap.get(e.fromId)!,
         to: nodeMap.get(e.toId)!
       })),
-      width: calculatedWidth,
-      height: calculatedHeight
+      width: Math.min(Math.max(Dimensions.get('window').width, calculatedWidth), MAX_CANVAS_WIDTH),
+      height: Math.min(calculatedHeight, MAX_CANVAS_HEIGHT)
     };
   }, [nodes, edges]);
 
   if (nodes.length === 0) {
     return (
-      <View style={{ padding: 20, alignItems: 'center', backgroundColor: L.surface, borderRadius: 16 }}>
+      <View style={{ padding: 20, alignItems: 'center', backgroundColor: L.surface, borderRadius: 16, marginHorizontal: 16 }}>
         <Text style={{ color: L.navySoft, fontFamily: 'Inter_400Regular' }}>No trending paths found.</Text>
       </View>
     );
@@ -126,30 +149,16 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   };
 
   const drawCurve = (x1: number, y1: number, x2: number, y2: number) => {
-    const dx = x2 - x1;
-    let cp1x = x1 + dx / 2;
-    let cp1y = y1;
-    let cp2x = x1 + dx / 2;
-    let cp2y = y2;
-    
-    if (Math.abs(dx) > 200) {
-      const isTop1 = y1 < 140;
-      const isTop2 = y2 < 140;
-      if (isTop1 && isTop2) {
-        cp1y -= 60;
-        cp2y -= 60;
-      } else if (!isTop1 && !isTop2) {
-        cp1y += 60;
-        cp2y += 60;
-      }
-    }
-    
+    const cp1x = x1 + (x2 - x1) / 2;
+    const cp1y = y1;
+    const cp2x = x1 + (x2 - x1) / 2;
+    const cp2y = y2;
     return `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
   };
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 16 }}>
-      <View style={{ backgroundColor: '#FDFCF9', borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: '#EAE7E0', width: width, height: height }}>
+      <View style={{ backgroundColor: '#FDFCF9', borderRadius: 24, overflow: 'hidden', marginHorizontal: 16, borderWidth: 1, borderColor: '#EAE7E0', width, height }}>
         <Svg width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
           <Defs>
             <Marker
@@ -159,12 +168,13 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               refY="5"
               markerWidth="5"
               markerHeight="5"
-              orient="auto"
+              orient="auto-start-reverse"
             >
-              <Path d="M 0 0 L 10 5 L 0 10 z" fill={L.teal} opacity={0.3} />
+              <Path d="M 0 0 L 10 5 L 0 10 z" fill={L.teal} opacity={0.6} />
             </Marker>
           </Defs>
 
+          {/* Draw Edges */}
           {positionedEdges.map((edge, i) => {
             const midX = (edge.from.x + edge.to.x) / 2;
             const midY = (edge.from.y + edge.to.y) / 2;
@@ -176,16 +186,40 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
                 <Path
                   d={drawCurve(startX, edge.from.y, endX, edge.to.y)}
                   stroke={L.teal}
-                  strokeOpacity={0.15}
+                  strokeOpacity={0.4}
                   strokeWidth="2"
                   fill="none"
                   markerEnd="url(#arrow)"
                 />
+                {edge.label && (
+                  <View style={{
+                    position: 'absolute',
+                    left: midX - 50,
+                    top: midY - 12,
+                    width: 100,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(253, 252, 249, 0.8)',
+                    borderRadius: 12,
+                    paddingHorizontal: 8,
+                    paddingVertical: 2
+                  }}>
+                    <Text style={{
+                      color: L.navySoft,
+                      fontSize: 10,
+                      textAlign: 'center',
+                      fontFamily: 'Inter_600SemiBold'
+                    }}>
+                      {edge.label}
+                    </Text>
+                  </View>
+                )}
               </G>
             );
           })}
         </Svg>
 
+        {/* Node Overlays for interaction and text */}
         {positionedNodes.map(node => (
           <TouchableOpacity
             key={node.id}
@@ -196,15 +230,14 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               left: node.x - 75,
               top: node.y - 32,
               width: 150,
-              minHeight: 64,
+              height: 64,
               backgroundColor: '#FFFFFF',
               borderRadius: 16,
               borderWidth: 1,
               borderColor: 'rgba(62, 107, 102, 0.1)',
               alignItems: 'center',
               justifyContent: 'center',
-              paddingHorizontal: 8,
-              paddingVertical: 10,
+              padding: 10,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.05,
@@ -216,7 +249,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               {node.title}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
+              <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }}>
                 {node.authorUsername ? `@${node.authorUsername}` : 'Explorer'}
               </Text>
             </View>
@@ -226,4 +259,3 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     </ScrollView>
   );
 }
-
