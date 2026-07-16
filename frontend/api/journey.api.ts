@@ -1,4 +1,5 @@
 import { apiFetch } from "./api";
+import { Platform } from "react-native";
 
 export interface JourneyExperience {
   id: string;
@@ -163,17 +164,21 @@ export async function submitJourney(
 ): Promise<SubmitJourneyResponse> {
   if (files && files.length > 0) {
     const formData = new FormData();
-    
+
     // Append 'journey' as a JSON string containing conversationId and the payload
     formData.append('journey', JSON.stringify({ conversationId, ...journeyPayload }));
-    
-    files.forEach(f => {
-      formData.append(f.id, {
-        uri: f.uri,
-        name: f.name,
-        type: f.type,
-      } as any);
-    });
+    for (const f of files) {
+      if (Platform.OS === "web") {
+        const blob = await (await fetch(f.uri)).blob();
+        formData.append(f.id, blob, f.name);
+      } else {
+        formData.append(f.id, {
+          uri: f.uri,
+          type: f.type || "application/octet-stream",
+          name: f.name,
+        } as any);
+      }
+    }
 
     return apiFetch<SubmitJourneyResponse>(
       "/journey/submit",

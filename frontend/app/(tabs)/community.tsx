@@ -457,7 +457,7 @@ export default function CommunityPage() {
       <View style={{ paddingHorizontal: 24, paddingTop: 56, paddingBottom: 8 }}>
         <Text style={{
           fontFamily: 'Monospace_500Medium',
-          fontSize: 32, color: UI.foreground, marginBottom: 4,
+          fontSize: 28, color: UI.foreground, marginBottom: 4,
         }}>
           Community
         </Text>
@@ -542,7 +542,7 @@ export default function CommunityPage() {
                     <Text
                       style={{
                         fontFamily: 'Monospace_500Medium',
-                        fontSize: 28,
+                        fontSize: 24,
                         color: UI.foreground,
                       }}>
                       Trending Paths
@@ -553,7 +553,7 @@ export default function CommunityPage() {
                       color={UI.fg80}
                     />
                   </TouchableOpacity>
-                  {graphExpanded && !selectedTopic && (
+                  {graphExpanded && graph && graph.nodes.length > 0 && (
                     <Animated.View entering={FadeInDown.springify()}>
                       <VisualGraph
                         nodes={graph.nodes}
@@ -564,7 +564,7 @@ export default function CommunityPage() {
                   <Text
                     style={{
                       fontFamily: 'Monospace_500Medium',
-                      fontSize: 28,
+                      fontSize: 24,
                       color: UI.foreground,
                       marginTop: 24,
                       marginBottom: 16,

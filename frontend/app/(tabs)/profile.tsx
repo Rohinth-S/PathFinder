@@ -28,7 +28,7 @@ const LANGUAGES = [
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { signOut, getToken } = useAuth();
+  const { signOut, getToken, isSignedIn } = useAuth();
   const { user: clerkUser } = useUser();
 
   const [user, setUser] = useState<SyncedUser | null>(null);
@@ -48,10 +48,13 @@ export default function ProfilePage() {
   const languageScale = useSharedValue(1);
 
   useEffect(() => {
-    loadUserProfile();
-  }, []);
+    if (isSignedIn) {
+      loadUserProfile();
+    }
+  }, [isSignedIn]);
 
   const loadUserProfile = async () => {
+    if (!isSignedIn) return;
     setIsLoading(true);
     setError(null);
     try {
@@ -141,10 +144,10 @@ export default function ProfilePage() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: L.background }}>
       {/* Header */}
-      <Animated.View entering={FadeInDown.duration(400).springify()} style={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 8 }}>
+      <Animated.View entering={FadeInDown.duration(400).springify()} style={{ paddingHorizontal: 24, paddingTop: 48, paddingBottom: 8 }}>
         <SectionLabel>Your Details</SectionLabel>
         <Text style={{
-          fontFamily: 'Monospace_500Medium', fontSize: 48, letterSpacing: -1
+          fontFamily: 'Monospace_500Medium', fontSize: 30, letterSpacing: -1
         }}>
           Profile
         </Text>

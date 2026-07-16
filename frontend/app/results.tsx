@@ -71,7 +71,7 @@ export default function ResultsPage() {
   const params = useLocalSearchParams<{ payload?: string }>();
   const [loading, setLoading] = useState(true);
 
-  const { getToken } = useAuth();
+  const { getToken, isSignedIn } = useAuth();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [journeyIdx, setJourneyIdx] = useState(0);
@@ -138,7 +138,8 @@ export default function ResultsPage() {
       let uri = currentAudioUri;
       if (!uri) {
         setIsGeneratingAudio(true);
-        const token = await getToken();
+        if (!isSignedIn) throw new Error("Not authenticated");
+      const token = await getToken();
         if (!token) throw new Error("No token");
         uri = await generateSpeechUri(token, aiInsights, preferredLang);
         setCurrentAudioUri(uri);
@@ -171,7 +172,8 @@ export default function ResultsPage() {
   useEffect(() => {
     async function init() {
       try {
-        const token = await getToken();
+        if (!isSignedIn) throw new Error("Not authenticated");
+      const token = await getToken();
         if (token) {
           const user = await syncUser(token);
           if (user.preferredLanguage) {
@@ -219,6 +221,7 @@ export default function ResultsPage() {
     if (!followUpQuery.trim()) return;
     setIsSubmittingFollowUp(true);
     try {
+      if (!isSignedIn) throw new Error("Not authenticated");
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
       const result = await submitQuery(token, followUpQuery);
@@ -385,7 +388,8 @@ export default function ResultsPage() {
                   }
                   setIsTranslating(true);
                   try {
-                    const token = await getToken();
+                    if (!isSignedIn) throw new Error("Not authenticated");
+      const token = await getToken();
                     if (!token) return;
                     const res = await translateInsights(token, aiInsights, preferredLang);
                     setTranslatedInsight(res.translatedAiInsights);
