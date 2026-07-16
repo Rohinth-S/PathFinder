@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import Svg, { Circle, Line, Text as SvgText, Defs, Marker, Path, G } from 'react-native-svg';
+import Svg, { Defs, Marker, Path, G } from 'react-native-svg';
 import { GraphNode, GraphEdge } from '../../api/community.api';
 import { L } from '../../constants/colors';
 import { useRouter } from 'expo-router';
@@ -18,13 +18,13 @@ interface PositionedNode extends GraphNode {
 export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   const router = useRouter();
 
-  const { positionedNodes, positionedEdges, width, height } = useMemo(() => {
-    if (nodes.length === 0) return { positionedNodes: [], positionedEdges: [], width: 0, height: 0 };
+  const { positionedNodes, positionedEdges, canvasWidth, canvasHeight } = useMemo(() => {
+    if (nodes.length === 0) return { positionedNodes: [], positionedEdges: [], canvasWidth: 0, canvasHeight: 0 };
 
     const nodeMap = new Map<string, PositionedNode>();
     nodes.forEach(n => nodeMap.set(n.id, { ...n, x: 0, y: 0 }));
 
-    // Calculate layers (very naive topological sort / distance from sources)
+    // Topological sort for layering
     const layers = new Map<string, number>();
     const inDegrees = new Map<string, number>();
     const adj = new Map<string, string[]>();
@@ -45,23 +45,16 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
 
     let currentLayer = 0;
     let queue = nodes.filter(n => inDegrees.get(n.id) === 0).map(n => n.id);
-    
-    if (queue.length === 0 && nodes.length > 0) {
-      queue = [nodes[0].id];
-    }
+    if (queue.length === 0 && nodes.length > 0) queue = [nodes[0].id];
 
     const visited = new Set<string>();
-
     while (queue.length > 0) {
       const nextQueue: string[] = [];
       for (const id of queue) {
         if (!visited.has(id)) {
           visited.add(id);
           layers.set(id, currentLayer);
-          const neighbors = adj.get(id) || [];
-          for (const n of neighbors) {
-            nextQueue.push(n);
-          }
+          for (const n of (adj.get(id) || [])) nextQueue.push(n);
         }
       }
       queue = nextQueue;
@@ -69,30 +62,27 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     }
 
     nodes.forEach(n => {
-      if (!visited.has(n.id)) {
-        layers.set(n.id, Math.floor(Math.random() * currentLayer));
-      }
+      if (!visited.has(n.id)) layers.set(n.id, Math.floor(Math.random() * currentLayer));
     });
 
-    // Sort nodes to form a single vertical list based on layer
-    const sortedNodeIds = nodes.map(n => n.id).sort((a, b) => {
-      const layerA = layers.get(a) || 0;
-      const layerB = layers.get(b) || 0;
-      return layerA - layerB;
-    });
+    // Sort by layer
+    const sortedNodeIds = nodes.map(n => n.id).sort((a, b) => (layers.get(a) || 0) - (layers.get(b) || 0));
 
-    const screenWidth = Dimensions.get('window').width - 32;
-    const Y_SPACING = 140;
-    const padding = 60;
-    const calculatedHeight = Math.max(280, sortedNodeIds.length * Y_SPACING + padding * 2);
-    const calculatedWidth = screenWidth;
-    const X_OFFSET = 60;
+    // Diagonal staircase layout — each node steps right and down
+    const X_STEP = 200;
+    const Y_STEP = 130;
+    const PADDING = 100;
+    const NODE_W = 150;
 
     sortedNodeIds.forEach((id, index) => {
       const pNode = nodeMap.get(id)!;
-      pNode.y = padding + index * Y_SPACING; // y position
-      pNode.x = (calculatedWidth / 2) + (index % 2 === 0 ? -X_OFFSET : X_OFFSET);
+      pNode.x = PADDING + index * X_STEP;
+      pNode.y = PADDING + index * Y_STEP;
     });
+
+    const lastIdx = sortedNodeIds.length - 1;
+    const cw = PADDING + lastIdx * X_STEP + NODE_W + PADDING;
+    const ch = PADDING + lastIdx * Y_STEP + 80 + PADDING;
 
     const validEdges = edges.filter(e => nodeMap.has(e.fromId) && nodeMap.has(e.toId));
 
@@ -101,10 +91,10 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       positionedEdges: validEdges.map(e => ({
         ...e,
         from: nodeMap.get(e.fromId)!,
-        to: nodeMap.get(e.toId)!
+        to: nodeMap.get(e.toId)!,
       })),
-      width: calculatedWidth,
-      height: calculatedHeight
+      canvasWidth: Math.max(cw, Dimensions.get('window').width - 32),
+      canvasHeight: Math.max(ch, 300),
     };
   }, [nodes, edges]);
 
@@ -121,102 +111,103 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   };
 
   const drawCurve = (x1: number, y1: number, x2: number, y2: number) => {
-    const dy = y2 - y1;
-    let cp1x = x1;
-    let cp1y = y1 + dy / 2;
-    let cp2x = x2;
-    let cp2y = y1 + dy / 2;
-    
-    if (Math.abs(dy) > 200) {
-      const isLeft1 = x1 < width / 2;
-      const isLeft2 = x2 < width / 2;
-      if (isLeft1 && isLeft2) {
-        cp1x -= 60;
-        cp2x -= 60;
-      } else if (!isLeft1 && !isLeft2) {
-        cp1x += 60;
-        cp2x += 60;
-      }
-    }
-    
-    return `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
+    // Smooth S-curve: go right first, then down
+    const midX = (x1 + x2) / 2;
+    return `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
   };
 
   return (
-    <View style={{ marginVertical: 16 }}>
-      <View style={{ backgroundColor: '#FDFCF9', borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: '#EAE7E0', width: '100%', height: height }}>
-        <Svg width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
-          <Defs>
-            <Marker
-              id="arrow"
-              viewBox="0 0 10 10"
-              refX="5"
-              refY="10"
-              markerWidth="5"
-              markerHeight="5"
-              orient="auto"
-            >
-              <Path d="M 0 0 L 10 0 L 5 10 z" fill={L.teal} opacity={0.3} />
-            </Marker>
-          </Defs>
+    <View style={{ marginVertical: 16, borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: '#EAE7E0', height: 340 }}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={true}
+        nestedScrollEnabled
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={true}
+          nestedScrollEnabled
+          contentContainerStyle={{ width: canvasWidth, height: canvasHeight }}
+          style={{ flex: 1 }}
+        >
+          <View style={{ width: canvasWidth, height: canvasHeight, backgroundColor: '#FDFCF9' }}>
+            {/* SVG edges */}
+            <Svg width={canvasWidth} height={canvasHeight} style={{ position: 'absolute', top: 0, left: 0 }}>
+              <Defs>
+                <Marker
+                  id="arrow"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto"
+                >
+                  <Path d="M 0 0 L 10 5 L 0 10 z" fill={L.teal} opacity={0.25} />
+                </Marker>
+              </Defs>
 
-          {positionedEdges.map((edge, i) => {
-            const startY = edge.from.y + 32;
-            const endY = edge.to.y - 32;
-            
-            return (
-              <G key={`edge-${i}`}>
-                <Path
-                  d={drawCurve(edge.from.x, startY, edge.to.x, endY)}
-                  stroke={L.teal}
-                  strokeOpacity={0.15}
-                  strokeWidth="2"
-                  fill="none"
-                  markerEnd="url(#arrow)"
-                />
-              </G>
-            );
-          })}
-        </Svg>
+              {positionedEdges.map((edge, i) => {
+                const startX = edge.from.x + 75;
+                const startY = edge.from.y + 10;
+                const endX = edge.to.x - 75;
+                const endY = edge.to.y + 10;
 
-        {positionedNodes.map(node => (
-          <TouchableOpacity
-            key={node.id}
-            onPress={() => handleNodePress(node.authorUsername)}
-            activeOpacity={0.8}
-            style={{
-              position: 'absolute',
-              left: node.x - 75,
-              top: node.y - 32,
-              width: 150,
-              minHeight: 64,
-              backgroundColor: '#FFFFFF',
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: 'rgba(62, 107, 102, 0.1)',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: 8,
-              paddingVertical: 10,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.05,
-              shadowRadius: 10,
-              elevation: 4,
-            }}
-          >
-            <Text style={{ color: L.navy, fontSize: 13, fontFamily: 'Inter_600SemiBold', textAlign: 'center', marginBottom: 4 }} numberOfLines={2}>
-              {node.title}
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
-                {node.authorUsername ? `@${node.authorUsername}` : 'Explorer'}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
+                return (
+                  <G key={`edge-${i}`}>
+                    <Path
+                      d={drawCurve(startX, startY, endX, endY)}
+                      stroke={L.teal}
+                      strokeOpacity={0.18}
+                      strokeWidth="2"
+                      fill="none"
+                      markerEnd="url(#arrow)"
+                    />
+                  </G>
+                );
+              })}
+            </Svg>
+
+            {/* Nodes */}
+            {positionedNodes.map(node => (
+              <TouchableOpacity
+                key={node.id}
+                onPress={() => handleNodePress(node.authorUsername)}
+                activeOpacity={0.8}
+                style={{
+                  position: 'absolute',
+                  left: node.x - 75,
+                  top: node.y - 30,
+                  width: 150,
+                  minHeight: 60,
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 16,
+                  borderWidth: 1,
+                  borderColor: 'rgba(62, 107, 102, 0.1)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingHorizontal: 8,
+                  paddingVertical: 10,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 10,
+                  elevation: 4,
+                }}
+              >
+                <Text style={{ color: L.navy, fontSize: 13, fontFamily: 'Inter_600SemiBold', textAlign: 'center', marginBottom: 4 }} numberOfLines={2}>
+                  {node.title}
+                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
+                    {node.authorUsername ? `@${node.authorUsername}` : 'Explorer'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
+      </ScrollView>
     </View>
   );
 }
-
