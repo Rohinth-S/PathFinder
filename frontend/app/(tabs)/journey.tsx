@@ -512,7 +512,7 @@ export default function HistoryPage() {
       {/* Graph Modal */}
       < Modal visible={showGraph} animationType="slide" presentationStyle="formSheet" >
         <View style={{ flex: 1, backgroundColor: L.background }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.surface }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20,paddingBottom:20, paddingTop:45, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.surface }}>
             <TouchableOpacity onPress={() => { setShowGraph(false); setSelectedNodeId(null); }} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <Feather name="arrow-left" size={20} color={L.navy} />
             </TouchableOpacity>

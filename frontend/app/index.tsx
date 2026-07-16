@@ -35,7 +35,7 @@ function LandingPageContent() {
   const { isLoaded, isSignedIn, getToken } = useAuth();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const { scrollY, viewportHeight, scrollDirection } = useLandingViewport();
-  
+
   const onScroll = useAnimatedScrollHandler((event) => {
     const nextY = event.contentOffset.y;
     if (nextY > scrollY.value) {
@@ -51,20 +51,22 @@ function LandingPageContent() {
   });
 
   useEffect(() => {
-  if (!isLoaded) return;
-  async function initialize() {
-    if (!isSignedIn) return;
-    const token = await getToken();
-    if (!token) return;
-    const user = await initializeUser(token);
-    if (user.username) {
-      router.replace("/(tabs)/ask");
-    } else {
-      router.replace("/(tabs)/profile");
+    if (!isLoaded) return;
+    async function initialize() {
+      if (!isSignedIn) {
+        return;
+      }
+      const token = await getToken();
+      if (!token) return;
+      const user = await initializeUser(token);
+      if (user.username) {
+        router.replace("/(tabs)/ask");
+      } else {
+        router.replace("/(tabs)/profile");
+      }
     }
-  }
-  initialize();
-}, [isLoaded, isSignedIn]);
+    initialize();
+  }, [isLoaded, isSignedIn]);
 
   const onPressGoogle = async () => {
     try {
