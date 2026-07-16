@@ -2,7 +2,6 @@
   "expo": {
     "name": "PathFinder",
     "slug": "path-finder",
-    "scheme": "pathfinder",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -31,6 +30,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "scheme": "pathfinder",
     "plugins": [
       "expo-router",
       "expo-secure-store",
@@ -51,15 +51,15 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "e8aa8139-ab59-40cb-a743-0833582bf471"
+        "projectId": "a9308a49-cc35-4e0e-934b-352bc38738bf"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "owner": "starboyrohinth",
+    "owner": "rohii24",
     "updates": {
-      "url": "https://u.expo.dev/e8aa8139-ab59-40cb-a743-0833582bf471"
+      "url": "https://u.expo.dev/a9308a49-cc35-4e0e-934b-352bc38738bf"
     }
   }
 }
