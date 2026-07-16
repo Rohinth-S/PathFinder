@@ -105,8 +105,8 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       }
     }
 
-    const X_SPACING = 340;
-    const Y_SPACING = 220;
+    const X_SPACING = 280;
+    const Y_SPACING = 140;
     const padding = 80;
 
     const actualMaxLayer = Math.max(0, balancedLayers.length - 1);
