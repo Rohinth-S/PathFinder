@@ -7,7 +7,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { startJourneySession, sendJourneyMessage, submitJourney, submitJourneyGoal, getUserJourney } from '../api/journey.api';
-import { UI } from '../constants/colors';
+import { UI, L } from '../constants/colors';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
 import * as ImagePicker from 'expo-image-picker';
@@ -51,18 +51,17 @@ export default function ShareJourneyPage() {
   };
 
 
-  
+
   const [activeTab, setActiveTab] = useState<'chat' | 'form'>('chat');
   const [conversationId, setConversationId] = useState<string | null>(null);
-  
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasSentMessage, setHasSentMessage] = useState(false);
-  
+
   const [journeyDraft, setJourneyDraft] = useState<any>(null);
   const [editableExperiences, setEditableExperiences] = useState<any[]>([]);
   const [userGoals, setUserGoals] = useState<any[]>([]);
@@ -76,7 +75,7 @@ export default function ShareJourneyPage() {
   const [tempProofUrl, setTempProofUrl] = useState('');
 
   const handleCreateGoal = async () => {
-    if (!newGoalTitle.trim() || !newGoalDesc.trim()) return;
+    if (!newGoalTitle.trim()) return;
     setIsCreatingGoal(true);
     try {
       const token = await getToken();
@@ -183,7 +182,7 @@ export default function ShareJourneyPage() {
       try {
         const token = await getToken();
         if (!token) throw new Error('Unauthenticated');
-        
+
         try {
           const journeyData = await getUserJourney(token);
           if (journeyData && journeyData.goals) {
@@ -208,11 +207,16 @@ export default function ShareJourneyPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+  console.log("activeTab:", activeTab);
+  console.log("messages:", messages);
+}, [activeTab, messages]);
+
   const sendMessage = async () => {
     if (!inputText.trim() || !conversationId) return;
     const userText = inputText;
     const userMsg: ChatMessage = { id: Date.now().toString(), text: userText, sender: 'user' };
-    
+
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
     setIsLoading(true);
@@ -220,7 +224,7 @@ export default function ShareJourneyPage() {
     try {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
-      
+
       const res = await sendJourneyMessage(token, conversationId, userText);
       if (res.success) {
         setJourneyDraft(res.journeyDraft);
@@ -229,9 +233,8 @@ export default function ShareJourneyPage() {
         setMessages(prev => [...prev, {
           id: Date.now().toString(),
           sender: 'ai',
-          text: "Got it! I've updated your journey draft. Switch to the Form view when you're ready to review."
+          text: "Got it! I've updated your journey draft. Keep telling me more, or switch to the Form view when you're ready to review."
         }]);
-        setHasSentMessage(true);
         setActiveTab('form');
       } else {
         throw new Error("Failed to process message");
@@ -254,9 +257,9 @@ export default function ShareJourneyPage() {
     try {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
-      
+
       const payload = { ...journeyDraft, experiences: editableExperiences };
-      
+
       // Extract files to upload
       const filesToUpload: { id: string, uri: string, name: string, type: string }[] = [];
       const cleanedExperiences = editableExperiences.map(exp => {
@@ -277,7 +280,7 @@ export default function ShareJourneyPage() {
         }
         return cleanedExp;
       });
-      
+
       payload.experiences = cleanedExperiences;
 
       const res = await submitJourney(token, conversationId, payload, filesToUpload.length > 0 ? filesToUpload : undefined);
@@ -314,11 +317,11 @@ export default function ShareJourneyPage() {
           backgroundColor: isUser ? '#0F172A' : '#EAF4F4',
         }}
       >
-        <Text style={{ 
-          color: isUser ? '#FFFFFF' : '#36585E', 
-          fontFamily: 'Inter_400Regular', 
-          fontSize: 15, 
-          lineHeight: 22 
+        <Text style={{
+          color: isUser ? '#FFFFFF' : '#36585E',
+          fontFamily: 'Inter_400Regular',
+          fontSize: 15,
+          lineHeight: 22
         }}>
           {item.text}
         </Text>
@@ -328,7 +331,7 @@ export default function ShareJourneyPage() {
 
   const renderFormContent = () => {
     const experiences = editableExperiences;
-    
+
     if (experiences.length === 0) {
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
@@ -342,14 +345,14 @@ export default function ShareJourneyPage() {
 
     return (
       <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }} showsVerticalScrollIndicator={false}>
-        <Text style={{ color: '#0F172A', fontFamily: 'InstrumentSerif_400Regular', fontSize: 32, marginBottom: 8 }}>
+        <Text style={{ color: '#0F172A', fontFamily: 'Monospace_600Bold', letterSpacing: -0.5, fontSize: 32, marginBottom: 8 }}>
           Review & Edit Draft
         </Text>
-        
+
         {/* Goal Form Section */}
         <View style={{ backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#EAE7E0', marginBottom: 8 }}>
-          <Text style={{ color: UI.accent, fontFamily: 'Inter_600SemiBold', fontSize: 18, marginBottom: 16 }}>Your Goals</Text>
-          
+          <Text style={{ color: L.navy, fontFamily: 'Inter_600SemiBold', fontSize: 18, marginBottom: 16 }}>Your Goals</Text>
+
           {userGoals.length > 0 && (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
               {userGoals.map(goal => (
@@ -370,24 +373,24 @@ export default function ShareJourneyPage() {
           />
           <TextInput
             style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', color: '#0F172A', borderRadius: 12, padding: 12, marginBottom: 12, minHeight: 60, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
-            placeholder="Description"
+            placeholder="Description (Optional)"
             placeholderTextColor="#94A3B8"
             value={newGoalDesc}
             onChangeText={setNewGoalDesc}
             multiline
             textAlignVertical="top"
           />
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={handleCreateGoal}
-            disabled={isCreatingGoal || !newGoalTitle.trim() || !newGoalDesc.trim()}
-            style={{ backgroundColor: UI.accent, paddingVertical: 12, borderRadius: 12, alignItems: 'center', opacity: (!newGoalTitle.trim() || !newGoalDesc.trim() || isCreatingGoal) ? 0.5 : 1 }}
+            disabled={isCreatingGoal || !newGoalTitle.trim()}
+            style={{ backgroundColor: L.teal, paddingVertical: 12, borderRadius: 12, alignItems: 'center', opacity: (!newGoalTitle.trim() || isCreatingGoal) ? 0.5 : 1 }}
           >
             {isCreatingGoal ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={{ color: '#FFF', fontFamily: 'Inter_600SemiBold' }}>Add Goal</Text>}
           </TouchableOpacity>
         </View>
 
         {experiences.map((exp: any, index: number) => (
-          <Animated.View 
+          <Animated.View
             key={index}
             entering={FadeInDown.delay(index * 100).duration(400)}
             style={{
@@ -399,7 +402,7 @@ export default function ShareJourneyPage() {
               gap: 16
             }}
           >
-            <Text style={{ color: UI.accent, fontFamily: 'Inter_600SemiBold', fontSize: 18 }}>
+            <Text style={{ color: L.navy, fontFamily: 'Inter_600SemiBold', fontSize: 18 }}>
               Experience {index + 1}
             </Text>
 
@@ -418,7 +421,7 @@ export default function ShareJourneyPage() {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                 <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13 }}>Associated Goal (Optional)</Text>
               </View>
-              
+
               {userGoals.length > 0 && (
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', marginBottom: 10 }}>
                   {userGoals.map(goal => {
@@ -427,9 +430,9 @@ export default function ShareJourneyPage() {
                       <TouchableOpacity
                         key={goal.id}
                         onPress={() => {
-                           const currentIds = exp.goalIds || [];
-                           const newIds = isSelected ? currentIds.filter((id: string) => id !== goal.id) : [...currentIds, goal.id];
-                           updateExperience(index, 'goalIds', newIds);
+                          const currentIds = exp.goalIds || [];
+                          const newIds = isSelected ? currentIds.filter((id: string) => id !== goal.id) : [...currentIds, goal.id];
+                          updateExperience(index, 'goalIds', newIds);
                         }}
                         style={{
                           paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16,
@@ -449,18 +452,18 @@ export default function ShareJourneyPage() {
 
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 <TextInput
-                  style={{ 
-                    flex: 1, 
-                    backgroundColor: '#FFFFFF', 
-                    borderWidth: 1, 
-                    borderColor: '#EAE7E0', 
-                    borderRadius: 12, 
-                    paddingHorizontal: 12, 
-                    paddingVertical: 10, 
-                    color: '#0F172A', 
-                    fontFamily: 'Inter_400Regular', 
-                    fontSize: 14, 
-                    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) 
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#FFFFFF',
+                    borderWidth: 1,
+                    borderColor: '#EAE7E0',
+                    borderRadius: 12,
+                    paddingHorizontal: 12,
+                    paddingVertical: 10,
+                    color: '#0F172A',
+                    fontFamily: 'Inter_400Regular',
+                    fontSize: 14,
+                    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {})
                   }}
                   placeholder="Type new goal to associate..."
                   placeholderTextColor="#94A3B8"
@@ -491,7 +494,7 @@ export default function ShareJourneyPage() {
                     }
                   }}
                   style={{
-                    backgroundColor: UI.accent,
+                    backgroundColor: L.teal,
                     paddingHorizontal: 16,
                     borderRadius: 12,
                     justifyContent: 'center',
@@ -538,7 +541,7 @@ export default function ShareJourneyPage() {
                 textAlignVertical="top"
               />
             </View>
-            
+
             <View>
               <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Challenge Faced (Optional)</Text>
               <TextInput
@@ -593,7 +596,7 @@ export default function ShareJourneyPage() {
             {/* Proofs Section */}
             <View style={{ marginTop: 8 }}>
               <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Proofs (Optional)</Text>
-              
+
               {exp.proofs && exp.proofs.length > 0 && (
                 <View style={{ gap: 8, marginBottom: 12 }}>
                   {exp.proofs.map((proof: any, pIdx: number) => (
@@ -611,28 +614,28 @@ export default function ShareJourneyPage() {
               )}
 
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => handleAddProofUrl(index)}
                   style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0' }}
                 >
-                  <Feather name="link" size={16} color={UI.accent} style={{ marginRight: 6 }} />
-                  <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium' }}>Add Link</Text>
+                  <Feather name="link" size={16} color={L.teal} style={{ marginRight: 6 }} />
+                  <Text style={{ color: L.teal, fontFamily: 'Inter_600SemiBold' }}>Add Link</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => handleAddProofPhoto(index)}
                   style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0' }}
                 >
-                  <Feather name="image" size={16} color={UI.accent} style={{ marginRight: 6 }} />
-                  <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium' }}>Add Photo</Text>
+                  <Feather name="image" size={16} color={L.teal} style={{ marginRight: 6 }} />
+                  <Text style={{ color: L.teal, fontFamily: 'Inter_600SemiBold' }}>Add Photo</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => handleAddProofDocument(index)}
                   style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#E2E8F0' }}
                 >
-                  <Feather name="file-text" size={16} color={UI.accent} style={{ marginRight: 6 }} />
-                  <Text style={{ color: UI.accent, fontFamily: 'Inter_500Medium' }}>Add Doc</Text>
+                  <Feather name="file-text" size={16} color={L.teal} style={{ marginRight: 6 }} />
+                  <Text style={{ color: L.teal, fontFamily: 'Inter_600SemiBold' }}>Add Doc</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -641,24 +644,7 @@ export default function ShareJourneyPage() {
 
         <TouchableOpacity
           style={{
-            backgroundColor: '#FFFFFF',
-            paddingVertical: 16,
-            borderRadius: 12,
-            alignItems: 'center',
-            marginTop: 8,
-            borderWidth: 1,
-            borderColor: '#EAE7E0'
-          }}
-          onPress={() => setActiveTab('chat')}
-        >
-          <Text style={{ color: '#0F172A', fontFamily: 'Inter_600SemiBold', fontSize: 16 }}>
-            Back to Chat (Tell AI More)
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={{
-            backgroundColor: UI.accent,
+            backgroundColor: L.teal,
             paddingVertical: 16,
             borderRadius: 12,
             alignItems: 'center',
@@ -687,21 +673,75 @@ export default function ShareJourneyPage() {
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={{ 
-          flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', 
+        <View style={{
+          flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
           paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16,
           borderBottomWidth: 1, borderColor: '#EAE7E0'
         }}>
           <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={{ width: 40, height: 40, justifyContent: 'center' }}>
             <Feather name="arrow-left" size={24} color="#0F172A" />
           </TouchableOpacity>
-          
-          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ color: '#0F172A', fontFamily: 'Inter_600SemiBold', fontSize: 16 }}>
-              {activeTab === 'chat' ? 'Share Experience' : 'Review Journey'}
-            </Text>
+
+          <View style={{
+            flexDirection: 'row',
+            backgroundColor: '#EAE7E0',
+            borderRadius: 20,
+            padding: 4
+          }}>
+            <TouchableOpacity
+              onPress={() => setActiveTab('chat')}
+              style={{
+                flexDirection: 'row', alignItems: 'center', gap: 6,
+                paddingVertical: 8, paddingHorizontal: 16,
+                borderRadius: 16,
+                backgroundColor: activeTab === 'chat' ? '#FFFFFF' : 'transparent',
+              }}
+            >
+              <Feather name="message-circle" size={16} color={activeTab === 'chat' ? '#0F172A' : '#4A5568'} />
+              <Text style={{ color: activeTab === 'chat' ? '#0F172A' : '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 14 }}>
+                Chat
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                if (!isLoading && journeyDraft?.experiences?.length > 0) {
+                  setActiveTab("form");
+                }
+              }}
+              disabled={isLoading || !journeyDraft?.experiences?.length}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 6,
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+                borderRadius: 16,
+                backgroundColor: activeTab === "form" ? "#FFFFFF" : "transparent",
+                opacity: (isLoading || !journeyDraft?.experiences?.length) ? 0.45 : 1,
+              }}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color={UI.accent} />
+              ) : (
+                <Feather
+                  name="file-text"
+                  size={16}
+                  color={activeTab === "form" ? "#0F172A" : "#4A5568"}
+                />
+              )}
+
+              <Text
+                style={{
+                  color: activeTab === "form" ? "#0F172A" : "#4A5568",
+                  fontFamily: "Inter_500Medium",
+                  fontSize: 14,
+                }}
+              >
+                Form
+              </Text>
+            </TouchableOpacity>
           </View>
-          
+
           <View style={{ width: 40 }} />
         </View>
 
@@ -713,133 +753,72 @@ export default function ShareJourneyPage() {
           <View style={{ flex: 1 }}>
             {activeTab === 'chat' ? (
               messages.length <= 1 ? (
-                <ScrollView 
-                  contentContainerStyle={{ 
-                    flexGrow: 1, 
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    padding: 24, 
-                    paddingBottom: Platform.OS === 'web' ? 100 : 40 
-                  }}
-                  showsVerticalScrollIndicator={false}
-                >
-                  <Text style={{ 
-                    color: '#0F172A', 
-                    fontFamily: 'InstrumentSerif_400Regular', 
-                    fontSize: Platform.OS === 'web' ? 40 : 32, 
-                    marginBottom: 16,
-                    textAlign: 'center'
-                  }}>
-                    Share Your Journey
-                  </Text>
-                  <Text style={{ 
-                    color: '#4A5568', 
-                    fontFamily: 'Inter_400Regular', 
-                    fontSize: Platform.OS === 'web' ? 16 : 14, 
-                    textAlign: 'center',
-                    marginBottom: Platform.OS === 'web' ? 40 : 24,
-                    lineHeight: Platform.OS === 'web' ? 24 : 20
-                  }}>
-                    {messages[0]?.text || "Tell me about your journey so far. You can mention your education, internships, projects, hackathons, startups, competitions, jobs, research, or any important experiences that helped shape your path."}
-                  </Text>
-                  
-                  <View style={{
-                    width: '100%',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: 24,
-                    padding: 16,
-                    borderWidth: 1,
-                    borderColor: '#EAE7E0',
-                    minHeight: 140,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 10,
-                    elevation: 2,
-                  }}>
+                <View style={{ flex: 1, justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: Platform.OS === 'web' ? 48 : 32, paddingBottom: Platform.OS === 'web' ? 40 : 24 }}>
+                  <View>
+                    <Text style={{ color: '#0F172A', fontFamily: 'Montserrat_500Medium', fontSize: Platform.OS === 'web' ? 40 : 32, marginBottom: 16, textAlign: 'center' }}>Share Your Journey</Text>
+                    <Text style={{ color: '#4A5568', fontFamily: 'Inter_400Regular', fontSize: Platform.OS === 'web' ? 16 : 14, lineHeight: Platform.OS === 'web' ? 24 : 20 }}>
+                      {messages[0]?.text || "Tell me about your journey so far. You can mention your education, internships, projects, hackathons, startups, competitions, jobs, research, or any important experiences that helped shape your path."}
+                    </Text>
+                  </View>
+
+                  <View style={{ width: '100%', backgroundColor: '#FFFFFF', borderRadius: 24, padding: 16, borderWidth: 1, borderColor: '#EAE7E0', minHeight: 140, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 }}>
                     <TextInput
-                      style={{
-                        color: '#0F172A',
-                        fontFamily: 'Inter_400Regular',
-                        fontSize: 16,
-                        textAlignVertical: 'top',
-                        flex: 1,
-                        ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
-                      }}
+                      style={{ flex: 1, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 16, textAlignVertical: 'top', ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                       placeholder="Describe your journey so far..."
                       placeholderTextColor="#94A3B8"
                       value={inputText}
                       onChangeText={setInputText}
                       multiline
-                      editable={!isLoading && !hasSentMessage}
+                      editable={!isLoading}
                     />
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 12 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
                       <TouchableOpacity
-                        style={{
-                          width: 44, height: 44, borderRadius: 22,
-                          backgroundColor: inputText.trim() ? '#D06757' : '#F1F5F9',
-                          justifyContent: 'center', alignItems: 'center'
-                        }}
+                        style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: inputText.trim() ? '#D06757' : '#F1F5F9', justifyContent: 'center', alignItems: 'center' }}
                         onPress={sendMessage}
-                        disabled={isLoading || !inputText.trim() || hasSentMessage}
+                        disabled={isLoading || !inputText.trim()}
                       >
                         <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : '#94A3B8'} />
                       </TouchableOpacity>
                     </View>
                   </View>
-                </ScrollView>
+                </View>
               ) : (
                 <>
+                  <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 }}>
+                    <Text style={{ color: '#0F172A', fontFamily: 'Montserrat_500Medium', fontSize: 28, marginBottom: 8 }}>Share Your Journey</Text>
+                    <Text style={{ color: '#4A5568', fontFamily: 'Inter_400Regular', fontSize: 14 }}>{messages[0]?.text}</Text>
+                  </View>
+
                   <FlatList
                     ref={flatListRef}
-                    data={messages}
+                    data={messages.slice(1)}
                     renderItem={renderMessage}
                     keyExtractor={item => item.id}
-                    contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 24 }}
+                    contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24, gap: 16 }}
                     onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+                    style={{ flex: 1 }}
                   />
-                  
+
                   {isLoading && (
-                    <Animated.View entering={FadeIn} style={{ padding: 16, alignSelf: 'flex-start' }}>
+                    <Animated.View entering={FadeIn} style={{ paddingHorizontal: 16, paddingBottom: 8, alignSelf: 'flex-start' }}>
                       <ActivityIndicator color="rgba(255,255,255,0.5)" size="small" />
                     </Animated.View>
                   )}
 
-                  <View style={{ 
-                    flexDirection: 'row', alignItems: 'center', 
-                    padding: 12, paddingHorizontal: 16, gap: 12,
-                    backgroundColor: '#FAF9F6'
-                  }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', padding: 12, paddingHorizontal: 16, gap: 12, backgroundColor: '#FAF9F6' }}>
                     <TextInput
-                      style={{
-                        flex: 1,
-                        backgroundColor: '#FFFFFF',
-                        borderRadius: 24,
-                        paddingHorizontal: 20,
-                        paddingVertical: 12,
-                        color: '#0F172A',
-                        fontFamily: 'Inter_400Regular',
-                        fontSize: 15,
-                        maxHeight: 100,
-                        borderWidth: 1,
-                        borderColor: '#EAE7E0',
-                        ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
-                      }}
+                      style={{ flex: 1, backgroundColor: '#FFFFFF', borderRadius: 24, paddingHorizontal: 20, paddingVertical: 12, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, maxHeight: 100, borderWidth: 1, borderColor: '#EAE7E0', ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                       placeholder="Describe your journey so far..."
                       placeholderTextColor="#94A3B8"
                       value={inputText}
                       onChangeText={setInputText}
                       multiline
-                      editable={!isLoading && !hasSentMessage}
+                      editable={!isLoading}
                     />
                     <TouchableOpacity
-                      style={{
-                        width: 44, height: 44, borderRadius: 22,
-                        backgroundColor: inputText.trim() ? '#D06757' : '#F1F5F9',
-                        justifyContent: 'center', alignItems: 'center'
-                      }}
+                      style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: inputText.trim() ? '#D06757' : '#F1F5F9', justifyContent: 'center', alignItems: 'center' }}
                       onPress={sendMessage}
-                      disabled={isLoading || !inputText.trim() || hasSentMessage}
+                      disabled={isLoading || !inputText.trim()}
                     >
                       <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : '#94A3B8'} />
                     </TouchableOpacity>
