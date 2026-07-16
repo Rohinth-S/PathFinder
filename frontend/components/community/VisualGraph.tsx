@@ -175,8 +175,8 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
           {positionedEdges.map((edge, i) => {
             const midX = (edge.from.x + edge.to.x) / 2;
             const midY = (edge.from.y + edge.to.y) / 2;
-            const startX = edge.from.x + 75;
-            const endX = edge.to.x - 75;
+            const startX = edge.from.x + 90;
+            const endX = edge.to.x - 90;
 
             return (
               <G key={`edge-${i}`}>
@@ -201,17 +201,18 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
             activeOpacity={0.8}
             style={{
               position: 'absolute',
-              left: node.x - 75,
+              left: node.x - 90,
               top: node.y - 32,
-              width: 150,
-              height: 64,
+              width: 180,
+              minHeight: 74,
               backgroundColor: '#FFFFFF',
               borderRadius: 16,
               borderWidth: 1,
               borderColor: 'rgba(62, 107, 102, 0.1)',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: 10,
+              paddingHorizontal: 12,
+              paddingVertical: 10,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.05,
@@ -223,7 +224,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               {node.title}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }}>
+              <Text style={{ color: L.teal, fontSize: 11, fontFamily: 'Inter_500Medium' }} numberOfLines={1} ellipsizeMode="tail">
                 {node.authorUsername ? `@${node.authorUsername}` : 'Explorer'}
               </Text>
             </View>
