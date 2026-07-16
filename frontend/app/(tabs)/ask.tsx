@@ -25,7 +25,7 @@ const SUGGESTED_QUESTIONS = [
 
 export default function QueryPage() {
   const router = useRouter();
-  const { getToken } = useAuth();
+  const { getToken, isSignedIn } = useAuth();
   const [query, setQuery] = useState('');
   const recorder = useAudioRecorder({...RecordingPresets.HIGH_QUALITY, directory: "document"});
   const recorderState = useAudioRecorderState(recorder);
@@ -134,6 +134,7 @@ export default function QueryPage() {
 
     setIsSearching(true);
     try {
+      if (!isSignedIn) throw new Error("Not authenticated");
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
       const result = await submitQuery(token, text, audioUri);

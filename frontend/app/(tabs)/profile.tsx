@@ -28,7 +28,7 @@ const LANGUAGES = [
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { signOut, getToken } = useAuth();
+  const { signOut, getToken, isSignedIn } = useAuth();
   const { user: clerkUser } = useUser();
 
   const [user, setUser] = useState<SyncedUser | null>(null);
@@ -48,10 +48,13 @@ export default function ProfilePage() {
   const languageScale = useSharedValue(1);
 
   useEffect(() => {
-    loadUserProfile();
-  }, []);
+    if (isSignedIn) {
+      loadUserProfile();
+    }
+  }, [isSignedIn]);
 
   const loadUserProfile = async () => {
+    if (!isSignedIn) return;
     setIsLoading(true);
     setError(null);
     try {

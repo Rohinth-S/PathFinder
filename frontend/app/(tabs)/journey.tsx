@@ -195,11 +195,9 @@ const createCytoscapeHtml = (elementsJson: string) => `
 `;
 
 // ───────────────────────────────────────────────
-// Main Page
-// ───────────────────────────────────────────────
 export default function HistoryPage() {
   const router = useRouter();
-  const { getToken } = useAuth();
+  const { getToken, isSignedIn } = useAuth();
   const { user: clerkUser } = useUser();
 
   const [journey, setJourney] = useState<UserJourneyResponse | null>(null);
@@ -211,11 +209,14 @@ export default function HistoryPage() {
 
   useFocusEffect(
     useCallback(() => {
-      loadJourney();
-    }, [])
+      if (isSignedIn) {
+        loadJourney();
+      }
+    }, [isSignedIn])
   );
 
   const loadJourney = async () => {
+    if (!isSignedIn) return;
     setIsLoading(true);
     setError(null);
     try {

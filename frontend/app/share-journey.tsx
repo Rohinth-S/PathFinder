@@ -22,7 +22,7 @@ interface ChatMessage {
 
 export default function ShareJourneyPage() {
   const router = useRouter();
-  const { getToken } = useAuth();
+  const { getToken, isSignedIn } = useAuth();
 
   const displayAlert = (title: string, message: string, onPress?: () => void) => {
     if (Platform.OS === 'web') {
@@ -78,6 +78,7 @@ export default function ShareJourneyPage() {
     if (!newGoalTitle.trim()) return;
     setIsCreatingGoal(true);
     try {
+      if (!isSignedIn) throw new Error("Not authenticated");
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
       const res = await submitJourneyGoal(token, {
@@ -180,7 +181,8 @@ export default function ShareJourneyPage() {
   useEffect(() => {
     async function initSession() {
       try {
-        const token = await getToken();
+        if (!isSignedIn) throw new Error("Not authenticated");
+      const token = await getToken();
         if (!token) throw new Error('Unauthenticated');
 
         try {
@@ -222,6 +224,7 @@ export default function ShareJourneyPage() {
     setIsLoading(true);
 
     try {
+      if (!isSignedIn) throw new Error("Not authenticated");
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
 
@@ -255,6 +258,7 @@ export default function ShareJourneyPage() {
 
     setIsSubmitting(true);
     try {
+      if (!isSignedIn) throw new Error("Not authenticated");
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
 
@@ -475,7 +479,8 @@ export default function ShareJourneyPage() {
                     const goalTitle = exp.tempGoalInput?.trim();
                     if (!goalTitle) return;
                     try {
-                      const token = await getToken();
+                      if (!isSignedIn) throw new Error("Not authenticated");
+      const token = await getToken();
                       if (!token) throw new Error("Not authenticated");
                       const res = await submitJourneyGoal(token, {
                         title: goalTitle,
