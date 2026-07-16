@@ -266,23 +266,27 @@ export default function ShareJourneyPage() {
       const filesToUpload: { id: string, uri: string, name: string, type: string }[] = [];
       const cleanedExperiences = editableExperiences.map(exp => {
         const { tempGoalInput, ...cleanedExp } = exp;
+        // Convert empty decisionReason to null
+        cleanedExp.decisionReason = cleanedExp.decisionReason?.trim() || null;
         if (cleanedExp.proofs) {
           cleanedExp.proofs = cleanedExp.proofs.map((p: any) => {
             if (p.localUri) {
               filesToUpload.push({
                 id: p.id,
                 uri: p.localUri,
-                name: p.filename || 'upload',
-                type: p.mimeType || 'application/octet-stream'
+                name: p.filename || "upload",
+                type: p.mimeType || "application/octet-stream",
               });
             }
-            const { localUri, filename, mimeType, status, ...rest } = p;
+            const { localUri, filename, mimeType, status,
+              ...rest
+            } = p;
             return rest;
           });
         }
+
         return cleanedExp;
       });
-
       payload.experiences = cleanedExperiences;
       console.log(
         JSON.stringify(payload.experiences, null, 2)
@@ -519,21 +523,18 @@ export default function ShareJourneyPage() {
                 textAlignVertical="top"
               />
             </View>
-
-            {index > 0 && (
-              <View>
-                <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>What led you to this experience? (Optional)</Text>
-                <TextInput
-                  style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 60, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
-                  value={exp.decisionReason || ''}
-                  onChangeText={t => updateExperience(index, 'decisionReason', t)}
-                  placeholder="e.g. I wanted to apply my skills from the previous project..."
-                  placeholderTextColor="#94A3B8"
-                  multiline
-                  textAlignVertical="top"
-                />
-              </View>
-            )}
+            <View>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>What led you to this experience?</Text>
+              <TextInput
+                style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 60, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
+                value={exp.decisionReason || ''}
+                onChangeText={t => updateExperience(index, 'decisionReason', t)}
+                placeholder="e.g. I wanted to apply my skills from the previous project..."
+                placeholderTextColor="#94A3B8"
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
 
             {exp.skills?.length > 0 && (
               <View style={{ marginTop: 8 }}>
@@ -636,7 +637,10 @@ export default function ShareJourneyPage() {
           paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16,
           borderBottomWidth: 1, borderColor: '#EAE7E0'
         }}>
-          <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={{ width: 40, height: 40, justifyContent: 'center' }}>
+          <TouchableOpacity
+            onPress={() => router.replace('/(tabs)/profile')}
+            style={{ width: 40, height: 40, justifyContent: 'center' }}
+          >
             <Feather name="arrow-left" size={24} color="#0F172A" />
           </TouchableOpacity>
 
@@ -732,7 +736,7 @@ export default function ShareJourneyPage() {
                     <TouchableOpacity
                       onPress={sendMessage}
                       disabled={isLoading || !inputText.trim()}
-                      style={{position: 'absolute', top: 14, right: 14, width: 34, height: 34, borderRadius: 17, justifyContent: 'center', alignItems: 'center', backgroundColor: inputText.trim()? '#D06757': '#F1F5F9',}}>
+                      style={{ position: 'absolute', top: 14, right: 14, width: 34, height: 34, borderRadius: 17, justifyContent: 'center', alignItems: 'center', backgroundColor: inputText.trim() ? '#D06757' : '#F1F5F9', }}>
                       <Feather
                         name="arrow-up"
                         size={16}
