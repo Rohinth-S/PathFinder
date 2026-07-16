@@ -65,6 +65,9 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       if (!visited.has(n.id)) layers.set(n.id, Math.floor(Math.random() * currentLayer));
     });
 
+    // Sort by layer
+    const sortedNodeIds = nodes.map(n => n.id).sort((a, b) => (layers.get(a) || 0) - (layers.get(b) || 0));
+
     // Group nodes by their topological layer
     const nodesByLayer = new Map<number, string[]>();
     sortedNodeIds.forEach(id => {
