@@ -1,5 +1,7 @@
 import { apiFetch } from "./api";
 import { Platform } from "react-native";
+import { File } from "expo-file-system";
+import { fetch } from "expo/fetch";
 
 export interface JourneyExperience {
   id: string;
@@ -160,23 +162,36 @@ export async function submitJourney(
   token: string,
   conversationId: string,
   journeyPayload: any,
-  files?: { id: string; uri: string; name: string; type: string }[]
+  files?: {
+    id: string;
+    uri: string;
+    name: string;
+    type: string;
+  }[]
 ): Promise<SubmitJourneyResponse> {
-  if (files && files.length > 0) {
+  if (files?.length) {
     const formData = new FormData();
 
-    // Append 'journey' as a JSON string containing conversationId and the payload
-    formData.append('journey', JSON.stringify({ conversationId, ...journeyPayload }));
+    formData.append(
+      "journey",
+      JSON.stringify({
+        conversationId,
+        ...journeyPayload,
+      })
+    );
+
     for (const f of files) {
       if (Platform.OS === "web") {
-        const blob = await (await fetch(f.uri)).blob();
+        // Web: fetch the local blob and preserve filename
+        const response = await fetch(f.uri);
+        const blob = await response.blob();
+
         formData.append(f.id, blob, f.name);
       } else {
-        formData.append(f.id, {
-          uri: f.uri,
-          type: f.type || "application/octet-stream",
-          name: f.name,
-        } as any);
+        // Native (Android/iOS): Expo File API
+        const file = new File(f.uri);
+
+        formData.append(f.id, file);
       }
     }
 
@@ -187,7 +202,7 @@ export async function submitJourney(
         body: formData,
       },
       token,
-      true // isMultipart
+      true
     );
   }
 
@@ -195,7 +210,12 @@ export async function submitJourney(
     "/journey/submit",
     {
       method: "POST",
-      body: JSON.stringify({ journey: JSON.stringify({ conversationId, ...journeyPayload }) }),
+      body: JSON.stringify({
+        journey: JSON.stringify({
+          conversationId,
+          ...journeyPayload,
+        }),
+      }),
     },
     token
   );
