@@ -27,7 +27,7 @@ export default function QueryPage() {
   const router = useRouter();
   const { getToken } = useAuth();
   const [query, setQuery] = useState('');
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorder = useAudioRecorder({...RecordingPresets.HIGH_QUALITY, directory: "document"});
   const recorderState = useAudioRecorderState(recorder);
   const isRecording = recorderState.isRecording;
   const [isSearching, setIsSearching] = useState(false);
