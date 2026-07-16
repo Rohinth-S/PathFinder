@@ -65,24 +65,48 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       if (!visited.has(n.id)) layers.set(n.id, Math.floor(Math.random() * currentLayer));
     });
 
-    // Sort by layer
-    const sortedNodeIds = nodes.map(n => n.id).sort((a, b) => (layers.get(a) || 0) - (layers.get(b) || 0));
-
-    // Diagonal staircase layout — each node steps right and down
-    const X_STEP = 200;
-    const Y_STEP = 130;
-    const PADDING = 100;
-    const NODE_W = 150;
-
-    sortedNodeIds.forEach((id, index) => {
-      const pNode = nodeMap.get(id)!;
-      pNode.x = PADDING + index * X_STEP;
-      pNode.y = PADDING + index * Y_STEP;
+    // Group nodes by their topological layer
+    const nodesByLayer = new Map<number, string[]>();
+    sortedNodeIds.forEach(id => {
+      const l = layers.get(id) || 0;
+      if (!nodesByLayer.has(l)) nodesByLayer.set(l, []);
+      nodesByLayer.get(l)!.push(id);
     });
 
-    const lastIdx = sortedNodeIds.length - 1;
-    const cw = PADDING + lastIdx * X_STEP + NODE_W + PADDING;
-    const ch = PADDING + lastIdx * Y_STEP + 80 + PADDING;
+    let maxLayer = 0;
+    let maxNodesInLayer = 0;
+
+    nodesByLayer.forEach((ids, layer) => {
+      if (layer > maxLayer) maxLayer = layer;
+      if (ids.length > maxNodesInLayer) maxNodesInLayer = ids.length;
+    });
+
+    // Layered grid layout — columns by layer, rows by index within layer
+    const X_STEP = 260;
+    const Y_STEP = 140;
+    const PADDING_X = 100;
+    const PADDING_Y = 100;
+    const NODE_W = 150;
+
+    nodesByLayer.forEach((ids, layer) => {
+      ids.forEach((id, indexInLayer) => {
+        const pNode = nodeMap.get(id)!;
+        pNode.x = PADDING_X + layer * X_STEP;
+        // Center nodes vertically in their layer relative to the tallest layer
+        const yOffset = ((maxNodesInLayer - ids.length) * Y_STEP) / 2;
+        pNode.y = PADDING_Y + yOffset + indexInLayer * Y_STEP;
+      });
+    });
+
+    const cw = PADDING_X + maxLayer * X_STEP + NODE_W + PADDING_X;
+    const ch = PADDING_Y + Math.max(0, maxNodesInLayer - 1) * Y_STEP + 80 + PADDING_Y;
+
+    // Safety fallback: if canvas is still dangerously large (> 20M pixels), limit to a safe cap to avoid Android crash
+    const MAX_CANVAS_WIDTH = 4000;
+    const MAX_CANVAS_HEIGHT = 4000;
+    
+    const finalCw = Math.min(Math.max(cw, Dimensions.get('window').width - 32), MAX_CANVAS_WIDTH);
+    const finalCh = Math.min(Math.max(ch, 300), MAX_CANVAS_HEIGHT);
 
     const validEdges = edges.filter(e => nodeMap.has(e.fromId) && nodeMap.has(e.toId));
 
@@ -93,8 +117,8 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
         from: nodeMap.get(e.fromId)!,
         to: nodeMap.get(e.toId)!,
       })),
-      canvasWidth: Math.max(cw, Dimensions.get('window').width - 32),
-      canvasHeight: Math.max(ch, 300),
+      canvasWidth: finalCw,
+      canvasHeight: finalCh,
     };
   }, [nodes, edges]);
 
