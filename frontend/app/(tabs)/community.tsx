@@ -455,7 +455,7 @@ export default function CommunityPage() {
       <View style={{ paddingHorizontal: 24, paddingTop: 56, paddingBottom: 8 }}>
         <Text style={{
           fontFamily: 'Monospace_500Medium',
-          fontSize: 32, color: UI.foreground, marginBottom: 4,
+          fontSize: 28, color: UI.foreground, marginBottom: 4,
         }}>
           Community
         </Text>
@@ -540,7 +540,7 @@ export default function CommunityPage() {
                     <Text
                       style={{
                         fontFamily: 'Monospace_500Medium',
-                        fontSize: 28,
+                        fontSize: 24,
                         color: UI.foreground,
                       }}>
                       Trending Paths
@@ -569,7 +569,7 @@ export default function CommunityPage() {
                   <Text
                     style={{
                       fontFamily: 'Monospace_500Medium',
-                      fontSize: 28,
+                      fontSize: 24,
                       color: UI.foreground,
                       marginTop: 24,
                       marginBottom: 16,
