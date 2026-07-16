@@ -4,7 +4,7 @@ import {
   Alert, ActivityIndicator, Platform, ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import {AudioModule,RecordingPresets,setAudioModeAsync,useAudioRecorder} from "expo-audio";
+import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder, useAudioRecorderState } from "expo-audio";
 import { useAuth } from '@clerk/clerk-expo';
 import { submitQuery } from '../../api/query.api';
 import { L } from '../../constants/colors';
@@ -27,10 +27,12 @@ export default function QueryPage() {
   const router = useRouter();
   const { getToken } = useAuth();
   const [query, setQuery] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
+  const recorder = useAudioRecorder({...RecordingPresets.HIGH_QUALITY, directory: "document"});
+  const recorderState = useAudioRecorderState(recorder);
+  const isRecording = recorderState.isRecording;
   const [isSearching, setIsSearching] = useState(false);
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const [isFocused, setIsFocused] = useState(false);
+  const stoppingRef = useRef(false);
 
   const displayAlert = (title: string, message: string) => {
     if (Platform.OS === 'web') {
@@ -73,45 +75,54 @@ export default function QueryPage() {
 
   /* ── Audio Recording ──────────────────────────────── */
 
-async function startRecording() {
-  try {
-    const permission =
-      await AudioModule.requestRecordingPermissionsAsync();
-    if (!permission.granted) {
+  async function startRecording() {
+    if (isSearching) return;
+    try {
+      const permission = await AudioModule.requestRecordingPermissionsAsync();
+      if (!permission.granted) {
+        displayAlert(
+          "Permission Denied",
+          "Please grant microphone access to use voice search."
+        );
+        return;
+      }
+      await setAudioModeAsync({
+        allowsRecording: true,
+        playsInSilentMode: true,
+      });
+      await recorder.prepareToRecordAsync();
+      recorder.record();
+    } catch (err) {
+      console.warn("Failed to start recording", err);
       displayAlert(
-        "Permission Denied",
-        "Please grant microphone access to use voice search."
+        "Recording Error",
+        "Failed to start recording. Please try again."
       );
-      return;
     }
-    await setAudioModeAsync({
-      allowsRecording: true,
-      playsInSilentMode: true,
-    });
-    await recorder.prepareToRecordAsync();
-    await recorder.record();
-    setIsRecording(true);
-  } catch (err) {
-    console.warn("Failed to start recording", err);
-    displayAlert("Recording Error", "Failed to start recording. Please try again.");
-    setIsRecording(false);
   }
-}
 
   async function stopRecording() {
-  setIsRecording(false);
-
+  if (stoppingRef.current) return;
+  stoppingRef.current = true;
   try {
     await recorder.stop();
+    const uri = recorder.uri;
     await setAudioModeAsync({
       allowsRecording: false,
+      playsInSilentMode: false,
     });
-    const uri = recorder.uri;
-    if (uri) {
-      await handleSubmit(null, uri);
+    if (!uri) {
+      throw new Error("Recording URI is null");
     }
-  } catch (error) {
-    console.warn("Failed to stop recording", error);
+    await handleSubmit(null, uri);
+  } catch (err) {
+    console.warn("Failed to stop recording", err);
+    displayAlert(
+      "Recording Error",
+      err instanceof Error ? err.message : "Failed to stop recording."
+    );
+  } finally {
+    stoppingRef.current = false;
   }
 }
 
@@ -125,14 +136,11 @@ async function startRecording() {
     try {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
-
       const result = await submitQuery(token, text, audioUri);
-
       // If the backend transcribed audio, show it
       if (result.transcribed && result.query) {
         setQuery(result.query);
       }
-
       router.push({
         pathname: '/results',
         params: { payload: JSON.stringify(result) },
@@ -140,8 +148,8 @@ async function startRecording() {
     } catch (error) {
       console.warn('Query Pipeline Error:', error);
       displayAlert(
-        'Connection Error',
-        'Could not reach the backend. Please ensure the server is running and try again.'
+        "Query Error",
+        error instanceof Error ? error.message : JSON.stringify(error)
       );
     } finally {
       setIsSearching(false);
@@ -269,7 +277,7 @@ async function startRecording() {
 
               {/* Recording indicator */}
               {isRecording && (
-               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: L.terracotta }} />
                   <Text style={{ fontFamily: 'Manrope_600SemiBold', fontSize: 11, color: L.terracotta, letterSpacing: 0.5 }}>
                     Listening...

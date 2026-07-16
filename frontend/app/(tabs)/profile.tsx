@@ -104,7 +104,6 @@ export default function ProfilePage() {
 
   const handleSignOut = async () => {
     await signOut();
-    router.replace('/');
   };
 
   const usernameAnimStyle = useAnimatedStyle(() => ({ transform: [{ scale: usernameScale.value }] }));
@@ -145,8 +144,7 @@ export default function ProfilePage() {
       <Animated.View entering={FadeInDown.duration(400).springify()} style={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 8 }}>
         <SectionLabel>Your Details</SectionLabel>
         <Text style={{
-          fontFamily: 'InstrumentSerif_400Regular',
-          fontSize: 48, color: L.navy, marginTop: 4, letterSpacing: -1
+          fontFamily: 'Monospace_500Medium', fontSize: 48, letterSpacing: -1
         }}>
           Profile
         </Text>
