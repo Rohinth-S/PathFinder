@@ -263,7 +263,7 @@ export default function ShareJourneyPage() {
       const payload = { ...journeyDraft, experiences: editableExperiences };
 
       // Extract files to upload
-      const filesToUpload: { id: string, uri: string, name: string, type: string }[] = [];
+      let fileToUpload: | { id: string; uri: string; name: string; type: string; } | undefined;
       const cleanedExperiences = editableExperiences.map(exp => {
         const { tempGoalInput, ...cleanedExp } = exp;
         // Convert empty decisionReason to null
@@ -271,12 +271,12 @@ export default function ShareJourneyPage() {
         if (cleanedExp.proofs) {
           cleanedExp.proofs = cleanedExp.proofs.map((p: any) => {
             if (p.localUri) {
-              filesToUpload.push({
+              fileToUpload = {
                 id: p.id,
                 uri: p.localUri,
                 name: p.filename || "upload",
                 type: p.mimeType || "application/octet-stream",
-              });
+              };
             }
             const { localUri, filename, mimeType, status,
               ...rest
@@ -292,7 +292,7 @@ export default function ShareJourneyPage() {
         JSON.stringify(payload.experiences, null, 2)
       );
 
-      const res = await submitJourney(token, conversationId, payload, filesToUpload.length > 0 ? filesToUpload : undefined);
+      const res = await submitJourney(token, conversationId, payload, fileToUpload  );
       if (res.success) {
         displayAlert(
           "Journey Saved! 🚀",
