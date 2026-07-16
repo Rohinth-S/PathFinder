@@ -70,10 +70,12 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       currentLayer++;
     }
 
-    // Any unvisited nodes (disconnected components or cyclic) just get assigned to random layers
+    // Any unvisited nodes (disconnected components or cyclic) spread across 3 layers to prevent extreme vertical height
+    let unvisitedIndex = 0;
     nodes.forEach(n => {
       if (!visited.has(n.id)) {
-        layers.set(n.id, Math.floor(Math.random() * currentLayer));
+        layers.set(n.id, unvisitedIndex % 3);
+        unvisitedIndex++;
       }
     });
 
@@ -118,8 +120,8 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     // Filter out edges with missing nodes
     const validEdges = edges.filter(e => nodeMap.has(e.fromId) && nodeMap.has(e.toId));
 
-    const MAX_CANVAS_WIDTH = 8000;
-    const MAX_CANVAS_HEIGHT = 8000;
+    const MAX_CANVAS_WIDTH = 6000;
+    const MAX_CANVAS_HEIGHT = 2500;
 
     return {
       positionedNodes: Array.from(nodeMap.values()),
@@ -155,7 +157,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 16 }}>
-      <View style={{ backgroundColor: '#FDFCF9', borderRadius: 24, overflow: 'hidden', marginHorizontal: 16, borderWidth: 1, borderColor: '#EAE7E0', width, height }}>
+      <View style={{ backgroundColor: '#FDFCF9', marginHorizontal: 16, width, height }}>
         <Svg width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
           <Defs>
             <Marker
