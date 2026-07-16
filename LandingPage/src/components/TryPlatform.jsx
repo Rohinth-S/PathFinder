@@ -29,7 +29,7 @@ export default function TryPlatform() {
           <p className="try-desc">
             Download and install the official PathFinder application. Experience full AI-guided onboarding, voice queries transcribing in real time, and dynamic path visuals on your mobile device.
           </p>
-          <a href="#" className="try-btn btn-mint" onClick={(e) => e.preventDefault()}>
+          <a href="https://fmqx14c5dhhkcis9.public.blob.vercel-storage.com/pathfinder.apk" download className="try-btn btn-mint">
             Download APK ↗
           </a>
         </div>
@@ -48,12 +48,12 @@ export default function TryPlatform() {
           }}>
             WEB
           </div>
-          <h3 className="try-title">Web Client Preview</h3>
+          <h3 className="try-title">Web Preview</h3>
           <p className="try-desc">
             Explore the interactive PathFinder platform directly in your web browser. Interact with the onboarding flow, search paths, and view experience charts without installing the app.
           </p>
-          <a href="#" className="try-btn btn-outline" onClick={(e) => e.preventDefault()}>
-            Launch Web Client ↗
+          <a href="https://path-finder-webapp.vercel.app" target="_blank" rel="noopener noreferrer" className="try-btn btn-outline">
+            Launch Web Preview↗
           </a>
         </div>
       </div>
