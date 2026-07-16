@@ -20,6 +20,12 @@ interface PositionedNode extends GraphNode {
 export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   const router = useRouter();
   const screenWidth = Dimensions.get('window').width;
+  const CARD_WIDTH = 150;
+  const CARD_HEIGHT = 65;
+  const X_SPACING = 180;
+  const Y_SPACING = 90;
+  const paddingLeftRight = 16;
+  const paddingTopBottom = 24;
 
   const { positionedNodes, positionedEdges, width, height } = useMemo(() => {
     if (nodes.length === 0) return { positionedNodes: [], positionedEdges: [], width: 0, height: 0 };
@@ -102,12 +108,6 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       }
     }
 
-    const CARD_WIDTH = 135;
-    const X_SPACING = 165; 
-    const Y_SPACING = 80;  
-    const paddingLeftRight = 16;
-    const paddingTopBottom = 24;
-
     const actualMaxLayer = Math.max(0, balancedLayers.length - 1);
     let maxNodesInOneLayer = 0;
     balancedLayers.forEach(layerNodes => {
@@ -163,8 +163,8 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   };
 
   const drawSelfLoop = (x: number, y: number) => {
-    const cardTopLeftX = x - 67.5;
-    const cardTopLeftY = y - 27.5;
+    const cardTopLeftX = x - CARD_WIDTH / 2;
+    const cardTopLeftY = y - CARD_HEIGHT / 2;
     const startX = cardTopLeftX + 30;
     const startY = cardTopLeftY;
     const cp1x = startX - 25;
@@ -214,8 +214,8 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
                 );
               }
 
-              const startX = edge.from.x + 67; 
-              const endX = edge.to.x - 67;   
+              const startX = edge.from.x + CARD_WIDTH / 2;
+              const endX = edge.to.x - CARD_WIDTH / 2;
               return (
                 <G key={`edge-${i}`}>
                   <Path
@@ -238,10 +238,10 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
               activeOpacity={0.85}
               style={{
                 position: 'absolute',
-                left: node.x - 67.5, 
-                top: node.y - 27.5,  
-                width: 135,
-                height: 55,
+                left: node.x - CARD_WIDTH / 2,
+                top: node.y - CARD_HEIGHT / 2,
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
                 backgroundColor: '#FFFFFF',
                 borderRadius: 10,
                 borderWidth: 1,
@@ -256,7 +256,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
                 elevation: 1.5,
               }}
             >
-              <Text style={{ color: '#0F172A', fontSize: 10, fontFamily: 'Inter_600SemiBold', textAlign: 'left', marginBottom: 1, lineHeight: 13 }} numberOfLines={2}>
+              <Text style={{ color: '#0F172A', fontSize: 11, fontFamily: 'Inter_600SemiBold', textAlign: 'left', marginBottom: 1, lineHeight: 13 }} numberOfLines={2}>
                 {node.title}
               </Text>
               <Text style={{ color: '#64748B', fontSize: 8, fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
