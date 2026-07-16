@@ -1,7 +1,7 @@
 {
   "name": "temp-expo-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "expo-router/entry",
   "dependencies": {
     "@clerk/clerk-expo": "^2.19.31",
     "@expo-google-fonts/instrument-serif": "^0.4.1",

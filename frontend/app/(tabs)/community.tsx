@@ -245,7 +245,9 @@ function UserCard({ user, onViewJourney }: { user: SearchCommunityUser; onViewJo
       {matchingGoals.length > 0 && (
         <View style={{ marginBottom: 16 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <SectionLabel>GOALS MATCHING YOUR SEARCH</SectionLabel>
+            <View style={{ flex: 1, paddingRight: 8 }}>
+              <SectionLabel style={{ flexShrink: 1 }}>GOALS MATCHING YOUR SEARCH</SectionLabel>
+            </View>
             <View style={{
               paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6,
               backgroundColor: 'rgba(59, 130, 246, 0.1)',
