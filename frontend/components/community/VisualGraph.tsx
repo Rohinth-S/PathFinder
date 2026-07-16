@@ -18,9 +18,6 @@ interface PositionedNode extends GraphNode {
 export function VisualGraph({ nodes, edges }: VisualGraphProps) {
   const router = useRouter();
 
-  // Simple layout: arrange nodes in a left-to-right force-like layout
-  // To avoid complex d3-force in RN, we'll use a deterministic layered layout.
-  // We'll calculate indegree and outdegree to assign layers.
   const { positionedNodes, positionedEdges, width, height } = useMemo(() => {
     if (nodes.length === 0) return { positionedNodes: [], positionedEdges: [], width: 0, height: 0 };
 
@@ -49,7 +46,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     // Assign layers
     let currentLayer = 0;
     let queue = nodes.filter(n => inDegrees.get(n.id) === 0).map(n => n.id);
-    
+
     // Fallback if there are cycles and no sources
     if (queue.length === 0 && nodes.length > 0) {
       queue = [nodes[0].id];
@@ -81,13 +78,13 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
     });
 
     const maxLayer = Math.max(...Array.from(layers.values()));
-    
+
     // Count nodes per layer to calculate vertical spacing
     const nodesPerLayer = new Map<number, string[]>();
     for (let i = 0; i <= maxLayer; i++) {
       nodesPerLayer.set(i, []);
     }
-    
+
     Array.from(layers.entries()).forEach(([id, layer]) => {
       nodesPerLayer.get(layer)!.push(id);
     });
@@ -110,7 +107,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
       layerNodes.forEach((id, index) => {
         const pNode = nodeMap.get(id)!;
         pNode.x = padding + i * X_SPACING + 75; // center offset
-        
+
         // Center vertically based on how many nodes in this layer
         const layerHeight = layerNodes.length * Y_SPACING;
         const startY = (calculatedHeight - layerHeight) / 2 + Y_SPACING / 2;
@@ -180,7 +177,7 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
             const midY = (edge.from.y + edge.to.y) / 2;
             const startX = edge.from.x + 75;
             const endX = edge.to.x - 75;
-            
+
             return (
               <G key={`edge-${i}`}>
                 <Path
@@ -191,29 +188,6 @@ export function VisualGraph({ nodes, edges }: VisualGraphProps) {
                   fill="none"
                   markerEnd="url(#arrow)"
                 />
-                {edge.label && (
-                  <View style={{
-                    position: 'absolute',
-                    left: midX - 50,
-                    top: midY - 12,
-                    width: 100,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: 'rgba(253, 252, 249, 0.8)',
-                    borderRadius: 12,
-                    paddingHorizontal: 8,
-                    paddingVertical: 2
-                  }}>
-                    <Text style={{
-                      color: L.navySoft,
-                      fontSize: 10,
-                      textAlign: 'center',
-                      fontFamily: 'Inter_600SemiBold'
-                    }}>
-                      {edge.label}
-                    </Text>
-                  </View>
-                )}
               </G>
             );
           })}
