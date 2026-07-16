@@ -106,16 +106,12 @@ export async function submitJourneyController(
       });
       return;
     }
-    const proofFiles = new Map<string, Express.Multer.File>();
-
-    for (const file of (req.files as Express.Multer.File[]) ?? []) {
-      proofFiles.set(file.fieldname, file);
-    }
+    const proofFile = req.file ?? null;
     const result = await submitJourney(
       userId,
       conversationId,
       { experiences: journeyPayload.experiences },
-      proofFiles
+      proofFile
     );
     res.json({
       success: true,

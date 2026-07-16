@@ -1,7 +1,7 @@
 import { apiFetch } from "./api";
-import { Platform } from "react-native";
 import { File } from "expo-file-system";
 import { fetch } from "expo/fetch";
+import { Platform } from 'react-native';
 
 export interface JourneyExperience {
   id: string;
@@ -158,52 +158,56 @@ export async function submitJourneyGoal(
 /**
  * Submit the final parsed journey draft for graph creation
  */
+
 export async function submitJourney(
   token: string,
   conversationId: string,
   journeyPayload: any,
-  files?: {
+  file?: {
     id: string;
     uri: string;
     name: string;
     type: string;
-  }[]
+  }
 ): Promise<SubmitJourneyResponse> {
-  if (files?.length) {
+  if (file) {
     const formData = new FormData();
 
-    formData.append(
-      "journey",
-      JSON.stringify({
-        conversationId,
-        ...journeyPayload,
-      })
-    );
+formData.append(
+  "journey",
+  JSON.stringify({
+    conversationId,
+    ...journeyPayload,
+  })
+);
 
-    for (const f of files) {
-      if (Platform.OS === "web") {
-        // Web: fetch the local blob and preserve filename
-        const response = await fetch(f.uri);
-        const blob = await response.blob();
+if (Platform.OS === "web") {
+  const response = await fetch(file.uri);
+  const blob = await response.blob();
 
-        formData.append(f.id, blob, f.name);
-      } else {
-        // Native (Android/iOS): Expo File API
-        const file = new File(f.uri);
+  formData.append("proof", blob, file.name);
+} else {
+  const uploadFile = new File(file.uri);
 
-        formData.append(f.id, file);
-      }
+  formData.append("proof", uploadFile,file.name);
+}
+
+const response = await fetch(
+  `${process.env.EXPO_PUBLIC_API_BASE_URL}/journey/submit`,
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  }
+);
+
+    if (!response.ok) {
+      throw new Error(await response.text());
     }
 
-    return apiFetch<SubmitJourneyResponse>(
-      "/journey/submit",
-      {
-        method: "POST",
-        body: formData,
-      },
-      token,
-      true
-    );
+    return response.json();
   }
 
   return apiFetch<SubmitJourneyResponse>(

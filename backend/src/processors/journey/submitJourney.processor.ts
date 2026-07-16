@@ -72,7 +72,7 @@ export async function submitJourney(
     userId: string,
     conversationId: string,
     input: SubmitJourney,
-    proofFiles: Map<string, Express.Multer.File>
+    proofFile: Express.Multer.File | null
 ): Promise<SubmitJourneyResponse> {
     const validation = submitJourneySchema.safeParse(input);
     if (!validation.success) {
@@ -90,7 +90,7 @@ export async function submitJourney(
                 verifyProof(
                     experience,
                     proof,
-                    proofFiles.get(proof.id) ?? null
+                    proofFile
                 )
             )
         );
