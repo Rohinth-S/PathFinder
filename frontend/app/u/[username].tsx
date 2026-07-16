@@ -134,36 +134,34 @@ const createCytoscapeHtml = (elementsJson: string) => `
             });
 
             cy.on('tap', 'node', function(evt){
-              var node = evt.target;
-              cy.animate({
-                center: { eles: node },
-                zoom: 1.4,
-                duration: 400,
-                easing: 'ease-in-out-cubic'
+               var node = evt.target;
+               cy.animate({center: { eles: node },zoom: 1.4,duration: 400});
+               const message = JSON.stringify({
+                 type: 'node_tap',
+                 nodeId: node.id(),
+                 nodeLabel: node.data('label')
               });
-              if (window.ReactNativeWebView) {
-                window.ReactNativeWebView.postMessage(JSON.stringify({
-                  type: 'node_tap',
-                  nodeId: node.id(),
-                  nodeLabel: node.data('label')
-                }));
-              }
-            });
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage(message);
+             } else {
+               window.parent.postMessage(message, "*");
+             }
+           });
             
             cy.on('tap', function(evt){
               if(evt.target === cy){
-                cy.animate({
-                  fit: { padding: 40 },
-                  duration: 400,
-                  easing: 'ease-in-out-cubic'
-                });
-                if (window.ReactNativeWebView) {
-                  window.ReactNativeWebView.postMessage(JSON.stringify({
-                    type: 'bg_tap'
-                  }));
+                 cy.animate({
+                   fit: { padding: 40 },
+                   duration: 400
+                  });
+                const message = JSON.stringify({type: 'bg_tap'});
+                if(window.ReactNativeWebView){
+                  window.ReactNativeWebView.postMessage(message);
+                }else{
+                  window.parent.postMessage(message, "*");
                 }
               }
-            });
+           });
 
             window.cy = cy;
         });
@@ -214,6 +212,19 @@ export default function PublicProfilePage() {
       console.warn("⚠️ No 'username' parameter is present.");
     }
   }, [username, fromQuery, imageUrl, expandedDetails]);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const handleWebMessage = (event: MessageEvent) => {
+        if (event.data && typeof event.data === 'string') {
+          handleWebViewMessage({ nativeEvent: { data: event.data } } as any);
+        }
+      };
+
+      window.addEventListener('message', handleWebMessage);
+      return () => window.removeEventListener('message', handleWebMessage);
+    }
+  }, []);
 
   const fetchJourney = async () => {
     try {
@@ -518,24 +529,34 @@ export default function PublicProfilePage() {
       {/* Graph Modal */}
       < Modal visible={showGraph} animationType="slide" presentationStyle="formSheet" >
         <View style={{ flex: 1, backgroundColor: L.background }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.surface }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 20, paddingTop: 45, borderBottomWidth: 1, borderBottomColor: L.border, backgroundColor: L.surface }}>
             <Text style={{ fontSize: 18, fontWeight: '700', color: L.navy }}>Knowledge Graph Preview</Text>
             <TouchableOpacity onPress={() => setShowGraph(false)} style={{ padding: 8, backgroundColor: L.surface, borderRadius: 20 }}>
               <Feather name="x" size={20} color={L.navy} />
             </TouchableOpacity>
           </View>
           {Platform.OS === 'web' ? (
-            <iframe
-              // @ts-ignore
-              srcDoc={createCytoscapeHtml(prepareGraphElements())}
-              style={{ flex: 1, width: '100%', height: '100%', border: 'none' }}
-            />
+            <>
+              <iframe
+                id="cy-iframe"
+                // @ts-ignore
+                srcDoc={createCytoscapeHtml(prepareGraphElements())}
+                style={{ flex: 1, width: '100%', height: '100%', border: 'none' }}
+              />
+              {renderBottomSheet()}
+            </>
           ) : (
-            <WebView
-              originWhitelist={['*']}
-              source={{ html: createCytoscapeHtml(prepareGraphElements()) }}
-              style={{ flex: 1 }}
-            />
+            <>
+              <WebView
+                ref={webViewRef}
+                originWhitelist={['*']}
+                source={{ html: createCytoscapeHtml(prepareGraphElements()) }}
+                style={{ flex: 1 }}
+                scrollEnabled={false}
+                onMessage={handleWebViewMessage}
+              />
+              {renderBottomSheet()}
+            </>
           )}
         </View>
       </Modal >

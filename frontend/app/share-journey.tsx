@@ -73,6 +73,7 @@ export default function ShareJourneyPage() {
 
   const [proofUrlPrompt, setProofUrlPrompt] = useState<{ visible: boolean, expIndex: number }>({ visible: false, expIndex: -1 });
   const [tempProofUrl, setTempProofUrl] = useState('');
+  const [inputHeight, setInputHeight] = useState(50);
 
   const handleCreateGoal = async () => {
     if (!newGoalTitle.trim()) return;
@@ -221,6 +222,7 @@ export default function ShareJourneyPage() {
 
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
+    setInputHeight(50);
     setIsLoading(true);
 
     try {
@@ -265,32 +267,36 @@ export default function ShareJourneyPage() {
       const payload = { ...journeyDraft, experiences: editableExperiences };
 
       // Extract files to upload
-      const filesToUpload: { id: string, uri: string, name: string, type: string }[] = [];
+      let fileToUpload: | { id: string; uri: string; name: string; type: string; } | undefined;
       const cleanedExperiences = editableExperiences.map(exp => {
         const { tempGoalInput, ...cleanedExp } = exp;
+        // Convert empty decisionReason to null
+        cleanedExp.decisionReason = cleanedExp.decisionReason?.trim() || null;
         if (cleanedExp.proofs) {
           cleanedExp.proofs = cleanedExp.proofs.map((p: any) => {
             if (p.localUri) {
-              filesToUpload.push({
+              fileToUpload = {
                 id: p.id,
                 uri: p.localUri,
-                name: p.filename || 'upload',
-                type: p.mimeType || 'application/octet-stream'
-              });
+                name: p.filename || "upload",
+                type: p.mimeType || "application/octet-stream",
+              };
             }
-            const { localUri, filename, mimeType, status, ...rest } = p;
+            const { localUri, filename, mimeType, status,
+              ...rest
+            } = p;
             return rest;
           });
         }
+
         return cleanedExp;
       });
-
       payload.experiences = cleanedExperiences;
       console.log(
-  JSON.stringify(payload.experiences, null, 2)
-);
+        JSON.stringify(payload.experiences, null, 2)
+      );
 
-      const res = await submitJourney(token, conversationId, payload, filesToUpload.length > 0 ? filesToUpload : undefined);
+      const res = await submitJourney(token, conversationId, payload, fileToUpload  );
       if (res.success) {
         displayAlert(
           "Journey Saved! 🚀",
@@ -521,21 +527,18 @@ export default function ShareJourneyPage() {
                 textAlignVertical="top"
               />
             </View>
-
-            {index > 0 && (
-              <View>
-                <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>What led you to this experience? (Optional)</Text>
-                <TextInput
-                  style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 60, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
-                  value={exp.decisionReason || ''}
-                  onChangeText={t => updateExperience(index, 'decisionReason', t)}
-                  placeholder="e.g. I wanted to apply my skills from the previous project..."
-                  placeholderTextColor="#94A3B8"
-                  multiline
-                  textAlignVertical="top"
-                />
-              </View>
-            )}
+            <View>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>What led you to this experience?</Text>
+              <TextInput
+                style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 60, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
+                value={exp.decisionReason || ''}
+                onChangeText={t => updateExperience(index, 'decisionReason', t)}
+                placeholder="e.g. I wanted to apply my skills from the previous project..."
+                placeholderTextColor="#94A3B8"
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
 
             {exp.skills?.length > 0 && (
               <View style={{ marginTop: 8 }}>
@@ -543,11 +546,11 @@ export default function ShareJourneyPage() {
                   Skills
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
-                {exp.skills.map((skill: any, i: number) => (
-                  <View key={i} style={{ backgroundColor: L.tealTint, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
-                    <Text style={{ color: L.teal, fontSize: 12, fontFamily: 'Inter_700Bold' }}>{skill.name}</Text>
-                  </View>
-                ))}
+                  {exp.skills.map((skill: any, i: number) => (
+                    <View key={i} style={{ backgroundColor: L.tealTint, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
+                      <Text style={{ color: L.teal, fontSize: 12, fontFamily: 'Inter_700Bold' }}>{skill.name}</Text>
+                    </View>
+                  ))}
                 </View>
               </View>
             )}
@@ -630,14 +633,18 @@ export default function ShareJourneyPage() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FAF9F6' }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
         <View style={{
           flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
           paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16,
           borderBottomWidth: 1, borderColor: '#EAE7E0'
         }}>
-          <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={{ width: 40, height: 40, justifyContent: 'center' }}>
+          <TouchableOpacity
+            onPress={() => router.replace('/(tabs)/profile')}
+            style={{ width: 40, height: 40, justifyContent: 'center' }}
+          >
             <Feather name="arrow-left" size={24} color="#0F172A" />
           </TouchableOpacity>
 
@@ -730,15 +737,16 @@ export default function ShareJourneyPage() {
                       multiline
                       editable={!isLoading}
                     />
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
-                      <TouchableOpacity
-                        style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: inputText.trim() ? '#D06757' : '#F1F5F9', justifyContent: 'center', alignItems: 'center' }}
-                        onPress={sendMessage}
-                        disabled={isLoading || !inputText.trim()}
-                      >
-                        <Feather name="arrow-up" size={20} color={inputText.trim() ? '#FFFFFF' : '#94A3B8'} />
-                      </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity
+                      onPress={sendMessage}
+                      disabled={isLoading || !inputText.trim()}
+                      style={{ position: 'absolute', top: 14, right: 14, width: 34, height: 34, borderRadius: 17, justifyContent: 'center', alignItems: 'center', backgroundColor: inputText.trim() ? '#D06757' : '#F1F5F9', }}>
+                      <Feather
+                        name="arrow-up"
+                        size={16}
+                        color={inputText.trim() ? '#FFFFFF' : '#94A3B8'}
+                      />
+                    </TouchableOpacity>
                   </View>
                 </View>
               ) : (
@@ -764,14 +772,21 @@ export default function ShareJourneyPage() {
                     </Animated.View>
                   )}
 
-                  <View style={{ flexDirection: 'row', alignItems: 'center', padding: 12, paddingHorizontal: 16, gap: 12, backgroundColor: '#FAF9F6' }}>
-                    <TextInput
-                      style={{ flex: 1, backgroundColor: '#FFFFFF', borderRadius: 24, paddingHorizontal: 20, paddingVertical: 12, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, maxHeight: 100, borderWidth: 1, borderColor: '#EAE7E0', ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
+                  <View style={{ flexDirection: 'row', alignItems: 'flex-end', padding: 12, paddingHorizontal: 16, gap: 12, backgroundColor: '#FAF9F6' }}>
+                    <TextInput multiline textAlignVertical="top" scrollEnabled={false}
+                      style={{ flex: 1, backgroundColor: '#FFF', borderRadius: 24, paddingLeft: 20, paddingRight: 26, paddingVertical: 12, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: inputHeight, maxHeight: 140, borderWidth: 1, borderColor: '#EAE7E0', ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                       placeholder="Describe your journey so far..."
                       placeholderTextColor="#94A3B8"
                       value={inputText}
                       onChangeText={setInputText}
-                      multiline
+                      onContentSizeChange={(e) => {
+                        setInputHeight(
+                          Math.min(
+                            140,
+                            Math.max(50, e.nativeEvent.contentSize.height)
+                          )
+                        );
+                      }}
                       editable={!isLoading}
                     />
                     <TouchableOpacity
@@ -809,7 +824,7 @@ export default function ShareJourneyPage() {
               <TouchableOpacity onPress={() => setProofUrlPrompt({ visible: false, expIndex: -1 })} style={{ padding: 12 }}>
                 <Text style={{ color: 'rgba(255,255,255,0.7)' }}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={submitProofUrl} style={{ backgroundColor:  L.teal, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 8 }}>
+              <TouchableOpacity onPress={submitProofUrl} style={{ backgroundColor: L.teal, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 8 }}>
                 <Text style={{ color: '#FFFFFF', fontFamily: 'Inter_600SemiBold' }}>Add</Text>
               </TouchableOpacity>
             </View>

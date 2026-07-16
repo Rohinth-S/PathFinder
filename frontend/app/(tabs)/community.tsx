@@ -482,19 +482,6 @@ export default function CommunityPage() {
           disabled={!selectedTopic}
           onPress={() => setSubtopicPickerVisible(true)}
         />
-        {/* Search button */}
-        <TouchableOpacity
-          onPress={handleSearch}
-          disabled={!isSearchEnabled}
-          activeOpacity={0.7}
-          style={{
-            width: 44, height: 44, borderRadius: 22,
-            backgroundColor: isSearchEnabled ? UI.accent : UI.fg08,
-            alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          <Feather name="search" size={18} color={isSearchEnabled ? '#FFFFFF' : UI.fg40} />
-        </TouchableOpacity>
       </View>
 
       {/* Results header */}
