@@ -208,9 +208,9 @@ export default function ShareJourneyPage() {
   }, []);
 
   useEffect(() => {
-  console.log("activeTab:", activeTab);
-  console.log("messages:", messages);
-}, [activeTab, messages]);
+    console.log("activeTab:", activeTab);
+    console.log("messages:", messages);
+  }, [activeTab, messages]);
 
   const sendMessage = async () => {
     if (!inputText.trim() || !conversationId) return;
@@ -282,6 +282,9 @@ export default function ShareJourneyPage() {
       });
 
       payload.experiences = cleanedExperiences;
+      console.log(
+  JSON.stringify(payload.experiences, null, 2)
+);
 
       const res = await submitJourney(token, conversationId, payload, filesToUpload.length > 0 ? filesToUpload : undefined);
       if (res.success) {
@@ -351,40 +354,42 @@ export default function ShareJourneyPage() {
 
         {/* Goal Form Section */}
         <View style={{ backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#EAE7E0', marginBottom: 8 }}>
-          <Text style={{ color: L.navy, fontFamily: 'Inter_600SemiBold', fontSize: 18, marginBottom: 16 }}>Your Goals</Text>
 
-          {userGoals.length > 0 && (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
-              {userGoals.map(goal => (
-                <View key={goal.id} style={{ backgroundColor: '#F1F5F9', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0' }}>
-                  <Text style={{ color: '#0F172A', fontSize: 13, fontFamily: 'Inter_500Medium' }}>{goal.title}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-
-          <Text style={{ color: '#4A5568', fontSize: 13, marginBottom: 6, fontFamily: 'Inter_500Medium' }}>Create a New Goal</Text>
-          <TextInput
-            style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', color: '#0F172A', borderRadius: 12, padding: 12, marginBottom: 12, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
-            placeholder="e.g. Become a Senior Developer"
-            placeholderTextColor="#94A3B8"
-            value={newGoalTitle}
-            onChangeText={setNewGoalTitle}
-          />
-          <TextInput
-            style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', color: '#0F172A', borderRadius: 12, padding: 12, marginBottom: 12, minHeight: 60, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
-            placeholder="Description (Optional)"
-            placeholderTextColor="#94A3B8"
-            value={newGoalDesc}
-            onChangeText={setNewGoalDesc}
-            multiline
-            textAlignVertical="top"
-          />
+          <Text style={{ color: 'L.navy', fontSize: 18, marginBottom: 10, fontFamily: 'Inter_500Medium' }}>Create a New Goal</Text>
+          <View style={{ marginBottom: 12 }}>
+            <Text style={{ marginBottom: 6, color: '#0F172A', fontFamily: 'Inter_500Medium' }}>
+              Title <Text style={{ color: '#DC2626' }}>*</Text>
+            </Text>
+            <TextInput style={{
+              backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', color: '#0F172A', borderRadius: 12, padding: 12,
+              ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+            }}
+              placeholder="Enter goal title"
+              placeholderTextColor="#94A3B8"
+              value={newGoalTitle}
+              onChangeText={setNewGoalTitle}
+            />
+          </View>
+          <View style={{ marginBottom: 12 }}>
+            <Text style={{ marginBottom: 6, color: '#0F172A', fontFamily: 'Inter_500Medium' }}>
+              Description <Text style={{ color: '#DC2626' }}>*</Text>
+            </Text>
+            <TextInput style={{
+              backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', color: '#0F172A', borderRadius: 12, padding: 12, minHeight: 60,
+              ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+            }}
+              placeholder="Describe your goal"
+              placeholderTextColor="#94A3B8"
+              value={newGoalDesc}
+              onChangeText={setNewGoalDesc}
+              multiline
+              textAlignVertical="top"
+            />
+          </View>
           <TouchableOpacity
             onPress={handleCreateGoal}
             disabled={isCreatingGoal || !newGoalTitle.trim()}
-            style={{ backgroundColor: L.teal, paddingVertical: 12, borderRadius: 12, alignItems: 'center', opacity: (!newGoalTitle.trim() || isCreatingGoal) ? 0.5 : 1 }}
-          >
+            style={{ backgroundColor: L.teal, paddingVertical: 12, borderRadius: 12, alignItems: 'center', opacity: (!newGoalTitle.trim() || isCreatingGoal) ? 0.5 : 1 }}>
             {isCreatingGoal ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={{ color: '#FFF', fontFamily: 'Inter_600SemiBold' }}>Add Goal</Text>}
           </TouchableOpacity>
         </View>
@@ -407,7 +412,7 @@ export default function ShareJourneyPage() {
             </Text>
 
             <View>
-              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Title (Mandatory)</Text>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Title <Text style={{ color: '#DC2626' }}>*</Text></Text>
               <TextInput
                 style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                 value={exp.title || ''}
@@ -419,7 +424,7 @@ export default function ShareJourneyPage() {
 
             <View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13 }}>Associated Goal (Optional)</Text>
+                <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13 }}>Associated Goal</Text>
               </View>
 
               {userGoals.length > 0 && (
@@ -436,8 +441,8 @@ export default function ShareJourneyPage() {
                         }}
                         style={{
                           paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16,
-                          backgroundColor: isSelected ? UI.accent : '#F1F5F9',
-                          borderWidth: 1, borderColor: isSelected ? UI.accent : '#E2E8F0',
+                          backgroundColor: isSelected ? L.teal : '#F1F5F9',
+                          borderWidth: 1, borderColor: isSelected ? L.teal : '#E2E8F0',
                           marginRight: 8
                         }}
                       >
@@ -449,66 +454,11 @@ export default function ShareJourneyPage() {
                   })}
                 </ScrollView>
               )}
-
-              <View style={{ flexDirection: 'row', gap: 8 }}>
-                <TextInput
-                  style={{
-                    flex: 1,
-                    backgroundColor: '#FFFFFF',
-                    borderWidth: 1,
-                    borderColor: '#EAE7E0',
-                    borderRadius: 12,
-                    paddingHorizontal: 12,
-                    paddingVertical: 10,
-                    color: '#0F172A',
-                    fontFamily: 'Inter_400Regular',
-                    fontSize: 14,
-                    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {})
-                  }}
-                  placeholder="Type new goal to associate..."
-                  placeholderTextColor="#94A3B8"
-                  value={exp.tempGoalInput || ''}
-                  onChangeText={t => updateExperience(index, 'tempGoalInput', t)}
-                />
-                <TouchableOpacity
-                  onPress={async () => {
-                    const goalTitle = exp.tempGoalInput?.trim();
-                    if (!goalTitle) return;
-                    try {
-                      const token = await getToken();
-                      if (!token) throw new Error("Not authenticated");
-                      const res = await submitJourneyGoal(token, {
-                        title: goalTitle,
-                        status: "In Progress",
-                        topics: [],
-                        subtopics: [],
-                      });
-                      if (res.success && res.goal) {
-                        setUserGoals(prev => [...prev, { id: res.goal.id, title: res.goal.title }]);
-                        const currentIds = exp.goalIds || [];
-                        updateExperience(index, 'goalIds', [...currentIds, res.goal.id]);
-                        updateExperience(index, 'tempGoalInput', '');
-                      }
-                    } catch (err: any) {
-                      displayAlert("Error", err.message || "Could not create goal");
-                    }
-                  }}
-                  style={{
-                    backgroundColor: L.teal,
-                    paddingHorizontal: 16,
-                    borderRadius: 12,
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Text style={{ color: '#FFFFFF', fontFamily: 'Inter_600SemiBold', fontSize: 13 }}>Link</Text>
-                </TouchableOpacity>
-              </View>
             </View>
 
             <View style={{ flexDirection: 'row', gap: 12 }}>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Start Date</Text>
+                <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Start Date <Text style={{ color: '#DC2626' }}>*</Text></Text>
                 <TextInput
                   style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                   value={exp.startDate || ''}
@@ -523,14 +473,14 @@ export default function ShareJourneyPage() {
                   style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                   value={exp.endDate || ''}
                   onChangeText={t => updateExperience(index, 'endDate', t)}
-                  placeholder="Present"
+                  placeholder="MM YYYY"
                   placeholderTextColor="#94A3B8"
                 />
               </View>
             </View>
 
             <View>
-              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Context / Description (Mandatory)</Text>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Description <Text style={{ color: '#DC2626' }}>*</Text></Text>
               <TextInput
                 style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                 value={exp.context || ''}
@@ -543,7 +493,7 @@ export default function ShareJourneyPage() {
             </View>
 
             <View>
-              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Challenge Faced (Optional)</Text>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Challenge Faced</Text>
               <TextInput
                 style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                 value={exp.challengeFaced || ''}
@@ -556,7 +506,7 @@ export default function ShareJourneyPage() {
             </View>
 
             <View>
-              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Outcome (Optional)</Text>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Outcome</Text>
               <TextInput
                 style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EAE7E0', borderRadius: 12, padding: 14, color: '#0F172A', fontFamily: 'Inter_400Regular', fontSize: 15, minHeight: 80, ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}) }}
                 value={exp.outcome || ''}
@@ -584,29 +534,34 @@ export default function ShareJourneyPage() {
             )}
 
             {exp.skills?.length > 0 && (
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+              <View style={{ marginTop: 8 }}>
+                <Text style={{ fontSize: 13, color: L.navy, fontFamily: 'Inter_600SemiBold', marginBottom: 6, }} >
+                  Skills
+                </Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
                 {exp.skills.map((skill: any, i: number) => (
-                  <View key={i} style={{ backgroundColor: 'rgba(255,105,0,0.15)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
-                    <Text style={{ color: UI.accent, fontSize: 12, fontFamily: 'Inter_500Medium' }}>{skill.name}</Text>
+                  <View key={i} style={{ backgroundColor: L.tealTint, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
+                    <Text style={{ color: L.teal, fontSize: 12, fontFamily: 'Inter_700Bold' }}>{skill.name}</Text>
                   </View>
                 ))}
+                </View>
               </View>
             )}
 
             {/* Proofs Section */}
             <View style={{ marginTop: 8 }}>
-              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Proofs (Optional)</Text>
+              <Text style={{ color: '#4A5568', fontFamily: 'Inter_500Medium', fontSize: 13, marginBottom: 6 }}>Proofs</Text>
 
               {exp.proofs && exp.proofs.length > 0 && (
                 <View style={{ gap: 8, marginBottom: 12 }}>
                   {exp.proofs.map((proof: any, pIdx: number) => (
                     <View key={pIdx} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 8, padding: 10, borderWidth: 1, borderColor: '#E2E8F0' }}>
-                      <Feather name={(proof.sourceType === 'link' || proof.sourceType === 'github') ? 'link' : 'file'} size={16} color={UI.accent} style={{ marginRight: 8 }} />
+                      <Feather name={(proof.sourceType === 'link' || proof.sourceType === 'github') ? 'link' : 'file'} size={16} color={L.teal} style={{ marginRight: 8 }} />
                       <Text style={{ color: '#0F172A', flex: 1 }} numberOfLines={1}>
                         {(proof.sourceType === 'link' || proof.sourceType === 'github') ? proof.url : (proof.filename || 'Uploaded File')}
                       </Text>
                       <TouchableOpacity onPress={() => handleRemoveProof(index, pIdx)}>
-                        <Feather name="trash-2" size={16} color="#ef4444" />
+                        <Feather name="trash-2" size={16} color={L.teal} />
                       </TouchableOpacity>
                     </View>
                   ))}
@@ -850,7 +805,7 @@ export default function ShareJourneyPage() {
               <TouchableOpacity onPress={() => setProofUrlPrompt({ visible: false, expIndex: -1 })} style={{ padding: 12 }}>
                 <Text style={{ color: 'rgba(255,255,255,0.7)' }}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={submitProofUrl} style={{ backgroundColor: UI.accent, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 8 }}>
+              <TouchableOpacity onPress={submitProofUrl} style={{ backgroundColor:  L.teal, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 8 }}>
                 <Text style={{ color: '#FFFFFF', fontFamily: 'Inter_600SemiBold' }}>Add</Text>
               </TouchableOpacity>
             </View>

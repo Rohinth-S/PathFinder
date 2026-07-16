@@ -68,11 +68,13 @@ const createCytoscapeHtml = (elementsJson: string) => `
                             'shape': 'data(shape)',
                             'border-width': 'data(borderWidth)',
                             'border-color': 'data(borderColor)',
-                            'width': 'label',
-                            'height': 'label',
-                            'padding': '16px',
+                            'width': '160px',
+                            'height': '80px',
                             'text-wrap': 'wrap',
-                            'text-max-width': '120px',
+                            'text-max-width': '130px',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'padding': '0px',
                             'transition-property': 'background-color, transform, border-width',
                             'transition-duration': 0.2,
                             'underlay-color': '#000000',
@@ -120,12 +122,12 @@ const createCytoscapeHtml = (elementsJson: string) => `
                   animationDuration: 800,
                   animationEasing: 'ease-out-quint',
                   fit: true,           
-                  padding: 40,         
+                  padding: 80,         
                   componentSpacing: 100,
-                  nodeRepulsion: 400000,
-                  nodeOverlap: 10,
-                  idealEdgeLength: 100,
-                  edgeElasticity: 100,
+                  nodeRepulsion: 900000,
+                  nodeOverlap: 150,
+                  idealEdgeLength: 220,
+                  edgeElasticity: 150,
                   nestingFactor: 5,
                   gravity: 80,
                   numIter: 1000
@@ -252,20 +254,20 @@ export default function HistoryPage() {
       } else if (data.type === 'export_result') {
         const base64Data = data.data.replace(/^data:image\/png;base64,/, "");
         if (Platform.OS === 'web') {
-           const link = document.createElement('a');
-           link.download = 'my-journey-graph.png';
-           link.href = 'data:image/png;base64,' + base64Data;
-           link.click();
+          const link = document.createElement('a');
+          link.download = 'my-journey-graph.png';
+          link.href = 'data:image/png;base64,' + base64Data;
+          link.click();
         } else {
-           const uri = FileSystem.cacheDirectory + 'my-journey-graph.png';
-           await FileSystem.writeAsStringAsync(uri, base64Data, {
-             encoding: FileSystem.EncodingType.Base64,
-           });
-           if (await Sharing.isAvailableAsync()) {
-             await Sharing.shareAsync(uri, { UTI: 'public.png', mimeType: 'image/png', dialogTitle: 'Share My Journey Graph' });
-           } else {
-             Alert.alert("Sharing not available");
-           }
+          const uri = FileSystem.cacheDirectory + 'my-journey-graph.png';
+          await FileSystem.writeAsStringAsync(uri, base64Data, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+          if (await Sharing.isAvailableAsync()) {
+            await Sharing.shareAsync(uri, { UTI: 'public.png', mimeType: 'image/png', dialogTitle: 'Share My Journey Graph' });
+          } else {
+            Alert.alert("Sharing not available");
+          }
         }
       }
     } catch (e) {
