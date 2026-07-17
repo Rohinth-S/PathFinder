@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Navbar from './components/Navbar';
 import HeroContent from './components/HeroContent';
 import PhoneMockup from './components/PhoneMockup';
@@ -84,6 +85,7 @@ function App() {
       <div className="reveal-on-scroll"><Resources /></div>
       <div className="reveal-on-scroll"><TeamSection /></div>
       <Footer />
+      <SpeedInsights />
     </main>
   );
 }
