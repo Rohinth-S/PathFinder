@@ -14,12 +14,8 @@ By structuring raw human experience into a verifiable, queryable **Life Graph**,
 
 ## ✦ Try PathFinder & Explore Resources
 
-* **Official Landing Page**: [Visit Website](https://path-finder-murex-six.vercel.app/)
-* **Web Client Preview**: [Launch Web App](https://path-finder-webapp.vercel.app)
-* **Android Client (APK)**: [Download APK File](https://fmqx14c5dhhkcis9.public.blob.vercel-storage.com/pathfinder.apk)
-* **Demo Video (YouTube)**: [Watch the PathFinder Pitch & Walkthrough](https://www.youtube.com/watch?v=cFn0jj-MVC8)
-* **PPT Presentation**: [View Pitch Deck](https://drive.google.com/file/d/1AobVEavMoAPnOungrUzjAT7i7eKRK1ei/view)
-* **Product Blog Post**: [Read on dev.to](https://dev.to/mithulcrafts/what-if-we-could-search-human-experiences-instead-of-opinions-33nb)
+* **Live demo**: [Visit Website](https://path-finder-webapp.vercel.app/)
+* **Demo Video (YouTube)**: [Watch the PathFinder Pitch & Walkthrough](https://youtu.be/voiIdOJLnCI)
 
 ---
 
