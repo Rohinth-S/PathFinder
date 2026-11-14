@@ -1,0 +1,570 @@
+{
+  "user": {
+    "username": "founder-works-60",
+    "clerkId": null,
+    "preferredLanguage": "en",
+    "summary": "An international academic placement architect who transitioned from a domestic engineering track to design strategic university application matrices, automated funding dashboards, and GRE/TOEFL upskilling roadmaps that connect global scholars with top Western research institutions.",
+    "imageUrl": "https://ui-avatars.com/api/?name=founder-works&background=random&rounded=true",
+    "expertiseAreas": [
+      "Standardized Testing Evaluation Strategy (GRE/TOEFL)",
+      "Automated Academic Data Extraction and Scrapers",
+      "Statement of Purpose (SOP) Structural Alignment",
+      "University Funding Allocation Analysis",
+      "Global Institutional Admissions Compliance"
+    ],
+    "reputationScore": 79,
+    "flagCount": 0,
+    "isFlagged": false,
+    "email": null
+  },
+  "goals": [
+    {
+      "id": "par-g-engineering-base",
+      "title": "Mastering Core Software Algorithms and Advanced Engineering Frameworks",
+      "description": "My primary target during my initial university semesters in Ahmedabad was to fully master technical database configurations, structural programming loops, and data systems to establish an undeniable technical baseline.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Software Engineering"],
+      "startDate": "Jul 2019",
+      "endDate": "May 2023"
+    },
+    {
+      "id": "par-g-standardized-tests",
+      "title": "Conquering Standardized Evaluation Metrics and High-Speed Language Processing Matrices",
+      "description": "The goal was to deeply analyze GRE vocabulary distributions and TOEFL spoken presentation parameters to hit elite, near-perfect target scores required by top Western graduate departments.",
+      "status": "achieved",
+      "topics": ["College Students", "Professionals"],
+      "subtopics": ["MS Abroad Applications"],
+      "startDate": "Jun 2023",
+      "endDate": "May 2024"
+    },
+    {
+      "id": "par-g-funding-tracker",
+      "title": "Engineering an Open-Source Automated University and Research Fellowship Scraper Hub",
+      "description": "The milestone target was to program a clean data intake dashboard that automatically extracts department funding changes, professor citation indexes, and application deadline dates dynamically.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Software Engineering", "MS Abroad Applications"],
+      "startDate": "Jun 2024",
+      "endDate": "May 2025"
+    },
+    {
+      "id": "par-g-sop-alignment",
+      "title": "Architecting Meticulous Faculty Research and Statement of Purpose (SOP) Alignment Sheets",
+      "description": "The operational benchmark was to map my engineering background directly against the exact laboratory grants and recent research papers of specific international faculty heads.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["MS Abroad Applications"],
+      "startDate": "Jun 2025",
+      "endDate": "Dec 2025"
+    },
+    {
+      "id": "par-g-admissions-board",
+      "title": "Cracking Highly Selective US and European Graduate Admissions Review Committees",
+      "description": "The core benchmark target was to clear complex global profile vetting filters and claim full-tuition fellowship awards from top-tier international institutions.",
+      "status": "achieved",
+      "topics": ["College Students", "Professionals"],
+      "subtopics": ["Cracking Placements", "MS Abroad Applications"],
+      "startDate": "Jan 2026",
+      "endDate": "May 2026"
+    },
+    {
+      "id": "par-g-placement-architecture",
+      "title": "Directing Scalable Academic Migration Matrices and Admission Roadmaps Globally",
+      "description": "The current ongoing milestone target is to manage data-driven profiling models and professor matching dashboards from my regional hub, helping thousands of scholars enter world-class universities.",
+      "status": "ongoing",
+      "topics": ["Professionals", "Startup"],
+      "subtopics": ["Edtech", "MS Abroad Applications", "Social Impact"],
+      "startDate": "Jun 2026",
+      "endDate": null
+    }
+  ],
+  "experiences": [
+    {
+      "id": "par-e-1",
+      "title": "Enrolling in Undergraduate Computer Science Engineering",
+      "startDate": "Jul 2019",
+      "endDate": "May 2020",
+      "context": "Began formal university science courses in Ahmedabad, focusing deeply on background code structure rather than shortcut solutions. I spent my personal hours solving system algorithms on grid blocks instead of just following standard semester templates.",
+      "organization": "Ahmedabad Institute of Technology",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Earned highest validation marks across early algorithm design and computational structure modules.",
+        "Built a localized text filing script to organize department library code records for our student hub."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-engineering-base"],
+      "skills": [
+        { "name": "Algorithmic Sorting Logic", "type": "Technical" },
+        { "name": "Structural Code Design", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "par-p-1",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Commenced engineering training with a heavy personal focus on core algorithmic fundamentals and backend variables."
+    },
+    {
+      "id": "par-e-2",
+      "title": "Configuring Multi-Tier Local Database Architectures",
+      "startDate": "Jun 2020",
+      "endDate": "May 2021",
+      "context": "Practiced designing clean relational data arrays, testing how nested tracking files maintain data integrity when handled multiple system connections concurrently.",
+      "organization": "Ahmedabad Institute of Technology",
+      "achievements": [
+        "Restructured ten distinct student database tables to model operational runtime efficiencies cleanly.",
+        "Created an educational reference manual charting key data constraints for our student tech group."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-engineering-base"],
+      "skills": [
+        { "name": "Relational Data Management", "type": "Technical" },
+        { "name": "System Constraint Profiling", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "par-p-2",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Acquired solid database design skills by charting multi-layered backend tracking properties manually."
+    },
+    {
+      "id": "par-e-3",
+      "title": "Optimizing Complex Server Ingestion Pathways",
+      "startDate": "Jun 2021",
+      "endDate": "May 2022",
+      "context": "Designed alternative sorting filters for our university research lab's historical project logs, learning how to pass large character strings without creating memory allocation chokes.",
+      "organization": "Ahmedabad Institute of Technology",
+      "achievements": [
+        "Reduced query processing delays by 20% by refactoring internal loop indexing logic.",
+        "Programmed programmatic verification rules that automatically flagged broken data rows."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-engineering-base"],
+      "skills": [
+        { "name": "Query Processing Refactoring", "type": "Technical" },
+        { "name": "Ingestion Verification Logic", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "par-p-3",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Restructured campus laboratory data paths, proving capability in handling high-volume raw records cleanly."
+    },
+    {
+      "id": "par-e-4",
+      "title": "Presenting Graduation Capstone Network Engineering Project",
+      "startDate": "Jun 2022",
+      "endDate": "May 2023",
+      "context": "Graduated near the top of my department after deploying a highly responsive web application framework for my capstone judges, completing a premier quantitative technology Moat.",
+      "organization": "Ahmedabad Institute of Technology",
+      "achievements": [
+        "Earned highest honors from the academic evaluation board for a meticulously detailed system architecture.",
+        "Linked live campus endpoints to verify operational data streaming paths smoothly."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-engineering-base"],
+      "skills": [
+        { "name": "System Architecture Design", "type": "Domain" },
+        { "name": "Endpoint Validation Tuning", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "par-p-4",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Graduated college after presenting an optimized web system project, establishing strong programmatic authority."
+    },
+    {
+      "id": "par-e-5",
+      "title": "Bypassing Mass Corporate IT Placement Loops",
+      "startDate": "Jun 2023",
+      "endDate": "Sep 2023",
+      "context": "Observed that our campus environment was entirely dominated by corporate recruiters offering routine maintenance slots and IT support routines that completely lacked higher research discovery or original technical scope.",
+      "challengeFaced": "Deciding to walk away from comfortable corporate pay checks to build a self-directed path into international research labs.",
+      "outcome": "Maintained pure focus on my academic roadmap, refusing assembly-line IT placements to begin full-time standardized test upskilling tracks.",
+      "organization": "Independent Higher Academic Research Path",
+      "achievements": [
+        "Isolated forty specific structural friction barriers inside traditional corporate software workflows.",
+        "Drafted an independent timeline guide used by student peers to plan higher education timelines."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-standardized-tests"],
+      "skills": [
+        { "name": "Academic Roadmap Formulation", "type": "Domain" },
+        { "name": "Strategic Decision Alignment", "type": "Soft" }
+      ],
+      "proofs": [{
+          "id": "par-p-5",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Chose an independent academic migration path over predictable local programming desks to build long-term research value."
+    },
+    {
+      "id": "par-e-6",
+      "title": "Dissecting Complex GRE Vocabulary Distributions",
+      "startDate": "Oct 2023",
+      "endDate": "Dec 2023",
+      "context": "Dedicated my full day blocks to mastering strict international evaluation matrices, analyzing thousands of advanced verbal text rows and reading passages under high-pressure countdown clocks.",
+      "organization": "Independent Higher Academic Research Path",
+      "achievements": [
+        "Manually charted prefix/suffix connection maps for over 2,000 top-tier vocabulary words.",
+        "Maintained perfect accuracy logs across thirty mock reading comprehension testing blocks."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-standardized-tests"],
+      "skills": [
+        { "name": "High-Speed Verbal Parsing", "type": "Technical" },
+        { "name": "Text Pattern Analysis", "type": "Domain" }
+      ],
+      "proofs": [{
+          "id": "par-p-6",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Conquered advanced verbal testing parameters by processing complex textual logic grids systematically."
+    },
+    {
+      "id": "par-e-7",
+      "title": "Mastering TOEFL Spoken Fluency Parameters",
+      "startDate": "Jan 2024",
+      "endDate": "May 2024",
+      "context": "Practiced programmatic verbal adjustments to align my speech delivery templates with strict international evaluation metrics, targeting maximum accuracy levels across all language criteria fields.",
+      "organization": "Global Academic Testing Circuits",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Achieved near-flawless target scores across GRE and TOEFL test parameters on my initial attempts.",
+        "Constructed an automated voice-tracking sheet to identify local pronoun emphasis variations."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-standardized-tests"],
+      "skills": [
+        { "name": "Language Delivery Adaptation", "type": "Soft" },
+        { "name": "Evaluation Metric Fulfillment", "type": "Domain" }
+      ],
+      "proofs": [{
+          "id": "par-p-7",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Cleared international language and logic tests with elite marks, verifying readiness for world-class settings."
+    },
+    {
+      "id": "par-e-8",
+      "title": "Scripting the Academic Funding Scraper Hub",
+      "startDate": "Jun 2024",
+      "endDate": "Sep 2024",
+      "context": "Began coding my core open-source system: a specialized data ingestion tool that extracts laboratory grant changes and faculty publication updates directly from overseas university networks.",
+      "organization": "Sovereign Academic Metrics Lab",
+      "achievements": [
+        "Programmed a high-speed data extraction loop that reads disparate web portal columns without processing lag.",
+        "Organized clear variable distribution models to map professor citation tracking histories instantly."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-funding-tracker"],
+      "skills": [
+        { "name": "Programmatic Web Scrapers", "type": "Technical" },
+        { "name": "Academic Data Integration", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "par-p-8",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Began developing an automated university profiling dashboard to connect applicant parameters directly with target laboratories."
+    },
+    {
+      "id": "par-e-9",
+      "title": "Deploying the Automated Application Sync Monitor",
+      "startDate": "Oct 2024",
+      "endDate": "Dec 2024",
+      "context": "Finished the deployment setup of my tracker platform, letting student users check university application status changes, deadline targets, and fellowship updates dynamically.",
+      "organization": "Sovereign Academic Metrics Lab",
+      "achievements": [
+        "Linked abstract faculty priority fields smoothly with live dashboard deadline tracking calendars.",
+        "Maintained stable query speeds across hundreds of faculty database records simultaneously."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-funding-tracker"],
+      "skills": [
+        { "name": "Dashboard Calendar Automation", "type": "Technical" },
+        { "name": "Database Query Management", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "par-p-9",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Completed the application dashboard engine, delivering real-time status visibility across international targets."
+    },
+    {
+      "id": "par-e-10",
+      "title": "Resolving the Funding Matrix Budget Asymmetry Crisis",
+      "startDate": "Jan 2025",
+      "endDate": "Mar 2025",
+      "context": "Hit a major application obstacle when multiple target departments reallocated their graduate grants away from teaching slots toward specialized fellowships, leaving my standard drafts misaligned.",
+      "challengeFaced": "Preventing application rejection risks and financial debt gaps when global university budgets shifted right before final deadlines.",
+      "outcome": "Spent three weeks analyzing professor citation patterns, re-engineering my statement of purpose (SOP) frameworks to link my code skills with current grant priorities perfectly.",
+      "organization": "Sovereign Academic Metrics Lab",
+      "achievements": [
+        "Completely aligned documentation layers with active international research laboratory grant lines.",
+        "Maintained flawless structural compatibility marks across elite target university criteria fields."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-sop-alignment"],
+      "skills": [
+        { "name": "Research Citation Analysis", "type": "Technical" },
+        { "name": "SOP Structural Alignment", "type": "Domain" }
+      ],
+      "proofs": [{
+          "id": "par-p-10",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Conquered a critical funding reallocation threat by implementing data-driven faculty matching architectures."
+    },
+    {
+      "id": "par-e-11",
+      "title": "Submitting Bulletproof Western Graduate Portfolios",
+      "startDate": "Apr 2025",
+      "endDate": "Jun 2025",
+      "context": "Ran final pipeline checks and dispatched optimized application packages to top-tier US and European university admission boards, backed by verified math proofs and code histories.",
+      "organization": "Global Institutional Admissions Circuits",
+      "applicationStatus": "pending",
+      "achievements": [
+        "Delivered ten perfectly structured application records matching strict compliance filters.",
+        "Obtained strong recommendation backing from engineering heads based on the accuracy of my tracker code."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-sop-alignment"],
+      "skills": [
+        { "name": "Admissions Compliance Auditing", "type": "Domain" },
+        { "name": "Portfolio Package Assembly", "type": "Soft" }
+      ],
+      "proofs": [{
+          "id": "par-p-11",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Dispatched optimized graduate profiles across international selection panels, maximizing target funding prospects."
+    },
+    {
+      "id": "par-e-12",
+      "title": "Securing Top-Tier US and European Graduate Confirmations",
+      "startDate": "Jul 2025",
+      "endDate": "Dec 2025",
+      "context": "Cleared all strict university profile vetting filters successfully, winning multiple direct admissions acceptances alongside comprehensive full-tuition scholarship backing.",
+      "organization": "Elite Western Research Universities",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Secured a premier full-fellowship research track offer based entirely on the mathematical depth of my open tool layout.",
+        "Successfully defeated opaque overseas selection limits to claim a permanent seat among global technical scholars."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-admissions-board"],
+      "skills": [
+        { "name": "International Track Navigation", "type": "Domain" },
+        { "name": "Fellowship Award Verification", "type": "Soft" }
+      ],
+      "proofs": [{
+          "id": "par-p-12",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Won multiple top-tier global graduate acceptances, fully proving the value of data-driven profile strategy."
+    },
+    {
+      "id": "par-e-13",
+      "title": "Structuring Data-Driven University Preparation Models",
+      "startDate": "Jan 2026",
+      "endDate": "Mar 2026",
+      "context": "Transitioned into full-scale student consulting workflows, structuring unified application roadmaps that replace outdated advising systems with precise metrics panels and professor publication scrapers.",
+      "organization": "Thakkar Academic Placement Architectures",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Authored ten detailed curriculum maps explaining GRE logic steps and statement of purpose (SOP) structures.",
+        "Built interactive review panels that let students check faculty target metrics inside simple dashboards."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-placement-architecture"],
+      "skills": [
+        { "name": "Advisory Product Engineering", "type": "Technical" },
+        { "name": "Curriculum Map Engineering", "type": "Domain" }
+      ],
+      "proofs": [{
+          "id": "par-p-13",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Formally launched my academic placement enterprise, converting private transition insights into a scalable student dashboard system."
+    },
+    {
+      "id": "par-e-14",
+      "title": "Scaling Cross-Regional Student Application Sprints",
+      "startDate": "Apr 2026",
+      "endDate": "Jun 2026",
+      "context": "Guided hundreds of local engineering candidates through rapid profile building and faculty selection loops, optimizing their code resumes to clear international screening tools cleanly.",
+      "organization": "Thakkar Academic Placement Architectures",
+      "achievements": [
+        "Helped fifty student peers secure direct technical admissions slots across prominent overseas research groups.",
+        "Refactored our candidate data intake portals, cutting user registration delays down by 25%."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-placement-architecture"],
+      "skills": [
+        { "name": "Candidate Resume Optimization", "type": "Domain" },
+        { "name": "Portal Registry Refactoring", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "par-p-14",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Directed intensive application matching cohorts, scaling technical placement parameters for aspiring global scholars."
+    },
+    {
+      "id": "par-e-15",
+      "title": "Directing Global Academic Migration Infrastructure Networks",
+      "startDate": "Jul 2026",
+      "endDate": null,
+      "context": "Managing comprehensive institutional application matrices and optimizing automated tracking tools from my regional hub, ensuring local talent pathways connect with elite Western research university doors cleanly.",
+      "organization": "Thakkar Global Education Advisory Ventures",
+      "achievements": [
+        "Streamlined technical profile pipelines serving thousands of active international university applicants daily.",
+        "Established strict data validation parameters that align student final papers directly with world-class faculty guidelines."
+      ],
+      "isVerified": true,
+      "goalIds": ["par-g-placement-architecture"],
+      "skills": [
+        { "name": "Global Placement Management", "type": "Technical" },
+        { "name": "Institutional Matrix Optimization", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "par-p-15",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Currently orchestrating large-scale academic placement roadmaps and open tracking platforms, shaping international scholar paths daily."
+    }
+  ],
+  "transitions": [
+    {
+      "fromExperienceId": "par-e-1",
+      "toExperienceId": "par-e-2",
+      "decisionLabel": "Moving from initial algorithm design tracks to master relational database structures and system constraints."
+    },
+    {
+      "fromExperienceId": "par-e-2",
+      "toExperienceId": "par-e-3",
+      "decisionLabel": "Pivoting from database indexing to optimize complex server ingestion loops across research lab logs."
+    },
+    {
+      "fromExperienceId": "par-e-3",
+      "toExperienceId": "par-e-4",
+      "decisionLabel": "Applying my system validation background to deploy an optimized network application for my graduation capstone."
+    },
+    {
+      "fromExperienceId": "par-e-4",
+      "toExperienceId": "par-e-5",
+      "decisionLabel": "Bypassing mass corporate IT recruitment cycles to initiate an independent higher academic research migration track."
+    },
+    {
+      "fromExperienceId": "par-e-5",
+      "toExperienceId": "par-e-6",
+      "decisionLabel": "Launching my test preparation track by parsing complex GRE verbal and reading comprehension logic sheets."
+    },
+    {
+      "fromExperienceId": "par-e-6",
+      "toExperienceId": "par-e-7",
+      "decisionLabel": "Transitioning from text row analysis to master strict TOEFL spoken fluency parameters and language metrics."
+    },
+    {
+      "fromExperienceId": "par-e-7",
+      "toExperienceId": "par-e-8",
+      "decisionLabel": "Formally scripting the data extraction modules of my custom automated university funding scraper hub."
+    },
+    {
+      "fromExperienceId": "par-e-8",
+      "toExperienceId": "par-e-9",
+      "decisionLabel": "Deploying the dashboard platform hub to coordinate university application tracking milestones across student networks."
+    },
+    {
+      "fromExperienceId": "par-e-9",
+      "toExperienceId": "par-e-10",
+      "decisionLabel": "Resolving a major budget reallocation bottleneck by re-engineering statement of purpose (SOP) frameworks."
+    },
+    {
+      "fromExperienceId": "par-e-10",
+      "toExperienceId": "par-e-11",
+      "decisionLabel": "Assembling bulletproof graduate profiles to submit verified portfolio tracks to overseas admissions boards."
+    },
+    {
+      "fromExperienceId": "par-e-11",
+      "toExperienceId": "par-e-12",
+      "decisionLabel": "Accepting premier international graduate offers with full funding, validating my data-driven profiling tactics."
+    },
+    {
+      "fromExperienceId": "par-e-12",
+      "toExperienceId": "par-e-13",
+      "decisionLabel": "Entering the professional edtech arena to build automated advisory products and high-performance placement roadmaps."
+    },
+    {
+      "fromExperienceId": "par-e-13",
+      "toExperienceId": "par-e-14",
+      "decisionLabel": "Orchestrating intensive cross-regional application cohorts and automating candidate resume optimizations."
+    },
+    {
+      "fromExperienceId": "par-e-14",
+      "toExperienceId": "par-e-15",
+      "decisionLabel": "Directing large-scale global education networks and managing comprehensive institutional application matrices daily."
+    }
+  ]
+}

@@ -1,0 +1,570 @@
+{
+  "user": {
+    "username": "career-explorer-87",
+    "clerkId": null,
+    "preferredLanguage": "en",
+    "summary": "A core systems engineer who broke through the absolute isolation of an unranked tier-3 college placement desert to clear off-campus MAANG fintech infrastructure selection boards by mastering advanced data structures, microsecond processing parameters, and open-source data visualization tooling.",
+    "imageUrl": "https://ui-avatars.com/api/?name=career-explorer&background=random&rounded=true",
+    "expertiseAreas": [
+      "Advanced Data Structures and Algorithmic Design",
+      "Low-Latency Memory Layouts and Pointer Tracking",
+      "Asynchronous Data Flow Panel Architecture",
+      "High-Traffic Application Stress Profiling",
+      "High-Volume Financial System Scalability"
+    ],
+    "reputationScore": 97,
+    "flagCount": 0,
+    "isFlagged": false,
+    "email": null
+  },
+  "goals": [
+    {
+      "id": "maang-g-numerical-foundations",
+      "title": "Mastering Analytical Mathematics and Structural Logic Patterns",
+      "description": "My primary target during my high school years in a small tier-2 town was to build absolute fluency across complex system calculation tables, network connection sheets, and structural equation arrays to prepare for technical tracks.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Other"],
+      "startDate": "Apr 2019",
+      "endDate": "May 2021"
+    },
+    {
+      "id": "maang-g-dsa-mastery",
+      "title": "Upskilling in Advanced Algorithms and Complete Runtime Memory Management",
+      "description": "The goal was to bypass basic non-interactive university text commands to deeply study low-overhead sorting trees, complex pointer arrays, and execution space parameters independently.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Software Engineering"],
+      "startDate": "Jul 2021",
+      "endDate": "Nov 2023"
+    },
+    {
+      "id": "maang-g-visualization-panel",
+      "title": "Engineering an Open-Source Data Structure Complexity Visualization Dashboard",
+      "description": "The milestone target was to design a responsive web tool that reads code logic loops and charts out system space expansions in real-time step graphics to demonstrate my practical software skill sets.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Software Engineering", "SaaS / Tech"],
+      "startDate": "Dec 2023",
+      "endDate": "Nov 2024"
+    },
+    {
+      "id": "maang-g-leet-milestone",
+      "title": "Cracking the 500 Plus Competitive Algorithm Problem Solving Board Matrix",
+      "description": "The target benchmark was to resolve hundreds of complex data structure puzzles on global judge networks, completely eliminating array parsing errors and optimization bottlenecks.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Competition", "Cracking Placements"],
+      "startDate": "Dec 2024",
+      "endDate": "Nov 2025"
+    },
+    {
+      "id": "maang-g-off-campus-maang",
+      "title": "Clearing Opaque Big-Tech Fintech Infrastructure Selection Board Challenges",
+      "description": "The operational target was to pass multi-round off-campus systems engineering reviews and live platform design panels to secure an entry slot inside an elite high-volume tech firm.",
+      "status": "achieved",
+      "topics": ["College Students", "Professionals"],
+      "subtopics": ["Cracking Placements", "Fintech"],
+      "startDate": "Dec 2025",
+      "endDate": "May 2026"
+    },
+    {
+      "id": "maang-g-fintech-scale",
+      "title": "Directing Ultra-Low-Latency Financial Transaction Systems at Enterprise Scale",
+      "description": "The current ongoing milestone target is to build microsecond transaction code paths, manage scaled database optimization layouts, and ensure payment network stability for millions of global users.",
+      "status": "ongoing",
+      "topics": ["Professionals", "Startup"],
+      "subtopics": ["SaaS / Tech", "Fintech", "Data / AI"],
+      "startDate": "Jun 2026",
+      "endDate": null
+    }
+  ],
+  "experiences": [
+    {
+      "id": "maang-e-1",
+      "title": "Enrolling in Secondary Science Preparation Classes",
+      "startDate": "Apr 2019",
+      "endDate": "May 2020",
+      "context": "Began high school advanced science tracks near Nagpur, avoiding casual learning models to practice structuring coordinate grid systems on paper pads manually. I prioritized learning systematic calculation laws to strengthen my logical thinking habits.",
+      "organization": "Nagpur Regional Science Academy",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Earned highest validation marks across introductory geometry logic and equation matrix classes.",
+        "Built a central numerical tracking catalog to help fellow students calculate compound strategy sums easily."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-numerical-foundations"],
+      "skills": [
+        { "name": "Coordinate Grid Logic", "type": "Technical" },
+        { "name": "Equation Matrix Analysis", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "maang-p-1",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Started early analytical training, building a solid groundwork in multi-layered geometric calculation arrays."
+    },
+    {
+      "id": "maang-e-2",
+      "title": "Completing District Level Math Olympiad Contests",
+      "startDate": "Jun 2020",
+      "endDate": "May 2021",
+      "context": "Participated in regional problem-solving matches under tight countdown constraints, learning how to partition numeric parameters and trace logic routes accurately under intense pressure.",
+      "organization": "District Education Council Office",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Finished in the top ranking circle across regional high school engineering competition candidates.",
+        "Created a formula shorthand handbook used widely by classmates to optimize calculation speeds."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-numerical-foundations"],
+      "skills": [
+        { "name": "Numeric Parameter Partitioning", "type": "Domain" },
+        { "name": "Speed Optimization Planning", "type": "Soft" }
+      ],
+      "proofs": [{
+          "id": "maang-p-2",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Proved strong quantitative capabilities by clearing competitive district problem-solving matches."
+    },
+    {
+      "id": "maang-e-3",
+      "title": "Entering Unranked Tier-3 Engineering College Track",
+      "startDate": "Jul 2021",
+      "endDate": "May 2022",
+      "context": "Enrolled in standard university courses, but quickly avoided routine slide copying to practice charting variable memory configurations directly on my terminal outside day lecture routines.",
+      "organization": "Isolated Regional Engineering College",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Earned top academic marks in early programming architecture and file system setup classes.",
+        "Wrote an independent desktop sorting automation tool to index laboratory datasets cleanly."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-dsa-mastery"],
+      "skills": [
+        { "name": "Terminal Code Configuration", "type": "Technical" },
+        { "name": "File System Setup Architecture", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "maang-p-3",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Began university technical training, focusing heavily on raw programming structures over simple web layout templates."
+    },
+    {
+      "id": "maang-e-4",
+      "title": "Mastering Advanced Pointer Allocation Matrices",
+      "startDate": "Jun 2022",
+      "endDate": "Dec 2022",
+      "context": "Spent my evening computer lab hours building custom link array systems, checking how variable address allocations interact across multi-layered data structures without throwing system crashes.",
+      "organization": "Isolated Regional Engineering College",
+      "achievements": [
+        "Programmed ten distinct dynamic address sorting structures to study code execution patterns.",
+        "Designed detailed memory monitoring charts used by my peer study circle to trace data leaks."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-dsa-mastery"],
+      "skills": [
+        { "name": "Dynamic Pointer Allocation", "type": "Technical" },
+        { "name": "Memory Leak Identification", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "maang-p-4",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Mastered complex pointer tracks by writing customized allocation models, avoiding reliance on pre-made software libraries."
+    },
+    {
+      "id": "maang-e-5",
+      "title": "Rejecting the Mass Corporate IT Training Conveyor Belt",
+      "startDate": "Jan 2023",
+      "endDate": "May 2023",
+      "context": "Realized that our college placement group pushed students exclusively into low-paying, mass outsourcing training setups that trained them solely for routine form editing desks and mass software testing benches.",
+      "challengeFaced": "Deciding to walk away from comfortable local IT placement paths while completely isolated from top-tier tech firm contacts.",
+      "outcome": "Maintained high university grades while launching an exhaustive off-campus upskilling plan focused entirely on high-performance algorithm engineering.",
+      "organization": "Isolated Regional Engineering College",
+      "achievements": [
+        "Isolated forty specific design gaps across traditional mass recruitment tutorial projects.",
+        "Drafted an independent technical preparation roadmap shared widely across regional student groups."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-dsa-mastery"],
+      "skills": [
+        { "name": "Technical Roadmap Design", "type": "Domain" },
+        { "name": "System Disconnect Diagnostics", "type": "Soft" }
+      ],
+      "proofs": [{
+          "id": "maang-p-5",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Bypassed predictable corporate outsourcing tracks to focus entirely on building elite product engineering credentials."
+    },
+    {
+      "id": "maang-e-6",
+      "title": "Scripting the Asynchronous Algorithm Event Listener Core",
+      "startDate": "Jun 2023",
+      "endDate": "Nov 2023",
+      "context": "Began coding my open-source dashboard core: a specialized tracking framework that monitors recursive calculation functions and records state property loops in real-time cycles.",
+      "organization": "Sovereign Open Source Systems Lab",
+      "achievements": [
+        "Programmed a high-speed event monitor that captures algorithmic array modifications smoothly.",
+        "Organized clear variable distribution tables that captured deep recursion execution changes instantly."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-dsa-mastery"],
+      "skills": [
+        { "name": "Asynchronous Event Monitoring", "type": "Technical" },
+        { "name": "Recursion State Tracking", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "maang-p-6",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Began developing an open-source monitoring system to record algorithm complexity parameters dynamically."
+    },
+    {
+      "id": "maang-e-7",
+      "title": "Integrating the Dynamic Space Complexity Layout Tier",
+      "startDate": "Dec 2023",
+      "endDate": "May 2024",
+      "context": "Added comprehensive runtime visualization modules to my dashboard framework, allowing users to see exactly how memory allocation tables expand and contract during active data sort actions.",
+      "organization": "Sovereign Open Source Systems Lab",
+      "achievements": [
+        "Linked raw calculation array parameters cleanly with interactive real-time step charts.",
+        "Maintained safe data execution speeds across hundreds of simulated test runs without platform lag."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-visualization-panel"],
+      "skills": [
+        { "name": "Dynamic Complexity Charting", "type": "Technical" },
+        { "name": "Data Execution Security", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "maang-p-7",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Completed the framework's visual display layer, delivering clear, analytical feedback loops for student programmers."
+    },
+    {
+      "id": "maang-e-8",
+      "title": "Conquering the Memory Overflow Stack Latency Crisis",
+      "startDate": "Jun 2024",
+      "endDate": "Nov 2024",
+      "context": "Hit a major infrastructure wall when checking deep recursive functions, causing our dashboard engine's processing loops to hit an unexpected stack collapse and throw system error alerts under heavy data scales.",
+      "challengeFaced": "Preventing calculation query timeouts and resource blocks when simulating thousands of multi-layered array modifications simultaneously.",
+      "outcome": "Spent three weeks analyzing computer storage line behaviors, completely re-engineering my parsing layout to use custom iterative memory-mapped indexes instead of deep recursive tracking.",
+      "organization": "Sovereign Open Source Systems Lab",
+      "achievements": [
+        "Completely eliminated stack overflow system errors across dense multi-layered test configurations.",
+        "Maintained sub-millisecond data transformation speeds, winning widespread traction across community open-source repositories."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-visualization-panel"],
+      "skills": [
+        { "name": "Iterative Memory Mapping", "type": "Technical" },
+        { "name": "Stack Ingestion Debugging", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "maang-p-8",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Resolved a critical platform crash by implementing custom data routing layers, catching the attention of a top-tier open-source engineer."
+    },
+    {
+      "id": "maang-e-9",
+      "title": "Launching the 500 Plus LeetCode Sprint Routine",
+      "startDate": "Dec 2024",
+      "endDate": "Apr 2025",
+      "context": "Began a rigorous daily calculation schedule across international algorithm networks, tracking error metrics across global judge systems to maximize my technical problem-solving agility.",
+      "organization": "LeetCode Online Competitive Network",
+      "achievements": [
+        "Resolved 200+ advanced dynamic programming and graph puzzles within a tight four-month window.",
+        "Maintained an optimal sub-second runtime record across the absolute majority of code submissions."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-leet-milestone"],
+      "skills": [
+        { "name": "Dynamic Programming Logic", "type": "Technical" },
+        { "name": "Graph Algorithm Architecture", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "maang-p-9",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Launched an aggressive competitive algorithm tracking schedule, sharpening execution speeds under strict parameters."
+    },
+    {
+      "id": "maang-e-10",
+      "title": "Crossing the Comprehensive Data Structures Milestone Matrix",
+      "startDate": "May 2025",
+      "endDate": "Nov 2025",
+      "context": "Successfully cleared the 500+ solved problem matrix on global judges, mastering complex sorting logic, bit manipulation, and system memory optimization variables perfectly.",
+      "organization": "LeetCode Online Competitive Network",
+      "achievements": [
+        "Crossed into the top tier performance brackets of global off-campus tech platform candidates.",
+        "Obtained an internal track referral to bypass automated recruitment filters based on my verified dashboard tool history."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-leet-milestone"],
+      "skills": [
+        { "name": "Bit Manipulation Optimization", "type": "Technical" },
+        { "name": "Problem Solving Verification", "type": "Domain" }
+      ],
+      "proofs": [{
+          "id": "maang-p-10",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Secured a major off-campus technical validation asset, breaking past traditional tier-3 college placement boundaries entirely."
+    },
+    {
+      "id": "maang-e-11",
+      "title": "Entering MAANG Fintech Infrastructure Strategy Panels",
+      "startDate": "Dec 2025",
+      "endDate": "Jan 2026",
+      "context": "Entered the off-campus selection circuit for the international big-tech fintech division, clearing intensive algorithm design teardowns and live platform capacity reviews.",
+      "organization": "MAANG Technical Recruitment Circuit",
+      "applicationStatus": "pending",
+      "achievements": [
+        "Derived complex data structure scale equations on the whiteboard before senior platform technology managers.",
+        "Diagnosed deep transaction tracking delays inside a mock checkout pipeline within ninety minutes."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-off-campus-maang"],
+      "skills": [
+        { "name": "Whiteboard Capacity Design", "type": "Domain" },
+        { "name": "Fintech Process Diagnostics", "type": "Domain" }
+      ],
+      "proofs": [{
+          "id": "maang-p-11",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Showcased expert analytical and data structure insights during highly competitive international off-campus technical loops."
+    },
+    {
+      "id": "maang-e-12",
+      "title": "Defending Low-Latency System Integration Blueprints",
+      "startDate": "Feb 2026",
+      "endDate": "Feb 2026",
+      "context": "Cleared advanced technical interview stages, demonstrating how dynamic memory layouts and non-blocking database queries prevent transaction chokes during high-traffic payment events.",
+      "organization": "MAANG Technical Recruitment Circuit",
+      "achievements": [
+        "Obtained full confirmation marks from all five technical board panel judges during my infrastructure defense.",
+        "Aligned complex data concurrency parameters smoothly with real-world enterprise financial targets."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-off-campus-maang"],
+      "skills": [
+        { "name": "Data Concurrency Architecture", "type": "Technical" },
+        { "name": "Non-Blocking Query Tuning", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "mang-p-12",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Successfully completed my final system architecture loops, establishing absolute technical authority before big-tech leaders."
+    },
+    {
+      "id": "maang-e-13",
+      "title": "Securing Core Product Systems Placement Confirmations",
+      "startDate": "Mar 2026",
+      "endDate": "Mar 2026",
+      "context": "Successfully cleared all strategic evaluation gates, receiving a formal corporate placement offer to join the tech platform's core financial infrastructure division.",
+      "organization": "MAANG Technology Corporation",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Earned a premier engineering position based entirely on verified data structures depth and open tool capabilities.",
+        "Successfully broke free from the isolated unranked campus desert to claim a slot inside a premier scaling group."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-off-campus-maang"],
+      "skills": [
+        { "name": "Off-Campus Track Traversal", "type": "Domain" },
+        { "name": "Infrastructure Placement Strategy", "type": "Soft" }
+      ],
+      "proofs": [{
+          "id": "maang-p-13",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Formally accepted the Fintech Infrastructure Engineer title, completing an exceptional self-taught transition path."
+    },
+    {
+      "id": "maang-e-14",
+      "title": "Onboarding inside the Global Financial Scaling Squad",
+      "startDate": "Apr 2026",
+      "endDate": "May 2026",
+      "context": "Completed core technical orientation setups, learning internal data pipeline definitions and configuring cloud ledger architectures to handle high-volume asset flows smoothly.",
+      "organization": "MAANG Core Fintech Division",
+      "achievements": [
+        "Configured my individual developer environment to sync with global testing sandboxes within forty-eight hours.",
+        "Documented ten critical transaction pipeline characteristics to aid upcoming engineering updates."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-fintech-scale"],
+      "skills": [
+        { "name": "Cloud Ledger Configuration", "type": "Technical" },
+        { "name": "Data Pipeline Mapping", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "maang-p-14",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Integrated smoothly into the core infrastructure squad, adapting my tracking tool insights to enterprise platforms."
+    },
+    {
+      "id": "maang-e-15",
+      "title": "Directing Large Scale Database Optimization Roadmaps",
+      "startDate": "Jun 2026",
+      "endDate":  null,
+      "context": "Managing ultra-low-latency transaction code paths and optimizing continuous ledger validation matrices within our core experience squad, ensuring all data arrays process flawlessly under million-row traffic surges.",
+      "organization": "MAANG Core Fintech Division",
+      "achievements": [
+        "Streamlined query parameters across our primary high-density checkout pipeline systems.",
+        "Partnered with data protection architects to enforce clean memory container configurations across all global networks."
+      ],
+      "isVerified": true,
+      "goalIds": ["maang-g-fintech-scale"],
+      "skills": [
+        { "name": "Ultra-Low-Latency Scripting", "type": "Technical" },
+        { "name": "Ledger Validation Optimization", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "maang-p-15",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Currently directing robust microsecond transaction frameworks inside the global scaling squad, shaping modern fintech infrastructure futures daily."
+    }
+  ],
+  "transitions": [
+    {
+      "fromExperienceId": "maang-e-1",
+      "toExperienceId": "maang-e-2",
+      "decisionLabel": "Moving from initial geometry classes to clear regional math competition loops through speed optimization planning."
+    },
+    {
+      "fromExperienceId": "maang-e-2",
+      "toExperienceId": "maang-e-3",
+      "decisionLabel": "Pivoting from high school math rounds to enter an engineering college track and master terminal code configurations."
+    },
+    {
+      "fromExperienceId": "maang-e-3",
+      "toExperienceId": "maang-e-4",
+      "decisionLabel": "Applying my system structure fundamentals to master dynamic pointer allocations and identify memory leaks."
+    },
+    {
+      "fromExperienceId": "maang-e-4",
+      "toExperienceId": "maang-e-5",
+      "decisionLabel": "Rejecting mass corporate outsourcing conveyor belts to build an independent off-campus product engineering preparation track."
+    },
+    {
+      "fromExperienceId": "maang-e-5",
+      "toExperienceId": "maang-e-6",
+      "decisionLabel": "Commencing my self-directed algorithm preparation by scripting the core event monitoring modules of my open tracking system."
+    },
+    {
+      "fromExperienceId": "maang-e-6",
+      "toExperienceId": "maang-e-7",
+      "decisionLabel": "Transitioning from event listener coding to integrate dynamic space complexity charting panels for student developers."
+    },
+    {
+      "fromExperienceId": "maang-e-7",
+      "toExperienceId": "maang-e-8",
+      "decisionLabel": "Resolving a critical memory stack overflow breakdown by engineering an optimized iterative memory mapping tier."
+    },
+    {
+      "fromExperienceId": "maang-e-8",
+      "toExperienceId": "maang-e-9",
+      "decisionLabel": "Launching a high-density daily problem-solving routine across global judges to master dynamic programming tracks."
+    },
+    {
+      "fromExperienceId": "maang-e-9",
+      "toExperienceId": "maang-e-10",
+      "decisionLabel": "Crossing the 500+ LeetCode solved problem matrix to secure a verified referral asset, breaking past college isolation lines."
+    },
+    {
+      "fromExperienceId": "maang-e-10",
+      "toExperienceId": "maang-e-11",
+      "decisionLabel": "Entering competitive off-campus MAANG fintech evaluation circuits to defend algorithm constraints before senior managers."
+    },
+    {
+      "fromExperienceId": "maang-e-11",
+      "toExperienceId": "maang-e-12",
+      "decisionLabel": "Advancing through system architecture loops to present non-blocking concurrency profiles to technical board panels."
+    },
+    {
+      "fromExperienceId": "maang-e-12",
+      "toExperienceId": "maang-e-13",
+      "decisionLabel": "Formally accepting the Fintech Infrastructure Engineer title offer, finishing my structural off-campus pivot path."
+    },
+    {
+      "fromExperienceId": "maang-e-13",
+      "toExperienceId": "maang-e-14",
+      "decisionLabel": "Integrating into the core scaling squad to map enterprise data pipelines and manage cloud ledger setups."
+    },
+    {
+      "fromExperienceId": "maang-e-14",
+      "toExperienceId": "maang-e-15",
+      "decisionLabel": "Directing large-scale database optimization roadmaps and running ultra-low-latency transaction code lines daily."
+    }
+  ]
+}

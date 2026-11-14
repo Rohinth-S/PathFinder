@@ -1,0 +1,570 @@
+{
+  "user": {
+    "username": "tech-trailblazer-77",
+    "clerkId": null,
+    "preferredLanguage": "en",
+    "summary": "An academic computing researcher who bypassed traditional corporate engineering pipelines to focus on high-density data matrix manipulation, automated research dataset processing utilities, and fully funded computational science laboratory fellowships.",
+    "imageUrl": "https://ui-avatars.com/api/?name=tech-trailblazer&background=random&rounded=true",
+    "expertiseAreas": [
+      "High-Density Dataset Processing Frameworks",
+      "Multi-Dimensional Matrix Calculation Optimization",
+      "Asynchronous Calculation Data Flow Layouts",
+      "Academic Simulation Performance Tuning",
+      "Computational Laboratory Pipeline Scaling"
+    ],
+    "reputationScore": 70,
+    "flagCount": 0,
+    "isFlagged": false,
+    "email": null
+  },
+  "goals": [
+    {
+      "id": "tech-g-sorting-foundations",
+      "title": "Mastering Analytical Data Indexing and Grid Alignment Laws",
+      "description": "My baseline objective during my school days in Pune was to build solid understanding across mathematical sorting rules, coordinate geometry patterns, and logical parameter charts to prepare for complex data lab tracks.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Other"],
+      "startDate": "Jan 2023",
+      "endDate": "May 2024"
+    },
+    {
+      "id": "tech-g-academic-frameworks",
+      "title": "Upskilling in High-Density Processing Matrices and Computer Memory Management",
+      "description": "The goal was to bypass basic software industry entry courses to independently study multi-dimensional data structures, background processor storage parameters, and simulation loops inside my early college terms.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Software Engineering"],
+      "startDate": "Jun 2024",
+      "endDate": "Nov 2025"
+    },
+    {
+      "id": "tech-g-processing-tool",
+      "title": "Engineering an Open-Source Unstructured Research Dataset Structuring Utility",
+      "description": "The milestone target was to program a high-performance parsing application that automatically cleans messy scientific text files and graphs data arrangement updates in real-time step charts.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Software Engineering", "Data / AI"],
+      "startDate": "Dec 2025",
+      "endDate": "Mar 2026"
+    },
+    {
+      "id": "tech-g-proof-defense",
+      "title": "Defending Structural Mathematical Proofs before University Review Councils",
+      "description": "The operational target was to explain my custom memory alignment layouts and system index algorithms directly to senior laboratory professors to earn absolute technical validation.",
+      "status": "achieved",
+      "topics": ["College Students"],
+      "subtopics": ["Competition", "Other"],
+      "startDate": "Mar 2026",
+      "endDate": "May 2026"
+    },
+    {
+      "id": "tech-g-funded-internship",
+      "title": "Securing a Fully Funded On-Campus Research Fellowship Placement Offering",
+      "description": "The target benchmark was to clear rapid algorithmic teardowns and live data scaling reviews at the university's flagship computational science center to bypass traditional industrial tracks.",
+      "status": "achieved",
+      "topics": ["College Students", "Professionals"],
+      "subtopics": ["Internship", "Data / AI"],
+      "startDate": "May 2026",
+      "endDate": "Jun 2026"
+    },
+    {
+      "id": "tech-g-matrix-calculations",
+      "title": "Directing Large Scale Laboratory Performance Pipelines and Simulation Cycles",
+      "description": "The current ongoing target is to coordinate deep-level system architecture evaluations, manage real-time data analysis loops, and keep laboratory multi-dimensional calculations aligned with world-class computational metrics.",
+      "status": "ongoing",
+      "topics": ["Professionals"],
+      "subtopics": ["Software Engineering", "Data / AI"],
+      "startDate": "Jun 2026",
+      "endDate": null
+    }
+  ],
+  "experiences": [
+    {
+      "id": "tech-e-1",
+      "title": "Enrolling in Secondary Data Validation Modules",
+      "startDate": "Jan 2023",
+      "endDate": "May 2023",
+      "context": "Began high school technical preparation tracks in Pune, choosing to look past casual study patterns to learn how relational information blocks align inside data systems. I practiced arranging numeric files manually to build robust analytical habits early.",
+      "organization": "Pune Advanced Science Center",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Earned highest validation grades across introductory logical cataloging and tracking classes.",
+        "Built a simple index template card catalog used by fellow students to sort lab values easily."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-sorting-foundations"],
+      "skills": [
+        { "name": "Logical Information Cataloging", "type": "Technical" },
+        { "name": "Data Value Alignment", "type": "Technical" }
+      ],
+      "proofs": [ {
+          "id": "tech-p-1",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Commenced fundamental diagnostic training, building a solid base in structural parameter sorting."
+    },
+    {
+      "id": "tech-e-2",
+      "title": "Configuring Multi Dimensional Grid Sorting Projects",
+      "startDate": "Jun 2023",
+      "endDate": "May 2024",
+      "context": "Spent my weekend hours solving complex geometry matrix problems, exploring how numbers change position properties inside large array layouts without breaking formatting rules.",
+      "organization": "Pune Advanced Science Center",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Designed five independent grid calculation frameworks that managed high numbers with zero data loss.",
+        "Drafted a clear reference manual charting pattern changes shared widely in my math study circle."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-sorting-foundations"],
+      "skills": [
+        { "name": "Grid Calculation Structuring", "type": "Technical" },
+        { "name": "Pattern Property Analysis", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-2",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Acquired solid quantitative insights by coding custom matrix properties and tracing data configurations manually."
+    },
+    {
+      "id": "tech-e-3",
+      "title": "Entering University Computer Science Engineering Program",
+      "startDate": "Jun 2024",
+      "endDate": "Dec 2024",
+      "context": "Enrolled in standard technical degree courses, but quickly avoided basic web design roadmaps to dedicate my terminal shifts to studying processor storage arrays on my screen viewport.",
+      "organization": "Savirtibai Phule Engineering University",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Earned top academic marks across early data systems and logical network track modules.",
+        "Wrote a local data organization script to file university research log histories cleanly."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-academic-frameworks"],
+      "skills": [
+        { "name": "Processor Storage Analysis", "type": "Technical" },
+        { "name": "Data History Management", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-3",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Began university programming blocks, prioritizing deep computational logic configurations over routine industrial application tools."
+    },
+    {
+      "id": "tech-e-4",
+      "title": "Developing Multi Layered High Density Simulation Loops",
+      "startDate": "Jan 2025",
+      "endDate": "May 2025",
+      "context": "Spent my evening computer lab hours coding algorithmic array processors, exploring how computational models transfer large sets of raw data values without creating system latency dropouts.",
+      "organization": "Savirtibai Phule Engineering University",
+      "achievements": [
+        "Programmed three separate array calculators that handled deep simulation streams smoothly.",
+        "Designed structured variable matrices used by our college project circle to minimize runtime crashes."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-academic-frameworks"],
+      "skills": [
+        { "name": "Array Processing Optimization", "type": "Technical" },
+        { "name": "Simulation Stream Testing", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-4",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Mastered high-density application concepts by coding robust data loops outside daytime study requirements."
+    },
+    {
+      "id": "tech-e-5",
+      "title": "Bypassing Routine Enterprise Placement Bootcamps",
+      "startDate": "Jun 2025",
+      "endDate": "Nov 2025",
+      "context": "Realized that standard university options pushed students to follow basic commercial web design paths, leading to duplicate portfolio applications that completely lacked higher mathematical research depth or real dataset scaling scope.",
+      "challengeFaced": "Balancing strict branch grade requirements while systematically designing complex dataset processing algorithms late at night.",
+      "outcome": "Maintained high semester standing while launching an intensive self-directed track in mathematical calculation tracking rules.",
+      "organization": "Savirtibai Phule Engineering University",
+      "achievements": [
+        "Isolated forty specific structural limits across traditional commercial portfolio tutorial guides.",
+        "Drafted a modern alternative architecture guide used widely across student developer groups."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-academic-frameworks"],
+      "skills": [
+        { "name": "Mathematical Optimization Auditing", "type": "Domain" },
+        { "name": "Dataset Architecture Strategy", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-5",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Tracked major execution gaps in standard student projects before starting an independent data processing utility setup."
+    },
+    {
+      "id": "tech-e-6",
+      "title": "Scripting the High Speed Unstructured Text Parsing Core",
+      "startDate": "Dec 2025",
+      "endDate": "Jan 2026",
+      "context": "Began coding my core open-source tool: a specialized data ingestion utility that cleans messy scientific text files and records code variable variations dynamically.",
+      "organization": "Sovereign Academic Data Lab",
+      "achievements": [
+        "Programmed an ultra-fast text data parser that reads large data rows smoothly.",
+        "Organized clear memory buffer arrays that avoided internal loop execution stalls completely."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-processing-tool"],
+      "skills": [
+        { "name": "Unstructured Text Ingestion", "type": "Technical" },
+        { "name": "Memory Buffer Configuration", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-6",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Started development on a custom processing core to read messy research records without formatting losses."
+    },
+    {
+      "id": "tech-e-7",
+      "title": "Integrating the Step Wise Data Layout Visualization Panel",
+      "startDate": "Feb 2026",
+      "endDate": "Mar 2026",
+      "context": "Connected interactive visual display tiers to my research tool, letting user scholars graph data arrangement updates in real-time step charts without requiring slow translation packages.",
+      "organization": "Sovereign Academic Data Lab",
+      "achievements": [
+        "Linked complex scientific variables cleanly with highly responsive chart graphics modules.",
+        "Maintained safe code processing speeds across multiple simulated platform diagnostic checks."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-processing-tool"],
+      "skills": [
+        { "name": "Visual Chart Customization", "type": "Technical" },
+        { "name": "Step Chart Data Mapping", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-7",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Completed the framework's visual display layer, providing clear layout analytics summaries for target platforms."
+    },
+    {
+      "id": "tech-e-8",
+      "title": "Conquering the Matrix Dimension Processing Collapse",
+      "startDate": "Mar 2026",
+      "endDate": "Mar 2026",
+      "context": "Hit a serious execution block when checking multi-tiered calculation logs, causing the tool's parsing arrays to run into unexpected memory locks and throwing system error alerts under heavy data scales.",
+      "challengeFaced": "Preventing calculation query timeouts and resource blocks when simulating thousands of multi-layered matrix updates concurrently.",
+      "outcome": "Spent three weeks refactoring execution queues, completely re-engineering my data absorption loops to use custom array caching layouts from first principles.",
+      "organization": "Sovereign Academic Data Lab",
+      "achievements": [
+        "Completely eliminated asynchronous processing lock failures across dense multi-layered test configurations.",
+        "Maintained sub-millisecond data processing velocities, validating my tool setups across open code hubs."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-proof-defense"],
+      "skills": [
+        { "name": "Array Caching Architecture", "type": "Technical" },
+        { "name": "Memory Lock Resolution", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-8",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Resolved a critical data calculation bottleneck by implementing custom async memory intervals, matching top-tier research standards."
+    },
+    {
+      "id": "tech-e-9",
+      "title": "Compiling Structural Proof Arrays for Lab Council Review",
+      "startDate": "Apr 2026",
+      "endDate": "Apr 2026",
+      "context": "Ran extensive data simulation checks across prominent university calculation archives using my custom utility, gathering clean execution summaries to build thorough validation records.",
+      "organization": "Independent Academic Research Initiative",
+      "achievements": [
+        "Mapped performance tracking profiles for twenty high-density scientific calculation files.",
+        "Isolated specific data storage leaks that caused performance chokes during major simulation runs."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-proof-defense"],
+      "skills": [
+        { "name": "Scientific Profile Valuation", "type": "Domain" },
+        { "name": "Storage Leak Diagnostics", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-9",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Assembled deep validation files across target simulation archives, laying a quantitative baseline for faculty board evaluations."
+    },
+    {
+      "id": "tech-e-10",
+      "title": "Defending System Custom Index Algorithms Before Professors",
+      "startDate": "Apr 2026",
+      "endDate": "May 2026",
+      "context": "Presented my open-source tracking dashboard configurations directly to senior university laboratory heads, explaining my code layout decisions using data-driven arguments.",
+      "organization": "Independent Academic Research Initiative",
+      "achievements": [
+        "Earned high validation approvals from technical team leads via hyper-focused structural explanations.",
+        "Unlocked direct advancement paths into the campus computational science center based entirely on my code proof."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-proof-defense"],
+      "skills": [
+        { "name": "Algorithm Board Defense", "type": "Soft" },
+        { "name": "Structural Explanation Delivery", "type": "Domain" }
+      ],
+      "proofs": [{
+          "id": "tech-p-10",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Presented system proof records directly to senior faculty boards, proving the value of self-directed technical investigation."
+    },
+    {
+      "id": "tech-e-11",
+      "title": "Entering Computational Science Center Review Sessions",
+      "startDate": "May 2026",
+      "endDate": "May 2026",
+      "context": "Entered rapid evaluation interviews with a prominent university research group, presenting immediate system architecture updates and mathematical proof charts to their laboratory leads.",
+      "organization": "University Computational Science Center Board",
+      "applicationStatus": "pending",
+      "achievements": [
+        "Derived complex multi-dimensional data models on the whiteboard before senior fellowship managers.",
+        "Detailed a precise technical roadmap to streamline data parsing speeds within an hour."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-funded-internship"],
+      "skills": [
+        { "name": "Multi-Dimensional Modeling", "type": "Domain" },
+        { "name": "Laboratory Speed Diagnostics", "type": "Domain" }
+      ],
+      "proofs": [{
+          "id": "tech-p-11",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Demonstrated superior data stream parsing and data structure capabilities during live research fellowship loops."
+    },
+    {
+      "id": "tech-e-12",
+      "title": "Presenting Low Overhead Matrix Transformation Blueprints",
+      "startDate": "May 2026",
+      "endDate": "Jun 2026",
+      "context": "Cleared final technical evaluations, showing how light memory filters and optimized container setups protect research computers from processing lag under high data loads.",
+      "organization": "University Computational Science Center Board",
+      "achievements": [
+        "Obtained full confirmation validations from all core board members during my practical systems defense.",
+        "Aligned complex data processing parameters cleanly with real-world research scaling targets."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-funded-internship"],
+      "skills": [
+        { "name": "Memory Filter Design", "type": "Technical" },
+        { "name": "Matrix Concurrency Tuning", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-12",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Successfully completed final strategy evaluations, establishing absolute computational authority before laboratory leaders."
+    },
+    {
+      "id": "tech-e-13",
+      "title": "Securing Fully Funded On Campus Research Fellowship",
+      "startDate": "Jun 2026",
+      "endDate": "Jun 2026",
+      "context": "Successfully cleared all review gates, receiving a formal corporate placement offer to join the university's flagship computational science center as a research intern.",
+      "organization": "University Computational Science Center",
+      "applicationStatus": "accepted",
+      "achievements": [
+        "Earned a funded research placement position based entirely on verified tool capabilities and proof documents.",
+        "Bypassed traditional industrial software tracks during my second year to claim an immediate campus laboratory slot."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-funded-internship"],
+      "skills": [
+        { "name": "Research Track Traversal", "type": "Domain" },
+        { "name": "Fellowship Strategy Alignment", "type": "Soft" }
+      ],
+      "proofs": [{
+          "id": "tech-p-13",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Formally accepted the On-Campus Research Fellowship title, completing a unique academic transition roadmap."
+    },
+    {
+      "id": "tech-e-14",
+      "title": "Onboarding inside the Computational Operations Division",
+      "startDate": "Jun 2026",
+      "endDate": "Jun 2026",
+      "context": "Completed operational environment configurations, learning laboratory workflow systems and connecting local code modules to production server sandboxes cleanly.",
+      "organization": "University Computational Science Center",
+      "achievements": [
+        "Configured my custom development files to match live laboratory servers within forty-eight hours.",
+        "Documented ten critical asset loading behaviors to support upcoming system updates."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-matrix-calculations"],
+      "skills": [
+        { "name": "Laboratory Environment Setup", "type": "Technical" },
+        { "name": "System Asset Configuration", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-14",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Integrated smoothly into the core research team, applying my metrics tool knowledge to operational simulation files."
+    },
+    {
+      "id": "tech-e-15",
+      "title": "Directing Deep Level System Architecture Evaluations",
+      "startDate": "Jul 2026",
+      "endDate":null,
+      "context": "Managing real-time data analysis loops and optimizing ultra-low-latency matrix data dependencies within our core experience group, ensuring all laboratory pipeline performance metrics match world-class scale boundaries perfectly.",
+      "organization": "University Computational Science Center",
+      "achievements": [
+        "Streamlined query parameters across our primary high-density checkout pipeline systems.",
+        "Partnered with data protection architects to enforce low-overhead memory allocations across all live global networks."
+      ],
+      "isVerified": true,
+      "goalIds": ["tech-g-matrix-calculations"],
+      "skills": [
+        { "name": "Ultra-Low-Latency Ingestion", "type": "Technical" },
+        { "name": "Ledger Validation Optimization", "type": "Technical" }
+      ],
+      "proofs": [{
+          "id": "tech-p-15",
+          "sourceType": "link",
+          "url": "public-source-unavailable",
+          "status": "verified",
+          "verifiedAt": null,
+          "reason": null
+        }],
+      "timelineSummary": "Currently orchestrating robust high-density calculations and simulation pipelines daily, guiding the absolute frontier of technology scale."
+    }
+  ],
+  "transitions": [
+    {
+      "fromExperienceId": "tech-e-1",
+      "toExperienceId": "tech-e-2",
+      "decisionLabel": "Moving from initial logic mapping lines to construct multi-dimensional grid sorting frameworks."
+    },
+    {
+      "fromExperienceId": "tech-e-2",
+      "toExperienceId": "tech-e-3",
+      "decisionLabel": "Pivoting from high school math grids to enter an engineering college track and manage terminal databases."
+    },
+    {
+      "fromExperienceId": "tech-e-3",
+      "toExperienceId": "tech-e-4",
+      "decisionLabel": "Applying my system structure fundamentals to code dynamic high-density simulation loops and variable matrices."
+    },
+    {
+      "fromExperienceId": "tech-e-4",
+      "toExperienceId": "tech-e-5",
+      "decisionLabel": "Rejecting enterprise recruitment bootcamps to construct an independent self-directed track in mathematical calculation tracking."
+    },
+    {
+      "fromExperienceId": "tech-e-5",
+      "toExperienceId": "tech-e-6",
+      "decisionLabel": "Commencing my research framework formulation by scripting the core text parsing modules of my open processing utility."
+    },
+    {
+      "fromExperienceId": "tech-e-6",
+      "toExperienceId": "tech-e-7",
+      "decisionLabel": "Transitioning from core engine scripting to integrate dynamic step-wise data layout visualization panels."
+    },
+    {
+      "fromExperienceId": "tech-e-7",
+      "toExperienceId": "tech-e-8",
+      "decisionLabel": "Resolving a critical matrix dimension processing collapse by engineering an optimized array caching tier."
+    },
+    {
+      "fromExperienceId": "tech-e-8",
+      "toExperienceId": "tech-e-9",
+      "decisionLabel": "Running full-scale data updates across simulation archives to compile quantitative storage leak diagnostics."
+    },
+    {
+      "fromExperienceId": "tech-e-9",
+      "toExperienceId": "tech-e-10",
+      "decisionLabel": "Launching algorithm board defenses to present custom index layouts directly to senior laboratory professors."
+    },
+    {
+      "fromExperienceId": "tech-e-10",
+      "toExperienceId": "tech-e-11",
+      "decisionLabel": "Entering computational science center evaluation loops to present multi-dimensional modeling blueprints to review boards."
+    },
+    {
+      "fromExperienceId": "tech-e-11",
+      "toExperienceId": "tech-e-12",
+      "decisionLabel": "Advancing through system reviews to present low-overhead matrix transformation grids to core architects."
+    },
+    {
+      "fromExperienceId": "tech-e-12",
+      "toExperienceId": "tech-e-13",
+      "decisionLabel": "Formally accepting the On-Campus Research Fellowship title offer, concluding my academic positioning roadmap."
+    },
+    {
+      "fromExperienceId": "tech-e-13",
+      "toExperienceId": "tech-e-14",
+      "decisionLabel": "Integrating into the laboratory operations team to configure sandboxes and map system configurations."
+    },
+    {
+      "fromExperienceId": "tech-e-14",
+      "toExperienceId": "tech-e-15",
+      "decisionLabel": "Directing deep-level system architecture evaluations and running real-time high-density simulation calculations daily."
+    }
+  ]
+}
