@@ -206,8 +206,3 @@ Read the following deep-dive manuals to understand, build, and deploy PathFinder
 | **Upstash Redis** | Onboarding Session Storage | Local Redis Instance | Managed Redis stores conversation history and journey drafts with automatic expiry. |
 | **Cloudinary** | Proof Asset Storage | Local File Storage | Cloudinary generates optimized thumbnails and secure CDN delivery URLs for images and PDFs submitted as verification evidence. |
 
----
-
-## Maintenance
-
-See the [current architecture](docs/architecture.md), [commit history audit](docs/maintenance/commit-history-audit.md), and [maintenance and validation guide](docs/maintenance/README.md).
