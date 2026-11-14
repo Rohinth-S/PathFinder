@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "PathFinder",
+    "slug": "path-finder",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.pathfinder.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff",
+        "foregroundImage": "./assets/icon.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "scheme": "pathfinder",
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-sharing",
+      "expo-image-picker",
+      "expo-document-picker",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-audio",
+      "expo-asset"
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a9308a49-cc35-4e0e-934b-352bc38738bf"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "owner": "rohii24",
+    "updates": {
+      "url": "https://u.expo.dev/a9308a49-cc35-4e0e-934b-352bc38738bf"
+    }
+  }
+}
