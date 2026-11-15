@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { L } from '../../constants/colors';
+import { EndDateAction } from './EndDateAction';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -15,6 +16,7 @@ export interface ExpandableGoalCardProps {
   topics?: string[];
   subtopics?: string[];
   duration?: string;
+  onSetEndDate?: (endDate: string) => Promise<void>;
 }
 
 export function ExpandableGoalCard({
@@ -23,7 +25,8 @@ export function ExpandableGoalCard({
   description,
   topics = [],
   subtopics = [],
-  duration = ""
+  duration = "",
+  onSetEndDate,
 }: ExpandableGoalCardProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -163,6 +166,7 @@ export function ExpandableGoalCard({
                 </Text>
               </View>
             </View>
+            {onSetEndDate && <EndDateAction label="Mark goal achieved" onSave={onSetEndDate} />}
           </View>
         </View>
       )}
@@ -184,6 +188,8 @@ export interface ExpandableExperienceCardProps {
   linkedGoalTitles?: string[];
   transitionLabel?: string;
   transitionDecision?: string;
+  onSetEndDate?: (endDate: string) => Promise<void>;
+  initiallyExpanded?: boolean;
 }
 
 export function ExpandableExperienceCard({
@@ -199,9 +205,11 @@ export function ExpandableExperienceCard({
   skills = [],
   linkedGoalTitles = [],
   transitionLabel,
-  transitionDecision
+  transitionDecision,
+  onSetEndDate,
+  initiallyExpanded = false,
 }: ExpandableExperienceCardProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(initiallyExpanded);
 
   const toggle = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -238,7 +246,8 @@ export function ExpandableExperienceCard({
       />
 
       {/* Tap Target Area Header */}
-      <TouchableOpacity onPress={toggle} activeOpacity={0.8} style={{ paddingBottom: expanded ? 6 : 0 }}>
+      <TouchableOpacity accessibilityRole="button" accessibilityLabel={title} accessibilityState={{ expanded }}
+        onPress={toggle} activeOpacity={0.8} style={{ paddingBottom: expanded ? 6 : 0 }}>
         <View style={{ flex: 1, paddingLeft: 6, paddingRight: 12 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <View style={{ flex: 1, paddingLeft: 6, paddingRight: 12 }}>
@@ -372,6 +381,7 @@ export function ExpandableExperienceCard({
               </View>
             )}
 
+            {onSetEndDate && <EndDateAction label="Set end date" onSave={onSetEndDate} />}
           </View>
         </View>
       )}
